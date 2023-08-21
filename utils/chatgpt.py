@@ -1,6 +1,6 @@
 import requests
 try:
-    from AIs.base import BaseBot
+    from utils.base import BaseBot
 except ImportError:
     from base import BaseBot
 

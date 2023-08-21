@@ -1,6 +1,6 @@
 try:
-    from AIs.base.base import *
-    #from consts import *
+    from utils.base.base import *
+    #from utils.base.consts import *
 except ImportError:
     from base.base import *
     #from base.consts import *
