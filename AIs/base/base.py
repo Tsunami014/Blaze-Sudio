@@ -46,14 +46,16 @@ class converse:
         out = '\n'.join([fancify(x['content'], x['role']) for x in self.cnvrs])
         return out
     def __repr__(self): return str(self)
-
     def __getitem__(self, key):
         return self.cnvrs[key]
+    
+    def tolist(self):
+        return self.cnvrs
 
 class BaseBot:
     def __init__(self, ic=None):
         """
-        The Base class for a bot
+        An AI chatbot
 
         Parameters
         ----------
