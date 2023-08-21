@@ -4,6 +4,9 @@ try:
 except ImportError:
     from base import *
 
+# TODO: more AIs
+# TODO: threading
+
 class ChatGPTBot(BaseBot):
     def _call_ai(self, cnvrs):
         #api_url = "https://chatgpt-api.shn.hk/v1/"
