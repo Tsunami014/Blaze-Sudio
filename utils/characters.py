@@ -22,5 +22,6 @@ class Character:
         # for things like current conversations or what the character is doing, use self.currents
         # TODO: How to summarise the personality????? Maybe it uses an online AI in the background if it's avaliable and stores the result?? Who knows.
         # Maybe new personality class??
+        # TODO: What to do about the conversations, and handling them into and getting a response from the AI???
     
 
