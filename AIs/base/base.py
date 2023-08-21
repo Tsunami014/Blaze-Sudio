@@ -40,6 +40,15 @@ class converse:
             The message said by the person
         """
         self.cnvrs.append({'role': role, 'content': content})
+    
+    def __str__(self):
+        fancify = lambda x, side: ('>   ' if side == 'user' else '   ') + x + ('   <' if side == 'bot' else '')
+        out = '\n'.join([fancify(x['content'], x['role']) for x in self.cnvrs])
+        return out
+    def __repr__(self): return str(self)
+
+    def __getitem__(self, key):
+        return self.cnvrs[key]
 
 class BaseBot:
     def __init__(self, ic=None):
@@ -60,7 +69,7 @@ class BaseBot:
         self.cnvrs.new()
     
     def _call_ai(self, cnvrs):
-        out = str(cnvrs)
+        out = 'hello!'#str(cnvrs)
         return {'choices': [{'message': {'role': 'bot', 'content': out}}]}
 
     def __call__(self, message, ignore_prev=False):
@@ -74,3 +83,4 @@ if __name__ == '__main__':
     bot = BaseBot()
     while True:
         print('bot : ' + bot(input('user : ')))
+        print('conversation : ```\n' + str(bot.cnvrs)+'\n```')
