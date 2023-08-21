@@ -1,11 +1,41 @@
 import requests
+
 try:
-    from utils.base import *
+    from utils.converse import *
 except ImportError:
-    from base import *
+    from converse import *
 
 # TODO: more AIs
 # TODO: threading
+
+class BaseBot:
+    def __init__(self, ic=None):
+        """
+        An AI chatbot
+
+        Parameters
+        ----------
+        ic : converse, optional
+            the initial conversation, by default nothing (new conversation)
+        """
+        self.cnvrs = ic if isinstance(ic, converse) else converse()
+
+    def reset(self):
+        """
+        Reset (or start a new) conversation.
+        """
+        self.cnvrs.new()
+    
+    def _call_ai(self, cnvrs):
+        out = 'hello!'#str(cnvrs)
+        return {'choices': [{'message': {'role': 'bot', 'content': out}}]}
+
+    def __call__(self, message, ignore_prev=False):
+        cnvrs = [] if ignore_prev else self.cnvrs
+        cnvrs.append('user', message)
+        out = self._call_ai(cnvrs)['choices'][0]['message']
+        cnvrs.append(out['role'], out['content'])
+        return out['content']
 
 class ChatGPTBot(BaseBot):
     def _call_ai(self, cnvrs):
