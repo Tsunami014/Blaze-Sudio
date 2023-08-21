@@ -1,7 +1,5 @@
 import requests
 
-# cnvrs = CoNVeRSation/CoNVeRSe
-
 class ChatGPTBot:
     def __init__(self):
         self.cnvrs = []
