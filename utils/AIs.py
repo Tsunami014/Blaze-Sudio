@@ -2,36 +2,25 @@ import requests
 
 try:
     from utils.converse import *
+    from utils.characters import *
 except ImportError:
     from converse import *
+    from characters import *
 
 # TODO: more AIs
 # TODO: threading
 
 class BaseBot:
-    def __init__(self, ic=None):
+    def __init__(self):
         """
-        An AI chatbot
-
-        Parameters
-        ----------
-        ic : converse, optional
-            the initial conversation, by default nothing (new conversation)
+        An AI chatbot, a vessel for responses.
         """
-        self.cnvrs = ic if isinstance(ic, converse) else converse()
-
-    def reset(self):
-        """
-        Reset (or start a new) conversation.
-        """
-        self.cnvrs.new()
     
     def _call_ai(self, cnvrs):
         out = 'hello!'#str(cnvrs)
         return {'choices': [{'message': {'role': 'bot', 'content': out}}]}
 
-    def __call__(self, message, ignore_prev=False):
-        cnvrs = [] if ignore_prev else self.cnvrs
+    def __call__(self, message, cnvrs=[], ignore_prev=False):
         cnvrs.append('user', message)
         out = self._call_ai(cnvrs)['choices'][0]['message']
         cnvrs.append(out['role'], out['content'])
@@ -49,26 +38,23 @@ class ChatGPTBot(BaseBot):
         return response.json()
 
 class AI(BaseBot):
-    def __init__(self, ic=None):
+    def __init__(self):
         """
-        A combo of ALL AI Chatbots that I have coded in!
+        A combo of MANY AI Chatbots!
         AIs supported:
         - ChatGPT
         
         Features:
+        #TODO:
         - Can switch between AIs
         - Detects when offline, and switches to another AI
         - Autoswitch
         - Preferences as to which AIs are best
-
-        Parameters
-        ----------
-        ic : converse, optional
-            the initial conversation, by default nothing (new conversation)
         """
-        self.cnvrs = ic if isinstance(ic, converse) else converse()
 
 if __name__ == '__main__':
     bot = ChatGPTBot()
-    while True:
-        print('bot : ' + bot(input('user : ')))
+    AI = Character(bot, 'AI', 'An AI assistant for the user.')
+    you = Character(None, 'User', '')
+    #while True:
+    #    print('bot : ' + bot(input('user : ')))
