@@ -1,4 +1,5 @@
-import requests
+import requests, os
+from bardapi import Bard
 
 try:
     from utils.converse import *
@@ -7,7 +8,6 @@ except ImportError:
     from converse import *
     from characters import *
     # Then set the path to the folder above, to import a file from the above folder
-    import os
     newpath = os.path.abspath(os.path.join(os.getcwd(), '../'))
     os.chdir(newpath)
 
@@ -59,6 +59,14 @@ class ChatGPTBot(BaseBot):
         }
         response = requests.post(api_url, json=todo)
         return response.json()
+
+class BardAIBot(BaseBot): #TODO: check if this works
+    def _init(self):
+        self.bard = Bard(token=loadAPIkeys()[0])
+        # OR os.environ['_BARD_API_KEY']="loadAPIkeys()[0]"
+    def _call_ai(self, cnvrs):
+        return self.bard.get_answer(str(cnvrs))['content']
+        # OR return Bard().get_answer(str(cnvrs))['content']
 
 class AI(BaseBot):
     def __init__(self):

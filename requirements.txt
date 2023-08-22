@@ -1,2 +1,3 @@
 requests
 connect-markdown-renderer
+bardapi
