@@ -6,12 +6,21 @@ import os
 from connect.utils.terminal.markdown import render
 
 def loadAPIkeys():
-    # Check if the file exists and return results
+    """
+    Check if the keys file exists and return the API keys
+
+    Returns
+    -------
+    tuple
+        (BardAPIkey, SydneyAPIkey)
+        None if not in file
+    """
     if os.path.exists('keys/apiKeys.key'):
         with open('keys/apiKeys.key', 'r') as file:
             lines = file.readlines()
             if len(lines) >= 2:
                 return (lines[0].split(': ')[1].strip(), lines[1].split(': ')[1].strip())
+    return (None, None)
 
 class SaveAPIKeysDialog:
     def how_to_get_keys():
@@ -144,9 +153,8 @@ class SaveAPIKeysDialog:
 
         # Get API keys and populate the entry fields if it does exist
         keys = loadAPIkeys()
-        if keys != None:
-            self.entry_api_key.insert(0, keys[0])
-            self.entry_api_key2.insert(0, keys[1])
+        if keys[0] != None: self.entry_api_key.insert(0, keys[0])
+        if keys[1] != None: self.entry_api_key2.insert(0, keys[1])
 
         # Start the Tkinter main loop
         self.root.mainloop()
