@@ -7,46 +7,46 @@ import os
 # Function to save API keys to a file
 def save_api_keys():
     api_key = entry_api_key.get()
-    secret_key = entry_secret_key.get()
+    api_key2 = entry_api_key2.get()
     
     # Validate input
-    if not api_key or not secret_key:
-        messagebox.showerror("Error", "API Key and Secret Key are required.")
-        return
+    #if not api_key or not api_key2:
+    #    messagebox.showerror("Error", "API Keys are required.")
+    #    return
 
     # Check if the file exists and update it if necessary
-    if os.path.exists('api_keys.txt'):
-        with open('api_keys.txt', 'w') as file:
+    if os.path.exists('keys/apiKeys.key'):
+        with open('keys/apiKeys.key', 'w') as file:
             file.write(f'API Key: {api_key}\n')
-            file.write(f'Secret Key: {secret_key}\n')
+            file.write(f'Other API Key: {api_key2}\n')
         status_var.set("API keys updated successfully!")
     else:
-        with open('api_keys.txt', 'w') as file:
+        with open('keys/apiKeys.key', 'w') as file:
             file.write(f'API Key: {api_key}\n')
-            file.write(f'Secret Key: {secret_key}\n')
+            file.write(f'Other API Key: {api_key2}\n')
         status_var.set("API keys saved successfully!")
 
 # Function to delete API keys and show confirmation dialog
 def delete_api_keys():
     result = messagebox.askquestion("Delete API Keys", "Are you sure you want to delete the API keys?")
     if result == 'yes':
-        if os.path.exists('api_keys.txt'):
-            os.remove('api_keys.txt')
+        if os.path.exists('keys/apiKeys.key'):
+            os.remove('keys/apiKeys.key')
             entry_api_key.delete(0, tk.END)
-            entry_secret_key.delete(0, tk.END)
+            entry_api_key2.delete(0, tk.END)
             status_var.set("API keys deleted successfully!")
 
 # Function to clear the entry fields
 def clear_fields():
     entry_api_key.delete(0, tk.END)
-    entry_secret_key.delete(0, tk.END)
+    entry_api_key2.delete(0, tk.END)
 
 # Function to copy API keys to clipboard
 def copy_to_clipboard():
     api_key = entry_api_key.get()
-    secret_key = entry_secret_key.get()
+    api_key2 = entry_api_key2.get()
     root.clipboard_clear()
-    root.clipboard_append(api_key + "\n" + secret_key)
+    root.clipboard_append(api_key + "\n" + api_key2)
     root.update()
     status_var.set("API keys copied to clipboard")
 
@@ -54,10 +54,10 @@ def copy_to_clipboard():
 def toggle_masking():
     if show_keys.get():
         entry_api_key.config(show="")
-        entry_secret_key.config(show="")
+        entry_api_key2.config(show="")
     else:
         entry_api_key.config(show="•")
-        entry_secret_key.config(show="•")
+        entry_api_key2.config(show="•")
 
 # Function to show the help page
 def show_help():
@@ -89,15 +89,15 @@ menu_bar.add_cascade(label="Help", menu=help_menu)
 help_menu.add_command(label="About", command=show_help)
 
 # Create labels and entry fields for API keys
-label_api_key = tk.Label(root, text="Add your API key here:", font=custom_font)
+label_api_key = tk.Label(root, text="Add your Bard API key here:", font=custom_font)
 label_api_key.pack(pady=10)
 entry_api_key = tk.Entry(root, show="•", font=custom_font)
 entry_api_key.pack()
 
-label_secret_key = tk.Label(root, text="Add your Secret key here:", font=custom_font)
-label_secret_key.pack(pady=10)
-entry_secret_key = tk.Entry(root, show="•", font=custom_font)
-entry_secret_key.pack()
+label_api_key2 = tk.Label(root, text="Add your Sydney API key here:", font=custom_font)
+label_api_key2.pack(pady=10)
+entry_api_key2 = tk.Entry(root, show="•", font=custom_font)
+entry_api_key2.pack()
 
 # Create buttons for saving, deleting, and clearing API keys
 save_button = tk.Button(root, text="Save API Keys", command=save_api_keys, font=custom_font)
@@ -124,12 +124,12 @@ status_bar = tk.Label(root, textvariable=status_var, bd=1, relief=tk.SUNKEN, anc
 status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
 # Check if the file exists and populate the entry fields if it does
-if os.path.exists('api_keys.txt'):
-    with open('api_keys.txt', 'r') as file:
+if os.path.exists('keys/apiKeys.key'):
+    with open('keys/apiKeys.key', 'r') as file:
         lines = file.readlines()
         if len(lines) >= 2:
             entry_api_key.insert(0, lines[0].split(': ')[1].strip())
-            entry_secret_key.insert(0, lines[1].split(': ')[1].strip())
+            entry_api_key2.insert(0, lines[1].split(': ')[1].strip())
 
 # Start the Tkinter main loop
 root.mainloop()
