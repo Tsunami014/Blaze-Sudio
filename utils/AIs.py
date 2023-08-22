@@ -20,11 +20,24 @@ class BaseBot:
         out = 'hello!'#str(cnvrs)
         return {'choices': [{'message': {'role': 'bot', 'content': out}}]}
 
-    def __call__(self, message, cnvrs=[], ignore_prev=False):
+    def __call__(self, message, cnvrs=[]):
         cnvrs.append('user', message)
         out = self._call_ai(cnvrs)['choices'][0]['message']
         cnvrs.append(out['role'], out['content'])
         return out['content']
+    
+    def is_online(self):
+        """
+        Returns
+        -------
+        Bool
+            Whether or not the bot can be questioned currently
+        """
+        try:
+            self.__call__('what\'s 1+1?\n')
+            return True
+        except:
+            return False
 
 class ChatGPTBot(BaseBot):
     def _call_ai(self, cnvrs):
