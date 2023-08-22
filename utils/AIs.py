@@ -6,6 +6,12 @@ try:
 except ImportError:
     from converse import *
     from characters import *
+    # Then set the path to the folder above, to import a file from the above folder
+    import os
+    newpath = os.path.abspath(os.path.join(os.getcwd(), '../'))
+    os.chdir(newpath)
+
+from api_keys import loadAPIkeys
 
 # TODO: more AIs
 # TODO: threading
@@ -15,6 +21,10 @@ class BaseBot:
         """
         An AI chatbot, a vessel for responses.
         """
+        self._init()
+    
+    def _init(self): # placeholder for other bots to fill if they need
+        pass
     
     def _call_ai(self, cnvrs):
         out = 'hello!'#str(cnvrs)
