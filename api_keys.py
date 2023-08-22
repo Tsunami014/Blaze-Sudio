@@ -3,6 +3,11 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
 import os
+from connect.utils.terminal.markdown import render
+
+def how_to_get_keys():
+    with open('keys/how_to_get_keys.md') as f:
+        print(render(f.read()))
 
 # Function to save API keys to a file
 def save_api_keys():
@@ -83,10 +88,17 @@ file_menu = tk.Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label="File", menu=file_menu)
 file_menu.add_command(label="Exit", command=root.quit)
 
+# Create an Edit menu
+edit_menu = tk.Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="Edit", menu=edit_menu)
+edit_menu.add_command(label="Copy to Clipboard", command=copy_to_clipboard)
+edit_menu.add_command(label="Clear", command=clear_fields)
+
 # Create a Help menu
 help_menu = tk.Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label="Help", menu=help_menu)
 help_menu.add_command(label="About", command=show_help)
+help_menu.add_command(label="How to get API keys?", command=how_to_get_keys)
 
 # Create labels and entry fields for API keys
 label_api_key = tk.Label(root, text="Add your Bard API key here:", font=custom_font)
@@ -106,10 +118,7 @@ save_button.pack(pady=5)
 delete_button = tk.Button(root, text="Delete API Keys", command=delete_api_keys, font=custom_font)
 delete_button.pack(pady=5)
 
-clear_button = tk.Button(root, text="Clear", command=clear_fields, font=custom_font)
-clear_button.pack(pady=5)
-
-copy_button = tk.Button(root, text="Copy to Clipboard", command=copy_to_clipboard, font=custom_font)
+copy_button = tk.Button(root, text="How do I get these API keys?", command=how_to_get_keys, font=custom_font)
 copy_button.pack(pady=5)
 
 # Create a checkbox to toggle key masking
