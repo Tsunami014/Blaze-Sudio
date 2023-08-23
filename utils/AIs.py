@@ -63,7 +63,7 @@ class ChatGPTBot(BaseBot):
 class BardAIBot(BaseBot): #TODO: check if this works
     def _init(self):
         self.bard = Bard(token=loadAPIkeys()[0])
-        # OR os.environ['_BARD_API_KEY']="loadAPIkeys()[0]"
+        # OR os.environ['_BARD_API_KEY']=loadAPIkeys()[0]
     def _call_ai(self, cnvrs):
         return self.bard.get_answer(str(cnvrs))['content']
         # OR return Bard().get_answer(str(cnvrs))['content']
@@ -84,7 +84,7 @@ class AI(BaseBot):
         """
 
 if __name__ == '__main__':
-    bot = ChatGPTBot()
+    bot = BardAIBot()
     AI = Character(bot, 'AI', 'An AI assistant for the user.')
     you = Character(None, 'User', '')
     #while True:
