@@ -1,3 +1,8 @@
+import os
+try:
+    from utils.discussions import *
+except ImportError:
+    from discussions import *
 
 class Character:
     def __init__(self, AI, name, personality):
@@ -15,13 +20,74 @@ class Character:
             The Personality of the character.
         """
         self.AI = AI
-        self.name = name
+        self.name = str(name) # just in case someone's an idiot (not me, but someone else)
         self.personality = personality
-        self.memory = [] # of important events, may not actually be a list, can change
-        self.currents = {} # Would it be a dict? Can change
+        self.memory = [] # of important events, may not actually be a list, can change, can delete if needed
+        path = os.getcwd()[:os.getcwd().index('AIHub')+len('AIHub')]
+        self.discus = DiscussionsDB(path+'\\data\\'+self.name+'_database.db') # Would it be a dict? Can change
+        self.discus.populate()
         # for things like current conversations or what the character is doing, use self.currents
         # TODO: How to summarise the personality????? Maybe it uses an online AI in the background if it's avaliable and stores the result?? Who knows.
         # Maybe new personality class??
-        # TODO: What to do about the conversations, and handling them into and getting a response from the AI???
     
+    # TODO: When game engine comes into existance, make a gradual response, and a wait until it is time to butt in, and a gradual speak
+    def __call__(self, message, who, print=False):
+        """
+        This character has said [message] to [who]
 
+        Parameters
+        ----------
+        message : str
+            the string message to send to others for them to respond
+        who : Character, 
+              iterable[Character,], 
+              TODO: dict{Character: str(what message that character heard, use for things like the characters playing chinese whispers or spying)}
+            The character(s) that heard the message.
+        print : bool
+            Whether or not to print the result, by default False
+        """
+        if isinstance(who, dict):
+            pass
+        elif isinstance(who, Character):
+            resp = who.got_told(message, self)
+            self.discus.add_message(who.name, resp)
+            print(who.name, ':', resp)
+        else: #assume it is an iterable
+            for character in who:
+                resp = character.got_told(message, self)
+                self.discus.add_message(character.name, resp)
+                print(character.name, ':', resp)
+    
+    def got_told(self, message, from_who):
+        if isinstance(from_who, Character):
+            name = from_who.name
+        else:
+            name = str(from_who)
+        self.discus.add_message(name, message)
+        resp = self.AI(self.discuss.get_messages())
+        self.discus.add_message(self.name, resp)
+        return resp
+
+    def get_messages(self):
+        """Gets a list of messages information
+
+        Returns:
+            list: List of entries in the format {"id":message id, "sender":sender name, "content":message content, "type":message type, "rank": message rank}
+        """
+        return self.discus.get_messages()
+    
+    def message_rank_up(self, message_id):
+        """Increments the rank of the message
+
+        Args:
+            message_id (int): The id of the message to be changed
+        """
+        return self.discus.message_rank_up(message_id)
+
+    def message_rank_down(self, message_id):
+        """Increments the rank of the message
+
+        Args:
+            message_id (int): The id of the message to be changed
+        """
+        return self.discus.message_rank_down(message_id)
