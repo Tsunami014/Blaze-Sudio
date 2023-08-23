@@ -7,8 +7,10 @@
  - [ ] Bard
  - [ ] Bing
  - [ ] GPT4ALL
- - [ ] LLAMA
- - [ ] any others in LOLLM
+
+### I'm now considering whether or not to do these...
+ - [ ] LLAMA - didn't it not work?
+ - [ ] any others in LOLLM... what ones?
 
 # Image AIs TODO:
  - [ ] Google Bard Image AI (maaaybe not)
@@ -17,6 +19,7 @@
  - [ ] GPT4Art (from gpt4all)
 
 # Things TODO:
+ - [ ] A UI for downloading GPT4All models for offline
  - [ ] The EVERY AI, which includes:
 >  - [ ] Multi-AI support
 >  - [ ] Switching AI support
