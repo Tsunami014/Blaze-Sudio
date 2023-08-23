@@ -17,6 +17,8 @@ from api_keys import loadAPIkeys
 # TODO: threading
 
 class BaseBot:
+    speed = 0 # 0 = instant, 1 = fast, 2 = kinda fast, 3 = medium, 4 = medium-slow, 5 = slow, 6 = xtra slow
+    shorten = False # Whether or not the length of the input affects the speed of response
     def __init__(self):
         """
         An AI chatbot, a vessel for responses.
@@ -48,6 +50,7 @@ class BaseBot:
             return False
 
 class ChatGPTBot(BaseBot):
+    speed = 1 # don't need the other as it is the same
     def _call_ai(self, cnvrs):
         #api_url = "https://chatgpt-api.shn.hk/v1/"
         api_url = "https://free.churchless.tech/v1/chat/completions"
@@ -59,6 +62,7 @@ class ChatGPTBot(BaseBot):
         return response.json()
 
 class BardAIBot(BaseBot): #TODO: check if this works
+    speed = '???' # TODO: change this to a good value
     def _init(self):
         self.bard = Bard(token=loadAPIkeys()[0])
         # OR os.environ['_BARD_API_KEY']=loadAPIkeys()[0]
