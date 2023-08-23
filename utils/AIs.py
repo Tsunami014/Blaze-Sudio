@@ -1,11 +1,11 @@
-import requests, os
+import requests, os, sys
 from bardapi import Bard
 
+sys.path.append(os.getcwd()) # dunno why but it needs this
+
 try:
-    from utils.converse import *
     from utils.characters import *
 except ImportError:
-    from converse import *
     from characters import *
     # Then set the path to the folder above, to import a file from the above folder
     newpath = os.path.abspath(os.path.join(os.getcwd(), '../'))
@@ -31,9 +31,7 @@ class BaseBot:
         return {'choices': [{'message': {'role': 'bot', 'content': out}}]}
 
     def __call__(self, message, cnvrs=[]):
-        cnvrs.append('user', message)
         out = self._call_ai(cnvrs)['choices'][0]['message']
-        cnvrs.append(out['role'], out['content'])
         return out['content']
     
     def is_online(self):
@@ -84,8 +82,8 @@ class AI(BaseBot):
         """
 
 if __name__ == '__main__':
-    bot = BardAIBot()
+    bot = ChatGPTBot()
     AI = Character(bot, 'AI', 'An AI assistant for the user.')
     you = Character(None, 'User', '')
-    #while True:
-    #    print('bot : ' + bot(input('user : ')))
+    while True:
+        you(input('You: '), AI)
