@@ -4,7 +4,7 @@
 # AIs TODO:
 
  - [x] ChatGPT
- - [ ] Bard
+ - [?] Bard
  - [ ] Bing
  - [ ] GPT4ALL
 
@@ -23,9 +23,9 @@
  - [ ] The EVERY AI, which includes:
 >  - [ ] Multi-AI support
 >  - [ ] Switching AI support
- - [ ] the base AI to be real good and customisable
+ - [x] the base AI to be real good and customisable
  - [ ] characters
- - [ ] conversations
+ - [x] conversations
  - [ ] game engine (in main.py)
  - [ ] UI
  - [ ] A GOOD name for all this
