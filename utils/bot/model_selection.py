@@ -1,5 +1,6 @@
 # AI generated file
-import pygame, textwrap
+import pygame, textwrap, os
+from gpt4all import GPT4All
 
 # Initialize Pygame
 pygame.init()
@@ -22,13 +23,29 @@ font = pygame.font.Font(None, 36)
 small_font = pygame.font.Font(None, 24)
 
 # Define model information (expanded)
-models = [
+"""models = [
     {"name": "GPT-3.5 Small", "description": "A compact language model for various tasks.", "downloaded": False},
     {"name": "Image Captioning", "description": "Generate captions for images.", "downloaded": False},
     {"name": "ChatGPT", "description": "Engage in interactive conversations.", "downloaded": False},
     {"name": "Code Generation", "description": "Generate code snippets.", "downloaded": False},
     # Add more models here
-]
+]"""
+
+# Get a list of models from GPT4All
+gotten_models = GPT4All.list_models()
+
+models = []
+
+# Check if each model exists in the 'models' folder
+for m in gotten_models:
+    model_filename = m["filename"]
+    model_path = os.path.join("models", model_filename)
+    downloaded = os.path.exists(model_path)
+    models.append({
+        "name": m["name"],
+        "description": m["description"],
+        "downloaded": downloaded
+        })
 
 # Define UI elements
 model_list = pygame.Rect(50, 100, 300, 400)
@@ -44,19 +61,21 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:  # Left mouse button
-                if download_button.collidepoint(event.pos):
-                    if selected_model is not None and not models[selected_model]["downloaded"]:
-                        model_name = models[selected_model]["name"]
-                        print(f"Downloading {model_name}...")
-                        models[selected_model]["downloaded"] = True  # Mark as downloaded
-                        # Implement your download logic here
+        # Handle download action
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if download_button.collidepoint(event.pos):
+                if selected_model is not None and not models[selected_model]["downloaded"]:
+                    model_name = models[selected_model]["name"]
+                    model_filename = models[selected_model]["filename"]
+                    model_path = os.path.join("models", model_filename)
 
-                elif model_list.collidepoint(event.pos):
-                    clicked_model = (event.pos[1] - model_list.top + scroll_offset) // 50
-                    if 0 <= clicked_model < len(models):
-                        selected_model = clicked_model
+                    if os.path.exists(model_path):
+                        print(f"{model_name} already downloaded.")
+                        models[selected_model]["downloaded"] = True
+                    else:
+                        print(f"Downloading {model_name}...")
+                        GPT4All.retrieve_model(model_filename, model_path)
+                        models[selected_model]["downloaded"] = True
 
     # Clear the screen
     screen.fill(white)
