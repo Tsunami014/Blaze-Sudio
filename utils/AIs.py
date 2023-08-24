@@ -70,12 +70,17 @@ class BardAIBot(BaseBot): #TODO: check if this works
         return self.bard.get_answer(str(cnvrs))['content']
         # OR return Bard().get_answer(str(cnvrs))['content']
 
-class AI(BaseBot):
+class AI():
+    # Defining values that can be yoinked from other AIs
+    speed = None
+    shorten = None
+
     def __init__(self):
         """
         A combo of MANY AI Chatbots!
         AIs supported:
         - ChatGPT
+        - Bard AI
         
         Features:
         #TODO:
@@ -84,6 +89,39 @@ class AI(BaseBot):
         - Autoswitch
         - Preferences as to which AIs are best
         """
+        self.AIs = []
+        all_ais = [ChatGPTBot, BardAIBot] # PUT IN ORDER OF HOW GOOD THEY ARE, best at front of list
+        for i in all_ais:
+            try:
+                self.AIs.append(i())
+            except:
+                pass
+        self.find_current()
+
+    def __getattr__(self, __name):
+        self.find_current()
+        return self.cur.__getattr__(__name)
+    
+    def find_current(self):
+        self.cur = None
+        for i in self.AIs:
+            if i.is_online():
+                self.cur = i
+                return
+
+    def __call__(self, *args, **kwargs):
+        self.find_current()
+        return self.cur(*args, **kwargs)
+    
+    def is_online(self):
+        """
+        Returns
+        -------
+        Bool
+            Whether or not the bot can be questioned currently
+        """
+        self.find_current()
+        return self.cur != None
 
 if __name__ == '__main__':
     bot = ChatGPTBot()
