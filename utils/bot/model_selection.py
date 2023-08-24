@@ -44,6 +44,7 @@ for m in gotten_models:
     models.append({
         "name": m["name"],
         "description": m["description"],
+        "filename": m["filename"],
         "downloaded": downloaded
         })
 
@@ -68,7 +69,10 @@ while running:
                     if selected_model is not None and not models[selected_model]["downloaded"]:
                         model_name = models[selected_model]["name"]
                         model_filename = models[selected_model]["filename"]
-                        model_path = os.path.join("models", model_filename)
+                        model_path = os.getcwd()
+                        if model_path.endswith('AIHub'): # folder above, too high
+                            model_path = os.path.join(model_path, 'utils', 'bot')
+                        model_path = os.path.join(model_path, 'model')
 
                         if os.path.exists(model_path):
                             print(f"{model_name} already downloaded.")
@@ -78,10 +82,11 @@ while running:
                             GPT4All.retrieve_model(model_filename, model_path)
                             models[selected_model]["downloaded"] = True
                 # Check if any button is pressed, then select the model
-                for i, model in enumerate(models[scroll_offset:]):
+                for i, model in enumerate(models):
                     model_rect = pygame.Rect(model_list.left + 10, model_list.top + i * 50 - scroll_offset * 50, model_list.width - 20, 50)
                     if model_rect.collidepoint(event.pos):
-                        selected_model = i + scroll_offset
+                        selected_model = i# + scroll_offset
+                        #print(f"Selected model: {models[selected_model]['name']}")
                         break
             # Handle scroll wheel events
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:  # Scroll up
@@ -95,16 +100,16 @@ while running:
 
     # Draw model list
     pygame.draw.rect(screen, black, model_list, border_radius=10)
-    for i, model in enumerate(models[scroll_offset:]):
+    for i, model in enumerate(models):
         model_rect = pygame.Rect(model_list.left + 10, model_list.top + i * 50 - scroll_offset * 50, model_list.width - 20, 50)
-        if selected_model is not None and selected_model == i + scroll_offset:
+        if selected_model is not None and selected_model == i:
             pygame.draw.rect(screen, gray, model_rect, border_radius=8)
         
         if model["downloaded"]:
             pygame.draw.rect(screen, green, (model_rect.left, model_rect.top, 5, model_rect.height))
             
         text = small_font.render(model["name"], True, white)
-        screen.blit(text, (model_list.left + 10, model_list.top + i * 50 + 10 - scroll_offset))
+        screen.blit(text, (model_list.left + 10, model_list.top + i * 50 + 10 - scroll_offset * 50))
 
     # Draw uninstall button
     if selected_model is not None and models[selected_model]["downloaded"]:
