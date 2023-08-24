@@ -77,6 +77,12 @@ while running:
                             print(f"Downloading {model_name}...")
                             GPT4All.retrieve_model(model_filename, model_path)
                             models[selected_model]["downloaded"] = True
+                # Check if any button is pressed, then select the model
+                for i, model in enumerate(models[scroll_offset:]):
+                    model_rect = pygame.Rect(model_list.left + 10, model_list.top + i * 50 - scroll_offset * 50, model_list.width - 20, 50)
+                    if model_rect.collidepoint(event.pos):
+                        selected_model = i + scroll_offset
+                        break
             # Handle scroll wheel events
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:  # Scroll up
                 scroll_offset = max(0, scroll_offset - 1)
