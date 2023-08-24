@@ -62,20 +62,27 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         # Handle download action
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if download_button.collidepoint(event.pos):
-                if selected_model is not None and not models[selected_model]["downloaded"]:
-                    model_name = models[selected_model]["name"]
-                    model_filename = models[selected_model]["filename"]
-                    model_path = os.path.join("models", model_filename)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                if download_button.collidepoint(event.pos):
+                    if selected_model is not None and not models[selected_model]["downloaded"]:
+                        model_name = models[selected_model]["name"]
+                        model_filename = models[selected_model]["filename"]
+                        model_path = os.path.join("models", model_filename)
 
-                    if os.path.exists(model_path):
-                        print(f"{model_name} already downloaded.")
-                        models[selected_model]["downloaded"] = True
-                    else:
-                        print(f"Downloading {model_name}...")
-                        GPT4All.retrieve_model(model_filename, model_path)
-                        models[selected_model]["downloaded"] = True
+                        if os.path.exists(model_path):
+                            print(f"{model_name} already downloaded.")
+                            models[selected_model]["downloaded"] = True
+                        else:
+                            print(f"Downloading {model_name}...")
+                            GPT4All.retrieve_model(model_filename, model_path)
+                            models[selected_model]["downloaded"] = True
+            # Handle scroll wheel events
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:  # Scroll up
+                scroll_offset = max(0, scroll_offset - 1)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:  # Scroll down
+                max_scroll = max(0, len(models) - model_list.height // 50)
+                scroll_offset = min(max_scroll, scroll_offset + 1)
 
     # Clear the screen
     screen.fill(white)
@@ -83,7 +90,7 @@ while running:
     # Draw model list
     pygame.draw.rect(screen, black, model_list, border_radius=10)
     for i, model in enumerate(models[scroll_offset:]):
-        model_rect = pygame.Rect(model_list.left + 10, model_list.top + i * 50 - scroll_offset, model_list.width - 20, 50)
+        model_rect = pygame.Rect(model_list.left + 10, model_list.top + i * 50 - scroll_offset * 50, model_list.width - 20, 50)
         if selected_model is not None and selected_model == i + scroll_offset:
             pygame.draw.rect(screen, gray, model_rect, border_radius=8)
         
