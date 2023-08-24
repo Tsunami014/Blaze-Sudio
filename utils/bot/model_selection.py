@@ -1,4 +1,3 @@
-# AI generated file
 import pygame, textwrap, os
 from gpt4all import GPT4All
 
@@ -22,21 +21,11 @@ red = (255, 0, 0)
 font = pygame.font.Font(None, 36)
 small_font = pygame.font.Font(None, 24)
 
-# Define model information (expanded)
-"""models = [
-    {"name": "GPT-3.5 Small", "description": "A compact language model for various tasks.", "downloaded": False},
-    {"name": "Image Captioning", "description": "Generate captions for images.", "downloaded": False},
-    {"name": "ChatGPT", "description": "Engage in interactive conversations.", "downloaded": False},
-    {"name": "Code Generation", "description": "Generate code snippets.", "downloaded": False},
-    # Add more models here
-]"""
-
 # Get a list of models from GPT4All
 gotten_models = GPT4All.list_models()
 
-models = []
-
 # Check if each model exists in the 'models' folder
+models = []
 for m in gotten_models:
     model_filename = m["filename"]
     model_path = os.path.join("models", model_filename)
@@ -46,7 +35,7 @@ for m in gotten_models:
         "description": m["description"],
         "filename": m["filename"],
         "downloaded": downloaded
-        })
+    })
 
 # Define UI elements
 model_list = pygame.Rect(50, 100, 300, 400)
@@ -62,18 +51,23 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        # Handle download action
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
+                for i, model in enumerate(models):
+                    model_rect = pygame.Rect(
+                        model_list.left + 10,
+                        model_list.top + i * 50 - scroll_offset * 50,
+                        model_list.width - 20,
+                        50
+                    )
+                    if model_rect.collidepoint(event.pos):
+                        selected_model = i
+                        break
                 if download_button.collidepoint(event.pos):
                     if selected_model is not None and not models[selected_model]["downloaded"]:
                         model_name = models[selected_model]["name"]
                         model_filename = models[selected_model]["filename"]
-                        model_path = os.getcwd()
-                        if model_path.endswith('AIHub'): # folder above, too high
-                            model_path = os.path.join(model_path, 'utils', 'bot')
-                        model_path = os.path.join(model_path, 'model')
-
+                        model_path = os.path.join("models", model_filename)
                         if os.path.exists(model_path):
                             print(f"{model_name} already downloaded.")
                             models[selected_model]["downloaded"] = True
@@ -81,17 +75,9 @@ while running:
                             print(f"Downloading {model_name}...")
                             GPT4All.retrieve_model(model_filename, model_path)
                             models[selected_model]["downloaded"] = True
-                # Check if any button is pressed, then select the model
-                for i, model in enumerate(models):
-                    model_rect = pygame.Rect(model_list.left + 10, model_list.top + i * 50 - scroll_offset * 50, model_list.width - 20, 50)
-                    if model_rect.collidepoint(event.pos):
-                        selected_model = i# + scroll_offset
-                        #print(f"Selected model: {models[selected_model]['name']}")
-                        break
-            # Handle scroll wheel events
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:  # Scroll up
+            if event.button == 4:  # Scroll up
                 scroll_offset = max(0, scroll_offset - 1)
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:  # Scroll down
+            if event.button == 5:  # Scroll down
                 max_scroll = max(0, len(models) - model_list.height // 50)
                 scroll_offset = min(max_scroll, scroll_offset + 1)
 
@@ -101,13 +87,16 @@ while running:
     # Draw model list
     pygame.draw.rect(screen, black, model_list, border_radius=10)
     for i, model in enumerate(models):
-        model_rect = pygame.Rect(model_list.left + 10, model_list.top + i * 50 - scroll_offset * 50, model_list.width - 20, 50)
+        model_rect = pygame.Rect(
+            model_list.left + 10,
+            model_list.top + i * 50 - scroll_offset * 50,
+            model_list.width - 20,
+            50
+        )
         if selected_model is not None and selected_model == i:
             pygame.draw.rect(screen, gray, model_rect, border_radius=8)
-        
         if model["downloaded"]:
             pygame.draw.rect(screen, green, (model_rect.left, model_rect.top, 5, model_rect.height))
-            
         text = small_font.render(model["name"], True, white)
         screen.blit(text, (model_list.left + 10, model_list.top + i * 50 + 10 - scroll_offset * 50))
 
@@ -117,45 +106,40 @@ while running:
         pygame.draw.rect(screen, red, uninstall_button, border_radius=8)
         text = small_font.render("Uninstall", True, white)
         screen.blit(text, (uninstall_button.centerx - 45, uninstall_button.centery - 10))
-        
-        # Handle uninstall action
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if uninstall_button.collidepoint(event.pos):
-                pygame.draw.rect(screen, white, (400, 300, 350, 150), border_radius=10)  # Clear the area
-                pygame.draw.rect(screen, gray, (400, 300, 350, 150), border_radius=10)  # Dialog background
-                confirmation_text = "Are you sure you want to uninstall?"
-                confirm_text = small_font.render(confirmation_text, True, black)
-                screen.blit(confirm_text, (420, 320))
-                yes_button = pygame.Rect(420, 380, 80, 30)
-                no_button = pygame.Rect(530, 380, 80, 30)
-                pygame.draw.rect(screen, red, yes_button, border_radius=8)
-                pygame.draw.rect(screen, green, no_button, border_radius=8)
-                yes_text = small_font.render("Yes", True, white)
-                no_text = small_font.render("No", True, white)
-                screen.blit(yes_text, (yes_button.centerx - 15, yes_button.centery - 10))
-                screen.blit(no_text, (no_button.centerx - 15, no_button.centery - 10))
-                pygame.display.flip()
-
-                # Wait for user input
-                confirm_waiting = True
-                while confirm_waiting:
-                    for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            running = False
+        if uninstall_button.collidepoint(pygame.mouse.get_pos()):
+            pygame.draw.rect(screen, white, (400, 300, 350, 150), border_radius=10)
+            pygame.draw.rect(screen, gray, (400, 300, 350, 150), border_radius=10)
+            confirmation_text = "Are you sure you want to uninstall?"
+            confirm_text = small_font.render(confirmation_text, True, black)
+            screen.blit(confirm_text, (420, 320))
+            yes_button = pygame.Rect(420, 380, 80, 30)
+            no_button = pygame.Rect(530, 380, 80, 30)
+            pygame.draw.rect(screen, red, yes_button, border_radius=8)
+            pygame.draw.rect(screen, green, no_button, border_radius=8)
+            yes_text = small_font.render("Yes", True, white)
+            no_text = small_font.render("No", True, white)
+            screen.blit(yes_text, (yes_button.centerx - 15, yes_button.centery - 10))
+            screen.blit(no_text, (no_button.centerx - 15, no_button.centery - 10))
+            pygame.display.flip()
+            confirm_waiting = True
+            while confirm_waiting:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                        confirm_waiting = False
+                    elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        if yes_button.collidepoint(event.pos):
+                            models[selected_model]["downloaded"] = False
                             confirm_waiting = False
-                        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                            if yes_button.collidepoint(event.pos):
-                                models[selected_model]["downloaded"] = False
-                                confirm_waiting = False
-                            elif no_button.collidepoint(event.pos):
-                                confirm_waiting = False
+                        elif no_button.collidepoint(event.pos):
+                            confirm_waiting = False
 
     # Draw info section
     info_section = pygame.Rect(400, 100, 350, 400)
     pygame.draw.rect(screen, gray, info_section, border_radius=10)
     if selected_model is not None:
         selected_info = models[selected_model]["description"]
-        info_lines = textwrap.wrap(selected_info, width=40)  # Wrap the text
+        info_lines = textwrap.wrap(selected_info, width=40)
         for i, line in enumerate(info_lines):
             text = small_font.render(line, True, black)
             screen.blit(text, (info_section.left + 10, info_section.top + i * 30 + 10))
