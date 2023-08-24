@@ -91,3 +91,7 @@ class Character:
             message_id (int): The id of the message to be changed
         """
         return self.discus.message_rank_down(message_id)
+
+    # TODO: should_keep_talking(Character)
+    # TODO: slowly stream the results
+    # TODO: should_interrupt(Character, said_so_far) - remember that some AIs are really slow
