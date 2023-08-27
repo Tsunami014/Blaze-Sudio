@@ -1,5 +1,6 @@
 import pygame, textwrap, os
 from gpt4all import GPT4All
+import html2text
 
 # Initialize Pygame
 pygame.init()
@@ -139,10 +140,15 @@ while running:
     pygame.draw.rect(screen, gray, info_section, border_radius=10)
     if selected_model is not None:
         selected_info = models[selected_model]["description"]
-        info_lines = textwrap.wrap(selected_info, width=40)
-        for i, line in enumerate(info_lines):
-            text = small_font.render(line, True, black)
-            screen.blit(text, (info_section.left + 10, info_section.top + i * 30 + 10))
+        l = html2text.html2text(selected_info).replace(' * ', ' • ').split('\n')
+        lines = []
+        for i in l:
+            lines.extend(textwrap.wrap(i, width=40))  # Wrap the text
+        top = 0
+        for i in range(len(lines)):
+            prev = small_font.render(lines[i], True, white)
+            if i != 0: top += prev.get_size()[1] + 10
+            screen.blit(prev, (info_section.left + 10, info_section.top + 10 + top))
 
     # Draw scroll bar
     pygame.draw.rect(screen, black, scroll_bar, border_radius=10)
