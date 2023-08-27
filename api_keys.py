@@ -23,7 +23,7 @@ def loadAPIkeys():
     return (None, None)
 
 class SaveAPIKeysDialog:
-    def how_to_get_keys(self):
+    def how_to_get_keys():
         with open('keys/how_to_get_keys.md') as f:
             print(render(f.read()))
 
