@@ -23,6 +23,7 @@ class BaseBot:
         """
         An AI chatbot, a vessel for responses.
         """
+        self.resp = ''
         self._init()
     
     def _init(self): # placeholder for other bots to fill if they need
@@ -34,6 +35,7 @@ class BaseBot:
 
     def __call__(self, message, cnvrs=[]):
         out = self._call_ai(cnvrs)['choices'][0]['message']
+        self.resp = out['content']
         return out['content']
     
     def is_online(self):
@@ -96,6 +98,7 @@ class AI():
                 self.AIs.append(i())
             except:
                 pass
+        self.resp = ''
         self.find_current()
 
     def __getattr__(self, __name):
@@ -111,7 +114,9 @@ class AI():
 
     def __call__(self, *args, **kwargs):
         self.find_current()
-        return self.cur(*args, **kwargs)
+        ret = self.cur(*args, **kwargs)
+        self.resp = self.cur.resp
+        return ret
     
     def is_online(self):
         """
