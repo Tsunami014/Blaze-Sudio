@@ -89,6 +89,12 @@ class BardAIBot(BaseBot): #TODO: check if this works
         return self.bard.get_answer(str(cnvrs))['content']
         # OR return Bard().get_answer(str(cnvrs))['content']
 
+class UserBot(BaseBot):
+    def _call_ai(self, cnvrs):
+        return {'choices': [{'message': {'role': 'bot', 'content': input('User : ')}}]}
+    def is_online(self):
+        return True
+
 class AI():
     # Defining values that can be yoinked from other AIs
     speed = None
