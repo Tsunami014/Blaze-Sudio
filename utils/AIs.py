@@ -33,6 +33,7 @@ class BaseBot:
         self.resp = ''
         self.thread = None
         self.stop = False
+        self.asked_for_resp = 0
         self._init()
     
     def _init(self): # placeholder for other bots to fill if they need
@@ -44,6 +45,8 @@ class BaseBot:
     
     def _stream_ai(self, tostream):
         self.stop = False
+        self.resp = ''
+        self.asked_for_resp = 0
         ts = tokenize_text(tostream)
         for i in ts:
             self.resp += i
@@ -51,6 +54,11 @@ class BaseBot:
             time.sleep(0.25 if ' .,/?!' in i else 0.15)
             if self.stop: break
         print()
+    
+    def any_more(self):
+        out = self.resp[self.asked_for_resp:]
+        self.asked_for_resp = len(self.resp)
+        return out
 
     def __call__(self, message, cnvrs=[]):
         out = self._call_ai(cnvrs)['choices'][0]['message']
