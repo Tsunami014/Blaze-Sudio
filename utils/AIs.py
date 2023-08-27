@@ -31,6 +31,8 @@ class BaseBot:
         An AI chatbot, a vessel for responses.
         """
         self.resp = ''
+        self.thread = None
+        self.stop = False
         self._init()
     
     def _init(self): # placeholder for other bots to fill if they need
@@ -52,8 +54,11 @@ class BaseBot:
 
     def __call__(self, message, cnvrs=[]):
         out = self._call_ai(cnvrs)['choices'][0]['message']
-        self.resp = out['content']
-        return out['content']
+        if self.thread != None:
+            self.stop = True
+            self.thread.join()
+        self.thread = Thread(target=self._stream_ai, args=(out,), daemon=True)
+        self.thread.start()
     
     def is_online(self):
         """
