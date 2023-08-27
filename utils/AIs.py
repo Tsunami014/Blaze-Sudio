@@ -70,7 +70,7 @@ class BaseBot:
 
 class ChatGPTBot(BaseBot):
     speed = 1 # don't need the other as it is the same
-    def _call_ai(self, cnvrs):
+    def _call_ai(self, cnvrs): # TODO: redo this func to work
         #api_url = "https://chatgpt-api.shn.hk/v1/"
         api_url = "https://free.churchless.tech/v1/chat/completions"
         todo = {
