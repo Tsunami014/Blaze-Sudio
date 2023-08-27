@@ -4,6 +4,8 @@ from threading import Thread
 
 sys.path.append(os.getcwd()) # dunno why but it needs this
 
+sys.path.append(os.getcwd()) # dunno why but it needs this
+
 try:
     from utils.characters import *
 except ImportError:
@@ -29,8 +31,6 @@ class BaseBot:
         An AI chatbot, a vessel for responses.
         """
         self.resp = ''
-        self.current = None
-        self.stop = False
         self._init()
     
     def _init(self): # placeholder for other bots to fill if they need
@@ -51,13 +51,9 @@ class BaseBot:
         print()
 
     def __call__(self, message, cnvrs=[]):
-        cnvrs.append({'role': 'user', 'content': message})
-        out = tokenize_text(self._call_ai(cnvrs)['choices'][0]['message'])
-        self.stop = True
-        try: self.current.join()
-        except: pass
-        self.current = Thread(target=self._stream_ai, args=(out,), daemon=True)
-        self.current.start()
+        out = self._call_ai(cnvrs)['choices'][0]['message']
+        self.resp = out['content']
+        return out['content']
     
     def is_online(self):
         """
