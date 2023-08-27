@@ -1,2 +1,4 @@
 keys/apiKeys.key
 *.pyc
+*.bin
+*.db
