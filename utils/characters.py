@@ -47,6 +47,7 @@ class Character:
         print : bool
             Whether or not to print the result, by default False
         """
+        # TODO: update now to include the fact that it streams the results
         if isinstance(who, dict):
             pass
         elif isinstance(who, Character):
@@ -59,12 +60,12 @@ class Character:
                 self.current_discussion.add_message(character.name, resp)
                 print(character.name, ':', resp)
     
+    def __str__(self):
+        return self.name
+    
     def got_told(self, message, from_who):
-        if isinstance(from_who, Character):
-            name = from_who.name
-        else:
-            name = str(from_who)
-        self.current_discussion.add_message(name, message)
+        # TODO: update now due to the streaming changes
+        self.current_discussion.add_message(str(from_who), message)
         resp = self.AI(self.current_discussion.get_messages())
         self.current_discussion.add_message(self.name, resp)
         return resp
