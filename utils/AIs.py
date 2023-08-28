@@ -1,6 +1,7 @@
 import requests, os, sys, time
 from bardapi import Bard
 from threading import Thread
+from conversation_parser import PARSE
 
 sys.path.append(os.getcwd()) # dunno why but it needs this
 
