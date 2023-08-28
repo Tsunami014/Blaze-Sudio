@@ -17,4 +17,10 @@ def PARSE(cnvrs, summary_level, prompt_type):
     str
         The conversation, but parsed
     """
-    return str(cnvrs)
+    full_prompt = ''
+    for message in cnvrs:
+        if message["role"] == "user":
+            full_prompt += 'user: ' + message["content"] + '\n'
+        if message["role"] == "assistant":
+            full_prompt += 'assistant: ' + message["content"] + '\n'
+    return full_prompt
