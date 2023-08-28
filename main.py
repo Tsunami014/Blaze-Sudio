@@ -39,6 +39,6 @@ class GameEngine: #TODO: Better name
             puncnum = 30
             endnum = 40
             if len(said) > endpuncnum and '.?!' in said or len(said) > puncnum and ',./?!"\'' in said or len(said) > endnum:
-                converse = {}
+                interrupts = {}
                 for j in self.characters:
-                    converse[j] = j.converse(said) # change params for multi-conversation/people support
+                    interrupts[j] = j.should_interrupt(said) # change params for multi-conversation/people support
