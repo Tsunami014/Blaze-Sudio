@@ -60,7 +60,7 @@ class BaseBot:
         return out
 
     def __call__(self, cnvrs):
-        out = self._call_ai(cnvrs)['choices'][0]['message']
+        out = self._call_ai(PARSE(cnvrs, 0, 0))['choices'][0]['message']
         if self.thread != None:
             self.stop = True
             self.thread.join()
