@@ -60,7 +60,7 @@ class BaseBot:
         self.asked_for_resp = len(self.resp)
         return out
 
-    def __call__(self, message, cnvrs=[]):
+    def __call__(self, cnvrs):
         out = self._call_ai(cnvrs)['choices'][0]['message']
         if self.thread != None:
             self.stop = True
