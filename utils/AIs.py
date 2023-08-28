@@ -68,6 +68,9 @@ class BaseBot:
         self.thread = Thread(target=self._stream_ai, args=(out,), daemon=True)
         self.thread.start()
     
+    def should_interrupt(self, cnvrs):
+        pass
+    
     def is_online(self):
         """
         Returns

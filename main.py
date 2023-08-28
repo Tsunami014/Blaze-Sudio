@@ -41,4 +41,4 @@ class GameEngine: #TODO: Better name
             if len(said) > endpuncnum and '.?!' in said or len(said) > puncnum and ',./?!"\'' in said or len(said) > endnum:
                 interrupts = {}
                 for j in self.characters:
-                    interrupts[j] = j.should_interrupt(said) # change params for multi-conversation/people support
+                    interrupts[j] = j.should_interrupt(said, who) # change params for multi-conversation/people support

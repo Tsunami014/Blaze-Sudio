@@ -69,12 +69,6 @@ class Character:
         self.current_discussion.add_message(self.name, resp)
         return resp
 
-    def get(self):
-        """
-        Gets the current bot's output
-        """
-        
-
     def get_messages(self):
         """Gets a list of messages information
 
@@ -101,7 +95,9 @@ class Character:
     
     def new_discussion(self):
         self.current_discussion = self.discus.create_discussion()
-
-    # TODO: should_keep_talking(Character)
-    # TODO: slowly stream the results
-    # TODO: should_interrupt(Character, said_so_far) - remember that some AIs are really slow
+    
+    def should_interrupt(self, said, who):
+        id = self.current_discussion.add_message(str(who), said)
+        out = self.AI.should_interrupt(self.current_discussion.get_messages())
+        self.current_discussion.delete_message(id)
+        return out
