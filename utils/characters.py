@@ -5,7 +5,7 @@ except ImportError:
     from discussions import *
 
 class Character:
-    def __init__(self, AI, name, personality):
+    def __init__(self, AI, name, personality, start=1):
         """
         A Character, with its own personality and everything and stuff
 
@@ -17,7 +17,10 @@ class Character:
             The name of the character. For basic conversations (like the normal chatGPT), this could be 'user' or 'assistant' or something.
             For more advanced conversations, this could be 'Grapefruit' or whatnot. Yeah, you get it, right?
         personality : str # I don't know that to do about this, would it be a string? What about summarisation?
-            The Personality of the character.
+            The Personality of the character. Describe who the character is.
+        start : int
+            The starting text to use. THIS MAKES ALL THE DIFFERENCE!
+            See `doc/character start int.md` for more info.
         """
         self.AI = AI
         self.name = str(name) # just in case someone's an idiot (not me, but someone else)
