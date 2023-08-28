@@ -79,7 +79,7 @@ class BaseBot:
             Whether or not the bot can be questioned currently
         """
         try:
-            self.__call__('what\'s 1+1?\n')
+            self('1+1 = ')
             return True
         except:
             return False
