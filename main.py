@@ -7,7 +7,7 @@ class GameEngine: #TODO: Better name
         userbot = UserBot() # TODO: make a userbot, which inputs the user's input and detects whether they interrupt or not, etc. and whatevs
         AI = Character(bot, 'AI', 'An AI assistant for the user.')
         you = Character(userbot, 'User', '')
-        you(input('You: '), AI)
+        #you(AI)
         self.characters = [
             AI,
             you
@@ -42,3 +42,6 @@ class GameEngine: #TODO: Better name
                 interrupts = {}
                 for j in self.characters:
                     interrupts[j] = j.should_interrupt(said, who) # change params for multi-conversation/people support
+
+if __name__ == '__main__':
+    pass

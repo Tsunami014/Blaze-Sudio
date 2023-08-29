@@ -170,9 +170,3 @@ class AI():
         """
         self.find_current()
         return self.cur != None
-
-if __name__ == '__main__':
-    AI = Character(ChatGPTBot(), 'AI', 'An AI assistant for the user.')
-    you = Character(UserBot(), 'User', '')
-    while True:
-        you(AI)
