@@ -7,9 +7,9 @@ def SL(txt, lvl=1): # Set Level
 
 class Summary:
     def __init__(self, description):
-        self.txt = self._parse(description)
+        self.txt = self.parse(description)
     
-    def _parse(self, description):
+    def parse(self, description):
         end = []
         temp = []
         lvl = 0
