@@ -68,7 +68,7 @@ class BaseBot:
             self.stop = True
             self.thread.join()
         self.stop = False
-        self.thread = Thread(target=self._stream_ai, args=(out,), daemon=True)
+        self.thread = Thread(target=self._stream_ai, args=(out['content'],), daemon=True)
         self.thread.start()
     
     def should_interrupt(self, cnvrs):
@@ -111,7 +111,7 @@ class BardAIBot(BaseBot): #TODO: check if this works
 
 class UserBot(BaseBot):
     def _call_ai(self, cnvrs):
-        return {'choices': [{'message': {'role': 'bot', 'content': input('User : ')}}]}
+        return {'choices': [{'message': {'role': 'user', 'content': input('User : ')}}]}
     def is_online(self):
         return True
 
@@ -172,8 +172,7 @@ class AI():
         return self.cur != None
 
 if __name__ == '__main__':
-    bot = ChatGPTBot()
-    AI = Character(bot, 'AI', 'An AI assistant for the user.')
-    you = Character(None, 'User', '')
+    AI = Character(ChatGPTBot(), 'AI', 'An AI assistant for the user.')
+    you = Character(UserBot(), 'User', '')
     while True:
-        you(input('You: '), AI)
+        you(AI)
