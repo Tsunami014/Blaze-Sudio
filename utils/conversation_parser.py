@@ -6,10 +6,43 @@ def SL(txt, lvl=1): # Set Level
     return amnt + txt + amnt
 
 class Summary:
-    def __init__(self, description):
+    def __init__(self, description=''):
+        """
+        A class for summarising text, useful for descriptions of things that need to be shortened.
+
+        Parameters
+        ----------
+        description : str
+            the text to summarise, defaults to nothing
+        """
+        if description != '': self.txt = self.parse(description)
+        else: self.txt = []
+    
+    def parse_into_txt(self, description):
+        """
+        Parses the description into self.txt, to be gotten by self.get(num)
+
+        Parameters
+        ----------
+        description : str
+            the text to summarise
+        """
         self.txt = self.parse(description)
     
     def parse(self, description):
+        """
+        parses the description into a list of dicts, each dict has a 'txt' and 'lvl' key, 'txt' is the text, 'lvl' is the level of the summary, 0 is the highest level, 1 is the next highest, etc.
+
+        Parameters
+        ----------
+        description : str
+            the text to summarise
+
+        Returns
+        -------
+        list[dict[]]
+            the parsed text
+        """
         end = []
         temp = []
         lvl = 0
@@ -43,14 +76,27 @@ class Summary:
         return end
     
     def get(self, summary_lvl):
+        """
+        gets the summary at the specified level of summarisation
+
+        Parameters
+        ----------
+        summary_lvl : int
+            the level of summarisation to get, 0 is the highest level, 1 is the next highest, etc.
+
+        Returns
+        -------
+        str
+            the summary of self.txt at the specified level
+        """
         res = []
         for i in self.txt:
             if i['lvl'] <= summary_lvl:
                 res.append(i['txt'])
         return TWD().detokenize(res)
 
-# print(Summary('`Hello!```Bye.``Hi again!').txt)
-# print(Summary('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 10))).txt)
+# print(Summary().parse('`Hello!```Bye.``Hi again!'))
+# print(Summary().parse('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 10))))
 
 def PARSE(cnvrs, summary_level, prompt_type):
     """
