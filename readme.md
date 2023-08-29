@@ -2,6 +2,7 @@ Welcome to AIHub! This is where you can use any AIs you want!
 1. still in progress
 2. someone please find a good name (e.g. android made 'nougat' and 'eclare' and whatnot, and Adobe made Firefly, so please someone find a good name for this)
 3. This is probably my best formed git repo I've ever made :)
+4. *Some* of the code was AI generated. Please do not kill me for that.
 
 # How to install
 ```bash
