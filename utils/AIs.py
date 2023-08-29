@@ -63,7 +63,8 @@ class BaseBot:
             inp = cnvrs
         else:
             inp = PARSE(cnvrs, 0, 0)
-        out = self._call_ai(inp)['choices'][0]['message']
+        out = self._call_ai(inp)
+        out = out['choices'][0]['message']
         if self.thread != None:
             self.stop = True
             self.thread.join()
