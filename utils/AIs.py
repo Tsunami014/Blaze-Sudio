@@ -59,7 +59,11 @@ class BaseBot:
         return out
 
     def __call__(self, cnvrs):
-        out = self._call_ai(PARSE(cnvrs, 0, 0))['choices'][0]['message']
+        if isinstance(self, (ChatGPTBot,)): # add all the AIs that need a conversation LIST to work (and don't need summarisation)
+            inp = cnvrs
+        else:
+            inp = PARSE(cnvrs, 0, 0)
+        out = self._call_ai(inp)['choices'][0]['message']
         if self.thread != None:
             self.stop = True
             self.thread.join()
