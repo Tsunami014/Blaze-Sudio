@@ -41,9 +41,16 @@ class Summary:
         if temp != []:
             end.append({'txt': TWD().detokenize(temp), 'lvl': lvl})
         return end
+    
+    def get(self, summary_lvl):
+        res = []
+        for i in self.txt:
+            if i['lvl'] <= summary_lvl:
+                res.append(i['txt'])
+        return TWD().detokenize(res)
 
 # print(Summary('`Hello!```Bye.``Hi again!').txt)
-# print(Summary('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 987))).txt)
+# print(Summary('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 10))).txt)
 
 def PARSE(cnvrs, summary_level, prompt_type):
     """
