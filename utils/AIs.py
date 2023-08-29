@@ -43,7 +43,6 @@ class BaseBot:
         return {'choices': [{'message': {'role': 'bot', 'content': out}}]}
     
     def _stream_ai(self, tostream):
-        self.stop = False
         self.resp = ''
         self.asked_for_resp = 0
         ts = tokenize_text(tostream)
@@ -64,6 +63,7 @@ class BaseBot:
         if self.thread != None:
             self.stop = True
             self.thread.join()
+        self.stop = False
         self.thread = Thread(target=self._stream_ai, args=(out,), daemon=True)
         self.thread.start()
     
@@ -79,6 +79,7 @@ class BaseBot:
         """
         try:
             self('1+1 = ')
+            self.stop = True
             return True
         except:
             return False
