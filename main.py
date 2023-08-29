@@ -5,12 +5,9 @@ class GameEngine: #TODO: Better name
     def __init__(self):
         bot = ChatGPTBot()
         userbot = UserBot() # TODO: make a userbot, which inputs the user's input and detects whether they interrupt or not, etc. and whatevs
-        AI = Character(bot, 'AI', 'An AI assistant for the user.')
-        you = Character(userbot, 'User', '')
-        #you(AI)
         self.characters = [
-            AI,
-            you
+            Character(bot, 'AI', 'An AI assistant for the user.'),
+            Character(userbot, 'User', '')
         ]
         self.ongoing = []
     
@@ -27,7 +24,9 @@ class GameEngine: #TODO: Better name
         if self.ongoing != None:
             self._interrupt(who, self.ongoing[0])"""
 
-    def call(self, who, said):
+    def call(self, who, people_listening, said=''):
+        if said == '':
+            said = who(people_listening)
         self.ongoing = [(who, said)] # TODO: Make multiple people chatting at same time support
 
     def update(self): # TODO: Make multiple conversations at same time support
@@ -44,4 +43,30 @@ class GameEngine: #TODO: Better name
                     interrupts[j] = j.should_interrupt(said, who) # change params for multi-conversation/people support
 
 if __name__ == '__main__':
-    pass
+    GE = GameEngine()
+    import pygame
+    pygame.init()
+
+    WIN = pygame.display.set_mode()
+    sze = WIN.get_size()
+    pygame.display.set_caption('AIHub')
+
+    txt = pygame.font.SysFont('Arial', 20)
+
+    clock = pygame.time.Clock()
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+                if event.key == pygame.K_SPACE:
+                    GE.call(GE.characters[1], GE.characters[0])
+        
+        WIN.fill((0, 0, 0))
+        for who, said in range(len(GE.ongoing)):
+            WIN.blit(txt.render(said, True, (255, 255, 255)), (0, 0))
+        pygame.display.update()
+        clock.tick(60)
