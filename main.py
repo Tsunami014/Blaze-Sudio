@@ -1,6 +1,7 @@
 from utils import Character
 from utils.AIs import *
-from graphics.GUI import InputBox, RESIZE_H
+from graphics.GUI import InputBox, RESIZE_H, TextBoxFrame
+from graphics.GUI.textboxify.borders import LIGHT
 
 class GameEngine: #TODO: Better name
     def __init__(self):
@@ -9,6 +10,17 @@ class GameEngine: #TODO: Better name
             Character(UserBot(), 'User', '')
         ]
         self.ongoing = []
+        self.dialog_box = TextBoxFrame(
+            text="",
+            text_width=320,
+            lines=2,
+            pos=(80, 180),
+            padding=(150, 100),
+            font_color=(92, 53, 102),
+            font_size=26,
+            bg_color=(173, 127, 168),
+            border=LIGHT,
+        )
     
     """def _interrupt(self, who, ongoing_who):
         loudness = ongoing_who.should_keep_talking(who)
