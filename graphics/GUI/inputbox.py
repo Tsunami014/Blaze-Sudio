@@ -68,6 +68,7 @@ class InputBox:
 
         for line in ls:
             lines.append(FONT.render(line, True, self.color))
+        if lines == []: lines = [FONT.render('', True, self.color)]
         nsurface = pg.Surface((max([i.get_width() for i in lines]), sum([i.get_height() for i in lines])))
         top = 0
         for i in lines:
