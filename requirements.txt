@@ -3,5 +3,4 @@ connect-markdown-renderer
 bardapi
 pygame
 gpt4all
-bs4
 nltk
