@@ -28,14 +28,21 @@ def tokenize_text(text, token_length=2): # ChatGPTed func
 class BaseBot:
     speed = 0 # 0 = instant, 1 = fast, 2 = kinda fast, 3 = medium, 4 = medium-slow, 5 = slow, 6 = xtra slow
     shorten = False # Whether or not the length of the input affects the speed of response
-    def __init__(self):
+    def __init__(self, printfunc=print):
         """
         An AI chatbot, a vessel for responses.
+
+        Parameters
+        ----------
+        printfunc : function
+            The function to use when streaming the tokens, defaults to print.
+            Must have 2 optional params: the text to print, defaults to '', and "end", defaults to '\n'
         """
         self.resp = ''
         self.thread = None
         self.stop = False
         self.asked_for_resp = 0
+        self.prf = printfunc
         self._init()
     
     def _init(self): # placeholder for other bots to fill if they need
@@ -51,10 +58,10 @@ class BaseBot:
         ts = tokenize_text(tostream)
         for i in ts:
             self.resp += i
-            print(i, end='')
+            self.prf(i, end='')
             time.sleep(0.25 if ' .,/?!' in i else 0.15)
             if self.stop: break
-        print()
+        self.prf()
     
     def any_more(self):
         out = self.resp[self.asked_for_resp:]
@@ -124,7 +131,7 @@ class AI():
     speed = None
     shorten = None
 
-    def __init__(self):
+    def __init__(self, printfunc=print):
         """
         A combo of MANY AI Chatbots!
         AIs supported:
@@ -137,12 +144,20 @@ class AI():
         - Detects when offline, and switches to another AI
         - Autoswitch
         - Preferences as to which AIs are best
+
+        Parameters
+        ----------
+        printfunc : function
+            The function to use when streaming the tokens, defaults to print.
+            Must have 2 optional params: the text to print, defaults to '', and "end", defaults to '\n'
         """
         self.AIs = []
         all_ais = [ChatGPTBot, BardAIBot] # PUT IN ORDER OF HOW GOOD THEY ARE, best at front of list
+        self.prf = printfunc
         for i in all_ais:
             try:
                 self.AIs.append(i())
+                self.AIs[-1].prf = self.prf
             except:
                 pass
         self.resp = ''
