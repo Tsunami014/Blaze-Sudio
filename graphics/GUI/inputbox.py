@@ -33,7 +33,7 @@ def renderTextCenteredAt(text, font, allowed_width): # modified from https://sta
             out = []
             line = ''
             for i in line_words[0]:
-                fw, fh = font.size(line+'- ')
+                fw, fh = font.size(line+'--')
                 if fw > allowed_width:
                     out.append(line+'-')
                     line = i
@@ -53,6 +53,7 @@ class InputBox:
         self.active = False
         self.resize = resize
         self.maxim = maxim
+        self.txt = text
         self.render_txt()
     
     def render_txt(self):
@@ -91,9 +92,10 @@ class InputBox:
             self.render_txt()
         if event.type == pg.KEYDOWN:
             if self.active:
-                if event.key == pg.K_RETURN and pg.K_RETURN != end_on:
-                    print(self.text)
-                    self.text = ''
+                if event.key == pg.K_RETURN:
+                    if pg.K_RETURN != end_on:
+                        print(self.text)
+                        self.text = ''
                 elif event.key == pg.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
@@ -109,7 +111,7 @@ class InputBox:
         # Blit the rect.
         pg.draw.rect(screen, self.color, self.rect, 2)
     
-    def interrupt(self, screen, end_on=pg.K_RETURN):
+    def interrupt(self, screen, end_on=pg.K_RETURN, run_too=lambda screen: None, event_callback=lambda event: None):
         clock = pg.time.Clock()
         done = False
 
@@ -119,10 +121,11 @@ class InputBox:
                     done = True
                 if self.handle_event(event, end_on) == False:
                     done = True
+                event_callback(event)
 
             screen.fill((30, 30, 30))
             self.draw(screen)
-
+            run_too(screen)
             pg.display.flip()
             clock.tick(30)
         return self.text

@@ -17,6 +17,6 @@
 #  limitations under the License.
 
 try:
-    from pyguix.ui import elements as ui
+    from pyguix.ui import elements as gui
 except ImportError:
-    from graphics.GUI.pyguix.ui import elements as ui
+    from graphics.GUI.pyguix.ui import elements as gui

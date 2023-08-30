@@ -1131,12 +1131,13 @@ class SnapHUDPartText(SnapHUDPart):
 class SnapHUD(pygame.sprite.Sprite):
     """ snap right/left heads up display ui element. """
 
-    def __init__(self,window,settings=utils.SNAP_DEFAULT_JSONSETTING,theme=utils.DEFAULT_THEME,context=utils.SNAP_DEFAULT_JSONCONTEXT,rg=pygame.sprite.RenderUpdates(),*groups):
+    def __init__(self,window,settings=utils.SNAP_DEFAULT_JSONSETTING,theme=utils.DEFAULT_THEME,context=utils.SNAP_DEFAULT_JSONCONTEXT,rg=pygame.sprite.RenderUpdates(),*groups, set_num_of_groups=0):
         
         super().__init__(*groups)
 
         self.__settings__ = self.__init_snap_settings__(settings)
         self.__context__ = self.__init_snap_context__(context)
+        self.__context__.__paa__ = self.__context__.__paa__[:set_num_of_groups]
         self.__theme__ = self.__init_theme__(theme)
         self.__win__ = window
         self.__win_w__,self.__win_h__ = window.get_size()
