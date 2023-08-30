@@ -17,7 +17,7 @@ class InputBox:
         self.txt_surface = FONT.render(text, True, self.color)
         self.active = False
 
-    def handle_event(self, event):
+    def handle_event(self, event, end_on=None):
         if event.type == pg.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
             if self.rect.collidepoint(event.pos):
@@ -29,7 +29,7 @@ class InputBox:
             self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
         if event.type == pg.KEYDOWN:
             if self.active:
-                if event.key == pg.K_RETURN:
+                if event.key == pg.K_RETURN and pg.K_RETURN != end_on:
                     print(self.text)
                     self.text = ''
                 elif event.key == pg.K_BACKSPACE:
@@ -38,6 +38,8 @@ class InputBox:
                     self.text += event.unicode
                 # Re-render the text.
                 self.txt_surface = FONT.render(self.text, True, self.color)
+                if end_on != None and event.key == end_on:
+                    return False
 
     def update(self):
         # Resize the box if the text is too long.
@@ -50,7 +52,7 @@ class InputBox:
         # Blit the rect.
         pg.draw.rect(screen, self.color, self.rect, 2)
     
-    def interrupt(self, screen):
+    def interrupt(self, screen, end_on=pg.K_RETURN):
         clock = pg.time.Clock()
         done = False
 
@@ -58,7 +60,8 @@ class InputBox:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     done = True
-                self.handle_event(event)
+                if self.handle_event(event, end_on) == False:
+                    done = True
 
             self.update()
 
@@ -72,4 +75,4 @@ class InputBox:
 if __name__ == '__main__':
     screen = pg.display.set_mode((640, 480))
     input_box = InputBox(100, 100, 140, 32, 'type here!')
-    input_box.interrupt(screen)
+    print('output:', input_box.interrupt(screen))
