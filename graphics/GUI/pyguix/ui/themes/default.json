@@ -1,0 +1,62 @@
+{
+    "Theme":
+    {
+        "colors":{
+            "default":{
+                "color":{
+                    "RGB": [58,55,53]
+                }
+            },
+            "title":{
+                "color":{
+                    "RGB": [36,33,30]
+                }
+             },
+            "text":{
+                "color":{
+                    "RGB": [220,220,200]
+                }
+             },
+             "text_title":{
+                "color":{
+                    "RGB": [200,200,180]
+                }
+             },
+             "text_subtitle":{
+                "color":{
+                    "RGB": [180,180,160]
+                }
+             },
+             "text_disabled":{
+                "color":{
+                    "RGB": [142,141,140]
+                }
+             },
+            "button":{
+                "color":{
+                    "RGB": [110,108,102]
+                }
+             },
+            "outline":{
+                "color":{
+                    "RGB": [42,41,40]
+                }
+             },
+            "title_outline":{
+                "color":{
+                    "RGB": [30,29,28]
+                }
+             },
+            "button_hover":{
+                "color":{
+                    "RGB": [150,148,146]
+                }
+             },
+            "button_hover_text":{
+                "color":{
+                    "RGB": [240,220,110]
+                }
+             }
+        }
+    }
+}

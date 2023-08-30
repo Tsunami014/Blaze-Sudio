@@ -1,0 +1,11 @@
+{
+    "PopupMenu": {
+        "details": {
+            "actionclass": "",
+            "targetclasses": "" 
+        },
+        "menuitems":{
+        },
+        "notes": "When default is left blank, right click when PopupMenu instance is active will not render or 'popup'"
+    }
+}

@@ -1,0 +1,83 @@
+{
+    "SnapHUD":
+    {
+        "variables":{
+            "start_direction": "Open"
+        },
+        "dimensions":{
+            "width": 155,
+            "height": 30,
+            "radius": 0
+        },
+        "buttons":{
+            "dimensions":{
+                "width": 30,
+                "height": 30,
+                "radius": 0
+            },
+            "buffer": 4,
+            "line_width": 2,
+            "Closed":{
+                "name": "Closed",
+                "tri_cords": [[4,13],[13,4],[13,22]],
+                "line_cords": [[17,4],[17,22]]
+            },
+            "Open":{
+                "name": "Open",
+                "tri_cords": [[8,4],[17,13],[8,22]],
+                "line_cords": [[4,4],[4,22]]
+            }
+        },
+        "title":{
+            "dimensions":{
+                "width": 120,
+                "height": 30,
+                "radius": 0
+            },
+            "font":{
+                "size": 22,
+                "type": "",
+                "set_bold": false
+            }
+        },
+        "part":{
+            "title":{
+                "dimensions":{
+                    "width": 120,
+                    "height": 20,
+                    "radius": 0
+                },
+                "font":{
+                    "size": 16,
+                    "type": "",
+                    "set_bold": false
+                }
+            },
+            "body":{
+                "dimensions":{
+                    "width":120,
+                    "height":30,
+                    "radius":0
+                },
+                "font":{
+                    "size": 20,
+                    "type": "",
+                    "set_bold": false
+                }
+            }
+        },
+        "alignment": {
+            "side": "Right",
+            "buffer": {
+                "dimensions":{
+                    "width": 30,
+                    "height": 20,
+                    "radius": 0
+                },
+                "outline_buffer": 8,
+                "buffer": 4
+            }
+        },
+        "notes": "Default SnapHUD settings: alignment.side is either 'Right/Left', start_direction: 'Closed/Open'"
+    }
+}

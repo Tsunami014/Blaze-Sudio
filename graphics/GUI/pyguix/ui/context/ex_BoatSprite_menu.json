@@ -1,0 +1,19 @@
+{
+    "PopupMenu": {
+        "details": {
+            "actionclass": "<class '__main__.BoatSpriteActions'>",
+            "targetclasses": ["<class '__main__.Boat'>"]
+        },
+        "menuitems":{
+            "info":{
+                "popupmenuitem":{
+                    "text": "Get Sprite Info",
+                    "type": 0,
+                    "action": "info",
+                    "enabled": true
+                }
+            }
+        },
+        "notes": "EXAMPLE: Get info for sprite. Read popup_examples_wnotes.py NOTE tags for details."
+    }
+}

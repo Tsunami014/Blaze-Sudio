@@ -1,0 +1,19 @@
+{
+    "PopupMenu": {
+        "details": {
+            "actionclass": "<class '__main__.SpriteActions'>",
+            "targetclasses": ["<class '__main__.simplesprite'>"]
+        },
+        "menuitems":{
+            "getinfo":{
+                "popupmenuitem":{
+                    "text": "Get Sprite Info",
+                    "type": 0,
+                    "action": "get_info",
+                    "enabled": true
+                }
+            }
+        },
+        "notes": "EXAMPLE: Simple print() Sprite info example."
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "SnapHUD": {
+        "details": {
+            "title": "Snap Example",
+            "infoclass": "<class '__main__.SnapHUDPartInfoExample'>"
+        },
+        "parts":{
+            "part_one":{
+                "title": "Example One",
+                "function": "part_one",
+                "type": "SnapHUDPartText"
+            },
+            "part_two":{
+                "title": "Part 2",
+                "function": "part_two",
+                "type": "SnapHUDPartText"
+            },
+            "three":{
+                "title": "three",
+                "function": "part_three",
+                "type": "SnapHUDPartText"
+            },
+            "four":{
+                "title": "4 info",
+                "function": "part_four",
+                "type": "SnapHUDPartText"
+            }
+        },
+        "notes": "infoclass sets target for call partinfo() functions. parts.(part_name).type sets type of SnapHUDPart. By default simple text value."
+    }
+}

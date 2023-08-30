@@ -1,0 +1,19 @@
+{
+    "PopupMenu": {
+        "details": {
+            "actionclass": "<class '__main__.RiverSpriteActions'>",
+            "targetclasses": ["<class '__main__.River'>"]
+        },
+        "menuitems":{
+            "changeimg":{
+                "popupmenuitem":{
+                    "text": "Change Sprite",
+                    "type": 0,
+                    "action": "change_image",
+                    "enabled": true
+                }
+            }
+        },
+        "notes": "EXAMPLE: Change contextof Sprite image example. Read popup_examples_wnotes.py for more info."
+    }
+}

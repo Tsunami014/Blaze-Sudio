@@ -1,0 +1,53 @@
+{
+    "MessageBox":
+    {
+        "variables":{
+            "title_max": 0.09,
+            "message_max": 0.12,
+            "font_size": 18,
+            "outline_buffer": 4,
+            "message_justify": "center",
+            "message_height_buffer": 4
+        },
+        "title":{
+            "dimensions":{
+                "width": 260,
+                "height": 34,
+                "radius": 0
+            },
+            "outline_buffer": 2,
+            "font_size": 22,
+            "text_upcase": 0
+        },
+        "cancel_button":{
+            "surface":{
+                "dimensions":{
+                    "width": 30,
+                    "height": 30,
+                    "radius": 0
+                }
+            },
+            "circle":{
+                "dimensions":{
+                    "width": 20,
+                    "height": 20,
+                    "radius": 10
+                },
+                "buffer": 22,
+                "default_text": "X"
+            }
+        },
+        "buttons":{
+            "dimensions":{
+                "width": 85,
+                "height": 25,
+                "radius": 0
+            },
+            "buffer": 7,
+            "return_button": 0,
+            "default_text": "OK",
+            "outline_buffer": 2
+        },
+        "notes": "Default MessageBox settings file"
+    }
+}

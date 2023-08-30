@@ -1,0 +1,26 @@
+{
+    "PopupMenu":
+    {
+        "variables":{
+            "outline_buffer": 8
+        },
+        "dimensions":{
+            "width": 140,
+            "height": 100,
+            "radius": 0
+        },
+        "menuitems":{
+            "action_text_buffer": 4,
+            "text": {
+                "size": 22,
+                "fonttype": ""
+            },
+            "dimensions":{
+                "width": 140,
+                "height": 20,
+                "radius": 0
+            }
+        },
+        "notes": "Default Popupmenu settings file."
+    }
+}
