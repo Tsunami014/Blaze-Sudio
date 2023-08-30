@@ -8,14 +8,75 @@ COLOR_INACTIVE = pg.Color('lightskyblue3')
 COLOR_ACTIVE = pg.Color('dodgerblue2')
 FONT = pg.font.Font(None, 32)
 
+RESIZE_W = 0
+RESIZE_H = 1
+RESIZE_NONE = 2
+
+def renderTextCenteredAt(text, font, allowed_width): # modified from https://stackoverflow.com/questions/49432109/how-to-wrap-text-in-pygame-using-pygame-font-font 
+    # first, split the text into words
+    words = text.split()
+
+    # now, construct lines out of these words
+    lines = []
+    while len(words) > 0:
+        # get as many words as will fit within allowed_width
+        line_words = []
+        while len(words) > 0:
+            line_words.append(words.pop(0))
+            fw, fh = font.size(' '.join(line_words + words[:1]))
+            if fw > allowed_width:
+                break
+
+        # add a line consisting of those words
+        line = ' '.join(line_words)
+        if len(line_words) == 1 and font.size(line_words[0])[0] > allowed_width:
+            out = []
+            line = ''
+            for i in line_words[0]:
+                fw, fh = font.size(line+'- ')
+                if fw > allowed_width:
+                    out.append(line+'-')
+                    line = i
+                else:
+                    line += i
+            #if line != '': out.append(line)
+            lines.extend(out)
+        lines.append(line)
+    return lines
+
 class InputBox:
 
-    def __init__(self, x, y, w, h, text=''):
+    def __init__(self, x, y, w, h, text='', resize=RESIZE_W, maxim=None):
         self.rect = pg.Rect(x, y, w, h)
         self.color = COLOR_INACTIVE
         self.text = text
-        self.txt_surface = FONT.render(text, True, self.color)
         self.active = False
+        self.resize = resize
+        self.maxim = maxim
+        self.render_txt()
+    
+    def render_txt(self):
+        self.txt = self.txt[:self.maxim]
+        lines = []
+        if self.resize == RESIZE_W:
+            ls = [self.text]
+        else:
+            ls = renderTextCenteredAt(self.text, FONT, self.rect.w - 5)
+            if self.resize == RESIZE_NONE:
+                ls = [ls[0]]
+
+        for line in ls:
+            lines.append(FONT.render(line, True, self.color))
+        nsurface = pg.Surface((max([i.get_width() for i in lines]), sum([i.get_height() for i in lines])))
+        top = 0
+        for i in lines:
+            nsurface.blit(i, (0, top))
+            top += i.get_height()
+        self.txt_surface = nsurface
+        if self.resize == RESIZE_W:
+            self.rect.w = self.txt_surface.get_width() + 10
+        elif self.resize == RESIZE_H:
+            self.rect.h = self.txt_surface.get_height() + 10
 
     def handle_event(self, event, end_on=None):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -27,6 +88,7 @@ class InputBox:
                 self.active = False
             # Change the current color of the input box.
             self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
+            self.render_txt()
         if event.type == pg.KEYDOWN:
             if self.active:
                 if event.key == pg.K_RETURN and pg.K_RETURN != end_on:
@@ -37,14 +99,9 @@ class InputBox:
                 else:
                     self.text += event.unicode
                 # Re-render the text.
-                self.txt_surface = FONT.render(self.text, True, self.color)
+                self.render_txt()
                 if end_on != None and event.key == end_on:
                     return False
-
-    def update(self):
-        # Resize the box if the text is too long.
-        width = max(200, self.txt_surface.get_width()+10)
-        self.rect.w = width
 
     def draw(self, screen):
         # Blit the text.
@@ -62,8 +119,6 @@ class InputBox:
                     done = True
                 if self.handle_event(event, end_on) == False:
                     done = True
-
-            self.update()
 
             screen.fill((30, 30, 30))
             self.draw(screen)
