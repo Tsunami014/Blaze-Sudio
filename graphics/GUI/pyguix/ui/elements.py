@@ -17,7 +17,7 @@
 #  limitations under the License.
 
 import pygame 
-import pyguix.__utils__.__help__ as utils
+import pyguix.utils as utils
 
 uth = utils.helper()
 # NOTE: When an action class is created, the base scope class adds its targetclasses as keys

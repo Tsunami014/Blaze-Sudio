@@ -15,3 +15,8 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+
+try:
+    from pyguix.ui import elements as ui
+except ImportError:
+    from graphics.GUI.pyguix.ui import elements as ui
