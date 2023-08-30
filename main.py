@@ -2,13 +2,18 @@ from utils import Character
 from utils.AIs import *
 from graphics.GUI import InputBox, RESIZE_H, TextBoxFrame
 from graphics.GUI.textboxify.borders import LIGHT
+import pygame
+
+pygame.init()
 
 class GameEngine: #TODO: Better name
-    def __init__(self):
+    def __init__(self, WIN):
+        pygame.display.set_caption('AIHub')
         self.characters = [
             Character(AI(), 'AI', 'An AI assistant for the user.'),
             Character(UserBot(), 'User', '')
         ]
+        self.WIN = WIN
         self.ongoing = []
         self.dialog_box = TextBoxFrame(
             text="",
@@ -21,6 +26,14 @@ class GameEngine: #TODO: Better name
             bg_color=(173, 127, 168),
             border=LIGHT,
         )
+        self.input_box = InputBox(100, 100, 140, 32, '', resize=RESIZE_H, maxim=1000)
+        def _(cnvrs):
+            self.input_box.rect.move_ip(0-self.input_box.rect.topleft[0], 0-self.input_box.rect.topleft[1])
+            self.input_box.rect.move_ip(*pygame.mouse.get_pos())
+            return {'choices': [{'message': {'role': 'user', 'content': self.input_box.interrupt(self.WIN)}}]}
+        self.characters[1].AI._call_ai = _
+        self.txt = pygame.font.SysFont('Arial', 20)
+        self.clock = pygame.time.Clock()
     
     """def _interrupt(self, who, ongoing_who):
         loudness = ongoing_who.should_keep_talking(who)
@@ -53,37 +66,26 @@ class GameEngine: #TODO: Better name
                 for j in self.characters:
                     interrupts[j] = j.should_interrupt(said, who) # change params for multi-conversation/people support
 
-if __name__ == '__main__':
-    import pygame
-    pygame.init()
-
-    WIN = pygame.display.set_mode((800, 500))
-    pygame.display.set_caption('AIHub')
-
-    GE = GameEngine()
-    input_box = InputBox(100, 100, 140, 32, '', resize=RESIZE_H, maxim=1000)
-    def _(cnvrs):
-        input_box.rect.move_ip(0-input_box.rect.topleft[0], 0-input_box.rect.topleft[1])
-        input_box.rect.move_ip(*pygame.mouse.get_pos())
-        return {'choices': [{'message': {'role': 'user', 'content': input_box.interrupt(WIN)}}]}
-    GE.characters[1].AI._call_ai = _
-
-    txt = pygame.font.SysFont('Arial', 20)
-
-    clock = pygame.time.Clock()
-    run = True
-    while run:
+    def __call__(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                return False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    run = False
+                    return False
                 if event.key == pygame.K_SPACE:
-                    GE.call(GE.characters[1], [])#GE.characters[0])
+                    self.call(self.characters[1], [])#self.characters[0])
         
-        WIN.fill((0, 0, 0))
-        for who, said in GE.ongoing:
-            WIN.blit(txt.render(said, True, (255, 255, 255)), (0, 0))
+        self.WIN.fill((0, 0, 0))
+        for who, said in self.ongoing:
+            self.WIN.blit(self.txt.render(said, True, (255, 255, 255)), (0, 0))
         pygame.display.update()
-        clock.tick(60)
+        self.clock.tick(60)
+        return True
+
+if __name__ == '__main__':
+    WIN = pygame.display.set_mode((800, 500))
+    GE = GameEngine(WIN)
+    run = True
+    while run:
+        run = GE()
