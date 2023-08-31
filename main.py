@@ -46,8 +46,6 @@ class GameEngine: #TODO: Better name
             rects = self.dialog_group.draw(screen)
             pygame.display.update(rects)
         def _(cnvrs):
-            global self
-            self.txt = ''
             self.input_box.rect.move_ip(0-self.input_box.rect.topleft[0], 0-self.input_box.rect.topleft[1])
             self.input_box.rect.move_ip(*pygame.mouse.get_pos())
             return {'choices': [{'message': {'role': 'user', 'content': self.input_box.interrupt(self.WIN, run_too=__)}}]}
@@ -71,12 +69,15 @@ class GameEngine: #TODO: Better name
     def call(self, who, people_listening, said=''):
         if said == '':
             said = who(people_listening)
-        self.ongoing = [(who, said)] # TODO: Make multiple people chatting at same time support
+        else:
+            self.ongoing = [(who, said)] # TODO: Make multiple people chatting at same time support
 
-    def update(self, who, add): # TODO: Make multiple conversations at same time support
+    def update(self, whoID, add): # TODO: Make multiple conversations at same time support
+        who = self.characters[whoID]
         characters = [i[0] for i in self.ongoing]
         if who not in characters:
-            self.ongoing = [(who, said)] # same line as above, if that changes this should too
+            self.ongoing = [(who, add)] # same line as above, if that changes this should too
+            characters = [i[0] for i in self.ongoing]
         else:
             said = self.ongoing[characters.index(who)][1]
             said += add
@@ -89,6 +90,8 @@ class GameEngine: #TODO: Better name
                 for j in self.characters:
                     if j != who: interrupts[j] = j.should_interrupt(said, who) # change params for multi-conversation/people support
                 pass # should do something here, but currently it doesn't.
+        txt = self.ongoing[characters.index(who)][1]
+        self.dialog_box.set_text(txt)
 
     def __call__(self):
         for event in pygame.event.get():
