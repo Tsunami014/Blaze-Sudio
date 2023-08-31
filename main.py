@@ -70,17 +70,17 @@ class GameEngine: #TODO: Better name
         if said == '':
             said = who(people_listening)
         else:
-            self.ongoing = [(who, said)] # TODO: Make multiple people chatting at same time support
+            self.ongoing = [[who, said]] # TODO: Make multiple people chatting at same time support
 
     def update(self, whoID, add): # TODO: Make multiple conversations at same time support
         who = self.characters[whoID]
         characters = [i[0] for i in self.ongoing]
         if who not in characters:
-            self.ongoing = [(who, add)] # same line as above, if that changes this should too
+            self.ongoing = [[who, add]] # same line as above, if that changes this should too
             characters = [i[0] for i in self.ongoing]
         else:
+            self.ongoing[characters.index(who)][1] += add
             said = self.ongoing[characters.index(who)][1]
-            said += add
             # defining some vars
             endpuncnum = 20
             puncnum = 30
