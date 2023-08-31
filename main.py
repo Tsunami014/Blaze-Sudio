@@ -19,18 +19,30 @@ class GameEngine: #TODO: Better name
             text="",
             text_width=320,
             lines=2,
-            pos=(80, 180),
+            pos=(0, 0),
             padding=(150, 100),
             font_color=(92, 53, 102),
             font_size=26,
             bg_color=(173, 127, 168),
             border=LIGHT,
         )
+        self.dialog_box.rect.move_ip(WIN.get_width() / 2 - self.dialog_box.rect.w / 2,
+                                     WIN.get_height() - self.dialog_box.rect.h)
+        self.dialog_box.set_indicator()
+        self.dialog_box.set_portrait()
+        # Create sprite group for the dialog boxes.
+        self.dialog_group = pygame.sprite.LayeredDirty()
+        self.dialog_group.add(self.dialog_box)
         self.input_box = InputBox(100, 100, 140, 32, '', resize=RESIZE_H, maxim=1000)
+        def __(screen):
+            # Update the changes so the user sees the text.
+            self.dialog_group.update()
+            rects = self.dialog_group.draw(screen)
+            pygame.display.update(rects)
         def _(cnvrs):
             self.input_box.rect.move_ip(0-self.input_box.rect.topleft[0], 0-self.input_box.rect.topleft[1])
             self.input_box.rect.move_ip(*pygame.mouse.get_pos())
-            return {'choices': [{'message': {'role': 'user', 'content': self.input_box.interrupt(self.WIN)}}]}
+            return {'choices': [{'message': {'role': 'user', 'content': self.input_box.interrupt(self.WIN, run_too=__)}}]}
         self.characters[1].AI._call_ai = _
         self.txt = pygame.font.SysFont('Arial', 20)
         self.clock = pygame.time.Clock()
@@ -79,6 +91,10 @@ class GameEngine: #TODO: Better name
         self.WIN.fill((0, 0, 0))
         for who, said in self.ongoing:
             self.WIN.blit(self.txt.render(said, True, (255, 255, 255)), (0, 0))
+        # Update the changes so the user sees the text.
+        self.dialog_group.update()
+        rects = self.dialog_group.draw(self.WIN)
+        pygame.display.update(rects)
         pygame.display.update()
         self.clock.tick(60)
         return True
