@@ -9,10 +9,7 @@ pygame.init()
 class GameEngine: #TODO: Better name
     def __init__(self, WIN):
         pygame.display.set_caption('AIHub')
-        self.characters = [
-            Character(AI(), 'AI', 'An AI assistant for the user.'),
-            Character(UserBot(), 'User', '')
-        ]
+        
         self.WIN = WIN
         self.ongoing = []
         self.dialog_box = TextBoxFrame(
@@ -33,6 +30,15 @@ class GameEngine: #TODO: Better name
         # Create sprite group for the dialog boxes.
         self.dialog_group = pygame.sprite.LayeredDirty()
         self.dialog_group.add(self.dialog_box)
+
+        def make(num):
+            return lambda txt='', end='\n': self.update(num, txt+end)
+
+        self.characters = [
+            Character(AI(make(0)), 'AI', 'An AI assistant for the user.'),
+            Character(UserBot(make(1)), 'User', '')
+        ]
+
         self.input_box = InputBox(100, 100, 140, 32, '', resize=RESIZE_H, maxim=1000)
         def __(screen):
             # Update the changes so the user sees the text.
@@ -40,6 +46,8 @@ class GameEngine: #TODO: Better name
             rects = self.dialog_group.draw(screen)
             pygame.display.update(rects)
         def _(cnvrs):
+            global self
+            self.txt = ''
             self.input_box.rect.move_ip(0-self.input_box.rect.topleft[0], 0-self.input_box.rect.topleft[1])
             self.input_box.rect.move_ip(*pygame.mouse.get_pos())
             return {'choices': [{'message': {'role': 'user', 'content': self.input_box.interrupt(self.WIN, run_too=__)}}]}
@@ -65,10 +73,13 @@ class GameEngine: #TODO: Better name
             said = who(people_listening)
         self.ongoing = [(who, said)] # TODO: Make multiple people chatting at same time support
 
-    def update(self): # TODO: Make multiple conversations at same time support
-        for i in self.ongoing:
-            who, said = i
-            said += who.any_more()
+    def update(self, who, add): # TODO: Make multiple conversations at same time support
+        characters = [i[0] for i in self.ongoing]
+        if who not in characters:
+            self.ongoing = [(who, said)] # same line as above, if that changes this should too
+        else:
+            said = self.ongoing[characters.index(who)][1]
+            said += add
             # defining some vars
             endpuncnum = 20
             puncnum = 30
@@ -76,7 +87,8 @@ class GameEngine: #TODO: Better name
             if len(said) > endpuncnum and '.?!' in said or len(said) > puncnum and ',./?!"\'' in said or len(said) > endnum:
                 interrupts = {}
                 for j in self.characters:
-                    interrupts[j] = j.should_interrupt(said, who) # change params for multi-conversation/people support
+                    if j != who: interrupts[j] = j.should_interrupt(said, who) # change params for multi-conversation/people support
+                pass # should do something here, but currently it doesn't.
 
     def __call__(self):
         for event in pygame.event.get():
