@@ -1,5 +1,5 @@
 import requests, os, sys, time
-from bardapi import Bard
+#from bardapi import Bard # very slow...
 from threading import Thread
 try:
     from conversation_parser import PARSE
@@ -111,14 +111,14 @@ class ChatGPTBot(BaseBot):
         response = requests.post(api_url, json=todo)
         return response.json()
 
-class BardAIBot(BaseBot): #TODO: check if this works
+"""class BardAIBot(BaseBot): #TODO: check if this works
     speed = '???' # TODO: change this to a good value
     def _init(self):
         self.bard = Bard(token=loadAPIkeys()[0])
         # OR os.environ['_BARD_API_KEY']=loadAPIkeys()[0]
     def _call_ai(self, cnvrs):
         return self.bard.get_answer(str(cnvrs))['content']
-        # OR return Bard().get_answer(str(cnvrs))['content']
+        # OR return Bard().get_answer(str(cnvrs))['content']"""
 
 class UserBot(BaseBot):
     def _call_ai(self, cnvrs):
@@ -136,7 +136,7 @@ class AI():
         A combo of MANY AI Chatbots!
         AIs supported:
         - ChatGPT
-        - Bard AI
+        - ~~Bard AI~~ NOT BARD AI ANY MORE, maybe will put back in later, but not now.
         
         Features:
         #TODO:
@@ -152,7 +152,7 @@ class AI():
             Must have 2 optional params: the text to print, defaults to '', and "end", defaults to '\n'
         """
         self.AIs = []
-        all_ais = [ChatGPTBot, BardAIBot] # PUT IN ORDER OF HOW GOOD THEY ARE, best at front of list
+        all_ais = [ChatGPTBot]#, BardAIBot] # PUT IN ORDER OF HOW GOOD THEY ARE, best at front of list
         self.prf = printfunc
         for i in all_ais:
             try:
