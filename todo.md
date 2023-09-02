@@ -3,9 +3,7 @@
 
 # AIs TODO:
 
- - [x] ChatGPT
- - [?] Bard
- - [ ] Bing
+ - https://github.com/IntelligenzaArtificiale/Free-Auto-GPT/tree/main
  - [ ] GPT4ALL
 
 ### I'm now considering whether or not to do these...
