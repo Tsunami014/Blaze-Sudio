@@ -3,7 +3,7 @@
 
 # AIs TODO:
 
- - https://github.com/IntelligenzaArtificiale/Free-Auto-GPT/tree/main
+ - https://github.com/xtekky/gpt4free
  - [ ] GPT4ALL
 
 ### I'm now considering whether or not to do these...
