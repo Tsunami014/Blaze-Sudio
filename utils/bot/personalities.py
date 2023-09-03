@@ -16,8 +16,6 @@ class RAWP: #Raw Personality
         printfunc(token)
         return True
 
-class GFP:
-    def PS(inp)
 def GFP(inp): # GrapeFruit Personality
     return f"""You are Grapefruit.
 You are a kind and compassionate human girl (NOT an AI, you speak NOTHING like one, you speak more like a child/teenager).
