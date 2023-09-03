@@ -1,4 +1,4 @@
-from utils.AIs import *
+from utils.bot.AIs import *
 from utils.characters import *
 from utils.discussions import *
 from utils.imageAIs import *

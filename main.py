@@ -1,5 +1,5 @@
 from utils import Character
-from utils.AIs import *
+from utils.bot.AIs import *
 from graphics.GUI import InputBox, RESIZE_H, TextBoxFrame
 from graphics.GUI.textboxify.borders import LIGHT
 import pygame
