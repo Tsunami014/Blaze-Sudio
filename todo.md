@@ -5,33 +5,33 @@
 
  - https://github.com/xtekky/gpt4free
  - [ ] GPT4ALL
+ - [ ] LLAMA
 
 ### I'm now considering whether or not to do these...
- - [ ] LLAMA - didn't it not work?
  - [ ] any others in LOLLM... what ones?
 
 # Image AIs TODO:
- - [ ] Google Bard Image AI (maaaybe not)
- - [ ] Sydney (Bing AI) Image AI (maaaaybe not)
+ - [ ] Google Bard Image AI (I think maybe possible? Needs research.)
+ - [ ] Sydney (Bing AI) Image AI (I think maybe possible? Needs research.)
  - [ ] any old diffusion image generator
  - [ ] GPT4Art (from gpt4all)
 
 # Things TODO:
- - [ ] A UI for downloading GPT4All models for offline
+ - [x] A UI for downloading GPT4All models for offline
  - [ ] The EVERY AI, which includes:
 >  - [ ] Multi-AI support
 >  - [ ] Switching AI support
  - [x] the base AI to be real good and customisable
- - [ ] characters
+ - [x] characters
  - [x] conversations
  - [ ] game engine (in main.py)
  - [ ] UI
- - [ ] A GOOD name for all this
+ - [x] A GOOD name for all this
  - [ ] STT (speech to text)
  - [ ] Sound generator which includes:
 >  - [ ] Seeded MIDI generator
 >  - [ ] AI music generator???
- - [ ] storyline
+ - [ ] Storyline
  - [ ] World
  - [ ] Image AI
  - [ ] graphics
