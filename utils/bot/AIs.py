@@ -1,20 +1,28 @@
 import requests, os, sys, time
 #from bardapi import Bard # very slow...
 from threading import Thread
+
+if os.getcwd().endswith('bot'): # set path to folder above
+    newpath = os.path.abspath(os.path.join(os.getcwd(), '../'))
+    os.chdir(newpath)
+
+sys.path.append(os.getcwd())
+
 try:
     from conversation_parser import PARSE
 except ImportError:
     from utils.conversation_parser import PARSE
 
-sys.path.append(os.getcwd()) # dunno why but it needs this
-
 try:
     from utils.characters import *
 except ImportError:
     from characters import *
+
+if os.getcwd().endswith('utils'): # set path to folder above
     # Then set the path to the folder above, to import a file from the above folder
     newpath = os.path.abspath(os.path.join(os.getcwd(), '../'))
     os.chdir(newpath)
+    sys.path.append(os.getcwd())
 
 from api_keys import loadAPIkeys
 
