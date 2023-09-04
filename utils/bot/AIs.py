@@ -14,8 +14,10 @@ elif os.getcwd().endswith('utils'): # set folder to one above
 sys.path.append(os.getcwd())
 
 from utils.conversation_parser import PARSE
+PARSE = PARSE
 from utils.characters import *
 from api_keys import loadAPIkeys
+from utils.bot.gpt4real import GPT4All
 
 # TODO: more AIs
 # TODO: threading
@@ -98,7 +100,17 @@ class BaseBot:
         except:
             return False
 
-class ChatGPTBot(BaseBot):
+class NetBaseBot(BaseBot):
+    def is_online(self):
+        try:
+            requests.get('https://8.8.8.8', timeout=0.1)
+        except requests.exceptions.ReadTimeout:
+            pass
+        except:
+            return False # Offline, or bug.
+        return super().is_online()
+
+class ChatGPTBot(NetBaseBot):
     speed = 1 # don't need the other as it is the same
     def _call_ai(self, cnvrs): # TODO: redo this func to work
         #api_url = "https://chatgpt-api.shn.hk/v1/"
@@ -110,7 +122,7 @@ class ChatGPTBot(BaseBot):
         response = requests.post(api_url, json=todo)
         return response.json()
 
-"""class BardAIBot(BaseBot): #TODO: check if this works
+"""class BardAIBot(NetBaseBot): #TODO: check if this works
     speed = '???' # TODO: change this to a good value
     def _init(self):
         self.bard = Bard(token=loadAPIkeys()[0])
@@ -151,7 +163,7 @@ class AI():
             Must have 2 optional params: the text to print, defaults to '', and "end", defaults to '\n'
         """
         self.AIs = []
-        all_ais = [ChatGPTBot]#, BardAIBot] # PUT IN ORDER OF HOW GOOD THEY ARE, best at front of list
+        all_ais = [GPT4All, ChatGPTBot]#, BardAIBot] # PUT IN ORDER OF HOW GOOD THEY ARE, best at front of list
         self.prf = printfunc
         for i in all_ais:
             try:
