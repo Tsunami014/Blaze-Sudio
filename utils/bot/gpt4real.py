@@ -1,73 +1,68 @@
 from gpt4all import GPT4All
 from threading import Thread
-try:
-    from utils.bot.methods import *
-    from utils.bot.personalities import *
-    from utils.bot.params import *
-except ModuleNotFoundError:
-    from methods import *
-    from personalities import *
-    from params import *
 
-class Bot:
-    def _init(self):
-        self.gptj = GPT4All("ggml-gpt4all-j-v1.3-groovyy", 'utils/bot/model/', \
-                model_type='gptj') #gptj, llama, mpt
-        self.setup = True
-    
-    def __init__(self, thread=True):
+try:
+    from utils.bot.AIs import PARSE
+except:
+    try:
+        from bot.AIs import PARSE
+    except:
+        from AIs import PARSE
+
+class GPT4All:
+    speed = 5 # 5 = slow, 6 = xtra slow
+    shorten = True
+    def __init__(self, printfunc=print):
         """
-        A GPT4All bot that is super cool! This bot is v2.0!
+        A GPT4All AI chatbot, a vessel for responses. This runs offline!
+
+        Parameters
+        ----------
+        printfunc : function
+            The function to use when streaming the tokens, defaults to print.
+            Must have 2 optional params: the text to print, defaults to '', and "end", defaults to '\n'
         """
-        self.setup = False
-        print('Loading please wait...\nHINT WITH LOADING: If you get less things to run (e.g. maybe close down those open browsers) it will lag your computer less (if at all!)')
+        self.resp = ''
+        self.thread = None
+        self.stop = False
+        self.asked_for_resp = 0
+        self.prf = printfunc
+        print('Loading AI please wait...\nHINT WITH LOADING: If you get less things to run (e.g. maybe close down those open browsers) it will lag your computer less (if at all!)')
         try:
             #Popular models:
             #ggml-gpt4all-j-v1.3-groovyy - gptj
             #gpt4all-lora-quantized-ggml - llama
-            if thread:
-                Thread(target=lambda: self._init(), daemon=True).start()
-            else:
-                self._init()
+            self.gptj = GPT4All("ggml-gpt4all-j-v1.3-groovyy", 'utils/bot/model/', \
+                model_type='gptj') #gptj, llama, mpt
         except Exception as e:
             input('ERROR SERRING UP. Try restarting this or cleaning up some disc space. If this error persists, report it or something. Press enter to quit.')
             raise e
-        self.response = ''
-        self._prevValues = [AIP, infinite]
-        self.run = False
-        self.generating = False
     
     @staticmethod # dunno why, it had this in the original so I'm including it here
-    def _response_callback(self, token_id, response, method, customs):
-        self.response += response.decode('utf-8')
-        if self.run == False:
-            return False
-        cont = method(response.decode('utf-8'), self.response, **customs)
-        if isinstance(cont, bool): return cont
-        if isinstance(cont, str):
-            self.response = cont
-            return False
+    def _response_callback(self, token_id, response):
+        self.resp += response.decode('utf-8')
+        if self.stop == False: return False
+        self.prf(response.decode('utf-8'), end='')
+        basics = ['User: ', '### Prompt']
+        for i in basics:
+            if i in self.resp:
+                self.resp[:self.resp.index(i):] # override the end result to remove the part, and stop generating
+                return False
         return True
     
     @staticmethod
     def _prompt_callback(self, token_id):
-        return self.run
+        return self.stop
     
-    def _start(self, inp, after, personality, method, customs, params, override=''):
-        if not self.setup:
-            print('You need to wait for it to finish setting up!')
-            return
+    def _start(self, inp, after):
         print('generating...')
-        self.generating = True
-        self.gptj.model._response_callback = lambda tok_id, resp: self._response_callback(self, tok_id, resp, method, customs)
-        self.gptj.model._prompt_callback = lambda tok_id: self._prompt_callback(self, tok_id)
-        self.gptj.generate((personality(inp) if override == '' else override), **params)
+        self.gptj.generate(inp)
         print('finished!')
-        after(self.response)
-        self.run = False
-        self.generating = False
+        self.prf()
+        after(self.resp)
+        self.stop = False
     
-    def __call__(self, inp, after=lambda end: None, personality=AIP, method=infinite, cont=False, wait=False, params=NORMAL, **customisations):
+    def __call__(self, inp, after=lambda end: None):
         """
         Make the bot generate a response! Can be confusing, so make sure to look at the parameters below!
 
@@ -88,78 +83,48 @@ class Bot:
         params : dict, optional
             The parameters (how much it generates, etc.) of the bot. If you need examples/defaults look in utils/bot/params.py, by default NORMAL
         """
-        if not cont:
-            self.response = ''
-        else:
-            personality, method = self._prevValues
-        self.run = True
-        t = Thread(target=self._start, args=(inp, after, personality, method, customisations, params, ('' if not cont else self.response)), daemon=True)
+        self.stop = True
+        self.asked_for_resp = 0
+        self.resp = ''
+        self.stop = False
+        self.gptj.model._response_callback = lambda tok_id, resp: self._response_callback(self, tok_id, resp)
+        self.gptj.model._prompt_callback = lambda tok_id: self._prompt_callback(self, tok_id)
+        t = Thread(target=self._start, args=(inp, after), daemon=True)
         t.start()
-        self._prevValues = [personality, method]
-        if wait:
-            t.join()
     
-    def wait_for_load(self):
-        while not self.setup:
-            pass
     def wait_for_stop_generating(self):
-        while self.generating:
+        while not self.stop:
             pass
+    
+    def _call_ai(self, cnvrs):
+        out = 'hello!'#str(cnvrs)
+        return {'choices': [{'message': {'role': 'bot', 'content': out}}]}
+    
+    def any_more(self):
+        out = self.resp[self.asked_for_resp:]
+        self.asked_for_resp = len(self.resp)
+        return out
 
-if __name__ == '__main__':
-    from tkinter.constants import END
-    from tkinter import Button, Text, Label, Scale
+    def __call__(self, cnvrs):
+        inp = PARSE(cnvrs, 0, 0)
+        out = self._call_ai(inp)
+        out = out['choices'][0]['message']
+        if self.thread != None:
+            self.stop = True
+            self.thread.join()
+        self.stop = False
+        self.thread = Thread(target=self._stream_ai, args=(out['content'],), daemon=True)
+        self.thread.start()
     
-    def set_out(txt, delete=True):
-        out.configure(state='normal')
-        if delete: out.delete('1.0', END)
-        out.insert(END, txt)
-        out.configure(state='disabled')
+    def should_interrupt(self, cnvrs):
+        pass
     
-    def generate(cont):
-        status.config(text=('Status: Generating...' if not cont else 'Status: Continuing...'))
-        set_out('' if not cont else (bot.response))
-        
-        def fin(output):
-            set_out(output + '\n\nfinished!')
-            status.config(text='Status: Done!')
-        
-        bot(
-            text.get('1.0', END), 
-            fin, 
-            [GFP, AIP, RAWP][int(s.get()) - 1], 
-            untilNext, 
-            cont,
-            printfunc=lambda tok: set_out(tok, False)
-        )
-    
-    def stop():
-        bot.run = False
-    
-    bot = Bot()
-    
-    text = Text(bg='white', height=10)
-    l = Label(text='Input:')
-    l.pack()
-    text.pack()
-    text.insert(END, '')
-    l1 = Label(text='personality \
-(1=grapefruit, 2=normal AI (faster), 3=raw (do not use unless you know what you are doing))')
-    l1.pack()
-    s = Scale(text._root(), from_=1, to=3, orient='horizontal')
-    s.pack()
-    s.set(2)
-    btn = Button(text._root(), text='Generate!', command=lambda: generate(False))
-    btn.pack()
-    btn2 = Button(text._root(), text='Keep going!', command=lambda: generate(True))
-    btn2.pack()
-    btn2 = Button(text._root(), text='Stop generating!', command=stop)
-    btn2.pack()
-    status = Label(text='Status: OK')
-    status.pack()
-    out = Text(text._root())
-    set_out("This is where the bot's generation output will be!")
-    out.pack(fill="both", expand=True)
-    out.configure(bg=text._root().cget('bg'))
-    out.configure(state="disabled")
-    text.mainloop()
+    def is_online(self):
+        """
+        Returns
+        -------
+        Bool
+            Whether or not the bot can be questioned currently.
+            For this bot, always is True.
+        """
+        return True
