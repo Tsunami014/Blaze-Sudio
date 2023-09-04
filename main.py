@@ -71,6 +71,11 @@ class GameEngine: #TODO: Better name
             said = who(people_listening)
         else:
             self.ongoing = [[who, said]] # TODO: Make multiple people chatting at same time support
+    
+    def finished(self, num):
+        del self.ongoing[num]
+        if len(self.ongoing) == 0:
+            self.ongoing = None
 
     def update(self, whoID, add): # TODO: Make multiple conversations at same time support
         who = self.characters[whoID]
@@ -91,6 +96,7 @@ class GameEngine: #TODO: Better name
                     if j != who: interrupts[j] = j.should_interrupt(said, who) # change params for multi-conversation/people support
                 pass # should do something here, but currently it doesn't.
         txt = self.ongoing[characters.index(who)][1]
+        self.dialog_box.reset(True)
         self.dialog_box.set_text(txt)
 
     def __call__(self):
