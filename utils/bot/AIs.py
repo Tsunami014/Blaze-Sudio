@@ -2,28 +2,19 @@ import requests, os, sys, time
 #from bardapi import Bard # very slow...
 from threading import Thread
 
-if os.getcwd().endswith('bot'): # set path to folder above
+if os.getcwd().endswith('bot'): # set path 2 folders above
+    newpath = os.path.abspath(os.path.join(os.getcwd(), '../../'))
+    os.chdir(newpath)
+elif os.getcwd().endswith('utils'): # set folder to one above
     newpath = os.path.abspath(os.path.join(os.getcwd(), '../'))
     os.chdir(newpath)
+
+# now current folder should be '\AIHub' and not '\AIHub\utils' or '\AIHub\utils\bot' anymore!
 
 sys.path.append(os.getcwd())
 
-try:
-    from conversation_parser import PARSE
-except ImportError:
-    from utils.conversation_parser import PARSE
-
-try:
-    from utils.characters import *
-except ImportError:
-    from characters import *
-
-if os.getcwd().endswith('utils'): # set path to folder above
-    # Then set the path to the folder above, to import a file from the above folder
-    newpath = os.path.abspath(os.path.join(os.getcwd(), '../'))
-    os.chdir(newpath)
-    sys.path.append(os.getcwd())
-
+from utils.conversation_parser import PARSE
+from utils.characters import *
 from api_keys import loadAPIkeys
 
 # TODO: more AIs
