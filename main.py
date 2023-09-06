@@ -31,12 +31,9 @@ class GameEngine: #TODO: Better name
         self.dialog_group = pygame.sprite.LayeredDirty()
         self.dialog_group.add(self.dialog_box)
 
-        def make(num):
-            return lambda txt='', end='\n': self.update(num, txt+end)
-
         self.characters = [
-            Character(AI(make(0)), 'AI', 'An AI assistant for the user.'),
-            Character(UserBot(make(1)), 'User', '')
+            Character(AI(), 'AI', 'An AI assistant for the user.'),
+            Character(UserBot(), 'User', '')
         ]
 
         self.input_box = InputBox(100, 100, 140, 32, '', resize=RESIZE_H, maxim=1000)
@@ -70,34 +67,39 @@ class GameEngine: #TODO: Better name
         if said == '':
             said = who(people_listening)
         else:
-            self.ongoing = [[who, said]] # TODO: Make multiple people chatting at same time support
+            self.ongoing = [[who, said, {}]] # TODO: Make multiple people chatting at same time support
     
     def finished(self, num):
         del self.ongoing[num]
         if len(self.ongoing) == 0:
             self.ongoing = None
 
-    def update(self, whoID, add): # TODO: Make multiple conversations at same time support
-        who = self.characters[whoID]
+    def update(self): # TODO: Make multiple conversations at same time support
         characters = [i[0] for i in self.ongoing]
-        if who not in characters:
-            self.ongoing = [[who, add]] # same line as above, if that changes this should too
-            characters = [i[0] for i in self.ongoing]
-        else:
-            self.ongoing[characters.index(who)][1] += add
-            said = self.ongoing[characters.index(who)][1]
+        txt = []
+        sep = '            '
+        for who, said, figured in self.ongoing:
+            said += who.any_more()
             # defining some vars
             endpuncnum = 20
             puncnum = 30
             endnum = 40
-            if len(said) > endpuncnum and '.?!' in said or len(said) > puncnum and ',./?!"\'' in said or len(said) > endnum:
-                interrupts = {}
-                for j in self.characters:
-                    if j != who: interrupts[j] = j.should_interrupt(said, who) # change params for multi-conversation/people support
-                pass # should do something here, but currently it doesn't.
-        txt = self.ongoing[characters.index(who)][1]
+
+            interrupts = {}
+            for i in self.characters:
+                if i != who:
+                    spd = who.speed * 2
+                    try:
+                        prev = figured[i]
+                    except:
+                        prev = 0
+                    if prev > endpuncnum-spd and '.?!' in said or prev > puncnum-spd and ',./?!"\'' in said or prev > endnum-spd:
+                        interrupts[i] = i.should_interrupt(said, who) # change params for multi-conversation/people support
+                        figured[i] = prev + len(said)
+            pass # should do something here, but currently it doesn't.
+            txt.append(said)
         self.dialog_box.reset(True)
-        self.dialog_box.set_text(txt)
+        self.dialog_box.set_text(sep.join(txt))
 
     def __call__(self):
         for event in pygame.event.get():
@@ -110,6 +112,7 @@ class GameEngine: #TODO: Better name
                     self.call(self.characters[1], [])#self.characters[0])
         
         self.WIN.fill((0, 0, 0))
+        self.update()
         for who, said in self.ongoing:
             self.WIN.blit(self.txt.render(said, True, (255, 255, 255)), (0, 0))
         # Update the changes so the user sees the text.
