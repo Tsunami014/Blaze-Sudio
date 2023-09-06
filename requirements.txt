@@ -1,6 +1,5 @@
 requests
 connect-markdown-renderer
-bardapi
 pygame
 gpt4all
 nltk
