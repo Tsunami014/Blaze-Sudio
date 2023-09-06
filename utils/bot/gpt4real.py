@@ -9,6 +9,8 @@ except:
     except:
         from AIs import PARSE
 
+BASICS = ['user: ', '### prompt'] # lower case for ease
+
 class GPT4All:
     speed = 5 # 5 = slow, 6 = xtra slow
     shorten = True
@@ -43,9 +45,8 @@ class GPT4All:
         self.resp += response.decode('utf-8')
         if self.stop == False: return False
         self.prf(response.decode('utf-8'), end='')
-        basics = ['User: ', '### Prompt']
-        for i in basics:
-            if i in self.resp:
+        for i in BASICS:
+            if i in self.resp.lower():
                 self.resp[:self.resp.index(i):] # override the end result to remove the part, and stop generating
                 return False
         return True
