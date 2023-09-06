@@ -64,6 +64,9 @@ class Character:
                 self.current_discussion.add_message(character.name, resp)
                 print(character.name, ':', resp)
     
+    def still_generating(self):
+        return self.AI.thread.is_alive()
+    
     def __str__(self):
         return self.name
     
