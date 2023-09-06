@@ -75,7 +75,6 @@ class GameEngine: #TODO: Better name
             self.ongoing = None
 
     def update(self): # TODO: Make multiple conversations at same time support
-        characters = [i[0] for i in self.ongoing]
         txt = []
         sep = '            '
         for who, said, figured in self.ongoing:
@@ -97,7 +96,7 @@ class GameEngine: #TODO: Better name
                         interrupts[i] = i.should_interrupt(said, who) # change params for multi-conversation/people support
                         figured[i] = prev + len(said)
             pass # should do something here, but currently it doesn't.
-            txt.append(said)
+            txt.append(str(who) + ': ' + said)
         self.dialog_box.reset(True)
         self.dialog_box.set_text(sep.join(txt))
 
