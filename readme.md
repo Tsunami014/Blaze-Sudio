@@ -1,10 +1,12 @@
 # Welcome to 🎇 Spark Sudios!
 (purposeful typo, if you wanted to know - for all of those whos `t` key is broken :D)
 
+# CURRENT VERSION: v0.1.0 🎇
+
 Things to note:
-1. still in progress
+1. # **<u>still in progress</u>**
 3. This is probably my best formed git repo I've ever made :)
-4. *Some* of the code was AI generated. Please do not kill me for that.
+4. *Some* of the code was AI generated. Please do not kill me for that. I have written in those files which is and isn't from an AI.
 5. This project comes with 2 python libraries built into it, [pyguix](https://github.com/DarthData410/PyGames-pyguix) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). This is for a couple of reasons:
     1. (the main big one) It can't be installed with pip (maybe it got taken down? I don't know)
     2. I don't have to wory about dependancy issues with those two packages
