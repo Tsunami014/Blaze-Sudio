@@ -549,6 +549,7 @@ class TextBox(pygame.sprite.DirtySprite):
 
         # Stuff to do while box is idle.
         else:
+            self.full = True
             self.idle = True
 
     def _to_list(self, msg):
