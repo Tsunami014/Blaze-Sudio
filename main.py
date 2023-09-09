@@ -63,22 +63,20 @@ class GameEngine: #TODO: Better name
         if self.ongoing != None:
             self._interrupt(who, self.ongoing[0])"""
 
-    def call(self, who, people_listening, said=''):
-        if said == '':
-            said = who(people_listening)
-        else:
-            self.ongoing = [[who, said, {}]] # TODO: Make multiple people chatting at same time support
+    def call(self, who, characters_listening):
+        who(characters_listening)
+        self.ongoing = [[who, '', {}]] # TODO: Make multiple people chatting at same time support
     
     def finished(self, num):
         del self.ongoing[num]
-        if len(self.ongoing) == 0:
-            self.ongoing = None
 
     def update(self): # TODO: Make multiple conversations at same time support
         txt = []
         sep = '            '
         for who, said, figured in self.ongoing:
-            said += who.any_more()
+            place = self.ongoing.index([who, said, figured])
+            said += who.AI.any_more()
+            self.ongoing[place][1] = said
             # defining some vars
             endpuncnum = 20
             puncnum = 30
@@ -87,7 +85,7 @@ class GameEngine: #TODO: Better name
             interrupts = {}
             for i in self.characters:
                 if i != who:
-                    spd = who.speed * 2
+                    spd = who.AI.speed * 2
                     try:
                         prev = figured[i]
                     except:
@@ -95,10 +93,13 @@ class GameEngine: #TODO: Better name
                     if prev > endpuncnum-spd and '.?!' in said or prev > puncnum-spd and ',./?!"\'' in said or prev > endnum-spd:
                         interrupts[i] = i.should_interrupt(said, who) # change params for multi-conversation/people support
                         figured[i] = prev + len(said)
-            pass # should do something here, but currently it doesn't.
+            pass # should do something here about the interrupts, but currently it doesn't.
             txt.append(str(who) + ': ' + said)
-        self.dialog_box.reset(True)
+            #if not who.still_generating():
+            #    self.finished([i[0] for i in self.ongoing].index(who))
+        self.dialog_box.very_soft_reset()
         self.dialog_box.set_text(sep.join(txt))
+        self.dialog_box.update()
 
     def __call__(self):
         for event in pygame.event.get():
@@ -112,7 +113,7 @@ class GameEngine: #TODO: Better name
         
         self.WIN.fill((0, 0, 0))
         self.update()
-        for who, said in self.ongoing:
+        for _, said, __ in self.ongoing:
             self.WIN.blit(self.txt.render(said, True, (255, 255, 255)), (0, 0))
         # Update the changes so the user sees the text.
         self.dialog_group.update()

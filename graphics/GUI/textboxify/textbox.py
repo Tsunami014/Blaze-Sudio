@@ -459,9 +459,8 @@ class TextBox(pygame.sprite.DirtySprite):
         self.full = False
         self.idle = False
         self.image.fill(self.__bg_color)
-        run = True
-        while run:
-            run = self.update()
+        while not self.full:
+            self.update()
 
     def reset(self, hard=False):
         """Reset dialog box.
@@ -505,7 +504,8 @@ class TextBox(pygame.sprite.DirtySprite):
             try:
                 wrds = self.words[self.num]
             except:
-                return False
+                self.full = True
+                return
             try:
                 word_string = self._to_list(wrds)[self.num2]
             except:
@@ -515,7 +515,8 @@ class TextBox(pygame.sprite.DirtySprite):
                     wrds = self.words[self.num]
                     word_string = self._to_list(wrds)[self.num2]
                 except:
-                    return False
+                    self.full = True
+                    return
             self.num2 += 1
             word_surface = Text(
                 text=word_string,
