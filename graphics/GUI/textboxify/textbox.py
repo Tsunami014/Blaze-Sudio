@@ -224,6 +224,9 @@ class TextBoxFrame(pygame.sprite.DirtySprite):
                         self.__side,
                         self.__bg_color,
                     )
+    
+    def very_soft_reset(self):
+        self.__textbox.soft_reset()
 
     def update(self):
         """Update all changes that has been made to the text box."""
@@ -403,7 +406,7 @@ class TextBox(pygame.sprite.DirtySprite):
         if text:
             self.words = self._to_list(text)
         else:
-            self.words = ""
+            self.words = []
 
         self.linesize = Text(text=" ", font=font_name, size=font_size).linesize
 
@@ -434,6 +437,8 @@ class TextBox(pygame.sprite.DirtySprite):
         self.image.fill(bg_color)
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
+        self.num = 0
+        self.num2 = 0
 
         if transparent:
             self.image.set_colorkey(bg_color)
@@ -447,6 +452,16 @@ class TextBox(pygame.sprite.DirtySprite):
         """
 
         self.words = self._to_list(text)
+    
+    def soft_reset(self):
+        self.__x, self.__y = 0, 0
+        self.num, self.num2 = 0, 0
+        self.full = False
+        self.idle = False
+        self.image.fill(self.__bg_color)
+        run = True
+        while run:
+            run = self.update()
 
     def reset(self, hard=False):
         """Reset dialog box.
@@ -459,6 +474,8 @@ class TextBox(pygame.sprite.DirtySprite):
 
         # Reset box to default values when whole message has been printed.
         if hard:
+            self.num = 0
+            self.num2 = 0
             self.__x, self.__y = 0, 0
             self.full = False
             self.idle = False
@@ -477,14 +494,29 @@ class TextBox(pygame.sprite.DirtySprite):
                 self.__x, self.__y = 0, 0
                 self.full = False
                 self.idle = False
+                self.num = 0
+                self.num2 = 0
 
     def update(self):
         """Update all changes that has been made to the text box."""
 
         # Print as long as there are words and text box isn't full.
         if self.words and not self.full:
-
-            word_string = self._split_up(self.words.pop(0))
+            try:
+                wrds = self.words[self.num]
+            except:
+                return False
+            try:
+                word_string = self._to_list(wrds)[self.num2]
+            except:
+                self.num += 1
+                self.num2 = 0
+                try:
+                    wrds = self.words[self.num]
+                    word_string = self._to_list(wrds)[self.num2]
+                except:
+                    return False
+            self.num2 += 1
             word_surface = Text(
                 text=word_string,
                 font=self.__font_name,
@@ -506,13 +538,13 @@ class TextBox(pygame.sprite.DirtySprite):
                 else:
                     self.__x = 0
                     self.__y += word_surface.height
-                    self.words.insert(0, word_string)
+                    #self.words.insert(0, word_string)
                     self.dirty = 1
 
             # All lines in the box are filled with words.
             else:
                 self.full = True
-                self.words.insert(0, word_string)
+                #self.words.insert(0, word_string)
 
         # Stuff to do while box is idle.
         else:
