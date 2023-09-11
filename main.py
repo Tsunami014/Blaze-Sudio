@@ -69,6 +69,9 @@ class GameEngine: #TODO: Better name
     
     def finished(self, num):
         del self.ongoing[num]
+    
+    def interrupts(self, d, said):
+        pass
 
     def update(self): # TODO: Make multiple conversations at same time support
         txt = []
@@ -77,6 +80,15 @@ class GameEngine: #TODO: Better name
             place = self.ongoing.index([who, said, figured])
             said += who.AI.any_more()
             self.ongoing[place][1] = said
+            if not who.still_generating():
+                interrupts = {}
+                for i in self.characters:
+                    interrupts[i] = i.should_interrupt(said, who) # change params for multi-conversation/people support
+                    figured[i] = prev + len(said)
+                self.interrupts(interrupts, said)
+                self.finished(place)
+                continue
+
             # defining some vars
             endpuncnum = 20
             puncnum = 30
@@ -93,7 +105,7 @@ class GameEngine: #TODO: Better name
                     if prev > endpuncnum-spd and '.?!' in said or prev > puncnum-spd and ',./?!"\'' in said or prev > endnum-spd:
                         interrupts[i] = i.should_interrupt(said, who) # change params for multi-conversation/people support
                         figured[i] = prev + len(said)
-            pass # should do something here about the interrupts, but currently it doesn't.
+            self.interrupts(interrupts, said)
             txt.append(str(who) + ': ' + said)
             #if not who.still_generating():
             #    self.finished([i[0] for i in self.ongoing].index(who))
