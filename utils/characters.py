@@ -65,6 +65,7 @@ class Character:
                 print(character.name, ':', resp)
     
     def still_generating(self):
+        if self.AI.thread == None: return False
         return self.AI.thread.is_alive()
     
     def __str__(self):
