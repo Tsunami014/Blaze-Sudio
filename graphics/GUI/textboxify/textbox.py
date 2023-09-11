@@ -539,12 +539,13 @@ class TextBox(pygame.sprite.DirtySprite):
                 else:
                     self.__x = 0
                     self.__y += word_surface.height
-                    #self.words.insert(0, word_string)
+                    self.num2 -= 1
                     self.dirty = 1
 
             # All lines in the box are filled with words.
             else:
                 self.full = True
+                self.num2 -= 1
                 #self.words.insert(0, word_string)
 
         # Stuff to do while box is idle.
