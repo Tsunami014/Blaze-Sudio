@@ -5,6 +5,7 @@
 
  - https://github.com/xtekky/gpt4free
  - [ ] GPT4ALL
+ - [ ] Auto-GPT
  - [ ] LLAMA
 
 ### I'm now considering whether or not to do these...
@@ -30,7 +31,9 @@
  - [ ] STT (speech to text)
  - [ ] Sound generator which includes:
 >  - [ ] Seeded MIDI generator
->  - [ ] AI music generator???
+>  - [ ] AI music generator
+>  - [ ] Get music from Zelda
+>  Please note that each game SHOULD only have one type of these above musics in them or it will sound odd. Possibly AI+Zelda if it cannot find the right music, but it shouldn't need to come to that. Acutally, maybe if it comes to that import more Zelda music. BOTW and TOTK.
  - [ ] Storyline
  - [ ] World
  - [ ] Image AI
