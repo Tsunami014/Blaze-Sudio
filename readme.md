@@ -1,7 +1,7 @@
-# Welcome to 🎇 Spark Sudios!
+# Welcome to ✨ Spark Sudios!
 (purposeful typo, if you wanted to know - for all of those whos `t` key is broken :D)
 
-# CURRENT VERSION: v0.1.0 🎇
+# CURRENT VERSION: v0.0.1 ✨
 
 Things to note:
 1. # **<u>still in progress</u>**
@@ -35,7 +35,7 @@ python -m pip install nltk
 and if it says python is not a valid command, try the steps listed above.
 
 ## Next versions coming soon:
- - v1.0.0 - 🟠`Ember Sudio` - all main AI functionality complete!
- - v2.0.0 - 🧨`Flare Sudio` - got a world and storyline!
- - v3.0.0 - 🧯`Fire Sudio` - cos by then it'll be on fire :grin: - all functionality complete!
+ - v1.0.0 - 🔶`Ember Sudio` - all main AI functionality complete!
+ - v2.0.0 - 💥`Flare Sudio` - got a world and storyline!
+ - v3.0.0 - 🌋`Fire Sudio` - cos by then it'll be on fire :grin: - all functionality complete!
  - v4.0.0 - 🔥`Blaze Sudio` - Unity integration!
