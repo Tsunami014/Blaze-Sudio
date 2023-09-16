@@ -1,6 +1,24 @@
 from nltk import word_tokenize as wt
 from nltk.tokenize.treebank import TreebankWordDetokenizer as TWD
 
+STARTPARAM = [
+    {
+        'type': '2characters',
+        'user': '\nQ: ',
+        'bot': '\nA: '},
+    {
+        'type': 'multi',
+        'user': '\nUser: ',
+        'bot': '\nYou: ',
+        'other': '\n{0}: '
+    },
+    {
+        'type': 'multi',
+        'user': '\nUser: ',
+        'other': '\n{0}: '
+    }
+]
+
 def SL(txt, lvl=1): # Set Level
     amnt = ''.join(['`' for _ in range(lvl)])
     return amnt + txt + amnt
@@ -95,10 +113,14 @@ class Summary:
                 res.append(i['txt'])
         return TWD().detokenize(res)
 
+    def __add__(self, add2): # For combining Summaries, e.g. combine character details with knowledge.
+        # Please note this takes 2 options for inputs - strings or Summary.
+        pass
+
 # print(Summary().parse('`Hello!```Bye.``Hi again!'))
 # print(Summary().parse('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 10))))
 
-def PARSE(cnvrs, summary_level, prompt_type):
+def PARSE(cnvrs, description, summary_level, prompt_type):
     """
     _summary_
 
@@ -106,8 +128,10 @@ def PARSE(cnvrs, summary_level, prompt_type):
     ----------
     cnvrs : list[dict[]]
         The conversation input. Just make a conversation with the 'discussion.py' file and use the get_messages func
+    description : Summary or str
+        The descrition of anything the AI needs to know. If string will not process it. BEWARNED.
     summary_level : int
-        0-10, 0 = not summarised at all, 10=basically 3 words long
+        0-10, 0 = not summarised at all, 10=basically 3 words long. THIS IS ONLY FOR SUMMARISING THE DESCRIPTION, see above.
     prompt_type : int
         see `doc/character start.md`, this value is that.
 
@@ -116,7 +140,12 @@ def PARSE(cnvrs, summary_level, prompt_type):
     str
         The conversation, but parsed
     """
-    full_prompt = ''
+    if isinstance(description, str):
+        full_prompt = description
+    elif isinstance(description, Summary):
+        full_prompt = description.get(summary_level)
+    else:
+        full_prompt = ''
     for message in cnvrs:
         if message["role"] == "user":
             full_prompt += 'user: ' + message["content"] + '\n'
