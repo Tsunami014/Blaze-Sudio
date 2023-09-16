@@ -41,8 +41,9 @@ The separator is a tuple. These are the possible first values:
 | Value | What it does | Pros | Cons |
 |:------|:------------:|-----:|-----:|
 | 0 | `## Conversation:` | It tells exactly what's coming next (a conversation in this case) | It's long |
-| 1 | `###` | It's short | It doesn't tell what's coming next |
-| 2 | nothing | It doesn't take up any space | It doesn't say that the conversation starts here, you may get whacky results, but in most cases it'll *probably* be fine... |
+| 1 | `##` | It's short | It doesn't tell what's coming next |
+| 2 | `######` | It's short-ish | It doesn't tell what's coming next and its quite long... |
+| 3 | nothing | It doesn't take up any space | It doesn't say that the conversation starts here, you may get whacky results, but in most cases it'll *probably* be fine... |
 
 And these are the possible second values:
 Example:
