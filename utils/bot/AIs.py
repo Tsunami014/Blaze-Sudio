@@ -63,7 +63,7 @@ class BaseBot:
         if isinstance(self, (ChatGPTBot,)): # add all the AIs that need a conversation LIST to work (and don't need summarisation)
             inp = cnvrs
         else:
-            inp = PARSE(cnvrs, 0, 0)
+            inp = PARSE(cnvrs, 0, 0) # TOCHANGE
         out = self._call_ai(inp)
         out = out['choices'][0]['message']
         if self.thread != None:
