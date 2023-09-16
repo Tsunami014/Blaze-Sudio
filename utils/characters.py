@@ -20,7 +20,7 @@ class Character:
             The Personality of the character. Describe who the character is.
         start : int
             The starting text to use. THIS MAKES ALL THE DIFFERENCE!
-            See `doc/character start int.md` for more info.
+            See `doc/character start.md` for more info.
         """
         self.AI = AI
         self.name = str(name) # just in case someone's an idiot (not me, but someone else)

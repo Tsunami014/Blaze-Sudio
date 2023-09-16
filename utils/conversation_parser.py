@@ -109,7 +109,7 @@ def PARSE(cnvrs, summary_level, prompt_type):
     summary_level : int
         0-10, 0 = not summarised at all, 10=basically 3 words long
     prompt_type : int
-        see `doc/character start int.md`, this value is that.
+        see `doc/character start.md`, this value is that.
 
     Returns
     -------
