@@ -12,7 +12,7 @@ elif os.getcwd().endswith('utils'): # set folder to one above
 
 sys.path.append(os.getcwd())
 
-from utils.conversation_parser import PARSE
+from utils.conversion_parse import PARSE
 PARSE = PARSE
 from utils.characters import *
 from api_keys import loadAPIkeys
