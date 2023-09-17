@@ -1,6 +1,8 @@
 from nltk import word_tokenize as wt
 from nltk.tokenize.treebank import TreebankWordDetokenizer as TWD
 
+# FOR SAMPLES SEE THE BOTTOM OF THIS FILE
+
 STARTPARAM1 = [
     {
         'user': '\nQ: ',
@@ -169,7 +171,7 @@ def create(start, description, prompt, bot_name):
     Parameters
     ----------
     start : iterable
-        see `character start.md`
+        see `doc/character start.md`
     description : str
         description of characters and stuff.
     prompt : dict
@@ -211,4 +213,19 @@ def create(start, description, prompt, bot_name):
                 f'Invalid role "bot" for start param {start[1]} which cannot take multi inputs. And this error is very rare and should not happen.'
             )
     return end
-        
+
+def parse_prompt(prompt, botNAME, userNAME, start):
+    pass
+    # TODO: Parse prompt to edit role names for different start params
+
+if __name__ == '__main__':
+    def sample(start):
+        sample_prompt = [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'Grapefruit', 'content': 'I am good, how are you?'}, {'role': 'user', 'content': 'I am good too! What did you do today?'}]
+        sample_desc = 'Grapefruit has a strong personality, and is not afraid to speak her mind.'
+        print(create(start, sample_desc, sample_prompt, 'Grapefruit'))
+        print('~~~~~~~~~~~~~~~~~~~~~~~~~')
+    # If you run this file you can see these next statements at work
+    # Each you can see is separated, by a like of ~~~~~~~~~~
+    # You can see the different start params at work, with the same sample prompt
+    sample([(0, 2), 2])
+    pass
