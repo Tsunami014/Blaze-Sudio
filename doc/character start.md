@@ -61,7 +61,7 @@ Values list:
 |:------|:------------:|-----:|-----:|
 | 0 | nowhere |  | It effectively doesn't do anything. Do not use this option |
 | 1 | A |  | It doesn't do what the first value was trying to achieve. Do not use this option |
-| 2 | B | It does what the first value was trying to achieve | It is only one separator, which may/may not be bad... |
+| 2 | B | It does what the first value was trying to achieve. THIS IS THE BEST OPTION IF YOU WANT TO HAVE LESS PROMPT SPACE | It is only one separator, which may/may not be bad... |
 | 3 | A & B | It clearly describes what each section of the input is trying to achieve | It is quite long... |
 
 Let's say in this conversation you've already said `How are you Grapefruit?` and she has already replied `I'm good thanks.`
