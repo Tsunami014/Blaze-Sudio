@@ -107,3 +107,18 @@ Grapefruit:
 |Tells you who says what, good for multi-characters|very large|
 |       |The more messages, the more characters needed (10 for 'grapefruit' instead of 3 for 'you'), but I guess this isn't that bad, but I guess what's more bad is the large amount of description needed at the start, though maybe this can be avoided with a little prompt engineering.|
 |       | Doesn't say WHO to complete, just says to complete. |
+
+3:
+```
+Grapefruit has a strong personality, and is not afraid to speak her mind.
+Finish this conversation:
+Person: How are you Grapefruit?
+Grapefruit: I'm good thanks.
+Person: [Your input]
+Grapefruit: 
+```
+| pros: | cons: |
+|:------|------:|
+|Tells you who says what, good for multi-characters|very large|
+| Allows adding for a name for the user |The more messages, the more characters needed (10 for 'grapefruit' instead of 3 for 'you'), but I guess this isn't that bad, but I guess what's more bad is the large amount of description needed at the start, though maybe this can be avoided with a little prompt engineering.|
+|       | Doesn't say WHO to complete, just says to complete. |
