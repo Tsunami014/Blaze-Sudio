@@ -133,6 +133,9 @@ class Summary:
         # Please note this takes 2 options for inputs - strings or Summary.
         pass
 
+# TODO: generate a summary of description that can change - e.g.
+# Have it so that you can return a summarised version of 'Grapefruit is a kind human girl' OR a summarised version of 'You are Grapefruit, a kind human girl.'
+
 # print(Summary().parse('`Hello!```Bye.``Hi again!'))
 # print(Summary().parse('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 10))))
 
