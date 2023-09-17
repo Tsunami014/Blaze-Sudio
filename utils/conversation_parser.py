@@ -1,22 +1,31 @@
 from nltk import word_tokenize as wt
 from nltk.tokenize.treebank import TreebankWordDetokenizer as TWD
 
-STARTPARAM = [
+STARTPARAM1 = [
     {
-        'type': '2characters',
         'user': '\nQ: ',
         'bot': '\nA: '},
     {
-        'type': 'multi',
         'user': '\nUser: ',
         'bot': '\nYou: ',
         'other': '\n{0}: '
     },
     {
-        'type': 'multi',
         'user': '\nUser: ',
         'other': '\n{0}: '
+    },
+    {
+        'other': '\n{0}: '
     }
+]
+STARTPARAM2 = [
+    {
+        'A': '\n## Description:',
+        'B': '\n## Conversation:'
+    },
+    '\n##',
+    '\n######',
+    ''
 ]
 
 def SL(txt, lvl=1): # Set Level
@@ -152,3 +161,54 @@ def PARSE(cnvrs, description, summary_level, prompt_type):
         if message["role"] == "assistant":
             full_prompt += 'assistant: ' + message["content"] + '\n'
     return full_prompt
+
+def create(start, description, prompt, bot_name):
+    """
+    Creates a string based off 'start' params.
+
+    Parameters
+    ----------
+    start : iterable
+        see `character start.md`
+    description : str
+        description of characters and stuff.
+    prompt : dict
+        [{'role': role, 'content': content}]
+    bot_name : str
+        the name of the bot. This is only used if the start param uses the bot's name, so at the end
+        of the prompt it uses the name to prompt the AI, e.g. 'Grapefruit: '. Otherwise, the name of
+        the bot is taken from the prompt.
+    """
+    end = ''
+    add = STARTPARAM2[start[0][0]]
+    if start[0][1] in [1, 3]:
+        if isinstance(add, dict): end += add['A']
+        else: end += add # assuming it's otherwise a string
+    end += description
+    if start[0][1] in [2, 3]:
+        if isinstance(add, dict): end += add['B']
+        else: end += add
+    add = STARTPARAM1[start[1]]
+    for i in prompt:
+        if i['role'] in ['assistant']: i['role'] = 'bot'
+
+        if i['role'] in list(add.keys())[:-1]:
+            end += add[i['role']]
+        else:
+            if 'other' in add.keys():
+                end += add['other'].format(i['role'])
+            else:
+                raise ValueError(
+                    f'Invalid role "{i["role"]}" for start param "{start[1]}" which cannot take multi inputs.'
+                )
+        end += i['content']
+    if 'bot' in add.keys(): end += add['bot']
+    else:
+        if 'other' in add.keys():
+            end += add['other'].format(bot_name)
+        else:
+            raise ValueError(
+                f'Invalid role "bot" for start param {start[1]} which cannot take multi inputs. And this error is very rare and should not happen.'
+            )
+    return end
+        
