@@ -27,7 +27,7 @@ STARTPARAM1 = [
 ]
 STARTPARAM2 = [
     {
-        'A': '\n## Description:',
+        'A': '## Description:\n',
         'B': '\n## Conversation:'
     },
     '\n##',
@@ -196,10 +196,12 @@ def create(start, description, prompt, bot_name):
         if isinstance(add, dict): end += add['B']
         else: end += add
     add = STARTPARAM1[start[1]]
+    ks = list(add.keys())
+    if 'other' in ks: ks.remove('other')
     for i in prompt:
         if i['role'] == 'assistant': i['role'] = 'bot'
 
-        if i['role'] in list(add.keys())[:-1]:
+        if i['role'] in ks:
             end += add[i['role']]
         else:
             if 'other' in add.keys():
@@ -244,5 +246,9 @@ if __name__ == '__main__':
     # If you run this file you can see these next statements at work
     # Each you can see is separated, by a like of ~~~~~~~~~~
     # You can see the different start params at work, with the same sample prompt
-    sample([(0, 2), 2])
+    sample([(1, 2), 2])
+    sample([(0, 0), 3])
+    sample([(0, 3), 1])
+    sample([(3, 1), 2])
+    sample([(0, 2), 0])
     pass
