@@ -1,6 +1,14 @@
 from nltk import word_tokenize as wt
 from nltk.tokenize.treebank import TreebankWordDetokenizer as TWD
 
+try:
+    from utils.conversion_parse.consts import *
+except ImportError:
+    try:
+        from conversion_parse.consts import *
+    except ImportError:
+        from consts import *
+
 # FOR SAMPLES SEE THE BOTTOM OF THIS FILE
 
 # 0 = no names, 1 = bot name, 2 = user name, 3 = both names
