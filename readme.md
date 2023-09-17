@@ -1,5 +1,5 @@
 # Welcome to ✨ Spark Sudios!
-(purposeful typo, if you wanted to know - for all of those whos `t` key is broken :D)
+(Thanks to the one and only Riley Dowsenator (@Imzafish) for the name!)
 
 # CURRENT VERSION: v0.0.1 ✨
 
