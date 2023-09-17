@@ -34,6 +34,8 @@ python -m pip install nltk
 ```
 and if it says python is not a valid command, try the steps listed above.
 
+[Discord server link](https://discord.gg/9zrGKtF6Cs) for any information, queries, bugs, conversations, etc. that you may have!
+
 ## Next versions coming soon:
  - v1.0.0 - 🔶`Ember Sudio` - all main AI functionality complete!
  - v2.0.0 - 💥`Flare Sudio` - got a world and storyline!
