@@ -1,5 +1,5 @@
-# Welcome to 🔶 Ember Sudios!
-(Thanks to the one and only Riley Dowsenator (@Imzafish) for the name!)
+# Welcome to ✨ Spark Sudios!
+(Thanks to the one and only (@Imzafish) for the name!)
 
 Also known as:
  - The putgamecreatorsoutofbusinessanator (Thanks to @Faunder.real for that one)
