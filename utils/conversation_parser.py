@@ -136,40 +136,7 @@ class Summary:
 # print(Summary().parse('`Hello!```Bye.``Hi again!'))
 # print(Summary().parse('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 10))))
 
-def PARSE(cnvrs, description, summary_level, prompt_type):
-    """
-    _summary_
-
-    Parameters
-    ----------
-    cnvrs : list[dict[]]
-        The conversation input. Just make a conversation with the 'discussion.py' file and use the get_messages func
-    description : Summary or str
-        The descrition of anything the AI needs to know. If string will not process it. BEWARNED.
-    summary_level : int
-        0-10, 0 = not summarised at all, 10=basically 3 words long. THIS IS ONLY FOR SUMMARISING THE DESCRIPTION, see above.
-    prompt_type : int
-        see `doc/character start.md`, this value is that.
-
-    Returns
-    -------
-    str
-        The conversation, but parsed
-    """
-    if isinstance(description, str):
-        full_prompt = description
-    elif isinstance(description, Summary):
-        full_prompt = description.get(summary_level)
-    else:
-        full_prompt = ''
-    for message in cnvrs:
-        if message["role"] == "user":
-            full_prompt += 'user: ' + message["content"] + '\n'
-        if message["role"] == "assistant":
-            full_prompt += 'assistant: ' + message["content"] + '\n'
-    return full_prompt
-
-def create(start, description, prompt, bot_name):
+def create(start, description, prompt, bot_name, summary_level=0):
     """
     Creates a string based off 'start' params.
 
@@ -177,21 +144,29 @@ def create(start, description, prompt, bot_name):
     ----------
     start : iterable
         see `doc/character start.md`
-    description : str
-        description of characters and stuff.
+    description : Summary or str
+        The descrition of anything the AI needs to know (e.g. You are a kind and loving person. etc.). If string will not process it. BEWARNED.
     prompt : dict
         [{'role': role, 'content': content}]
-    bot_name : str
+    bot_name : str #TODO: REMOVE THIS PARAM
         the name of the bot. This is only used if the start param uses the bot's name, so at the end
         of the prompt it uses the name to prompt the AI, e.g. 'Grapefruit: '. Otherwise, the name of
         the bot is taken from the prompt.
+    summary_level : int
+        0-10, 0 = not summarised at all, 10=basically 3 words long. THIS IS ONLY FOR SUMMARISING THE DESCRIPTION, see `description` param.
     """
+    if isinstance(description, str):
+        desc = description
+    elif isinstance(description, Summary):
+        desc = description.get(summary_level)
+    else:
+        desc = ''
     end = ''
     add = STARTPARAM2[start[0][0]]
     if start[0][1] in [1, 3]:
         if isinstance(add, dict): end += add['A']
         else: end += add # assuming it's otherwise a string
-    end += description
+    end += desc
     if start[0][1] in [2, 3]:
         if isinstance(add, dict): end += add['B']
         else: end += add
