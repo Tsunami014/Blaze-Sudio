@@ -130,8 +130,14 @@ class Summary:
         return TWD().detokenize(res)
 
     def __add__(self, add2): # For combining Summaries, e.g. combine character details with knowledge.
-        # Please note this takes 2 options for inputs - strings or Summary.
-        pass
+        if isinstance(add2, str):
+            add2 = Summary(add2)
+        if isinstance(add2, Summary):
+            self.txt.extend(add2.txt)
+        else:
+            raise TypeError(
+                'Cannot add Summary to class ' + str(type(add2))
+            )
 
 # TODO: generate a summary of description that can change - e.g.
 # Have it so that you can return a summarised version of 'Grapefruit is a kind human girl' OR a summarised version of 'You are Grapefruit, a kind human girl.'
