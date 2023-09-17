@@ -136,7 +136,7 @@ class Summary:
 # print(Summary().parse('`Hello!```Bye.``Hi again!'))
 # print(Summary().parse('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 10))))
 
-def create(start, description, prompt, bot_name, summary_level=0):
+def PARSE(start, description, prompt, bot_name, summary_level=0):
     """
     Creates a string based off 'start' params.
 
@@ -216,7 +216,7 @@ if __name__ == '__main__':
     def sample(start):
         sample_prompt = [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'bot', 'content': 'I am good, how are you?'}, {'role': 'user', 'content': 'I am good too! What did you do today?'}]
         sample_desc = 'Grapefruit has a strong personality, and is not afraid to speak her mind.'
-        print(create(start, sample_desc, parse_prompt(sample_prompt, 'Grapefruit', 'User', start), 'Grapefruit'))
+        print(PARSE(start, sample_desc, parse_prompt(sample_prompt, 'Grapefruit', 'User', start), 'Grapefruit'))
         print('\033[%sm~~~~~~~~~~~~~~~~~~~~~~~~~\033[0m' % str(randint(91, 96)))
     # If you run this file you can see these next statements at work
     # Each you can see is separated, by a like of ~~~~~~~~~~
