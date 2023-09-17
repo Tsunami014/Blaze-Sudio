@@ -3,6 +3,11 @@ from nltk.tokenize.treebank import TreebankWordDetokenizer as TWD
 
 # FOR SAMPLES SEE THE BOTTOM OF THIS FILE
 
+# 0 = no names, 1 = bot name, 2 = user name, 3 = both names
+STARTNAMES = [
+    0, 0, 1, 2
+]
+
 STARTPARAM1 = [
     {
         'user': '\nQ: ',
@@ -192,7 +197,7 @@ def create(start, description, prompt, bot_name):
         else: end += add
     add = STARTPARAM1[start[1]]
     for i in prompt:
-        if i['role'] in ['assistant']: i['role'] = 'bot'
+        if i['role'] == 'assistant': i['role'] = 'bot'
 
         if i['role'] in list(add.keys())[:-1]:
             end += add[i['role']]
@@ -215,15 +220,27 @@ def create(start, description, prompt, bot_name):
     return end
 
 def parse_prompt(prompt, botNAME, userNAME, start):
-    pass
-    # TODO: Parse prompt to edit role names for different start params
+    rpl = {}
+    rpls = STARTNAMES[start[1]]
+    if rpls == 1: rpl['bot'] = botNAME
+    elif rpls == 2: rpl['user'] = userNAME
+    elif rpls == 3:
+        rpl['bot'] = botNAME
+        rpl['user'] = userNAME
+    
+    for i in prompt:
+        if i['role'] in rpl.keys():
+            if i['role'] == 'assistant': i['role'] = 'bot'
+            i['content'] = i['content'].replace(rpl[i['role']], i['role'])
+    return prompt
 
 if __name__ == '__main__':
+    from random import randint
     def sample(start):
-        sample_prompt = [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'Grapefruit', 'content': 'I am good, how are you?'}, {'role': 'user', 'content': 'I am good too! What did you do today?'}]
+        sample_prompt = [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'bot', 'content': 'I am good, how are you?'}, {'role': 'user', 'content': 'I am good too! What did you do today?'}]
         sample_desc = 'Grapefruit has a strong personality, and is not afraid to speak her mind.'
-        print(create(start, sample_desc, sample_prompt, 'Grapefruit'))
-        print('~~~~~~~~~~~~~~~~~~~~~~~~~')
+        print(create(start, sample_desc, parse_prompt(sample_prompt, 'Grapefruit', 'User', start), 'Grapefruit'))
+        print('\033[%sm~~~~~~~~~~~~~~~~~~~~~~~~~\033[0m' % str(randint(91, 96)))
     # If you run this file you can see these next statements at work
     # Each you can see is separated, by a like of ~~~~~~~~~~
     # You can see the different start params at work, with the same sample prompt
