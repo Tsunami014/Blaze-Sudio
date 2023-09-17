@@ -29,3 +29,8 @@ STARTPARAM2 = [
     '\n######',
     ''
 ]
+
+# Tenses:
+YOUTENSE = 0
+NAMETENSE = 1
+ALLTENSES = [YOUTENSE, NAMETENSE]
