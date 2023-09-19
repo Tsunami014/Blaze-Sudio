@@ -142,7 +142,7 @@ class DescSummary():
     # TODO: generate a summary of description that can change - e.g.
     # Have it so that you can return a summarised version of 'Grapefruit is a kind human girl' OR a summarised version of 'You are Grapefruit, a kind human girl.'
     def __init__(self, selfname):
-        self.clauses = []
+        self.clauses = {}
         self.selfname = selfname
     def add_clause(self, who=None, **kwargs):
         """
@@ -205,7 +205,13 @@ class DescSummary():
                     f'Invalid type for kwarg "--{a}" (which should be str or a Summary): {type(a)}'
                 )
         if who == None: who = self.selfname
-        self.clauses.append({'who': str(who), 'adjs': kwargs.pop('adjs', []), 'thoughts': kwargs.pop('thoughts', []), 'nouns': kwargs.pop('nouns', [])})
+        if str(who) in self.clauses:
+            for i in self.clauses[str(who)]:
+                i['adjs'].extend(kwargs.pop('adjs', []))
+                i['thoughts'].extend(kwargs.pop('thoughts', []))
+                i['nouns'].extend(kwargs.pop('nouns', []))
+        else:
+            self.clauses[str(who)] = {'adjs': kwargs.pop('adjs', []), 'thoughts': kwargs.pop('thoughts', []), 'nouns': kwargs.pop('nouns', [])}
     def get(self, summary_lvl, tense):
         if tense not in ALLTENSES:
             raise ValueError(
