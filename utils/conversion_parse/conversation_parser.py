@@ -11,6 +11,29 @@ except ImportError:
 
 # FOR SAMPLES SEE THE BOTTOM OF THIS FILE
 
+def parseKWs(kwargs, possible, requireds=[]):
+    allrequ = {}
+    for i in range(len(requireds)):
+        if isinstance(requireds[i], str): allrequ[requireds[i]] = i
+        else:
+            for _ in list(requireds[i]): allrequ[_] = i
+    rs = [True for _ in range(len(requireds))]
+    for a in kwargs:
+        if a not in possible:
+            raise ValueError(
+                f'Unknown kwarg "--{a}"\nAvaliable args: "{" ".join("--"+_ for _ in possible)}"'
+            )
+        if a in allrequ.keys(): rs[allrequ[a]] = False
+    if any(rs):
+        find = []
+        for i in range(len(requireds)):
+            if rs[i]:
+                if isinstance(requireds[i], str): find.append('--'+requireds[i])
+                else: find.append('('+' or '.join(['--'+_ for _ in list(requireds[i])])+')')
+        raise ValueError(
+            f'Missing required kwargs: "{" ".join(find)}"'
+        )
+
 def SL(txt, lvl=1): # Set Level
     amnt = ''.join(['`' for _ in range(lvl)])
     return amnt + txt + amnt
@@ -115,8 +138,49 @@ class Summary:
                 'Cannot add Summary to class ' + str(type(add2))
             )
 
-# TODO: generate a summary of description that can change - e.g.
-# Have it so that you can return a summarised version of 'Grapefruit is a kind human girl' OR a summarised version of 'You are Grapefruit, a kind human girl.'
+class DescSummary():
+    # TODO: generate a summary of description that can change - e.g.
+    # Have it so that you can return a summarised version of 'Grapefruit is a kind human girl' OR a summarised version of 'You are Grapefruit, a kind human girl.'
+    def __init__(self, selfname):
+        self.clauses = []
+        self.selfname = selfname
+    def add_clause(self, who=None, **kwargs):
+        """
+        Adds a clause to self. This is (for example) 'You are Grapefruit' or 'Kinkajou is kind'
+
+        Parameters
+        ----------
+        who : str, optional
+            The name of the character that has this trait, by default self
+        
+        kwargs
+        ------
+        verbs : list/str
+            The list of verbs ('kind', 'rough') to use. If given a string will split it by ' ' to create a list
+        part : str
+            The part of the who that is described. This by default is just the whole who.
+        
+        For kwargs you MUST include:
+         - verbs param
+        """
+        parseKWs(kwargs, ['verbs', 'part'], ['verbs'])
+        
+        verbs = Summary(verbs)
+        if who == None: who = self.selfname
+        self.clauses.append({'who': who, 'verbs': verbs})
+    def get(self, summary_lvl, tense):
+        if tense not in ALLTENSES:
+            raise ValueError(
+                f'Tense "{tense}" is not a valid tense! Valid tenses are: {ALLTENSES}'
+            )
+        res = []
+        for i in self.clauses:
+            res.append('%s %s' % (i['who'], i['verbs'].get(summary_lvl)))
+        return TWD().detokenize(res)
+
+#DS = DescSummary('Grapefruit')
+#DS.add_clause('kind human girl')
+#pass
 
 # print(Summary().parse('`Hello!```Bye.``Hi again!'))
 # print(Summary().parse('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 10))))
