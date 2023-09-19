@@ -151,23 +151,61 @@ class DescSummary():
         Parameters
         ----------
         who : str, optional
-            The name of the character that has this trait, by default self
+            The name of the classification that has this trait, by default self
         
         kwargs
         ------
-        verbs : list/str
-            The list of verbs ('kind', 'rough') to use. If given a string will split it by ' ' to create a list
+        adjs : str/Summary/list[str/Summary]
+            The list of adjectives ('kind', 'rough') to use.
+        thoughts : str/Summary/list[str/Summary]
+            The thoughts of a classification. (e.g. loves, how they feel about things, etc.)
+        nouns : str/Summary/list[str/Summary]
+            The nouns of a classification. (e.g. for a character a noun could be 'human' saying they are a human)
         part : str
             The part of the who that is described. This by default is just the whole who.
         
-        For kwargs you MUST include:
-         - verbs param
-        """
-        parseKWs(kwargs, ['verbs', 'part'], ['verbs'])
+        For the kwargs (adjs, thoughts or nouns), the following applies:
+            If given a string will split the string by " " to create a list of Summary classes.
+            If given a Summary it will put it in a list by itself, e.g. [Summary]
+            If given a list of strings it will turn each of the strings into Summary classes, though it will not split them up.
+            If given a list of Summary classes it will just leave it as it is.
+            If given a list of mixed strings and Summaries it will convert the strings to Summaries.
         
-        verbs = Summary(verbs)
+        For kwargs you MUST include:
+         - adjs OR thoughts OR nouns
+        
+        Examples for this function:
+         - Grapefruit is kind and nice = (who='Grapefruit', adjs=')
+        """
+        parseKWs(kwargs, ['adjs', 'thoughts', 'nouns', 'part'], [('adjs', 'thoughts', 'nouns')])
+        
+        for a in kwargs:
+            if a in ['part']:
+                if isinstance(kwargs[a], str): pass
+                else:
+                    raise TypeError(
+                        'Invalid type for kwarg "--part" (which should be str): '+str(type(kwargs[a]))
+                    )
+            if isinstance(kwargs[a], str): kwargs[a] = [Summary(i) for i in a.split(' ')]
+            elif isinstance(kwargs[a], Summary): kwargs[a] = [kwargs[a]]
+            elif isinstance(kwargs[a], list):
+                if all([isinstance(i, str) for i in kwargs[a]]):
+                    kwargs[a] = [Summary(i) for i in kwargs[a]]
+                elif all([isinstance(i, Summary) for i in kwargs[a]]): pass
+                else:
+                    for i in kwargs[a]:
+                        if isinstance(i, Summary): pass
+                        elif isinstance(i, str): i = Summary(i)
+                        else:
+                            raise TypeError(
+                                f'Invalid type for value {i} from list kwarg "--{a}" (which should be str or a Summary): {type(i)}'
+                            )
+            else:
+                raise TypeError(
+                    f'Invalid type for kwarg "--{a}" (which should be str or a Summary): {type(a)}'
+                )
         if who == None: who = self.selfname
-        self.clauses.append({'who': who, 'verbs': verbs})
+        self.clauses.append({'who': str(who), 'adjs': kwargs.pop('adjs', []), 'thoughts': kwargs.pop('thoughts', []), 'nouns': kwargs.pop('nouns', [])})
     def get(self, summary_lvl, tense):
         if tense not in ALLTENSES:
             raise ValueError(
