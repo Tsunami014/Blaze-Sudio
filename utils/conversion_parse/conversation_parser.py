@@ -42,6 +42,7 @@ class Summary:
     def __init__(self, description=''):
         """
         A class for summarising text, useful for descriptions of things that need to be shortened.
+        If you need it... `docs/summary syntax.md`
 
         Parameters
         ----------
@@ -54,6 +55,7 @@ class Summary:
     def parse_into_txt(self, description):
         """
         Parses the description into self.txt, to be gotten by self.get(num)
+        If you need it... `docs/summary syntax.md`
 
         Parameters
         ----------
@@ -65,6 +67,7 @@ class Summary:
     def parse(self, description):
         """
         parses the description into a list of dicts, each dict has a 'txt' and 'lvl' key, 'txt' is the text, 'lvl' is the level of the summary, 0 is the highest level, 1 is the next highest, etc.
+        If you need it... `docs/summary syntax.md`
 
         Parameters
         ----------
@@ -173,6 +176,7 @@ class DescSummary():
     def add_clause(self, who=None, **kwargs):
         """
         Adds a clause to self. This is (for example) 'You are Grapefruit' or 'Kinkajou is kind'
+        This uses Summary syntax, see `docs/summary syntax.md`
 
         Parameters
         ----------
