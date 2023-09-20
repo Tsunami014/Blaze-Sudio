@@ -77,13 +77,34 @@ class Summary:
             the parsed text
         """
         end = []
-        temp = []
         lvl = 0
         prev = 0 # 0 = nothing was before, 1 = going up, 2 = going down
         l = []
-        for i in wt(description): l.append(i) if i != '``' else l.extend(['`', '`'])
+        group = False #TODO: groups IN groups
+        temp = ''
+        for i in wt(description):
+            if i == '(':
+                group = []
+                temp = ''
+            elif i == ')':
+                if temp != '': group.append(Summary(temp))
+                temp = ''
+                l.append(group)
+                group = False
+            elif i == '|':
+                if group != False:
+                    if temp != '': group.append(Summary(temp))
+                    temp = ''
+            else:
+                if group is False:
+                    l.append(i) if i != '``' else l.extend(['`', '`'])
+                else:
+                    temp += i
+        temp = []
         for wrd in l:
-            if wrd == '`':
+            if isinstance(wrd, list):
+                end.append(wrd)
+            elif wrd == '`':
                 if prev == 0:
                     if temp != []:
                         end.append({'txt': TWD().detokenize(temp), 'lvl': lvl})
@@ -124,7 +145,12 @@ class Summary:
         """
         res = []
         for i in self.txt:
-            if i['lvl'] >= summary_lvl:
+            if isinstance(i, list):
+                for j in i:
+                    if j.get(summary_lvl) != '':
+                        res.append(j.get(summary_lvl))
+                        break
+            elif i['lvl'] >= summary_lvl:
                 res.append(i['txt'])
         return TWD().detokenize(res)
 

@@ -52,7 +52,6 @@ class TestConversationParser(unittest.TestCase):
         self.assertEqual(s.get(2), 'bye bye')
         self.assertEqual(s.get(3), '')
 
-        # TODO:
         s = Summary('(`loves-life`|``optimist``)')
         self.assertEqual(s.get(0), 'loves-life')
         self.assertEqual(s.get(2), 'optimist')
@@ -62,7 +61,7 @@ class TestConversationParser(unittest.TestCase):
         from utils.conversion_parse import DescSummary, Summary
         DS = DescSummary('Grapefruit')
         DS.add_clause(adjs='kind good')
-        self.assertEqual(DS.clauses['Grapefruit']['adjectives'], [Summary('kind'), Summary('good')])
+        self.assertEqual([_.txt for _ in DS.clauses['Grapefruit']['adjectives']], [Summary('kind').txt, Summary('good').txt])
 
         #TODO: finish this test
 
