@@ -28,6 +28,29 @@ class TestConversationParser(unittest.TestCase):
 
         parseKWs({'hello': 'bye'}, ['hello', 'goodbye'], [('goodbye', 'hello')])
         parseKWs({'goodbye': 'bye'}, ['hello', 'goodbye'], [('goodbye', 'hello')])
+    
+    def testSummary(self):
+        from utils.conversion_parse import Summary, SL
+        s = Summary('hi')
+        self.assertEqual(s.txt, [{'txt': 'hi', 'lvl': 0}])
+        s = Summary('`hi`')
+        self.assertEqual(s.txt, [{'txt': 'hi', 'lvl': 1}])
+        s = Summary('``hi``')
+        self.assertEqual(s.txt, [{'txt': 'hi', 'lvl': 2}])
+        s = Summary(SL('hi', 99))
+        self.assertEqual(s.txt, [{'txt': 'hi', 'lvl': 99}])
+        s = Summary('`hi`hi again')
+        self.assertEqual(s.txt, [{'txt': 'hi', 'lvl': 1}, {'txt': 'hi again', 'lvl': 0}])
+        s = Summary('`hi```bye``hi again')
+        self.assertEqual(s.txt, [{'txt': 'hi', 'lvl': 1}, {'txt': 'bye', 'lvl': 2}, {'txt': 'hi again', 'lvl': 0}])
+        s = Summary('%s%s%s' % (SL('qqqq', 4), SL('qqqqq', 5), SL('zzz', 3)))
+        self.assertEqual(s.txt, [{'txt': 'qqqq', 'lvl': 4}, {'txt': 'qqqqq', 'lvl': 5}, {'txt': 'zzz', 'lvl': 3}])
+
+        s = Summary('`hi hi hi```bye bye``hi')
+        self.assertEqual(s.get(0), 'hi hi hi bye bye hi')
+        self.assertEqual(s.get(1), 'hi hi hi bye bye')
+        self.assertEqual(s.get(2), 'bye bye')
+        self.assertEqual(s.get(3), '')
 
 if __name__ == '__main__':
     unittest.main()
