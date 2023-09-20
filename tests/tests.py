@@ -45,8 +45,14 @@ class TestConversationParser(unittest.TestCase):
         self.assertEqual(s.txt, [{'txt': 'hi', 'lvl': 1}, {'txt': 'bye', 'lvl': 2}, {'txt': 'hi again', 'lvl': 0}])
         s = Summary('%s%s%s' % (SL('qqqq', 4), SL('qqqqq', 5), SL('zzz', 3)))
         self.assertEqual(s.txt, [{'txt': 'qqqq', 'lvl': 4}, {'txt': 'qqqqq', 'lvl': 5}, {'txt': 'zzz', 'lvl': 3}])
+        
+        s = Summary('`hi~`hi again')
+        self.assertEqual(s.txt, [{'txt': 'hi', 'lvl': 1}, {'txt': 'hi again', 'lvl': 0}])
+        self.assertEqual(s.get(0), 'hi hi again')
+        self.assertEqual(s.get(1), 'hi')
+        self.assertEqual(s.get(2), '')
 
-        s = Summary('`hi hi hi```bye bye``hi')
+        s = Summary('`hi hi hi```~bye bye~``hi')
         self.assertEqual(s.get(0), 'hi hi hi bye bye hi')
         self.assertEqual(s.get(1), 'hi hi hi bye bye')
         self.assertEqual(s.get(2), 'bye bye')
@@ -54,8 +60,19 @@ class TestConversationParser(unittest.TestCase):
 
         s = Summary('(`loves-life`|``optimist``)')
         self.assertEqual(s.get(0), 'loves-life')
+        self.assertEqual(s.get(1), 'loves-life')
         self.assertEqual(s.get(2), 'optimist')
         self.assertEqual(s.get(3), '')
+    
+        s = Summary(r'hi :\) \\') # excessive use of backslash because of python's string formatting, so use 'r' instead
+        self.assertEqual(s.get(0), 'hi :) \\')
+
+        s = Summary('```Grapefruit`````:`` (`loves-life`|``:`````~optimist```)')
+        self.assertEqual(s.get(0), 'Grapefruit: loves-life')
+        self.assertEqual(s.get(1), 'Grapefruit:loves-life')
+        self.assertEqual(s.get(2), 'Grapefruit: optimist')
+        self.assertEqual(s.get(3), 'Grapefruit optimist')
+        self.assertEqual(s.get(4), '')
     
     def testDescSummary(self):
         from utils.conversion_parse import DescSummary, Summary

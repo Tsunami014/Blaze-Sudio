@@ -37,33 +37,56 @@ So now we can see in that example shown above, `hi` has an importance level of 1
 
 ### Now what if you asked for the importance level of the whole thing?
 
-Well, in the example above, if you asked for an importance level of 0, it would give you `hi bye`. Why? We didn't tell it to give any spaces! The answer is that it separates each word to compile the text, so to put it back together again it uses a retokenizer. Don't stress about it too hard, it just means that in some cases, the spacing will stuff up. See `Warnings and FAQ` below.
+Well, in the example above, if you asked for an importance level of 0, it would give you `hibye`. Why? We didn't tell it to give any spaces!
 
-Anyways, so a summary level of 0 would produce `hi bye`.
+Anyways, so a summary level of 0 would produce `hibye`.
 
-A summary level of 1 would produce `hi bye` as both `hi` and `bye` have importance levels equal to or greater than 1.
+A summary level of 1 would produce `hibye` as both `hi` and `bye` have importance levels equal to or greater than 1 still.
 
-But, when you input a summary level of 2, the output would be `bye` as the word `hi` has a summary level of less than 2.
+But, when you input a summary level of 2, the output would be `bye` as the word `hi` has a summary level of less than 2, so it is not included in the result.
 
 And anything higher than 2 will make nothing.
 
+## Squiggles (~) #TODO
+------
+A squiggle (~) means a space. But, the space is only there *if there is text on both sides of it*. Let's consider this example:
+
+hi\`~bye\`
+
+In this you can see the word `hi` with an importance level of 0 and `~bye` with an importance of 1. But, you can see the squiggle there! So, how does it work?
+
+If you asked for a summary level of 0, it would return `hi bye`. You can see the squiggle in this was converted into a space. But, ask for a summary of 1 and you'll get `bye` with no space. That is because there is nothign next to it, so it is excluded!
+
+## Backslashes (\\) #TODO
+A backslash (like in many other coding languages) neglects something. So, if you wanted to make a smiley face, LISTEN UP!
+
+A backslash basically says 'ignore anything special about this character'. So, usualy `(` is a construct for a list, but if you backslash it (`\(`) it becomes the regular character `(`. So, a smiley face `:)` would be needed to be convert into `:\)`, but when you output it it will look the same.
+
+And, if you want a literal backslash character (`\`) then you would have to backslash the backslash character (`\\`).
+
+### I'm needing to put way too many backslashes into the parser!
+Maybe you have something like `hi :\) \\` and you want to put it into Python. You would have to put it as `'hi :\\) \\\\'` in python because otherwise python'll stuff up, but to make it easier on yourself python has a special trick: `r'hi :\) \\'`. The 'r' in front tells Python the whole string is raw text, not to be confused with any backslash sequences.
+
 ## Examples
 ------
- - \`hi\`\`\`bye\`\`hi again
+ - \`hi\`\`\`~bye~\`\`hi again
 
-    This would have: `hi` with an importance level of 1, `bye` with an importance level of 2, and `hi again` with an importance level of 0.
+    This would have: `hi` with an importance level of 1, `~bye~` with an importance level of 2, and `hi again` with an importance level of 0.
 
     So if you asked for a summary level of 0, it would look like `hi bye hi again` and an importance level of 1 would look like `hi bye` and an importance level of 2 would look like `bye` and anything greater would be blank.
+
+ - \`\`Am I happy? \`\`(no|\`maybe?\`|\`\`yes! :\\)\`\`)
+
+    Summary level of 0: `Am I happy? no`
+
+    Summary level of 1: `Am I happy? maybe?`
+
+    Summary level of 2: `Am I happy? yes!`
 
 TODO: more examples.
 
 ## Warnings and FAQ
 ------
-### About the stuff-ups about the spacings
-
-The retokenizer means that the spacing will be stuffed up. This does not matter for a lot of things, TODO: make it not matter for more/all things, but if you find your text looks wonky, try something else.
-
-So, no `:)`s. If you tried to input `hi :)` It will output `hi: )` instead. YOU HAVE BEEN WARNED!
 
 ### Why is my syntax not working?
 TODO: make syntaxErrors to give them errors.
