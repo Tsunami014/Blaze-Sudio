@@ -115,7 +115,7 @@ class Summary:
         Parameters
         ----------
         summary_lvl : int
-            the level of summarisation to get, 0 is the highest level, 1 is the next highest, etc.
+            the level of summarisation to get, 0 gets pretty much the whole text, 1 gets some and leaves out others, etc.
 
         Returns
         -------
@@ -124,7 +124,7 @@ class Summary:
         """
         res = []
         for i in self.txt:
-            if i['lvl'] <= summary_lvl:
+            if i['lvl'] >= summary_lvl:
                 res.append(i['txt'])
         return TWD().detokenize(res)
 
