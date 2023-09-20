@@ -1,6 +1,3 @@
-from nltk import word_tokenize as wt
-from nltk.tokenize.treebank import TreebankWordDetokenizer as TWD
-
 try:
     from utils.conversion_parse.consts import *
 except ImportError:
@@ -10,6 +7,20 @@ except ImportError:
         from consts import *
 
 # FOR SAMPLES SEE THE BOTTOM OF THIS FILE
+
+def wt(txt): # word tokenize
+    l = list(txt)
+    out = []
+    tmp = ''
+    for i in l:
+        if i in ['`', ')', '(', '|']:
+            if tmp != '': out.append(tmp)
+            tmp = ''
+            out.append(i)
+        else:
+            tmp += i
+    if tmp != '': out.append(tmp)
+    return out
 
 def parseKWs(kwargs, possible, requireds=[]):
     allrequ = {}
@@ -110,7 +121,7 @@ class Summary:
             elif wrd == '`':
                 if prev == 0:
                     if temp != []:
-                        end.append({'txt': TWD().detokenize(temp), 'lvl': lvl})
+                        end.append({'txt': ''.join(temp), 'lvl': lvl})
                         temp = []
                     if lvl != 0:
                         lvl -= 1
@@ -129,7 +140,7 @@ class Summary:
                 temp.append(wrd)
                 prev = 0
         if temp != []:
-            end.append({'txt': TWD().detokenize(temp), 'lvl': lvl})
+            end.append({'txt': ''.join(temp), 'lvl': lvl})
         return end
     
     def get(self, summary_lvl):
@@ -155,7 +166,7 @@ class Summary:
                         break
             elif i['lvl'] >= summary_lvl:
                 res.append(i['txt'])
-        return TWD().detokenize(res)
+        return ''.join(res)
 
     def __add__(self, add2): # For combining Summaries, e.g. combine character details with knowledge.
         if isinstance(add2, str):
@@ -250,7 +261,7 @@ class DescSummary():
         res = []
         for i in self.clauses:
             res.append('%s %s' % (i['who'], i['verbs'].get(summary_lvl)))
-        return TWD().detokenize(res)
+        return ''.join(res)
 
 #DS = DescSummary('Grapefruit')
 #DS.add_clause('kind human girl')
