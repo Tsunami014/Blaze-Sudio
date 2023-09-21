@@ -16,7 +16,13 @@ from utils.conversion_parse import PARSE
 PARSE = PARSE
 from utils.characters import *
 from api_keys import loadAPIkeys
-from utils.bot.gpt4real import GPT4All
+try:
+    from utils.bot.gpt4real import GPT4All
+except ImportError:
+    try:
+        from bot.gpt4real import GPT4All
+    except ImportError:
+        from gpt4real import GPT4All
 
 # TODO: more AIs
 # TODO: threading
