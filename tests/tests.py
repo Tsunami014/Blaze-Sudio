@@ -47,7 +47,7 @@ class TestConversationParser(unittest.TestCase):
         self.assertEqual(s.txt, [{'txt': 'qqqq', 'lvl': 4}, {'txt': 'qqqqq', 'lvl': 5}, {'txt': 'zzz', 'lvl': 3}])
         
         s = Summary('`hi~`hi again')
-        self.assertEqual(s.txt, [{'txt': 'hi', 'lvl': 1}, {'txt': 'hi again', 'lvl': 0}])
+        self.assertEqual(s.txt, [{'txt': 'hi~', 'lvl': 1}, {'txt': 'hi again', 'lvl': 0}])
         self.assertEqual(s.get(0), 'hi hi again')
         self.assertEqual(s.get(1), 'hi')
         self.assertEqual(s.get(2), '')
@@ -74,13 +74,18 @@ class TestConversationParser(unittest.TestCase):
         self.assertEqual(s.get(3), 'Grapefruit optimist')
         self.assertEqual(s.get(4), '')
     
-    def testDescSummary(self):
-        from utils.conversion_parse import DescSummary, Summary
-        DS = DescSummary('Grapefruit')
-        DS.add_clause(adjs='kind good')
-        self.assertEqual([_.txt for _ in DS.clauses['Grapefruit']['adjectives']], [Summary('kind').txt, Summary('good').txt])
+    def testKnowledge(self):
+        from utils.conversion_parse import Knowledge, Summary
+        K = Knowledge('Grapefruit')
+        K.add_clause(is_adjs='kind/good')
+        self.assertEqual(K.get(), 'Grapefruit is kind and good.')
+        K.add_clause(is_a='dragon')
+        self.assertEqual(K.get(), 'Grapefruit is a kind and good dragon.')
+        K.add_clause(is_a='cat')
+        self.assertEqual(K.get(), 'Grapefruit is a kind and good cat.') # replaces last is_a
+        K.add_clause(who='loves to dance/reads lots/has a happy life')
+        self.assertEqual(K.get(), 'Grapefruit is a kind and good cat who loves to dance, reads lots and has a happy life.')
 
-        #TODO: finish this test
 
 if __name__ == '__main__':
     unittest.main()
