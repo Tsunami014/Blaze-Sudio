@@ -154,14 +154,14 @@ class Summary:
             end.append({'txt': ''.join(temp), 'lvl': lvl})
         return end
     
-    def get(self, summary_lvl):
+    def get(self, summary_lvl=0):
         """
         gets the summary at the specified level of summarisation
 
         Parameters
         ----------
         summary_lvl : int
-            the level of summarisation to get, 0 gets pretty much the whole text, 1 gets some and leaves out others, etc.
+            the level of summarisation to get, 0 gets pretty much the whole text, 1 gets some and leaves out others, etc., defaults to 0
 
         Returns
         -------
@@ -190,57 +190,83 @@ class Summary:
             raise TypeError(
                 'Cannot add Summary to class ' + str(type(add2))
             )
+    
+    def __str__(self):
+        return self.get(0)
+    def __repr__(self): return str(self)
 
-class DescSummary():
-    # TODO: generate a summary of description that can change - e.g.
-    # Have it so that you can return a summarised version of 'Grapefruit is a kind human girl' OR a summarised version of 'You are Grapefruit, a kind human girl.'
-    def __init__(self, selfname):
+class Knowledge():
+    def __init__(self, selfname, **kwargs):
+        """
+        This class stores knowledge (e.g. Grapefruit is nice and kind)
+
+        Parameters
+        ----------
+        selfname : str
+            The name of this character
+
+        If you know your stuff about this class, you can add kwargs to be passed to self.add_clause for instant adding of the clauses.
+        You can still use it, just you may need to see the documentation in that function itself.
+        """
         self.clauses = {}
         self.selfname = selfname
-    def add_clause(self, who=None, **kwargs):
+        if kwargs != {}:
+            self.add_clause(**kwargs)
+    def add_clause(self, name=None, **kwargs):
         """
-        Adds a clause to self. This is (for example) 'You are Grapefruit' or 'Kinkajou is kind'
+        Adds a clause to self. This is (for example) 'Grapefruit reads books' or 'Kinkajou is a kind dragon'
         This uses Summary syntax, see `docs/summary syntax.md`
 
         Parameters
         ----------
-        who : str, optional
-            The name of the classification that has this trait, by default self
+        name : str, optional
+            The name of the classification that has this trait, by default self's name
         
         kwargs
         ------
-        adjs : str/Summary/list[str/Summary]
-            The list of adjectives ('kind', 'rough') to use.
-        thoughts : str/Summary/list[str/Summary]
-            The thoughts of a classification. (e.g. loves, how they feel about things, etc.)
-        nouns : str/Summary/list[str/Summary]
-            The nouns of a classification. (e.g. for a character a noun could be 'human' saying they are a human)
-        part : str
-            The part of the who that is described. This by default is just the whole who.
+        is_adjs : str/Summary/list[str/Summary]
+            The list of adjectives ('kind', 'rough', 'mean', 'silly') to use.
+        is_a : str/Summary
+            The noun (or noun group) of a classification. (e.g. 'dog', 'dragon', 'RainWing dragon', etc.)
+            Please note that there can only be one is_adj, so it will override the previous one.
+            Also, lists aren't allowed for this param either.
+        who : str/Summary/list[str/Summary]
+            Things that don't fit into the above categories (e.g. 'reads lots', 'licks the floor each night')
         
         For the kwargs (adjs, thoughts or nouns), the following applies:
-            If given a string will split the string by " " to create a list of Summary classes.
+            If given a string will split the string by "/" to create a list of Summary classes.
             If given a Summary it will put it in a list by itself, e.g. [Summary]
             If given a list of strings it will turn each of the strings into Summary classes, though it will not split them up.
             If given a list of Summary classes it will just leave it as it is.
             If given a list of mixed strings and Summaries it will convert the strings to Summaries.
         
         For kwargs you MUST include:
-         - adjs OR thoughts OR nouns
+         - is_adjs OR is_a OR who
         
         Examples for this function:
-         - Grapefruit is kind and nice = (who='Grapefruit', adjs=')
+         - Grapefruit is kind and nice = (name='Grapefruit', adjs='kind \`\`nice\`\`') (you can see the summary syntax is applied here too)
+         - Hinix is a lovelly and kind brown dog who licks the floor clean = (name='Hinix', is_adjs='lovelly kind', is_a='brown dog', who='licks the floor clean')
         """
-        parseKWs(kwargs, ['adjs', 'thoughts', 'nouns', 'part'], [('adjs', 'thoughts', 'nouns')])
+        parseKWs(kwargs, ['is_adjs', 'is_a', 'who'], [('is_adjs', 'is_a', 'who')])
+
+        kwargs = {i: kwargs[i] for i in kwargs if kwargs[i] != [] and kwargs[i] != '' and kwargs[i] != None}
         
         for a in kwargs:
-            if a in ['part']:
-                if isinstance(kwargs[a], str): pass
+            if a in ['is_a']:
+                if a in ['is_a']:
+                    if isinstance(kwargs[a], str): kwargs[a] = Summary(kwargs[a])
+                    elif isinstance(kwargs[a], Summary): pass
+                    else:
+                        raise TypeError(
+                            f'Invalid type for kwarg "--{a}" (which should be str or Summary): '+str(type(kwargs[a]))
+                        )
                 else:
-                    raise TypeError(
-                        'Invalid type for kwarg "--part" (which should be str): '+str(type(kwargs[a]))
-                    )
-            if isinstance(kwargs[a], str): kwargs[a] = [Summary(i) for i in a.split(' ')]
+                    if isinstance(kwargs[a], str): pass
+                    else:
+                        raise TypeError(
+                            f'Invalid type for kwarg "--{a}" (which should be str): '+str(type(kwargs[a]))
+                        )
+            elif isinstance(kwargs[a], str): kwargs[a] = [Summary(i) for i in kwargs[a].split('/')]
             elif isinstance(kwargs[a], Summary): kwargs[a] = [kwargs[a]]
             elif isinstance(kwargs[a], list):
                 if all([isinstance(i, str) for i in kwargs[a]]):
@@ -256,29 +282,60 @@ class DescSummary():
                             )
             else:
                 raise TypeError(
-                    f'Invalid type for kwarg "--{a}" (which should be str or a Summary): {type(a)}'
+                    f'Invalid type for kwarg "--{a}" (which should be str, Summary, or list (of strs and/or Summaries)): {type(a)}'
                 )
-        if who == None: who = self.selfname
-        if str(who) in self.clauses:
-            for i in self.clauses[str(who)]:
-                i['adjs'].extend(kwargs.pop('adjs', []))
-                i['thoughts'].extend(kwargs.pop('thoughts', []))
-                i['nouns'].extend(kwargs.pop('nouns', []))
+        if name == None: name = self.selfname
+        if str(name) in self.clauses:
+            self.clauses[str(name)]['is_adjs'].extend(kwargs.pop('is_adjs', []))
+            self.clauses[str(name)]['is_a'] = kwargs.pop('is_a', self.clauses[str(name)]['is_a'])
+            self.clauses[str(name)]['who'].extend(kwargs.pop('who', []))
         else:
-            self.clauses[str(who)] = {'adjs': kwargs.pop('adjs', []), 'thoughts': kwargs.pop('thoughts', []), 'nouns': kwargs.pop('nouns', [])}
-    def get(self, summary_lvl, tense):
-        if tense not in ALLTENSES:
-            raise ValueError(
-                f'Tense "{tense}" is not a valid tense! Valid tenses are: {ALLTENSES}'
-            )
-        res = []
-        for i in self.clauses:
-            res.append('%s %s' % (i['who'], i['verbs'].get(summary_lvl)))
-        return ''.join(res)
-
-#DS = DescSummary('Grapefruit')
-#DS.add_clause('kind human girl')
-#pass
+            self.clauses[str(name)] = {'is_adjs': kwargs.pop('is_adjs', []), 'is_a': kwargs.pop('is_a', Summary()), 'who': kwargs.pop('who', [])}
+    
+    def _parse(self, is_adjs, is_a, who, name):
+        is_adjs = [i for i in is_adjs if i != '']
+        who = [i for i in who if i != '']
+        notblank = [(i != [] and i != '') for i in [is_adjs, is_a, who]]
+        #print(is_adjs, is_a, who, name, gender, notblank)
+        if all([not i for i in notblank]): return ''
+        out = name
+        if notblank[0] or notblank[1]:
+            out += ' is '
+            if notblank[1]:
+                out += 'a '
+            if notblank[0]:
+                if len(is_adjs) > 1:
+                    out += ', '.join([i for i in is_adjs[:-1]])
+                    if len(who) < 5: out += ' and '
+                    else: out += ', '
+                out += is_adjs[-1]
+            if notblank[1]:
+                if notblank[0]:
+                    out += ' '
+                out += is_a
+        if notblank[2]:
+            if notblank[0] and notblank[1]:
+                out += ' who '
+            else:
+                out += ' '
+            if len(who) > 1:
+                out += ', '.join([i for i in who[:-1]])
+                if len(who) < 5: out += ' and '
+                else: out += ', '
+            out += who[-1]
+        return out + '.'
+    
+    def get(self, summary_lvl=0, topics=None):
+        if topics == None: topics = [self.selfname]
+        res = ''
+        for i in topics:
+            if i in self.clauses:
+                res += self._parse([i.get(summary_lvl) for i in self.clauses[i]['is_adjs']], 
+                                   self.clauses[i]['is_a'].get(summary_lvl), 
+                                   [i.get(summary_lvl) for i in self.clauses[i]['who']], 
+                                   i #.get(summary_lvl)
+                )
+        return res
 
 # print(Summary().parse('`Hello!```Bye.``Hi again!'))
 # print(Summary().parse('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 10))))
@@ -310,13 +367,18 @@ def PARSE(start, description, prompt, bot_name, summary_level=0):
         desc = ''
     end = ''
     add = STARTPARAM2[start[0][0]]
-    if start[0][1] in [1, 3]:
-        if isinstance(add, dict): end += add['A']
-        else: end += add # assuming it's otherwise a string
-    end += desc
-    if start[0][1] in [2, 3]:
-        if isinstance(add, dict): end += add['B']
-        else: end += add
+    if isinstance(add, dict) and 'NLs' in add.keys():
+        end += add['NLs'].format(desc)
+    else:
+        if start[0][1] in [1, 3]:
+            end += '\n'
+            if isinstance(add, dict): end += add['A']
+            else: end += add # assuming it's otherwise a string
+        end += desc
+        if start[0][1] in [2, 3]:
+            if isinstance(add, dict): end += add['B']
+            else: end += add
+            end += '\n'
     add = STARTPARAM1[start[1]]
     ks = list(add.keys())
     if 'other' in ks: ks.remove('other')
@@ -358,19 +420,63 @@ def parse_prompt(prompt, botNAME, userNAME, start):
             i['content'] = i['content'].replace(rpl[i['role']], i['role'])
     return prompt
 
+def cycle(my_list, start_at=None):
+    start_at = 0 if start_at is None else start_at
+    while True:
+        yield my_list[start_at]
+        start_at = (start_at + 1) % len(my_list)
+
 if __name__ == '__main__':
-    from random import randint
-    def sample(start):
-        sample_prompt = [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'bot', 'content': 'I am good, how are you?'}, {'role': 'user', 'content': 'I am good too! What did you do today?'}]
-        sample_desc = 'Grapefruit has a strong personality, and is not afraid to speak her mind.'
-        print(PARSE(start, sample_desc, parse_prompt(sample_prompt, 'Grapefruit', 'User', start), 'Grapefruit'))
-        print('\033[%sm~~~~~~~~~~~~~~~~~~~~~~~~~\033[0m' % str(randint(91, 96)))
+    from random import shuffle, choice, randint
+    class Generator:
+        def __init__(self):
+            l = list(range(91, 96))
+            shuffle(l)
+            self.order = cycle(l)
+            self.order2 = cycle(l, 2)
+        def generate_desc(self):
+            K = Knowledge('Grapefruit')
+            self.args = {'is_adjs':choice([None, 'nice', 'nice/kind', 'nice/kind/happy/beautiful']), 
+                'is_a':choice([None, 'dragon', 'human', 'elf', 'wizard', 'brown dog']), 
+                'who':choice([None, 'loves life', 'reads lots/codes', 'gets bored easily/loves life/reads a lot/codes', 'always wears brown clothing'])
+            }
+            K.add_clause(**self.args)
+            return K.get(0)
+        def __call__(self, start=None):
+            out = ''
+            if start == None: start = [(randint(0, 3), randint(0, 4)), randint(0, len(STARTPARAM1)-1)]
+            sample_prompt = choice([
+                [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'bot', 'content': 'I am good, how are you?'}, {'role': 'user', 'content': 'I am good too! What did you do today?'}],
+                [{'role': 'user', 'content': 'Hello'}, {'role': 'bot', 'content': 'Hello! What can I help you with today?'}, {'role': 'user', 'content': 'I dunno...'}, {'role': 'bot', 'content': 'Well, I can help you with anything! Just pick a topic!'}, {'role': 'user', 'content': 'I like books'}, {'role': 'bot', 'content': 'I like books too! What is your favourite book?'}, {'role': 'user', 'content': 'I like Harry Potter'}],
+                [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'bot', 'content': 'What can I help you with?'}, {'role': 'user', 'content': 'I need help with a Python project.'}],
+                [{'role': 'user', 'content': 'What is the best way to handle errors in Python?'}, {'role': 'bot', 'content': 'There are several ways to handle errors in Python, such as using try-except blocks or raising exceptions. What kind of errors are you trying to handle?'}, {'role': 'user', 'content': 'I\'m trying to handle file I/O errors.'}],
+                [{'role': 'user', 'content': 'How do I install a Python package using pip?'}, {'role': 'bot', 'content': 'You can install a Python package using pip by running the command "pip install package_name" in your terminal. Have you used pip before?'}, {'role': 'user', 'content': 'No, I haven\'t. Can you walk me through it?'}]
+            ])
+            sample_desc = 'You are Grapefruit. '+self.generate_desc()
+            self.args['start'] = start
+            out += '\033[%sm| ' % str(next(self.order2))
+            pretty = lambda x: '"' if isinstance(x, str) else ''
+            for i in self.args: out += i+' : '+pretty(self.args[i])+str(self.args[i])+pretty(self.args[i])+' | '
+            out += '\033[0m\n'
+            out += PARSE(start, sample_desc, parse_prompt(sample_prompt, 'Grapefruit', 'User', start), 'Grapefruit')+'\n'
+            out += '\033[%sm~~~~~~~~~~~~~~~~~~~~~~~~~\033[0m' % str(next(self.order))
+            return out
     # If you run this file you can see these next statements at work
     # Each you can see is separated, by a like of ~~~~~~~~~~
     # You can see the different start params at work, with the same sample prompt
-    sample([(1, 2), 2])
-    sample([(0, 0), 3])
-    sample([(0, 3), 1])
-    sample([(3, 1), 2])
-    sample([(0, 2), 0])
-    pass
+    def gen():
+        g = Generator()
+        yield g([(1, 2), 2])
+        yield g([(0, 0), 3])
+        yield g([(0, 3), 1])
+        yield g([(3, 1), 2])
+        yield g([(0, 2), 0])
+        yield '\nAnd here are some randomly generated ones:\n' + g()
+        while True:
+            yield g()
+    g = gen()
+    print('Here are some I prepared earlier:\n')
+    while True:
+        print(next(g))
+        if input() != '':
+            break

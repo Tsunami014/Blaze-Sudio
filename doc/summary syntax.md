@@ -1,12 +1,15 @@
 # Summary syntax
 ------------------------------------
 
-## The backticks (\`)
+## Importance
 ------
 Encasing anything in backticks (\`) makes it more important.
 
 e.g.
 \`\`hi\`\` makes the statement `hi` have an importance of 2, so when you ask for a summary of it to a summary level of 2 or less, it will include that wheras if you have \`bye\` that shows the word `bye` has an importance of 1, so when you ask for a summary of it to a summary level of 1 or lower it will include that, but a summary level of 2 will exclude it but include \`\`hi\`\` and anything above 2 will not include either of them.
+
+### Infinite importance TODO: this
+To specify infinite importance, instead of encasing text with backticks, you encase it with asterikes (\*).
 
 ## Groups ('or' syntax)
 ------
@@ -63,6 +66,8 @@ A backslash (like in many other coding languages) neglects something. So, if you
 A backslash basically says 'ignore anything special about this character'. So, usualy `(` is a construct for a list, but if you backslash it (`\(`) it becomes the regular character `(`. So, a smiley face `:)` would be needed to be convert into `:\)`, but when you output it it will look the same.
 
 And, if you want a literal backslash character (`\`) then you would have to backslash the backslash character (`\\`).
+
+Supported backslashes: `(`, `)`, `\`, `|`, `~` or (\`) (so with any of these you can backslash then it will count as the literal character)
 
 ### I'm needing to put way too many backslashes into the parser!
 Maybe you have something like `hi :\) \\` and you want to put it into Python. You would have to put it as `'hi :\\) \\\\'` in python because otherwise python'll stuff up, but to make it easier on yourself python has a special trick: `r'hi :\) \\'`. The 'r' in front tells Python the whole string is raw text, not to be confused with any backslash sequences.

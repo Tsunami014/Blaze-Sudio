@@ -44,6 +44,17 @@ The separator is a tuple. These are the possible first values:
 | 1 | `##` | It's short | It doesn't tell what's coming next |
 | 2 | `######` | It's short-ish | It doesn't tell what's coming next and its quite long... |
 | 3 | nothing | It doesn't take up any space | It doesn't say that the conversation starts here, you may get whacky results, but in most cases it'll *probably* be fine... |
+| 4 | `##description##` (see below) | It is nice and short, not using up any newlines | It may stuff up... who knows. |
+
+### The juice with #4 above:
+It does not have any newlines, so if you used it it would look like:
+```
+##You are a human girl called Grapefruit. You are not afraid to speak your mind.##
+Q: How are you Grapefruit?
+A: I'm good thanks.
+Q: [Your input]
+A: 
+```
 
 And these are the possible second values:
 Example:

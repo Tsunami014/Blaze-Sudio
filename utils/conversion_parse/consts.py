@@ -22,15 +22,15 @@ STARTPARAM1 = [
 ]
 STARTPARAM2 = [
     {
-        'A': '## Description:\n',
-        'B': '\n## Conversation:'
+        'A': '## Description:',
+        'B': '## Conversation:'
     },
-    '\n##',
-    '\n######',
-    ''
+    '##',
+    '######',
+    {
+        'NLs': '{0}'
+    },
+    {
+        'NLs': '##{0}##'
+    },
 ]
-
-# Tenses:
-YOUTENSE = 0
-NAMETENSE = 1
-ALLTENSES = [YOUTENSE, NAMETENSE]
