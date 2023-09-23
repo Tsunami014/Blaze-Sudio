@@ -5,22 +5,33 @@ except ImportError:
         from conversion_parse.consts import *
     except ImportError:
         from consts import *
+import re
 
 # FOR SAMPLES SEE THE BOTTOM OF THIS FILE
 
-def wt(txt): # word tokenize
-    l = list(txt)
-    out = []
-    tmp = ''
-    for i in l:
-        if i in ['`', ')', '(', '|']:
-            if tmp != '': out.append(tmp)
-            tmp = ''
-            out.append(i)
-        else:
-            tmp += i
-    if tmp != '': out.append(tmp)
-    return out
+# TODO: replace code with regular expressions
+
+def split(txt):
+    tout = []
+    spl = txt.split('\n')
+    for line in spl:
+        tmp = []
+        out = re.split(r'(`|((?<!\\)\))|((?<!\\)\()|~|\|)', line)
+        for i in out:
+            if i is None: continue
+            if i == '': continue
+            finds = re.findall(r'\\[^(|~)]', i)
+            if finds != []:
+                raise SyntaxError(
+                    f'Text "<txt>", line {spl.index(line)}, in <main>\n\
+    {line}\n\
+    {"".join([" " for _ in range(sum([len(__) for __ in out[:out.index(i)]])+i.index(finds[0]))])}^\n\
+BackslashError: backslash escaping a character that is not in: [`, ), ~, |, (, \\]'
+                )# TODO: in group (not main)
+            #for j in re.findall(r'\\(\(|\)|~|\|`)', i): i = i.replace('\\'+j, j)
+            tmp.append(i)
+        tout.extend(tmp)
+    return tout
 
 def parseKWs(kwargs, possible, requireds=[]):
     allrequ = {}
@@ -96,7 +107,7 @@ class Summary:
         l = []
         group = False #TODO: groups IN groups
         temp = ''
-        for i in wt(description):
+        for i in split(description):
             if i == '(':
                 group = []
                 temp = ''
@@ -110,7 +121,7 @@ class Summary:
                     if temp != '': group.append(Summary(temp))
                     temp = ''
             else:
-                if group is False:
+                if group == False:
                     l.append(i) if i != '``' else l.extend(['`', '`'])
                 else:
                     temp += i
@@ -166,7 +177,9 @@ class Summary:
                         break
             elif i['lvl'] >= summary_lvl:
                 res.append(i['txt'])
-        return ''.join(res)
+        out = ''.join(res)
+        for i in re.findall('.~.', out): out = out.replace(i, i[0]+' '+i[-1])
+        return out.replace('~', '')
 
     def __add__(self, add2): # For combining Summaries, e.g. combine character details with knowledge.
         if isinstance(add2, str):
