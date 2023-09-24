@@ -1,7 +1,7 @@
-import requests, os, sys, time
+import os, sys, time
 from threading import Thread
 import g4f
-import asyncio
+import asyncio, aiohttp
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 import nest_asyncio
 nest_asyncio.apply()
@@ -29,17 +29,12 @@ except ImportError:
     except ImportError:
         from gpt4real import G4A
 
-# TODO: more AIs
-# TODO: threading
-
 def tokenize_text(text, token_length=2): # ChatGPTed func
     tokens = [text[i:i+token_length] for i in range(0, len(text), token_length)]
     return tokens
 
 class BaseBot:
-    speed = 0 # 0 = instant, 1 = fast, 2 = kinda fast, 3 = medium, 4 = medium-slow, 5 = slow, 6 = xtra slow
     shorten = False # Whether or not the length of the input affects the speed of response
-    usesasync = False
     def __init__(self):
         """
         An AI chatbot, a vessel for responses.
@@ -47,19 +42,13 @@ class BaseBot:
         self.resp = ''
         self.thread = None
         self.stop = False
-        self.asked_for_resp = 0
-        self._init()
     
-    def _init(self): # placeholder for other bots to fill if they need
-        pass
-    
-    def _call_ai(self, cnvrs):
+    async def _call_ai(self, cnvrs):
         out = 'hello!'#str(cnvrs)
-        return {'choices': [{'message': {'role': 'bot', 'content': out}}]}
+        return out
     
     def _stream_ai(self, tostream):
         self.resp = ''
-        self.asked_for_resp = 0
         ts = tokenize_text(tostream)
         for i in ts:
             self.resp += i
@@ -75,13 +64,12 @@ class BaseBot:
         self.asked_for_resp = len(self.resp)
         return out
 
-    def __call__(self, cnvrs):
+    async def __call__(self, cnvrs):
         if isinstance(self, (ChatGPTBot,)): # add all the AIs that need a conversation LIST to work (and don't need summarisation)
             inp = cnvrs
         else:
             inp = PARSE(cnvrs, 0, 0) # TOCHANGE
-        out = self._call_ai(inp)
-        out = out['choices'][0]['message']
+        out = await self._call_ai(inp)
         if self.thread != None:
             self.stop = True
             self.thread.join()
@@ -89,10 +77,7 @@ class BaseBot:
         self.thread = Thread(target=self._stream_ai, args=(out['content'],), daemon=True)
         self.thread.start()
     
-    def should_interrupt(self, cnvrs):
-        pass
-    
-    def is_online(self):
+    async def is_online(self):
         """
         Returns
         -------
@@ -100,75 +85,81 @@ class BaseBot:
             Whether or not the bot can be questioned currently
         """
         try:
-            if self.usesasync:
-                asyncio.run(self('1+1 = '))
-            else:
-                self('1+1 = ')
+            await self('1+1 = ')
             self.stop = True
             return True
         except:
             return False
+    
+    def __str__(self): return f'<{type(self).__name__}>'
+    def __repr__(self): return self.__str__()
 
 class NetBaseBot(BaseBot):
-    def is_online(self):
+    def __init__(self):
+        """
+        An AI chatbot, a vessel for responses.
+        This AI uses the network, so it checks for wifi connection before checking whether or not it is online.
+        """
+        super().__init__()
+    async def is_online(self):
         try:
-            requests.get('https://8.8.8.8', timeout=0.1)
-        except requests.exceptions.ReadTimeout:
-            pass
+            async with aiohttp.ClientSession() as session:
+                async with session.get('https://8.8.8.8', timeout=0.1):
+                    pass
+        except asyncio.exceptions.TimeoutError:
+            pass # timeout, nothing to worry about
         except:
             return False # Offline, or bug.
-        return super().is_online()
+        return await super().is_online()
 
 class CacheBaseBot(BaseBot):
     def __init__(self):
         """
         An AI chatbot, a vessel for responses.
+        This AI stores it's avaliability in a cache, so it doesn't need to check every time. It can reevaluate if needed.
         """
-        self.resp = ''
-        self.thread = None
-        self.stop = False
-        self.asked_for_resp = 0
+        super().__init__()
         self.cache = None
-        self._init()
     
-    def reevaluate(self):
-        self.cache = super().is_online()
+    async def reevaluate(self):
+        self.cache = await super().is_online()
         return self.cache
     
-    def is_online(self):
-        if self.usesasync:
-            try:
-                if self.cache == None:
-                    asyncio.run(self.reevaluate())
-            except: asyncio.run(self.reevaluate())
-        else:
-            try:
-                if self.cache == None:
-                    self.reevaluate()
-            except: self.reevaluate()
+    async def is_online(self):
+        try:
+            if self.cache == None:
+                await self.reevaluate()
+        except NameError: await self.reevaluate()
         return self.cache
 
 class ChatGPTBot(NetBaseBot):
     speed = 1 # don't need the other as it is the same
-    def _call_ai(self, cnvrs): # TODO: redo this func to work
-        #api_url = "https://chatgpt-api.shn.hk/v1/"
-        api_url = "https://free.churchless.tech/v1/chat/completions"
-        todo = {
-        "model": "gpt-3.5-turbo",
-        "messages": cnvrs
-        }
-        response = requests.post(api_url, json=todo)
-        return response.json()
+    async def _call_ai(self, cnvrs): # TODO: redo this func to work
+        async with aiohttp.ClientSession() as session:
+            #api_url = "https://chatgpt-api.shn.hk/v1/"
+            api_url = "https://free.churchless.tech/v1/chat/completions"
+            todo = {
+            "model": "gpt-3.5-turbo",
+            "messages": cnvrs
+            }
+            async with session.post(api_url, data=todo) as response:
+                data = await response.json()
+                return data['choices'][0]['message']
 
 class UserBot(BaseBot):
+    def __init__(self):
+        """
+        A way for the user to look like a bot in the computer's eyes and be treated the same. Kinda.
+        Basically, instead of querying any AIs, it prompts the user for a response.
+        Will need to be updated to work with a UI
+        """
+        super().__init__()
     def _call_ai(self, cnvrs):
-        return {'choices': [{'message': {'role': 'user', 'content': input('User : ')}}]}
-    def is_online(self):
+        return input('User : ')
+    async def is_online(self):
         return True
 
 class G4FBot(CacheBaseBot):
-    speed = 1 # don't need the other as it is the same
-    usesasync = True
     def __init__(self, provider, model):
         """
         An AI chatbot, a vessel for responses.
@@ -183,7 +174,6 @@ class G4FBot(CacheBaseBot):
         self.resp = ''
         self.thread = None
         self.stop = False
-        self.asked_for_resp = 0
         if isinstance(provider, str):
             self.provider = getattr(g4f.Provider, provider)
         else:
@@ -198,41 +188,18 @@ class G4FBot(CacheBaseBot):
 
     async def __call__(self, cnvrs):
         if self.model.name in []: # add all the AIs that need a conversation LIST to work (and don't need summarisation)
-            inp = {'role': 'user', 'content': PARSE(cnvrs, 0, 0)} # TOCHANGE VALUES OF PARSE FUNC
+            inp = PARSE(cnvrs, 0, 0) # TOCHANGE VALUES OF PARSE FUNC
         else:
             inp = cnvrs
         if isinstance(inp, str):
             inp = [{'role': 'user', 'content': inp}]
         out = await self._call_ai(inp)
-        #out = out['choices'][0]['message']
         if self.thread != None:
             self.stop = True
             self.thread.join()
         self.stop = False
         self.thread = Thread(target=self._stream_ai, args=(out,), daemon=True)
         self.thread.start()
-    
-    async def is_online(self):
-        """
-        Returns
-        -------
-        Bool
-            Whether or not the bot can be questioned currently
-        """
-        try:
-            if self.cache == None:
-                await self.reevaluate()
-        except: await self.reevaluate()
-        return self.cache
-    
-    async def reevaluate(self):
-        try:
-            await self([{'role': 'user', 'content': 'Hi'}])
-            self.cache = True
-        except Exception as e:
-            #print(e)
-            self.cache = False
-        return self.cache
     
     async def _call_ai(self, cnvrs):
         return await self.provider.create_async(
@@ -241,16 +208,13 @@ class G4FBot(CacheBaseBot):
                 )
 
 class AI():
-    # Defining values that can be yoinked from other AIs
-    speed = None
-    shorten = None
-
     def __init__(self):
         """
         A combo of MANY AI Chatbots!
+        # NOTE: REMEMBER TO CALL `await AI.find_current()` BEFORE USING THE AI OR ELSE IT WILL ERROR WITH `None has no attribute X`
         AIs supported:
         - ChatGPT (who knows whether or not it works, there just in case...)
-        - ALL THE AIS (providers & models) FROM g4f!!!!!!
+        - ALL THE AIS (providers & models) FROM g4f!!!!!! (including ChatGPT XD)
         - GPT4All (offline :) )
         
         Features:
@@ -292,17 +256,13 @@ class AI():
             except:
                 pass
     
-    def still_generating(self):
-        return self.cur.still_generating()
-    
     async def reevaluate(self):
         responses = [
-            i.reevaluate()
-            for i in [_ for _ in self.AIs if _.usesasync and isinstance(_, CacheBaseBot)]
+            i.reevaluate() for i in [_ for _ in self.AIs if isinstance(_, CacheBaseBot)]
         ]
-        responses = await asyncio.gather(*responses) 
+        await asyncio.gather(*responses) 
 
-    def __getattr__(self, __name):
+    def __getattr__(self, __name): # To get the attributes from the current AI
         return getattr(self.cur,__name)
     
     async def find_current(self):
@@ -318,18 +278,4 @@ class AI():
         return l # all the working AIs
 
     async def __call__(self, *args, **kwargs):
-        await self.find_current()
-        if self.cur.usesasync:
-            await self.cur(*args, **kwargs)
-        else:
-            self.cur(*args, **kwargs)
-    
-    def is_online(self):
-        """
-        Returns
-        -------
-        Bool
-            Whether or not the bot can be questioned currently
-        """
-        self.find_current()
-        return self.cur != None
+        await self.cur(*args, **kwargs)
