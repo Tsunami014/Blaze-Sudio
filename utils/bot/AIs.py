@@ -1,5 +1,8 @@
 import requests, os, sys, time
 from threading import Thread
+import g4f
+import asyncio
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 if os.getcwd().endswith('bot'): # set path 2 folders above
     newpath = os.path.abspath(os.path.join(os.getcwd(), '../../'))
@@ -34,6 +37,7 @@ def tokenize_text(text, token_length=2): # ChatGPTed func
 class BaseBot:
     speed = 0 # 0 = instant, 1 = fast, 2 = kinda fast, 3 = medium, 4 = medium-slow, 5 = slow, 6 = xtra slow
     shorten = False # Whether or not the length of the input affects the speed of response
+    usesasync = False
     def __init__(self):
         """
         An AI chatbot, a vessel for responses.
@@ -106,6 +110,35 @@ class NetBaseBot(BaseBot):
             return False # Offline, or bug.
         return super().is_online()
 
+class CacheBaseBot(BaseBot):
+    def __init__(self):
+        """
+        An AI chatbot, a vessel for responses.
+        """
+        self.resp = ''
+        self.thread = None
+        self.stop = False
+        self.asked_for_resp = 0
+        self.cache = None
+        self._init()
+    
+    def reevaluate(self):
+        self.cache = super().is_online()
+        return self.cache
+    
+    def is_online(self):
+        if self.usesasync:
+            try:
+                if self.cache == None:
+                    asyncio.run(self.reevaluate())
+            except: asyncio.run(self.reevaluate())
+        else:
+            try:
+                if self.cache == None:
+                    self.reevaluate()
+            except: self.reevaluate()
+        return self.cache
+
 class ChatGPTBot(NetBaseBot):
     speed = 1 # don't need the other as it is the same
     def _call_ai(self, cnvrs): # TODO: redo this func to work
@@ -124,6 +157,66 @@ class UserBot(BaseBot):
     def is_online(self):
         return True
 
+class G4FBot(CacheBaseBot):
+    speed = 1 # don't need the other as it is the same
+    usesasync = True
+    def __init__(self, provider, model):
+        """
+        An AI chatbot, a vessel for responses.
+
+        Parameters
+        ----------
+        provider : str / g4f.Provider
+            The provider of the model, e.g. 'EleutherAI'
+        model : str / g4f.models
+            The model name, e.g. 'gpt-neo-2.7B'
+        """
+        self.resp = ''
+        self.thread = None
+        self.stop = False
+        self.asked_for_resp = 0
+        if isinstance(provider, str):
+            self.provider = getattr(g4f.Provider, provider)
+        else:
+            self.provider = provider
+        if isinstance(model, str):
+            self.model = getattr(g4f.models, model)
+        else:
+            self.model = model
+    
+    def __str__(self): return f'<{self.provider.__name__}: {self.model.__name__}>'
+    def __repr__(self): return self.__str__()
+
+    async def __call__(self, cnvrs):
+        if self.model.name in []: # add all the AIs that need a conversation LIST to work (and don't need summarisation)
+            inp = PARSE(cnvrs, 0, 0) # TOCHANGE
+        else:
+            inp = cnvrs
+        out = await self._call_ai(inp)
+        out = out['choices'][0]['message']
+        if self.thread != None:
+            self.stop = True
+            self.thread.join()
+        self.stop = False
+        self.thread = Thread(target=self._stream_ai, args=(out['content'],), daemon=True)
+        self.thread.start()
+    
+    async def reevaluate(self):
+        try:
+            await self._call_ai([{'role': 'user', 'content': 'Hi'}])
+            self.cache = True
+        except:
+            self.cache = False
+        return self.cache
+    
+    async def _call_ai(self, cnvrs):
+        return  {'role': 'bot', 
+                 'content': await self.provider.create_async(
+                    model=self.model.name,
+                    messages=cnvrs,
+                )
+        }
+
 class AI():
     # Defining values that can be yoinked from other AIs
     speed = None
@@ -133,7 +226,9 @@ class AI():
         """
         A combo of MANY AI Chatbots!
         AIs supported:
-        - ChatGPT
+        - ChatGPT (who knows whether or not it works, there just in case...)
+        - ALL THE AIS (providers & models) FROM g4f!!!!!!
+        - GPT4All (offline :) )
         
         Features:
         #TODO:
@@ -143,7 +238,31 @@ class AI():
         - Preferences as to which AIs are best
         """
         self.AIs = []
-        all_ais = [GPT4All, ChatGPTBot] # PUT IN ORDER OF HOW GOOD THEY ARE, best at front of list
+        all_ais = [GPT4All, ChatGPTBot]
+        
+        provs = [i for i in dir(g4f.Provider) if not i.startswith('__') and i != 'annotations' and \
+                 i.lower() != 'base_provider' and getattr(g4f.Provider,i).working and \
+                 (not getattr(g4f.Provider,i).needs_auth)]
+        def get_models(name):
+            l = []
+            #p = getattr(g4f.Provider,name.replace(re.findall(" .*", name)[0], "")).__name__
+            p = getattr(g4f.Provider,name).__name__
+            for i in [i for i in dir(g4f.models) if i.lower() != 'base_provider' and not i.startswith('__') and i.lower() == i]:
+                try:
+                    if (not i.startswith('__')) and i.lower() == i:
+                        ms = getattr(g4f.models, i).best_provider
+                        if not isinstance(ms, (tuple, list)): ms = [ms]
+                        ms = [_.__name__ for _ in ms]
+                        if p in ms:
+                            append = G4FBot(name, i)
+                            l.append(append)
+                except: pass
+            return l
+        prov_models = {i: get_models(i) for i in provs}
+        self.allthings = []
+        for i in provs: self.allthings.extend([(i, j) for j in prov_models[i]])
+
+        for i in provs: self.AIs.extend(get_models(i))
         for i in all_ais:
             try:
                 self.AIs.append(i())
@@ -151,6 +270,15 @@ class AI():
                 pass
         self.resp = ''
         self.find_current()
+    
+    async def reevaluate(self):
+        responses = [
+            i.reevaluate()
+            for i in [_ for _ in self.AIs if _.usesasync and isinstance(_, CacheBaseBot)]
+        ]
+        responses = await asyncio.gather(*responses)
+
+        return responses
 
     def __getattr__(self, __name):
         self.find_current()
