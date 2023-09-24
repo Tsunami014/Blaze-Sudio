@@ -2,7 +2,7 @@
 (Thanks to the one and only Riley Dowsenator (@Imzafish) for the name!)
 
 Also known as:
- - The putgamecreatorsoutofbusinessanator
+ - The putgamecreatorsoutofbusinessanator (Thanks to @Faunder.real for that one)
  - One piece of code to rule them all!
 
 # CURRENT VERSION: v0.0.1 ✨
