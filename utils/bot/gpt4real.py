@@ -11,7 +11,7 @@ except:
 
 BASICS = ['user: ', '### prompt'] # lower case for ease
 
-class GPT4All:
+class G4A:
     speed = 5 # 5 = slow, 6 = xtra slow
     shorten = True
     def __init__(self, printfunc=print):
