@@ -3,6 +3,8 @@ from threading import Thread
 import g4f
 import asyncio
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+import nest_asyncio
+nest_asyncio.apply()
 
 if os.getcwd().endswith('bot'): # set path 2 folders above
     newpath = os.path.abspath(os.path.join(os.getcwd(), '../../'))
@@ -20,12 +22,12 @@ PARSE = PARSE
 from utils.characters import *
 from api_keys import loadAPIkeys
 try:
-    from utils.bot.gpt4real import GPT4All
+    from utils.bot.gpt4real import G4A
 except ImportError:
     try:
-        from bot.gpt4real import GPT4All
+        from bot.gpt4real import G4A
     except ImportError:
-        from gpt4real import GPT4All
+        from gpt4real import G4A
 
 # TODO: more AIs
 # TODO: threading
@@ -64,6 +66,10 @@ class BaseBot:
             time.sleep(0.25 if ' .,/?!' in i else 0.15)
             if self.stop: break
     
+    def still_generating(self):
+        if self.thread == None: return False
+        return self.thread.is_alive()
+    
     def any_more(self):
         out = self.resp[self.asked_for_resp:]
         self.asked_for_resp = len(self.resp)
@@ -94,7 +100,10 @@ class BaseBot:
             Whether or not the bot can be questioned currently
         """
         try:
-            self('1+1 = ')
+            if self.usesasync:
+                asyncio.run(self('1+1 = '))
+            else:
+                self('1+1 = ')
             self.stop = True
             return True
         except:
@@ -189,33 +198,47 @@ class G4FBot(CacheBaseBot):
 
     async def __call__(self, cnvrs):
         if self.model.name in []: # add all the AIs that need a conversation LIST to work (and don't need summarisation)
-            inp = PARSE(cnvrs, 0, 0) # TOCHANGE
+            inp = {'role': 'user', 'content': PARSE(cnvrs, 0, 0)} # TOCHANGE VALUES OF PARSE FUNC
         else:
             inp = cnvrs
+        if isinstance(inp, str):
+            inp = [{'role': 'user', 'content': inp}]
         out = await self._call_ai(inp)
-        out = out['choices'][0]['message']
+        #out = out['choices'][0]['message']
         if self.thread != None:
             self.stop = True
             self.thread.join()
         self.stop = False
-        self.thread = Thread(target=self._stream_ai, args=(out['content'],), daemon=True)
+        self.thread = Thread(target=self._stream_ai, args=(out,), daemon=True)
         self.thread.start()
+    
+    async def is_online(self):
+        """
+        Returns
+        -------
+        Bool
+            Whether or not the bot can be questioned currently
+        """
+        try:
+            if self.cache == None:
+                await self.reevaluate()
+        except: await self.reevaluate()
+        return self.cache
     
     async def reevaluate(self):
         try:
-            await self._call_ai([{'role': 'user', 'content': 'Hi'}])
+            await self([{'role': 'user', 'content': 'Hi'}])
             self.cache = True
-        except:
+        except Exception as e:
+            #print(e)
             self.cache = False
         return self.cache
     
     async def _call_ai(self, cnvrs):
-        return  {'role': 'bot', 
-                 'content': await self.provider.create_async(
+        return await self.provider.create_async(
                     model=self.model.name,
                     messages=cnvrs,
                 )
-        }
 
 class AI():
     # Defining values that can be yoinked from other AIs
@@ -238,7 +261,7 @@ class AI():
         - Preferences as to which AIs are best
         """
         self.AIs = []
-        all_ais = [GPT4All, ChatGPTBot]
+        all_ais = [G4A, ChatGPTBot]
         
         provs = [i for i in dir(g4f.Provider) if not i.startswith('__') and i != 'annotations' and \
                  i.lower() != 'base_provider' and getattr(g4f.Provider,i).working and \
@@ -268,34 +291,38 @@ class AI():
                 self.AIs.append(i())
             except:
                 pass
-        self.resp = ''
-        self.find_current()
+    
+    def still_generating(self):
+        return self.cur.still_generating()
     
     async def reevaluate(self):
         responses = [
             i.reevaluate()
             for i in [_ for _ in self.AIs if _.usesasync and isinstance(_, CacheBaseBot)]
         ]
-        responses = await asyncio.gather(*responses)
-
-        return responses
+        responses = await asyncio.gather(*responses) 
 
     def __getattr__(self, __name):
-        self.find_current()
-        return self.cur.__getattr__(__name)
+        return getattr(self.cur,__name)
     
-    def find_current(self):
+    async def find_current(self):
         self.cur = None
-        for i in self.AIs:
-            if i.is_online():
-                self.cur = i
-                return
+        async def run(i): return i.is_online()
+        resp = [(run(i) if not i.usesasync else i.is_online()) for i in self.AIs]
+        responses = await asyncio.gather(*resp)
+        l = []
+        for i in range(len(responses)):
+            if responses[i]:
+                l.append(self.AIs[i])
+        self.cur = l[0]
+        return l # all the working AIs
 
-    def __call__(self, *args, **kwargs):
-        self.find_current()
-        ret = self.cur(*args, **kwargs)
-        self.resp = self.cur.resp
-        return ret
+    async def __call__(self, *args, **kwargs):
+        await self.find_current()
+        if self.cur.usesasync:
+            await self.cur(*args, **kwargs)
+        else:
+            self.cur(*args, **kwargs)
     
     def is_online(self):
         """
