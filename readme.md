@@ -2,7 +2,7 @@
 (purposeful typo, if you wanted to know - for all of those whos `t` key is broken :D)
 
 Also known as:
- - The putgamecreatorsoutofbusinessanator
+ - The putgamecreatorsoutofbusinessanator (Thanks to @Faunder.real for that one)
  - One piece of code to rule them all!
 
 # CURRENT VERSION: v0.0.1 ✨
