@@ -340,7 +340,7 @@ class Knowledge():
 # print(Summary().parse('`Hello!```Bye.``Hi again!'))
 # print(Summary().parse('%s%s - noo! %s' % (SL('Hello!', 2), SL('Wait...'), SL('I forgot!!', 10))))
 
-def PARSE(start, description, prompt, bot_name, summary_level=0):
+def PARSE(start, desc, prompt, bot_name):
     """
     Creates a string based off 'start' params.
 
@@ -348,7 +348,7 @@ def PARSE(start, description, prompt, bot_name, summary_level=0):
     ----------
     start : iterable
         see `doc/character start.md`
-    description : Summary or str
+    desc : str (should be parsed already from Summary or Knowledge classes)
         The descrition of anything the AI needs to know (e.g. You are a kind and loving person. etc.). If string will not process it. BEWARNED.
     prompt : dict
         [{'role': role, 'content': content}]
@@ -356,15 +356,8 @@ def PARSE(start, description, prompt, bot_name, summary_level=0):
         the name of the bot. This is only used if the start param uses the bot's name, so at the end
         of the prompt it uses the name to prompt the AI, e.g. 'Grapefruit: '. Otherwise, the name of
         the bot is taken from the prompt.
-    summary_level : int
-        0-10, 0 = not summarised at all, 10=basically 3 words long. THIS IS ONLY FOR SUMMARISING THE DESCRIPTION, see `description` param.
     """
-    if isinstance(description, str):
-        desc = description
-    elif isinstance(description, Summary):
-        desc = description.get(summary_level)
-    else:
-        desc = ''
+    prompt = parse_prompt(prompt, bot_name, 'User', start)
     end = ''
     add = STARTPARAM2[start[0][0]]
     if isinstance(add, dict) and 'NLs' in add.keys():
@@ -458,7 +451,7 @@ if __name__ == '__main__':
             pretty = lambda x: '"' if isinstance(x, str) else ''
             for i in self.args: out += i+' : '+pretty(self.args[i])+str(self.args[i])+pretty(self.args[i])+' | '
             out += '\033[0m\n'
-            out += PARSE(start, sample_desc, parse_prompt(sample_prompt, 'Grapefruit', 'User', start), 'Grapefruit')+'\n'
+            out += PARSE(start, sample_desc, sample_prompt, 'Grapefruit')+'\n'
             out += '\033[%sm~~~~~~~~~~~~~~~~~~~~~~~~~\033[0m' % str(next(self.order))
             return out
     # If you run this file you can see these next statements at work
