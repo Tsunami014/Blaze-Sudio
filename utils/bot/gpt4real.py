@@ -12,9 +12,8 @@ except:
 BASICS = ['user: ', '### prompt'] # lower case for ease
 
 class G4A:
-    speed = 5 # 5 = slow, 6 = xtra slow
     shorten = True
-    def __init__(self, printfunc=print):
+    def __init__(self, model, typ, printfunc=print):
         """
         A GPT4All AI chatbot, a vessel for responses. This runs offline!
 
@@ -29,13 +28,12 @@ class G4A:
         self.stop = False
         self.asked_for_resp = 0
         self.prf = printfunc
-        print('Loading AI please wait...\nHINT WITH LOADING: If you get less things to run (e.g. maybe close down those open browsers) it will lag your computer less (if at all!)')
         try:
             #Popular models:
             #ggml-gpt4all-j-v1.3-groovyy - gptj
             #gpt4all-lora-quantized-ggml - llama
-            self.gptj = GPT4All("ggml-gpt4all-j-v1.3-groovyy", 'utils/bot/model/', \
-                model_type='gptj') #gptj, llama, mpt
+            self.gptj = GPT4All(model, 'utils/bot/model/', \
+                model_type=typ) #gptj, llama, mpt
         except Exception as e:
             input('ERROR SERRING UP. Try restarting this or cleaning up some disc space. If this error persists, report it or something. Press enter to quit.')
             raise e

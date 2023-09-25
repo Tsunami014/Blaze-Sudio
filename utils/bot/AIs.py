@@ -1,6 +1,7 @@
 import os, sys, time
 from threading import Thread
 import g4f
+
 import asyncio, aiohttp
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 import nest_asyncio
@@ -228,6 +229,7 @@ class AI():
         - Autoswitch
         - Preferences as to which AIs are best
         """
+        print('Loading AI please wait...\nHINT WITH LOADING: If you get less things to run (e.g. maybe close down those open browsers) it will lag your computer less (if at all!)')
         self.AIs = []
         all_ais = [G4A, ChatGPTBot]
         
