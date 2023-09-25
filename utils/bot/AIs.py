@@ -131,7 +131,7 @@ class CacheBaseBot(BaseBot):
         try:
             if self.cache == None:
                 await self.reevaluate()
-        except NameError: await self.reevaluate()
+        except: await self.reevaluate()
         return self.cache
 
 class ChatGPTBot(NetBaseBot):
@@ -275,15 +275,24 @@ class AI():
         ]
         onlines = await asyncio.gather(*responses)
         return [[str(modelsl[i]), (False if onlines[i] == False else modelsl[i].out)] for i in range(len(onlines))]
-        
 
-    def __getattr__(self, __name): # To get the attributes from the current AI
-        return getattr(self.cur,__name)
+    def __getattr__(self, name):
+        if 'cur' not in dir(self):
+            raise AttributeError(
+                f'\
+NO AI INITIATED and attribute {name} does not exist on this object!!!!\n\
+Please use `await AI.find_current()` to find the current AI.'
+            )
+        try:
+            return getattr(self.cur, name)
+        except:
+            raise AttributeError(
+                f'Attribute {name} does not exist on this object or the current AI!'
+            )
     
     async def find_current(self):
         self.cur = None
-        async def run(i): return i.is_online()
-        resp = [(run(i) if not i.usesasync else i.is_online()) for i in self.AIs]
+        resp = [(i.is_online()) for i in self.AIs]
         responses = await asyncio.gather(*resp)
         l = []
         for i in range(len(responses)):
