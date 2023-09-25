@@ -60,11 +60,6 @@ class BaseBot:
     def still_generating(self):
         if self.thread == None: return False
         return self.thread.is_alive()
-    
-    def any_more(self):
-        out = self.resp[self.asked_for_resp:]
-        self.asked_for_resp = len(self.resp)
-        return out
 
     async def __call__(self, cnvrs):
         if isinstance(self, (ChatGPTBot,)): # add all the AIs that need a conversation LIST to work (and don't need summarisation)
@@ -231,7 +226,10 @@ class AI():
         """
         print('Loading AI please wait...\nHINT WITH LOADING: If you get less things to run (e.g. maybe close down those open browsers) it will lag your computer less (if at all!)')
         self.AIs = []
-        all_ais = [G4A, ChatGPTBot]
+        all_ais = [ChatGPTBot]
+
+        #for i in os.listdir('utils/bot/model'):
+        #    all_ais.append(G4A(i, 'utils/bot/model/'))
         
         provs = [i for i in dir(g4f.Provider) if not i.startswith('__') and i != 'annotations' and \
                  i.lower() != 'base_provider' and getattr(g4f.Provider,i).working and \
