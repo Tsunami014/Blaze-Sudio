@@ -40,6 +40,7 @@ class BaseBot:
         An AI chatbot, a vessel for responses.
         """
         self.resp = ''
+        self.out = ''
         self.thread = None
         self.stop = False
     
@@ -70,6 +71,7 @@ class BaseBot:
         else:
             inp = PARSE(cnvrs, 0, 0) # TOCHANGE
         out = await self._call_ai(inp)
+        self.out = out
         if self.thread != None:
             self.stop = True
             self.thread.join()
@@ -85,7 +87,7 @@ class BaseBot:
             Whether or not the bot can be questioned currently
         """
         try:
-            await self('1+1 = ')
+            await self('Q: How are you?\nA: ')
             self.stop = True
             return True
         except:
@@ -172,6 +174,7 @@ class G4FBot(CacheBaseBot):
             The model name, e.g. 'gpt-neo-2.7B'
         """
         self.resp = ''
+        self.out = ''
         self.thread = None
         self.stop = False
         if isinstance(provider, str):
@@ -183,7 +186,7 @@ class G4FBot(CacheBaseBot):
         else:
             self.model = model
     
-    def __str__(self): return f'<{self.provider.__name__}: {self.model.__name__}>'
+    def __str__(self): return f'<{self.provider.params[self.provider.params.index("r.")+2:self.provider.params.index(" supports")]}: {self.model.name}>'
     def __repr__(self): return self.__str__()
 
     async def __call__(self, cnvrs):
@@ -194,6 +197,7 @@ class G4FBot(CacheBaseBot):
         if isinstance(inp, str):
             inp = [{'role': 'user', 'content': inp}]
         out = await self._call_ai(inp)
+        self.out = out
         if self.thread != None:
             self.stop = True
             self.thread.join()
@@ -255,12 +259,23 @@ class AI():
                 self.AIs.append(i())
             except:
                 pass
+        from utils.bot.set_preferences import get_preferences
+        self.AIs.sort(key=lambda x: get_preferences([str(x)]))
     
     async def reevaluate(self):
         responses = [
             i.reevaluate() for i in [_ for _ in self.AIs if isinstance(_, CacheBaseBot)]
         ]
-        await asyncio.gather(*responses) 
+        await asyncio.gather(*responses)
+    
+    async def get_all_model_responses(self):
+        modelsl = [_ for _ in self.AIs if isinstance(_, CacheBaseBot)]
+        responses = [
+            i.reevaluate() for i in modelsl
+        ]
+        onlines = await asyncio.gather(*responses)
+        return [[str(modelsl[i]), (False if onlines[i] == False else modelsl[i].out)] for i in range(len(onlines))]
+        
 
     def __getattr__(self, __name): # To get the attributes from the current AI
         return getattr(self.cur,__name)
