@@ -12,6 +12,6 @@ def print_generation(txt):
             seen = ai.resp
 
 print('evaluating...')
-asyncio.run(ai.reevaluate())
+asyncio.run(ai.find_current())
 print_generation('Hello! how are you?')
 pass
