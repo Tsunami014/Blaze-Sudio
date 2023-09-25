@@ -1,6 +1,6 @@
 {
-    "<ChatBase: gpt-3.5-turbo>": 7,
-    "<H2o: h2oai/h2ogpt-gm-oasst1-en-2048-falcon-40b-v1>": 8,
+    "<ChatBase: gpt-3.5-turbo>": 4,
+    "<H2o: h2oai/h2ogpt-gm-oasst1-en-2048-falcon-40b-v1>": 7,
     "<Vercel: huggingface:bigscience/bloom>": 1,
     "<Vercel: huggingface:EleutherAI/gpt-neox-20b>": 2,
     "<Vercel: openai:text-ada-001>": 7,
@@ -8,5 +8,8 @@
     "<Vercel: huggingface:google/flan-t5-xxl>": 6,
     "<Vercel: openai:gpt-3.5-turbo-16k>": 7,
     "<Vercel: replicate:a16z-infra/llama7b-v2-chat>": 7,
-    "<Vercel: openai:text-davinci-002>": 6
+    "<Vercel: openai:text-davinci-002>": 6,
+    "<Vercel: cohere:command-light-nightly>": 7,
+    "<Vercel: cohere:command-nightly>": 7,
+    "<Vercel: openai:text-davinci-003>": 6
 }
