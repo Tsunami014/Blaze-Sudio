@@ -6,6 +6,7 @@ except ImportError:
     except ImportError:
         from consts import *
 import re
+from math import inf
 
 # FOR SAMPLES SEE THE BOTTOM OF THIS FILE
 
@@ -16,17 +17,17 @@ def split(txt):
     spl = txt.split('\n')
     for line in spl:
         tmp = []
-        out = re.split(r'(`|((?<!\\)\))|((?<!\\)\()|~|\|)', line)
+        out = re.split(r'([`|(\\)*~])', line) # ((?<!\\)[`|()*~]|\\(?=[^`|()~*]))
         for i in out:
             if i is None: continue
             if i == '': continue
-            finds = re.findall(r'\\[^(|~)]', i)
+            finds = re.findall(r'\\[^(|~)*]', i)
             if finds != []:
                 raise SyntaxError(
                     f'Text "<txt>", line {spl.index(line)}, in <main>\n\
     {line}\n\
     {"".join([" " for _ in range(sum([len(__) for __ in out[:out.index(i)]])+i.index(finds[0]))])}^\n\
-BackslashError: backslash escaping a character that is not in: [`, ), ~, |, (, \\]'
+BackslashError: backslash escaping a character that is not in: [`, ), ~, |, (, \\, *]'
                 )# TODO: in group (not main)
             #for j in re.findall(r'\\(\(|\)|~|\|`)', i): i = i.replace('\\'+j, j)
             tmp.append(i)
@@ -57,6 +58,8 @@ def parseKWs(kwargs, possible, requireds=[]):
         )
 
 def SL(txt, lvl=1): # Set Level
+    if lvl == None or lvl == inf:
+        return f'*{txt}*'
     amnt = ''.join(['`' for _ in range(lvl)])
     return amnt + txt + amnt
 
@@ -107,8 +110,15 @@ class Summary:
         l = []
         group = False #TODO: groups IN groups
         temp = ''
+        backslashed = False
         for i in split(description):
-            if i == '(':
+            if backslashed:
+                if group == False:
+                    l.append(i) if i != '``' else l.extend(['`', '`'])
+                else:
+                    temp += i
+                backslashed = False
+            elif i == '(':
                 group = []
                 temp = ''
             elif i == ')':
@@ -119,16 +129,29 @@ class Summary:
             elif i == '|':
                 if group != False:
                     if temp != '': group.append(Summary(temp))
-                    temp = ''
+                    temp = '' 
+            elif i == '\\':
+                backslashed = True
             else:
                 if group == False:
                     l.append(i) if i != '``' else l.extend(['`', '`'])
                 else:
                     temp += i
-        temp = []
+        temp = [] # TODO: syntaxError if group hasn't closed off yet
+        wrappedininf = False
         for wrd in l:
             if isinstance(wrd, list):
+                if temp != []:
+                    end.append({'txt': ''.join(temp), 'lvl': lvl})
+                    temp = []
                 end.append(wrd)
+            elif wrd == '*':
+                if wrappedininf:
+                    end.append({'txt': ''.join(temp), 'lvl': inf})
+                    temp = []
+                    wrappedininf = False
+                else:
+                    wrappedininf = True
             elif wrd == '`':
                 if prev == 0:
                     if temp != []:
@@ -152,9 +175,16 @@ class Summary:
                 prev = 0
         if temp != []:
             end.append({'txt': ''.join(temp), 'lvl': lvl})
+        if wrappedininf: # something went wrong with the infinity wrapping
+            place = len(description) - description[::-1].index('*')
+            raise SyntaxError(
+                f'Text "<txt>", in <main>\n\
+{description}\n\
+{"".join([" " for _ in range(place)])}^\n\
+InfinityError: unequal matchup of infinity creators') # TODO: in <group> and line # 
         return end
     
-    def get(self, summary_lvl=0):
+    def get(self, summary_lvl=0, was_bef=False):
         """
         gets the summary at the specified level of summarisation
 
@@ -162,23 +192,24 @@ class Summary:
         ----------
         summary_lvl : int
             the level of summarisation to get, 0 gets pretty much the whole text, 1 gets some and leaves out others, etc., defaults to 0
+        was_bef : bool
+            Whether or not there was text before. This means that the ~ parser will act as if there was text before.
 
         Returns
         -------
         str
             the summary of self.txt at the specified level
         """
-        res = []
+        out = ''
         for i in self.txt:
             if isinstance(i, list):
                 for j in i:
                     if j.get(summary_lvl) != '':
-                        res.append(j.get(summary_lvl))
+                        out += j.get(summary_lvl, out!='')
                         break
             elif i['lvl'] >= summary_lvl:
-                res.append(i['txt'])
-        out = ''.join(res)
-        for i in re.findall('.~.', out): out = out.replace(i, i[0]+' '+i[-1])
+                out += i['txt']
+        for i in re.findall('%s~.' % ('' if was_bef else '.'), out): out = out.replace(i, i[0]+' '+i[-1])
         return out.replace('~', '')
 
     def __add__(self, add2): # For combining Summaries, e.g. combine character details with knowledge.

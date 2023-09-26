@@ -67,15 +67,22 @@ class TestConversationParser(unittest.TestCase):
         s = Summary(r'hi :\) \\') # excessive use of backslash because of python's string formatting, so use 'r' instead
         self.assertEqual(s.get(0), 'hi :) \\')
 
-        s = Summary('```Grapefruit`````:`` (`loves-life`|``:`````~optimist```)')
+        s = Summary('```Grapefruit````:` (`loves-life`|``:`````~optimist```)')
         self.assertEqual(s.get(0), 'Grapefruit: loves-life')
         self.assertEqual(s.get(1), 'Grapefruit:loves-life')
         self.assertEqual(s.get(2), 'Grapefruit: optimist')
         self.assertEqual(s.get(3), 'Grapefruit optimist')
         self.assertEqual(s.get(4), '')
+
+        s = Summary('*hi*``~bye``')
+        self.assertEqual(s.get(0), 'hi bye')
+        self.assertEqual(s.get(2), 'hi bye')
+        self.assertEqual(s.get(3), 'hi')
+        from math import inf
+        self.assertEqual(s.get(inf), 'hi')
     
     def testKnowledge(self):
-        from utils.conversion_parse import Knowledge, Summary
+        from utils.conversion_parse import Knowledge
         K = Knowledge('Grapefruit')
         K.add_clause(is_adjs='kind/good')
         self.assertEqual(K.get(), 'Grapefruit is kind and good.')

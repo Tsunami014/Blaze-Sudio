@@ -60,7 +60,7 @@ In this you can see the word `hi` with an importance level of 0 and `~bye` with 
 
 If you asked for a summary level of 0, it would return `hi bye`. You can see the squiggle in this was converted into a space. But, ask for a summary of 1 and you'll get `bye` with no space. That is because there is nothign next to it, so it is excluded!
 
-## Backslashes (\\) #TODO
+## Backslashes (\\)
 A backslash (like in many other coding languages) neglects something. So, if you wanted to make a smiley face, LISTEN UP!
 
 A backslash basically says 'ignore anything special about this character'. So, usualy `(` is a construct for a list, but if you backslash it (`\(`) it becomes the regular character `(`. So, a smiley face `:)` would be needed to be convert into `:\)`, but when you output it it will look the same.
