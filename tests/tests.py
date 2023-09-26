@@ -8,7 +8,7 @@ sys.path.append(os.getcwd()) # and make sure we can access all stuff as if from 
 
 class TestConversationParser(unittest.TestCase):
     def test_kwarg_parser(self):
-        from utils.conversion_parse import parseKWs
+        from utils.conversation_parse import parseKWs
         with self.assertRaises(ValueError) as cm:
             parseKWs({'hi': 'bye'}, ['hello'])
         self.assertEqual(str(cm.exception), 'Unknown kwarg "--hi"\nAvaliable args: "--hello"')
@@ -30,7 +30,7 @@ class TestConversationParser(unittest.TestCase):
         parseKWs({'goodbye': 'bye'}, ['hello', 'goodbye'], [('goodbye', 'hello')])
     
     def testSummary(self):
-        from utils.conversion_parse import Summary, SL
+        from utils.conversation_parse import Summary, SL
         s = Summary('hi')
         self.assertEqual(s.txt, [{'txt': 'hi', 'lvl': 0}])
         s = Summary('`hi`')
@@ -82,7 +82,7 @@ class TestConversationParser(unittest.TestCase):
         self.assertEqual(s.get(inf), 'hi')
     
     def testKnowledge(self):
-        from utils.conversion_parse import Knowledge
+        from utils.conversation_parse import Knowledge
         K = Knowledge('Grapefruit')
         K.add_clause(is_adjs='kind/good')
         self.assertEqual(K.get(), 'Grapefruit is kind and good.')
