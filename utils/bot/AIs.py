@@ -61,11 +61,11 @@ class BaseBot:
         if self.thread == None: return False
         return self.thread.is_alive()
 
-    async def __call__(self, cnvrs):
-        if isinstance(self, (ChatGPTBot,)): # add all the AIs that need a conversation LIST to work (and don't need summarisation)
+    async def __call__(self, cnvrs, change=True):
+        if isinstance(self, (ChatGPTBot,)) or not change: # add all the AIs that need a conversation LIST to work (and don't need summarisation)
             inp = cnvrs
         else:
-            inp = PARSE(cnvrs, 0, 0) # TOCHANGE
+            inp = PARSE([(3, 0), 2], '', inp, 'Bot') #TODO: change params
         out = await self._call_ai(inp)
         self.out = out
         if self.thread != None:
@@ -185,9 +185,9 @@ class G4FBot(CacheBaseBot):
     def __str__(self): return f'<{self.provider.params[self.provider.params.index("r.")+2:self.provider.params.index(" supports")]}: {self.model.name}>'
     def __repr__(self): return self.__str__()
 
-    async def __call__(self, cnvrs):
-        if self.model.name in []: # add all the AIs that need a conversation LIST to work (and don't need summarisation)
-            inp = PARSE(cnvrs, 0, 0) # TOCHANGE VALUES OF PARSE FUNC
+    async def __call__(self, cnvrs, change=True):
+        if self.model.name in [] or not change: # add all the AIs that need a conversation LIST to work (and don't need summarisation)
+            inp = PARSE([(3, 0), 2], '', inp, 'Bot') # TODO: CHANGE PARAMS
         else:
             inp = cnvrs
         if isinstance(inp, str):
@@ -208,7 +208,7 @@ class G4FBot(CacheBaseBot):
                 )
 
 class AI():
-    def __init__(self):
+    def __init__(self, use_gpt4real=True, loadgpt4real=False):
         """
         A combo of MANY AI Chatbots!
         # NOTE: REMEMBER TO CALL `await AI.find_current()` BEFORE USING THE AI OR ELSE IT WILL ERROR WITH `None has no attribute X`
@@ -223,13 +223,28 @@ class AI():
         - Detects when offline, and switches to another AI
         - Autoswitch
         - Preferences as to which AIs are best
+
+        Parameters
+        ----------
+        use_gpt4real : bool or list, optional
+            Whether or not to use the GPT4Real AI, by default True
+            If given a list will use all the files in the `utils/bot/model` folder with the names in the list
+        loadgpt4real : bool, optional
+            Whether or not to load the GPT4Real AI, by default False
+            If this is False, it will only load the model when it uses the model.
+            This is useful if you don't want to load the model if you don't need it, but bad if you want all the loading to happen at the same time.
         """
-        print('Loading AI please wait...\nHINT WITH LOADING: If you get less things to run (e.g. maybe close down those open browsers) it will lag your computer less (if at all!)')
+        print('HINT WITH LOADING: If you get less things to run (e.g. maybe close down those open browsers) it will lag your computer less (if at all!)')
         self.AIs = []
         all_ais = [ChatGPTBot]
 
-        #for i in os.listdir('utils/bot/model'):
-        #    all_ais.append(G4A(i, 'utils/bot/model/'))
+        if use_gpt4real == True or isinstance(use_gpt4real, list):
+            if isinstance(use_gpt4real, list):
+                for i in use_gpt4real:
+                    self.AIs.append(G4A(i, 'utils/bot/model/', loadgpt4real))
+            else:
+                for i in os.listdir('utils/bot/model'):
+                    self.AIs.append(G4A(i, 'utils/bot/model/', loadgpt4real))
         
         provs = [i for i in dir(g4f.Provider) if not i.startswith('__') and i != 'annotations' and \
                  i.lower() != 'base_provider' and getattr(g4f.Provider,i).working and \
@@ -255,10 +270,7 @@ class AI():
 
         for i in provs: self.AIs.extend(get_models(i))
         for i in all_ais:
-            try:
-                self.AIs.append(i())
-            except:
-                pass
+            self.AIs.append(i())
         from utils.bot.set_preferences import get_preferences
         self.AIs.sort(key=lambda x: get_preferences([str(x)]))
     
@@ -268,13 +280,40 @@ class AI():
         ]
         await asyncio.gather(*responses)
     
-    async def get_all_model_responses(self):
-        modelsl = [_ for _ in self.AIs if isinstance(_, CacheBaseBot)]
+    async def get_all_model_responses(self, use_gpt4real=False, use_gpt4real_if_all_else_fails=True):
+        modelsl = [_ for _ in self.AIs if not isinstance(_, G4A)]
+        async def trial(i):
+            try:
+                await i('Q: hi\nA: ', change=False)
+                i.stop = True
+                return i.out
+            except:
+                return False
         responses = [
-            i.reevaluate() for i in modelsl
+            trial(i) for i in modelsl
         ]
+        if use_gpt4real:
+            modelsl2 = [_ for _ in self.AIs if isinstance(_, G4A)]
+            async def trial2(i):
+                await i('Q: hi\nA: ', change=False)
+                while i.still_generating():
+                    await asyncio.sleep(0.1)
+                return i.resp
+            modelsl.extend(modelsl2)
+            responses.extend([trial2(i) for i in modelsl2])
         onlines = await asyncio.gather(*responses)
-        return [[str(modelsl[i]), (False if onlines[i] == False else modelsl[i].out)] for i in range(len(onlines))]
+        if use_gpt4real_if_all_else_fails and not any(onlines) and not use_gpt4real:
+            modelsl2 = [_ for _ in self.AIs if isinstance(_, G4A)]
+            async def trial2(i):
+                await i('Q: hi\nA: ', change=False)
+                while i.still_generating():
+                    await asyncio.sleep(0.1)
+                return i.resp
+            responses = [trial2(i) for i in modelsl2]
+            onlines2 = await asyncio.gather(*responses)
+            onlines.extend(onlines2)
+            modelsl.extend(modelsl2)
+        return [[str(modelsl[i]), onlines[i]] for i in range(len(onlines))]
 
     def __getattr__(self, name):
         if 'cur' not in dir(self):
@@ -290,14 +329,28 @@ Please use `await AI.find_current()` to find the current AI.'
                 f'Attribute {name} does not exist on this object or the current AI!'
             )
     
-    async def find_current(self):
+    async def find_current(self, use_gpt4real=False, use_gpt4real_if_all_else_fails=True):
         self.cur = None
-        resp = [(i.is_online()) for i in self.AIs]
+        if not use_gpt4real: l = [i for i in self.AIs if not isinstance(i, G4A)]
+        else: l = self.AIs
+        resp = [(i.is_online()) for i in l]
         responses = await asyncio.gather(*resp)
         l = []
         for i in range(len(responses)):
             if responses[i]:
                 l.append(self.AIs[i])
+        if l == []:
+            if use_gpt4real_if_all_else_fails:
+                try:
+                    self.cur = [i for i in self.AIs if isinstance(i, G4A)][0]
+                except IndexError:
+                    raise ValueError(
+                        'No valid AI model found! (including GPT4All)'
+                    )
+            else:
+                raise ValueError(
+                    'No valid AI model found! (excluding GPT4All, but you specified to not have them included, so :P)'
+                )
         self.cur = l[0]
         return l # all the working AIs
 

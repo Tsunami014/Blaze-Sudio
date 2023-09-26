@@ -13,27 +13,31 @@ BASICS = ['user: ', '### prompt'] # lower case for ease
 
 class G4A:
     shorten = True
-    def __init__(self, model, typ, printfunc=print):
+    def __init__(self, model, typ, loadmodel):
         """
         A GPT4All AI chatbot, a vessel for responses. This runs offline!
 
         Parameters
         ----------
-        printfunc : function
-            The function to use when streaming the tokens, defaults to print.
-            Must have 2 optional params: the text to print, defaults to '', and "end", defaults to '\n'
+        model : str
+            The name of the file to use for the model. This is the name of a file in utils/bot/model/ that contains the model.
+        typ : str
+            The type of model to use. Options are: gptj, llama, mpt
+        loadmodel : bool
+            Whether or not to load the model. If False, it will load the model on it's first __call__.
         """
         self.resp = ''
         self.thread = None
         self.stop = False
-        self.asked_for_resp = 0
-        self.prf = printfunc
+        self.model = model
+        self.typ = typ
+        if loadmodel: self.load_model()
+        else: self.gptj = None
+    
+    def load_model(self):
         try:
-            #Popular models:
-            #ggml-gpt4all-j-v1.3-groovyy - gptj
-            #gpt4all-lora-quantized-ggml - llama
-            self.gptj = GPT4All(model, 'utils/bot/model/', \
-                model_type=typ) #gptj, llama, mpt
+            self.gptj = GPT4All(self.model, 'utils/bot/model/', \
+                model_type=self.typ, allow_download=False) # we download them earlier, that's why we're here
         except Exception as e:
             input('ERROR SERRING UP. Try restarting this or cleaning up some disc space. If this error persists, report it or something. Press enter to quit.')
             raise e
@@ -41,89 +45,58 @@ class G4A:
     @staticmethod # dunno why, it had this in the original so I'm including it here
     def _response_callback(self, token_id, response):
         self.resp += response.decode('utf-8')
-        if self.stop == False: return False
-        self.prf(response.decode('utf-8'), end='')
+        if self.stop: return True
         for i in BASICS:
             if i in self.resp.lower():
-                self.resp[:self.resp.index(i):] # override the end result to remove the part, and stop generating
+                self.resp = self.resp[:self.resp.index(i):] # override the end result to remove the part, and stop generating
                 return False
         return True
     
     @staticmethod
     def _prompt_callback(self, token_id):
-        return self.stop
+        return not self.stop
     
-    def _start(self, inp, after):
-        print('generating...')
-        self.gptj.generate(inp)
-        print('finished!')
-        self.prf()
-        after(self.resp)
+    def _call_ai(self, inp):
         self.stop = False
+        self.resp = ''
+        self.resp = self.gptj.generate(inp)
     
-    def __call__(self, inp, after=lambda end: None):
+    async def __call__(self, inp, change=True):
         """
-        Make the bot generate a response! Can be confusing, so make sure to look at the parameters below!
+        Make the bot generate a response!
 
         Parameters
         ----------
-        inp : str
+        inp : list[dict[str, str]]
             The string to input into the AI
-        after : function, optional but recommended
-            What to do after the bot finishes its stuff. The function needs to have one required parameter for the bot's final output, by default nothing
-        personality : function, optional
-            The personality of the AI. If you need examples/defaults look in utils/bot/personalities.py, by default AIP (AI's default faster personality)
-        method : function, optional
-            Basically what to do with every new token the bot produces. If you need examples/defaults look in utils/bot/methods.py, by default infinite generation
-        cont : bool, optional
-            Whether or not to continue off the last thing you inputted. Note this will continue what IT WROTE, to get it to write more off the same prompt, by default False (it will not continue)
-        wait : bool, optional
-            Whether to wait for the thing to finish or leave it as a thread, by default False (leave as a thread)
         params : dict, optional
-            The parameters (how much it generates, etc.) of the bot. If you need examples/defaults look in utils/bot/params.py, by default NORMAL
+            The parameters (how much it generates, etc.) of the bot. TODO: get a list of avaliable inputs
+        change : bool, optional
+            Whether to change the input if it is a string into a conversation, defaults to True
         """
-        self.stop = True
-        self.asked_for_resp = 0
-        self.resp = ''
-        self.stop = False
+        if self.gptj == None: self.load_model()
+        if change:
+            if isinstance(inp, str): inp = [{'role': 'user', 'content': inp}]
+            inp = PARSE([(3, 0), 2], '', inp, 'Bot') # TODO: change params
         self.gptj.model._response_callback = lambda tok_id, resp: self._response_callback(self, tok_id, resp)
         self.gptj.model._prompt_callback = lambda tok_id: self._prompt_callback(self, tok_id)
-        t = Thread(target=self._start, args=(inp, after), daemon=True)
-        t.start()
-    
-    def wait_for_stop_generating(self):
-        while not self.stop:
-            pass
-    
-    def _call_ai(self, cnvrs):
-        out = 'hello!'#str(cnvrs)
-        return {'choices': [{'message': {'role': 'bot', 'content': out}}]}
-    
-    def any_more(self):
-        out = self.resp[self.asked_for_resp:]
-        self.asked_for_resp = len(self.resp)
-        return out
-
-    def __call__(self, cnvrs):
-        inp = PARSE(cnvrs, 0, 0)
-        out = self._call_ai(inp)
-        out = out['choices'][0]['message']
-        if self.thread != None:
-            self.stop = True
-            self.thread.join()
-        self.stop = False
-        self.thread = Thread(target=self._stream_ai, args=(out['content'],), daemon=True)
+        self.thread = Thread(target=self._call_ai, args=(inp,), daemon=True)
         self.thread.start()
     
-    def should_interrupt(self, cnvrs):
-        pass
-    
-    def is_online(self):
+    async def is_online(self):
         """
         Returns
         -------
         Bool
             Whether or not the bot can be questioned currently.
             For this bot, always is True.
+            I think...
         """
         return True
+    
+    def still_generating(self):
+        if self.thread == None: return False
+        return self.thread.is_alive()
+    
+    def __str__(self): return f'<GPT4All: {self.model}>'
+    def __repr__(self): return self.__str__()
