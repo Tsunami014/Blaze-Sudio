@@ -1,8 +1,8 @@
 try:
-    from utils.conversion_parse.consts import *
+    from utils.conversation_parse.consts import *
 except ImportError:
     try:
-        from conversion_parse.consts import *
+        from conversation_parse.consts import *
     except ImportError:
         from consts import *
 import re
