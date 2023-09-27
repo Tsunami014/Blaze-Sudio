@@ -395,14 +395,14 @@ def PARSE(start, desc, prompt, bot_name):
         end += add['NLs'].format(desc)
     else:
         if start[0][1] in [1, 3]:
-            end += '\n'
             if isinstance(add, dict): end += add['A']
             else: end += add # assuming it's otherwise a string
+            end += '\n'
         end += desc
         if start[0][1] in [2, 3]:
+            end += '\n'
             if isinstance(add, dict): end += add['B']
             else: end += add
-            end += '\n'
     add = STARTPARAM1[start[1]]
     ks = list(add.keys())
     if 'other' in ks: ks.remove('other')
@@ -439,9 +439,19 @@ def parse_prompt(prompt, botNAME, userNAME, start):
         rpl['user'] = userNAME
     
     for i in prompt:
-        if i['role'] in rpl.keys():
-            if i['role'] == 'assistant': i['role'] = 'bot'
-            i['content'] = i['content'].replace(rpl[i['role']], i['role'])
+        if 'role' in rpl.keys():
+            if i['role'].lower() == 'assistant': i['role'] = 'bot'
+            try:
+                i['content'] = i['content'].replace(rpl[i['role'].lower()], i['role'])
+            except KeyError: pass
+        else:
+            try:
+                i['role'] = i['sender']
+                if i['role'].lower() == 'assistant': i['role'] = 'bot'
+                try:
+                    i['content'] = i['content'].replace(rpl[i['role'].lower()], i['role'])
+                except KeyError: pass
+            except: pass
     return prompt
 
 def cycle(my_list, start_at=None):
