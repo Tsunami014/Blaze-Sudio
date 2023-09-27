@@ -333,7 +333,7 @@ class AI:
                 await i('Q: How are you?\nA: ')
                 i.stop = True
                 return (str(i), i.out)
-            except: None
+            except: return None
         l = [i for i in self.AIs if not isinstance(i, G4A)]
         resp = [test(i) for i in l]
         responses = await asyncio.gather(*resp)
@@ -358,6 +358,30 @@ Please use `await AI.find_current()` to find the current AI.'
             raise AttributeError(
                 f'Attribute {name} does not exist on this object or the current AI!'
             )
+    
+    async def list_all(self, use_gpt4real=False):
+        self.cur = None
+        if not use_gpt4real: l = [i for i in self.AIs if not isinstance(i, G4A)]
+        else: l = self.AIs
+        resp = [(i.is_online()) for i in l]
+        return l, resp
+
+    async def results(self, l, responses, used_gpt4real=False, use_gpt4real_if_all_else_fails=True):
+        outs = [l[i] for i in range(len(l)) if responses[i]]
+        responses = [l[i].out for i in range(len(l)) if responses[i]]
+        if outs == []:
+            if use_gpt4real_if_all_else_fails:
+                try:
+                    self.cur = [i for i in self.AIs if isinstance(i, G4A)][0]
+                except IndexError:
+                    raise ValueError(
+                        'No working AI model found! (including GPT4All :O)'
+                    )
+            else:
+                raise ValueError(
+                    'No working AI model found! (%s GPT4All%s)' % (('excluding' if not used_gpt4real else 'including')(', but you specified to not have them included, so :P' if not used_gpt4real else ' :O'))
+                )
+        self.cur = outs[0]
     
     async def find_current(self, use_gpt4real=False, use_gpt4real_if_all_else_fails=True):
         self.cur = None

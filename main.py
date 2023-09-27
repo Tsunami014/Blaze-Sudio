@@ -2,6 +2,7 @@ from utils import Character
 from utils.bot.AIs import *
 from graphics.GUI import InputBox, RESIZE_H, TextBoxFrame
 from graphics.GUI.textboxify.borders import LIGHT
+from graphics import Progressbar
 import pygame
 import asyncio
 
@@ -144,12 +145,14 @@ class Sparky:
         return True
 
     async def load(self): #TODO: make a loading bar
-        self.WIN.fill((0, 0, 0))
-        self.WIN.blit(self.txt.render('Please wait... Loading AIs...', True, (255, 255, 255)), (0, 0))
-        pygame.display.update()
         for ai in self.AIs:
             if isinstance(ai, AI):
-                await ai.find_current()
+                self.WIN.fill((255, 255, 255))
+                pygame.display.update()
+                bar = Progressbar(600, 50)
+                l, tasks = await ai.list_all(False)
+                res = bar(WIN, (WIN.get_width() - 600) // 2, (WIN.get_height() - 50) // 2, 5, tasks, 'Loading AI... Please wait... {2}%')
+                await ai.results(l, res, False, True)
 
 if __name__ == '__main__':
     WIN = pygame.display.set_mode((800, 500))
