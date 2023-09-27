@@ -18,7 +18,7 @@ elif os.getcwd().endswith('utils'): # set folder to one above
 
 sys.path.append(os.getcwd())
 
-from utils.conversation_parse import PARSE
+from utils.conversation_parse import PARSE, Summary
 from utils.characters import *
 from api_keys import loadAPIkeys
 try:
@@ -60,18 +60,16 @@ class BaseBot:
         if self.thread == None: return False
         return self.thread.is_alive()
 
-    async def __call__(self, cnvrs, change=True):
+    async def __call__(self, cnvrs, description='', change=True):
         if isinstance(self, (ChatGPTBot,)) or not change: # add all the AIs that need a conversation LIST to work (and don't need summarisation)
             inp = cnvrs
         else:
-            inp = PARSE([(3, 0), 2], '', inp, 'Bot') #TODO: change params
+            inp = PARSE([(3, 0), 2], description, cnvrs, 'Bot') #TODO: change params
         out = await self._call_ai(inp)
         self.out = out
-        if self.thread != None:
-            self.stop = True
-            self.thread.join()
+        self.stop_generating()
         self.stop = False
-        self.thread = Thread(target=self._stream_ai, args=(out['content'],), daemon=True)
+        self.thread = Thread(target=self._stream_ai, args=(out,), daemon=True)
         self.thread.start()
     
     async def is_online(self):
@@ -87,6 +85,33 @@ class BaseBot:
             return True
         except:
             return False
+    
+    async def should_interrupt(self, conv, description=''):
+        """
+        Parameters
+        ----------
+        conv : str
+            The conversation so far
+        description : str, optional
+            The description of the conversation, by default ''
+        
+        Returns
+        -------
+        str
+            The interrupt code
+        """
+        conv = PARSE([(3, 0), 2], description+\
+                     Summary('*\n*`You are to `(```make a statement about```|*reply to*)* this conversation*``;``*\n**Respond with one character from the following list:\n**a=agree;i=interrupt;l=leave;s=*(``say something``|*speak*)').get(0)\
+                     , conv, 'Bot') #TODO: change params
+        await self(conv)
+        self.stop = True
+        self.stop_generating()
+        return self.out
+    
+    def stop_generating(self):
+        if self.thread != None:
+            self.stop = True
+            self.thread.join()
     
     def __str__(self): return f'<{type(self).__name__}>'
     def __repr__(self): return self.__str__()
@@ -200,13 +225,27 @@ class G4FBot(CacheBaseBot):
         self.thread = Thread(target=self._stream_ai, args=(out,), daemon=True)
         self.thread.start()
     
+    async def is_online(self):
+        """
+        Returns
+        -------
+        Bool
+            Whether or not the bot can be questioned currently
+        """
+        try:
+            await self('Q: How are you?\nA: ')
+            self.stop = True
+            return bool(self.out) # if it is None or '' or [] etc. then false, else True
+        except:
+            return False
+    
     async def _call_ai(self, cnvrs):
         return await self.provider.create_async(
                     model=self.model.name,
                     messages=cnvrs,
                 )
 
-class AI():
+class AI:
     def __init__(self, use_gpt4real=True, loadgpt4real=False):
         """
         A combo of MANY AI Chatbots!
@@ -280,39 +319,31 @@ class AI():
         await asyncio.gather(*responses)
     
     async def get_all_model_responses(self, use_gpt4real=False, use_gpt4real_if_all_else_fails=True):
-        modelsl = [_ for _ in self.AIs if not isinstance(_, G4A)]
-        async def trial(i):
-            try:
-                await i('Q: hi\nA: ', change=False)
-                i.stop = True
-                return i.out
-            except:
-                return False
-        responses = [
-            trial(i) for i in modelsl
-        ]
-        if use_gpt4real:
+        async def test_gpt4real():
             modelsl2 = [_ for _ in self.AIs if isinstance(_, G4A)]
             async def trial2(i):
                 await i('Q: hi\nA: ', change=False)
                 while i.still_generating():
                     await asyncio.sleep(0.1)
-                return i.resp
-            modelsl.extend(modelsl2)
-            responses.extend([trial2(i) for i in modelsl2])
-        onlines = await asyncio.gather(*responses)
-        if use_gpt4real_if_all_else_fails and not any(onlines) and not use_gpt4real:
-            modelsl2 = [_ for _ in self.AIs if isinstance(_, G4A)]
-            async def trial2(i):
-                await i('Q: hi\nA: ', change=False)
-                while i.still_generating():
-                    await asyncio.sleep(0.1)
-                return i.resp
+                return (str(i), i.resp)
             responses = [trial2(i) for i in modelsl2]
-            onlines2 = await asyncio.gather(*responses)
-            onlines.extend(onlines2)
-            modelsl.extend(modelsl2)
-        return [[str(modelsl[i]), onlines[i]] for i in range(len(onlines))]
+            return (await asyncio.gather(*responses)), modelsl2
+        async def test(i):
+            try:
+                await i('Q: How are you?\nA: ')
+                i.stop = True
+                return (str(i), i.out)
+            except: None
+        l = [i for i in self.AIs if not isinstance(i, G4A)]
+        resp = [test(i) for i in l]
+        responses = await asyncio.gather(*resp)
+        if use_gpt4real or (use_gpt4real_if_all_else_fails and not any([i != None for i in responses])):
+            res = await test_gpt4real()
+            responses.extend(res[0])
+            l.extend(res[1])
+        
+        responses = [i for i in responses if i != None]
+        return responses # all the working AIs' resopnses
 
     def __getattr__(self, name):
         if 'cur' not in dir(self):
@@ -334,24 +365,55 @@ Please use `await AI.find_current()` to find the current AI.'
         else: l = self.AIs
         resp = [(i.is_online()) for i in l]
         responses = await asyncio.gather(*resp)
-        l = []
-        for i in range(len(responses)):
-            if responses[i]:
-                l.append(self.AIs[i])
-        if l == []:
+        outs = [l[i] for i in range(len(l)) if responses[i]]
+        responses = [l[i].out for i in range(len(l)) if responses[i]]
+        if outs == []:
             if use_gpt4real_if_all_else_fails:
                 try:
                     self.cur = [i for i in self.AIs if isinstance(i, G4A)][0]
                 except IndexError:
                     raise ValueError(
-                        'No valid AI model found! (including GPT4All)'
+                        'No working AI model found! (including GPT4All :O)'
                     )
             else:
                 raise ValueError(
-                    'No valid AI model found! (excluding GPT4All, but you specified to not have them included, so :P)'
+                    'No working AI model found! (%s GPT4All%s)' % (('excluding' if not use_gpt4real else 'including')(', but you specified to not have them included, so :P' if not use_gpt4real else ' :O'))
                 )
-        self.cur = l[0]
+        self.cur = outs[0]
         return l # all the working AIs
 
     async def __call__(self, *args, **kwargs):
+        if isinstance(self.cur, G4A) and kwargs.get('change', True) and len(args) >= 1:
+            args[0] = PARSE([(3, 0), 2], '', args[0], 'Bot') # TODO: change params
         await self.cur(*args, **kwargs)
+    
+    async def should_interrupt(self, conv, description=''):
+        """
+        Parameters
+        ----------
+        conv : str
+            The conversation so far
+        description : str, optional
+            The description of the conversation, by default ''
+        
+        Returns
+        -------
+        str
+            The interrupt code
+        """
+        if isinstance(self.cur, G4A):
+            conv = PARSE([(3, 0), 2], description+\
+                     Summary('*\n*`You are to `(```make a statement about```|*reply to*)* this conversation*``;``*\n**Respond with one character from the following list:\n**a=agree;i=interrupt;l=leave*').get(0)\
+                     , conv, 'Bot') #TODO: change params
+            await self.cur(conv)
+            while self.cur.still_generating():
+                await asyncio.sleep(0.1)
+            return self.cur.resp
+        
+        await self.cur.should_interrupt(conv)
+        self.stop = True
+        self.stop_generating()
+        return self.out
+    
+    def stop_generating(self):
+        self.cur.stop_generating()
