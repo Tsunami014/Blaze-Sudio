@@ -383,11 +383,13 @@ def PARSE(start, desc, prompt, bot_name):
         The descrition of anything the AI needs to know (e.g. You are a kind and loving person. etc.). If string will not process it. BEWARNED.
     prompt : dict
         [{'role': role, 'content': content}]
+        (if given a string will imagine that 'system' said that)
     bot_name : str #TODO: REMOVE THIS PARAM
         the name of the bot. This is only used if the start param uses the bot's name, so at the end
         of the prompt it uses the name to prompt the AI, e.g. 'Grapefruit: '. Otherwise, the name of
         the bot is taken from the prompt.
     """
+    if isinstance(prompt, str): prompt = [{'role': 'system', 'content': prompt}]
     prompt = parse_prompt(prompt, bot_name, 'User', start)
     end = ''
     add = STARTPARAM2[start[0][0]]

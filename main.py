@@ -3,10 +3,13 @@ from utils.bot.AIs import *
 from graphics.GUI import InputBox, RESIZE_H, TextBoxFrame
 from graphics.GUI.textboxify.borders import LIGHT
 import pygame
+import asyncio
 
 pygame.init()
 
-class GameEngine: #TODO: Better name
+# TODO: threading
+
+class Sparky:
     def __init__(self, WIN):
         pygame.display.set_caption('AIHub')
         
@@ -31,9 +34,14 @@ class GameEngine: #TODO: Better name
         self.dialog_group = pygame.sprite.LayeredDirty()
         self.dialog_group.add(self.dialog_box)
 
+        self.AIs = [ # for duplicate AIs
+            AI(),
+            UserBot()
+        ]
+
         self.characters = [
-            Character(AI(), 'AI', 'An AI assistant for the user.'),
-            Character(UserBot(), 'User', '')
+            Character(self.AIs[0], 'AI', 'An AI assistant for the user.'),
+            Character(self.AIs[1], 'User', '')
         ]
 
         self.input_box = InputBox(100, 100, 140, 32, '', resize=RESIZE_H, maxim=1000)
@@ -42,10 +50,10 @@ class GameEngine: #TODO: Better name
             self.dialog_group.update()
             rects = self.dialog_group.draw(screen)
             pygame.display.update(rects)
-        def _(cnvrs):
+        async def _(cnvrs):
             self.input_box.rect.move_ip(0-self.input_box.rect.topleft[0], 0-self.input_box.rect.topleft[1])
             self.input_box.rect.move_ip(*pygame.mouse.get_pos())
-            return {'choices': [{'message': {'role': 'user', 'content': self.input_box.interrupt(self.WIN, run_too=__)}}]}
+            return self.input_box.interrupt(self.WIN, run_too=__)
         self.characters[1].AI._call_ai = _
         self.txt = pygame.font.SysFont('Arial', 20)
         self.clock = pygame.time.Clock()
@@ -63,28 +71,32 @@ class GameEngine: #TODO: Better name
         if self.ongoing != None:
             self._interrupt(who, self.ongoing[0])"""
 
-    def call(self, who, characters_listening):
-        who(characters_listening)
+    async def call(self, who, characters_listening):
+        await who(characters_listening)
         self.ongoing = [[who, '', {}]] # TODO: Make multiple people chatting at same time support
     
     def finished(self, num):
         del self.ongoing[num]
     
     def interrupts(self, d, said):
-        pass
+        print(f'It was said: {said}, and in response: {str(d)}')
 
-    def update(self): # TODO: Make multiple conversations at same time support
+    async def update(self): # TODO: Make multiple conversations at same time support
         txt = []
         sep = '            '
         for who, said, figured in self.ongoing:
             place = self.ongoing.index([who, said, figured])
-            said += who.AI.any_more()
+            said += who.any_more()
             self.ongoing[place][1] = said
             if not who.still_generating():
+                for i in self.characters:
+                    if i != who:
+                        i.stop_generating()
                 interrupts = {}
                 for i in self.characters:
-                    interrupts[i] = i.should_interrupt(said, who) # change params for multi-conversation/people support
-                    figured[i] = prev + len(said)
+                    if i != who:
+                        interrupts[i] = await i.should_interrupt(said, who) # change params for multi-conversation/people support
+                        figured[i] = figured.get(i, 0) + len(said)
                 self.interrupts(interrupts, said)
                 self.finished(place)
                 continue
@@ -97,23 +109,19 @@ class GameEngine: #TODO: Better name
             interrupts = {}
             for i in self.characters:
                 if i != who:
-                    spd = who.AI.speed * 2
-                    try:
-                        prev = figured[i]
-                    except:
-                        prev = 0
+                    spd = 20 if isinstance(i, G4A) else 0
+                    prev = figured.get(i, 0)
                     if prev > endpuncnum-spd and '.?!' in said or prev > puncnum-spd and ',./?!"\'' in said or prev > endnum-spd:
-                        interrupts[i] = i.should_interrupt(said, who) # change params for multi-conversation/people support
-                        figured[i] = prev + len(said)
+                        if not i.still_generating():
+                            interrupts[i] = await i.should_interrupt(said, who) # change params for multi-conversation/people support
+                            figured[i] = prev + len(said)
             self.interrupts(interrupts, said)
             txt.append(str(who) + ': ' + said)
-            #if not who.still_generating():
-            #    self.finished([i[0] for i in self.ongoing].index(who))
         self.dialog_box.very_soft_reset()
         self.dialog_box.set_text(sep.join(txt))
         self.dialog_box.update()
 
-    def __call__(self):
+    async def __call__(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
@@ -121,10 +129,10 @@ class GameEngine: #TODO: Better name
                 if event.key == pygame.K_ESCAPE:
                     return False
                 if event.key == pygame.K_SPACE:
-                    self.call(self.characters[1], [])#self.characters[0])
+                    await self.call(self.characters[1], [])#self.characters[0])
         
         self.WIN.fill((0, 0, 0))
-        self.update()
+        await self.update()
         for _, said, __ in self.ongoing:
             self.WIN.blit(self.txt.render(said, True, (255, 255, 255)), (0, 0))
         # Update the changes so the user sees the text.
@@ -135,9 +143,18 @@ class GameEngine: #TODO: Better name
         self.clock.tick(60)
         return True
 
+    async def load(self): #TODO: make a loading bar
+        self.WIN.fill((0, 0, 0))
+        self.WIN.blit(self.txt.render('Please wait... Loading AIs...', True, (255, 255, 255)), (0, 0))
+        pygame.display.update()
+        for ai in self.AIs:
+            if isinstance(ai, AI):
+                await ai.find_current()
+
 if __name__ == '__main__':
     WIN = pygame.display.set_mode((800, 500))
-    GE = GameEngine(WIN)
+    GE = Sparky(WIN)
+    asyncio.run(GE.load())
     run = True
     while run:
-        run = GE()
+        run = asyncio.run(GE())

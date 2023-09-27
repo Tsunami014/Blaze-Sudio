@@ -1,14 +1,6 @@
 from gpt4all import GPT4All
 from threading import Thread
 
-try:
-    from utils.bot.AIs import PARSE
-except:
-    try:
-        from bot.AIs import PARSE
-    except:
-        from AIs import PARSE
-
 BASICS = ['user: ', '### prompt'] # lower case for ease
 
 class G4A:
@@ -61,7 +53,7 @@ class G4A:
         self.resp = ''
         self.resp = self.gptj.generate(inp)
     
-    async def __call__(self, inp, change=True):
+    async def __call__(self, inp, change=None):
         """
         Make the bot generate a response!
 
@@ -71,13 +63,8 @@ class G4A:
             The string to input into the AI
         params : dict, optional
             The parameters (how much it generates, etc.) of the bot. TODO: get a list of avaliable inputs
-        change : bool, optional
-            Whether to change the input if it is a string into a conversation, defaults to True
         """
         if self.gptj == None: self.load_model()
-        if change:
-            if isinstance(inp, str): inp = [{'role': 'user', 'content': inp}]
-            inp = PARSE([(3, 0), 2], '', inp, 'Bot') # TODO: change params
         self.gptj.model._response_callback = lambda tok_id, resp: self._response_callback(self, tok_id, resp)
         self.gptj.model._prompt_callback = lambda tok_id: self._prompt_callback(self, tok_id)
         self.thread = Thread(target=self._call_ai, args=(inp,), daemon=True)
@@ -97,6 +84,28 @@ class G4A:
     def still_generating(self):
         if self.thread == None: return False
         return self.thread.is_alive()
+    
+    async def should_interrupt(self, conv, description=''):
+        """
+        Parameters
+        ----------
+        conv : str
+            The conversation so far
+        description : str, optional
+            The description of the conversation, by default ''
+        
+        Returns
+        -------
+        str
+            The interrupt code (one character)
+        """
+        conv = description
+        await self(conv)
+    
+    def stop_generating(self):
+        if self.thread != None:
+            self.stop = True
+            self.thread.join()
     
     def __str__(self): return f'<GPT4All: {self.model}>'
     def __repr__(self): return self.__str__()
