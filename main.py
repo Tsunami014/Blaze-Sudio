@@ -91,17 +91,16 @@ class Sparky:
     def finished(self, num):
         del self.ongoing[num]
     
-    def interrupts(self, d, said):
+    async def interrupts(self, d, said):
         for i in d:
             t = d[i]
-            if d[i] == 'a': t = random.choice(['mm-hmm.', 'ook.', 'sure thango'])
-            elif d[i] == 'q': t = random.choice(['what?', 'huh?', 'what did you say?'])
-            elif d[i] == 'l': t = random.choice(['no more of this. bye!', 'cya', 'bye!'])
+            if d[i] == 'q': t = random.choice(['what?', 'huh?', 'what did you say?'])
             elif d[i] == 'o': t = random.choice(['okay.', 'sure.', 'alright.'])
             elif d[i] == 'n': t = random.choice(['no.', 'nope.', 'nah.'])
             elif d[i] == 'y': t = random.choice(['yes.', 'yep.', 'yeah.'])
-            elif d[i] == 'h': t = random.choice(['hmm...', 'hmm.', 'hmmm', 'interesting...'])
-            elif d[i] == 'i': t = random.choice(['excuse me.', 'Um, I have something to say'])
+            elif d[i] == 'i':
+                t = random.choice(['excuse me.', 'Um, I have something to say'])
+                await self.call(i, [self.ongoing[0][0]])
             elif d[i] == 's':
                 self.ongoing.append([i, '', {}])
                 continue
@@ -128,7 +127,7 @@ class Sparky:
                     if i != who:
                         interrupts[i] = await i.should_interrupt(said, who) # change params for multi-conversation/people support
                         figured[i] = figured.get(i, 0) + len(said)
-                self.interrupts(interrupts, said)
+                await self.interrupts(interrupts, said)
                 self.finished(place)
                 continue
 
@@ -146,7 +145,7 @@ class Sparky:
                         if not i.still_generating():
                             interrupts[i] = await i.should_interrupt(said, who) # change params for multi-conversation/people support
                             figured[i] = prev + len(said)
-            self.interrupts(interrupts, said)
+            await self.interrupts(interrupts, said)
             txt.append(str(who) + ': ' + said)
         self.dialog_box.very_soft_reset()
         self.dialog_box.set_text(sep.join(txt))
