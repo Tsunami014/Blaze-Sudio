@@ -316,31 +316,38 @@ class AI:
         ]
         await asyncio.gather(*responses)
     
-    async def get_all_model_responses(self, use_gpt4real=False, use_gpt4real_if_all_else_fails=True):
+    async def get_all_model_responses(self, use_gpt4real=False, use_gpt4real_if_all_else_fails=True, times_too=False):
         async def test_gpt4real():
             modelsl2 = [_ for _ in self.AIs if isinstance(_, G4A)]
             async def trial2(i):
                 await i('Q: hi\nA: ', change=False)
                 while i.still_generating():
                     await asyncio.sleep(0.1)
-                return (str(i), i.resp)
+                return (str(i), i.resp), time.time()
             responses = [trial2(i) for i in modelsl2]
             return (await asyncio.gather(*responses)), modelsl2
         async def test(i):
             try:
                 await i('Q: How are you?\nA: ')
                 i.stop = True
-                return (str(i), i.out)
-            except: return None
+                return (str(i), i.out), time.time()
+            except: return None, time.time()
         l = [i for i in self.AIs if not isinstance(i, G4A)]
+        n = time.time()
         resp = [test(i) for i in l]
-        responses = await asyncio.gather(*resp)
+        resps = await asyncio.gather(*resp)
+        responses = [i[0] for i in resps]
+        times = [i[1] - n for i in resps]
         if use_gpt4real or (use_gpt4real_if_all_else_fails and not any([i != None for i in responses])):
+            n = time.time()
             res = await test_gpt4real()
-            responses.extend(res[0])
+            responses.extend([i[0] for i in res[0]])
+            times.extend([i[1] - n for i in res[0]])
             l.extend(res[1])
         
+        times = [times[i] for i in range(len(times)) if responses[i] != None]
         responses = [i for i in responses if i != None]
+        if times_too: return responses, times
         return responses # all the working AIs' resopnses
 
     def __getattr__(self, name):
