@@ -104,8 +104,6 @@ class BaseBot:
                      Summary('*\n*`You are to `(```make a statement about```|*reply to*)* this conversation*``;``*\n**Respond with one character from the following list:\n**a=agree;i=interrupt;l=leave;s=*(``say something``|*speak*)').get(0)\
                      , conv, 'Bot') #TODO: change params
         await self(conv)
-        self.stop = True
-        self.stop_generating()
         return self.out
     
     def stop_generating(self):
@@ -425,18 +423,17 @@ Please use `await AI.find_current()` to find the current AI.'
         str
             The interrupt code
         """
-        if isinstance(self.cur, G4A):
-            conv = PARSE([(3, 0), 2], description+\
-                     Summary('*\n*`You are to `(```make a statement about```|*reply to*)* this conversation*``;``*\n**Respond with one character from the following list:\n**a=agree;i=interrupt;l=leave*').get(0)\
+        conv = PARSE([(3, 0), 2], description+\
+                     Summary('*\n*`You are to `(```make a statement about```|*reply to*)* this conversation*``;``*\n**USE ONE OF THE FOLLOWING CHARACTERS IN YOUR RESPONSE:\n**a=agree;i=interrupt;l=leave;q=ask "what?";y=yes;n=no;o=ok;h=hmm;s=say something (that is not part of this list)*').get(0)\
                      , conv, 'Bot') #TODO: change params
+        conv = conv[:-2] + "'s single character response: "
+        if isinstance(self.cur, G4A):
             await self.cur(conv)
             while self.cur.still_generating():
                 await asyncio.sleep(0.1)
             return self.cur.resp
         
         await self.cur.should_interrupt(conv)
-        self.stop = True
-        self.stop_generating()
         return self.out
     
     def stop_generating(self):
