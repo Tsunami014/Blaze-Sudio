@@ -33,20 +33,22 @@ async def rate_all(resps=None):
     out = {}
     if resps == None:
         ais = AI()
-        resps = await ais.get_all_model_responses()
+        resps, times = await ais.get_all_model_responses(times_too=True)
     prevs = get_preferences()
     print('Rate these responses out of 10! (nothing is 5)')
+    i = 0
     for name, output in resps:
         if output == False: continue
         add = ''
         if name in prevs: add = ' (previous: ' + str(prevs[name]) + ')'
         try:
-            rating = input(name + add + ': ' + output + '\n')
+            rating = input(name + add + f' (time taken: {round(times[i])} secs): ' + output + '\n')
         except KeyboardInterrupt:
             await rate_all(resps)
             return
         if rating == '': continue
         else: out[name] = int(rating)
+        i += 1
     set_preferences(out)
 
 if __name__ == '__main__':
