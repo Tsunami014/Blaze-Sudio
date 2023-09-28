@@ -424,7 +424,7 @@ Please use `await AI.find_current()` to find the current AI.'
             The interrupt code
         """
         conv = PARSE([(3, 0), 2], description+\
-                     Summary('*\n*`You are to `(```make a statement about```|*reply to*)* this conversation*``;``*\n**USE ONE OF THE FOLLOWING CHARACTERS IN YOUR RESPONSE:\n**a=agree;i=interrupt;l=leave;q=ask "what?";y=yes;n=no;o=ok;h=hmm;s=say something (that is not part of this list)*').get(0)\
+                     Summary('*\n*`You are to `(```make a statement about```|*reply to*)* this conversation*``;``*\n**USE ONE OF THE FOLLOWING CHARACTERS IN YOUR RESPONSE:\n**i=interrupt;q=ask "what?";y=yes;n=no;o=ok;s=say something (that is not part of this list)*').get(0)\
                      , conv, 'Bot') #TODO: change params
         conv = conv[:-2] + "'s single character response: "
         if isinstance(self.cur, G4A):
