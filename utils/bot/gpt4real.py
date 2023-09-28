@@ -59,7 +59,7 @@ class G4A:
 
         Parameters
         ----------
-        inp : list[dict[str, str]]
+        inp : str
             The string to input into the AI
         params : dict, optional
             The parameters (how much it generates, etc.) of the bot. TODO: get a list of avaliable inputs
@@ -84,23 +84,6 @@ class G4A:
     def still_generating(self):
         if self.thread == None: return False
         return self.thread.is_alive()
-    
-    async def should_interrupt(self, conv, description=''):
-        """
-        Parameters
-        ----------
-        conv : str
-            The conversation so far
-        description : str, optional
-            The description of the conversation, by default ''
-        
-        Returns
-        -------
-        str
-            The interrupt code (one character)
-        """
-        conv = description
-        await self(conv)
     
     def stop_generating(self):
         if self.thread != None:

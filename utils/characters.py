@@ -69,7 +69,7 @@ class Character:
     def still_generating(self):
         return self.AI.still_generating()
     
-    def __str__(self): return f'<Character: {self.name}>'
+    def __str__(self): return self.name
     def __repr__(self): return str(self)
     
     def got_told(self, message, from_who):

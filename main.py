@@ -3,18 +3,30 @@ from utils.bot.AIs import *
 from graphics.GUI import InputBox, RESIZE_H, TextBoxFrame
 from graphics.GUI.textboxify.borders import LIGHT
 from graphics import Progressbar
-import pygame
-import asyncio
+import pygame, asyncio, random
 
 pygame.init()
 
 # TODO: threading
+
+class randowords:
+    def __init__(self, txt, sizeOScreen, font, colour=(255, 255, 255), lifespan=120):
+        self.sur = font.render(txt, True, colour)
+        pygame.transform.rotate(self.sur, random.randint(-40, 40))
+        self.pos = (random.randint(0, sizeOScreen[0]), random.randint(0, sizeOScreen[1]))
+        self.lifespan = lifespan
+    
+    def __call__(self, screen):
+        screen.blit(self.sur, self.pos)
+        self.lifespan -= 1
+        return self.lifespan <= 0
 
 class Sparky:
     def __init__(self, WIN):
         pygame.display.set_caption('AIHub')
         
         self.WIN = WIN
+        self.rwords = []
         self.ongoing = []
         self.dialog_box = TextBoxFrame(
             text="",
@@ -80,7 +92,25 @@ class Sparky:
         del self.ongoing[num]
     
     def interrupts(self, d, said):
-        print(f'It was said: {said}, and in response: {str(d)}')
+        for i in d:
+            t = d[i]
+            if d[i] == 'a': t = random.choice(['mm-hmm.', 'ook.', 'sure thango'])
+            elif d[i] == 'q': t = random.choice(['what?', 'huh?', 'what did you say?'])
+            elif d[i] == 'l': t = random.choice(['no more of this. bye!', 'cya', 'bye!'])
+            elif d[i] == 'o': t = random.choice(['okay.', 'sure.', 'alright.'])
+            elif d[i] == 'n': t = random.choice(['no.', 'nope.', 'nah.'])
+            elif d[i] == 'y': t = random.choice(['yes.', 'yep.', 'yeah.'])
+            elif d[i] == 'h': t = random.choice(['hmm...', 'hmm.', 'hmmm', 'interesting...'])
+            elif d[i] == 'i': t = random.choice(['excuse me.', 'Um, I have something to say'])
+            elif d[i] == 's':
+                self.ongoing.append([i, '', {}])
+                continue
+            else:
+                print(t)
+                self.ongoing = [[i, '', {}]]
+                continue
+            print(i.name, ':', t)
+            self.rwords.append(randowords(t, self.WIN.get_size(), self.txt))
 
     async def update(self): # TODO: Make multiple conversations at same time support
         txt = []
@@ -140,6 +170,8 @@ class Sparky:
         self.dialog_group.update()
         rects = self.dialog_group.draw(self.WIN)
         pygame.display.update(rects)
+        #self.rwords = [i for i in self.rwords if not i(self.WIN)] # text disappears after 2 secs
+        for i in self.rwords: i(self.WIN) # infinite text
         pygame.display.update()
         self.clock.tick(60)
         return True
