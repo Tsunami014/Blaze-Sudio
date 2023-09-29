@@ -1,13 +1,24 @@
 import languagemodels as lm
 
-import os, re
+import os, re, json
 # "((utils\/bot)|(bot))?\/(?=[^\/]*\.py)" would be if the input ended in the filename.py
 bef = re.findall(r'((((utils\/bot)|(bot)))?\n)', os.getcwd()+'\n')[0][:-1] # inp ends in newline
 if bef != '': bef += '/'
 
-def install_all_fast():
+ram_to_gb = lm.config.convert_to_gb # converts it like 4gb to 4.0 and 4.8M to 0.48
+
+def installed(new=None): # if new == None, don't change anything
+    with open(f'{bef}preferences.json', 'w') as f:
+        d = json.load(f)
+        if new != None:
+            d['downloaded tinyllms'] = new
+            json.dump(d, f, indent=4)
+    return d['downloaded tinyllms']
+
+def install_tinyllm(ram):
     # basically, this just runs everything that is in the library so it installs all the models it needs for all the tasks
-    lm.set_max_ram('base')
+    ram = ram_to_gb(ram) # I know it automatically does this, but it's for the saving it in the file...
+    lm.set_max_ram(ram)
     lm.do("What color is the sky?")
     lm.complete("She hid in her room until")
     lm.code("""
@@ -38,40 +49,13 @@ def install_all_fast():
     lm.store_doc(lm.get_wiki("C language"), "C")
     lm.store_doc(lm.get_wiki("Javascript"), "Javascript")
     lm.get_doc_context("What does it mean for batteries to be included in a language?")
+    installed(installed() + [ram])
+
+def install_all_fast():
+    install_tinyllm('base')
 
 def install_all_slow():
-    # basically, this just runs everything that is in the library so it installs all the models it needs for all the tasks
-    lm.set_max_ram('4gb')
-    lm.do("What color is the sky?")
-    lm.complete("She hid in her room until")
-    lm.code("""
-    a = 2
-    b = 5
-    # Swap a and b
-    """)
-    lm.chat('''
-    System: Respond as a helpful assistant.
-    User: What time is it?
-    Assistant:''')
-    lm.get_wiki('Chemistry')
-    lm.get_weather(41.8, -87.6)
-    lm.get_date()
-    lm.chat(f'''
-    System: Respond as a helpful assistant. It is {lm.get_date()}
-    User: What time is it?
-    Assistant:''')
-    context = "There is a green ball and a red box"
-    lm.extract_answer("What color is the ball?", context).lower()
-    lm.classify("That movie was terrible.","positive","negative")
-    lm.store_doc("Paris is in France.")
-    lm.store_doc("Paris is nice.")
-    lm.store_doc("The sky is blue.")
-    lm.get_doc_context("Where is Paris?")
-    lm.docs.clear()
-    lm.store_doc(lm.get_wiki("Python"), "Python")
-    lm.store_doc(lm.get_wiki("C language"), "C")
-    lm.store_doc(lm.get_wiki("Javascript"), "Javascript")
-    lm.get_doc_context("What does it mean for batteries to be included in a language?")
+    install_tinyllm('4gb')
 
 def test_tinyllm():
     lm.set_max_ram('base')
