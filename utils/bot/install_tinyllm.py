@@ -6,7 +6,7 @@ bef = '/'.join([i for i in ['utils', 'bot'] if i not in bef.split('/')])
 if bef != '': bef += '/'
 
 def installed(new=None): # if new == None, don't change anything
-    with open(f'{bef}preferences.json', 'w') as f:
+    with open(f'{bef}preferences.json', 'r+') as f:
         d = json.load(f)
         if new != None:
             d['downloaded tinyllms'] = new

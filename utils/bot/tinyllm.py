@@ -45,3 +45,6 @@ class tinyllm(BaseBot):
         return optionsd[classify(txt, *list(optionsd.keys()))]
     
     def __str__(self): return f'<tinyllm {str(self.ram)}GB RAM>'
+
+    def copy(self):
+        return tinyllm(self.ram)
