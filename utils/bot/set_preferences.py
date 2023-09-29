@@ -8,8 +8,6 @@ except ImportError:
         from AIs import AI
 
 import os, re
-# "((utils\/bot)|(bot))?\/(?=[^\/]*\.py)" would be if the input ended in the filename.py
-# "((((utils\/bot)|(bot)))?\n)" is another thing
 bef = re.findall(r'((utils\/?)?(bot)?\n)', os.getcwd().replace('\\','/')+'\n')[0][0][:-1] # inp ends in newline
 bef = '/'.join([i for i in ['utils', 'bot'] if i not in bef.split('/')])
 if bef != '': bef += '/'
