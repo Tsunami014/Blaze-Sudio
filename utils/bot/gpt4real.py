@@ -4,7 +4,6 @@ from threading import Thread
 BASICS = ['user: ', '### prompt'] # lower case for ease
 
 class G4A:
-    shorten = True
     def __init__(self, model, typ, loadmodel):
         """
         A GPT4All AI chatbot, a vessel for responses. This runs offline!
