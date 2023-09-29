@@ -5,8 +5,6 @@ import os, re, json
 bef = re.findall(r'((((utils\/bot)|(bot)))?\n)', os.getcwd()+'\n')[0][:-1] # inp ends in newline
 if bef != '': bef += '/'
 
-ram_to_gb = lm.config.convert_to_gb # converts it like 4gb to 4.0 and 4.8M to 0.48
-
 def installed(new=None): # if new == None, don't change anything
     with open(f'{bef}preferences.json', 'w') as f:
         d = json.load(f)
@@ -17,8 +15,7 @@ def installed(new=None): # if new == None, don't change anything
 
 def install_tinyllm(ram):
     # basically, this just runs everything that is in the library so it installs all the models it needs for all the tasks
-    ram = ram_to_gb(ram) # I know it automatically does this, but it's for the saving it in the file...
-    lm.set_max_ram(ram)
+    ram = lm.set_max_ram(ram)
     lm.do("What color is the sky?")
     lm.complete("She hid in her room until")
     lm.code("""
