@@ -23,6 +23,8 @@ from utils.characters import *
 from api_keys import loadAPIkeys
 from utils.bot.gpt4real import G4A
 from utils.bot.basebots import *
+from utils.bot.tinyllm import tinyllm
+from utils.bot.install_tinyllm import installed
 
 class ChatGPTBot(NetBaseBot):
     speed = 1 # don't need the other as it is the same
@@ -157,6 +159,7 @@ class AI:
         provs = [i for i in dir(g4f.Provider) if not i.startswith('__') and i != 'annotations' and \
                  i.lower() != 'base_provider' and getattr(g4f.Provider,i).working and \
                  (not getattr(g4f.Provider,i).needs_auth)]
+
         def get_models(name):
             l = []
             #p = getattr(g4f.Provider,name.replace(re.findall(" .*", name)[0], "")).__name__
@@ -179,8 +182,13 @@ class AI:
         for i in provs: self.AIs.extend(get_models(i))
         for i in all_ais:
             self.AIs.append(i())
-        from utils.bot.set_preferences import get_preferences
+        self.AIs.extend([tinyllm(i) for i in installed()])
+        self.sort()
+    
+    def sort(self):
+        from utils.bot.set_preferences import get_preferences # it is here to avoid circular imports
         self.AIs.sort(key=lambda x: get_preferences([str(x)]))
+        return self.AIs
     
     async def reevaluate(self):
         responses = [
