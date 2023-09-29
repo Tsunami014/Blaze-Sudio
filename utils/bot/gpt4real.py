@@ -91,3 +91,6 @@ class G4A:
     
     def __str__(self): return f'<GPT4All: {self.model}>'
     def __repr__(self): return self.__str__()
+
+    def copy(self):
+        return G4A(self.model, self.typ, self.gptj != None)

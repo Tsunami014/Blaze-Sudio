@@ -1,4 +1,3 @@
-from copy import deepcopy
 import os, sys, time
 from threading import Thread
 import g4f
@@ -116,6 +115,8 @@ class G4FBot(CacheBaseBot):
                     model=self.model.name,
                     messages=cnvrs,
                 )
+    def copy(self):
+        return G4FBot(self.provider, self.model)
 
 class AI:
     def __init__(self, use_gpt4real=True, loadgpt4real=False):
@@ -313,7 +314,7 @@ Please use `await AI.find_current()` to find the current AI.'
         if preferTiny:
             ls = [i for i in self.AIs if isinstance(i, tinyllm)]
             if len(ls) != 0:
-                c = deepcopy(self.cur)
+                c = self.cur.copy()
                 self.cur = ls[0]
                 txt = PARSE([(3, 0), 2], description, conv, 'Bot')
                 ret = await self.cur.should_interrupt(txt)
