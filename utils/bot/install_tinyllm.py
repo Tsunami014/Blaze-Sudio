@@ -2,7 +2,9 @@ import languagemodels as lm
 
 import os, re, json
 # "((utils\/bot)|(bot))?\/(?=[^\/]*\.py)" would be if the input ended in the filename.py
-bef = re.findall(r'((((utils\/bot)|(bot)))?\n)', os.getcwd()+'\n')[0][:-1] # inp ends in newline
+# "((((utils\/bot)|(bot)))?\n)" is another thing
+bef = re.findall(r'((utils\/?)?(bot)?\n)', os.getcwd().replace('\\','/')+'\n')[0][0][:-1] # inp ends in newline
+bef = '/'.join([i for i in ['utils', 'bot'] if i not in bef.split('/')])
 if bef != '': bef += '/'
 
 def installed(new=None): # if new == None, don't change anything
