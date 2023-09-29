@@ -2,3 +2,4 @@ requests
 connect-markdown-renderer
 pygame
 gpt4all
+languagemodels

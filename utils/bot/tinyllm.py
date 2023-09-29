@@ -1,0 +1,39 @@
+import languagemodels as lm
+# default RAM: 0.48gb ("base")
+print(lm.do("What color is the sky?"))
+print(lm.do("What is the capital of France?"))
+print(lm.do("If I have 7 apples then eat 5, how many apples do I have?"))
+#lm.set_max_ram('4gb') # increase this so that the models it selects are more powerful
+# but the thing is, I have better models that are faster than the ones that are with 4gb anyways
+#print(lm.do("If I have 7 apples then eat 5, how many apples do I have?"))
+#lm.set_max_ram('base')
+print(lm.complete("She hid in her room until"))
+print(lm.code("""
+a = 2
+b = 5
+# Swap a and b
+"""))
+print(lm.chat('''
+System: Respond as a helpful assistant.
+User: What time is it?
+Assistant:'''))
+print(lm.get_wiki('Chemistry'))
+print(lm.get_weather(41.8, -87.6))
+print(lm.get_date())
+print(lm.chat(f'''
+System: Respond as a helpful assistant. It is {lm.get_date()}
+User: What time is it?
+Assistant:'''))
+context = "There is a green ball and a red box"
+print(lm.extract_answer("What color is the ball?", context).lower())
+print(lm.classify("That movie was terrible.","positive","negative"))
+lm.store_doc("Paris is in France.")
+lm.store_doc("Paris is nice.")
+lm.store_doc("The sky is blue.")
+print(lm.get_doc_context("Where is Paris?"))
+lm.docs.clear()
+lm.store_doc(lm.get_wiki("Python"), "Python")
+lm.store_doc(lm.get_wiki("C language"), "C")
+lm.store_doc(lm.get_wiki("Javascript"), "Javascript")
+print(lm.get_doc_context("What does it mean for batteries to be included in a language?"))
+pass
