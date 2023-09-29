@@ -292,7 +292,7 @@ Please use `await AI.find_current()` to find the current AI.'
         return l # all the working AIs
 
     async def __call__(self, *args, **kwargs):
-        if isinstance(self.cur, G4A) and kwargs.get('change', True) and len(args) >= 1:
+        if self.cur.shorten or kwargs.get('change', True):
             args[0] = PARSE([(3, 0), 2], '', args[0], 'Bot') # TODO: change params
         await self.cur(*args, **kwargs)
     
