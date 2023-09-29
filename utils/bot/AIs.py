@@ -1,3 +1,4 @@
+from copy import deepcopy
 import os, sys, time
 from threading import Thread
 import g4f
@@ -79,7 +80,6 @@ class G4FBot(CacheBaseBot):
             self.model = model
     
     def __str__(self): return f'<{self.provider.params[self.provider.params.index("r.")+2:self.provider.params.index(" supports")]}: {self.model.name}>'
-    def __repr__(self): return self.__str__()
 
     async def __call__(self, cnvrs, change=True):
         if self.model.name in [] or not change: # add all the AIs that need a conversation LIST to work (and don't need summarisation)
@@ -296,7 +296,7 @@ Please use `await AI.find_current()` to find the current AI.'
             args[0] = PARSE([(3, 0), 2], '', args[0], 'Bot') # TODO: change params
         await self.cur(*args, **kwargs)
     
-    async def should_interrupt(self, conv, description=''):
+    async def should_interrupt(self, conv, description='', preferTiny=True):
         """
         Parameters
         ----------
@@ -310,6 +310,18 @@ Please use `await AI.find_current()` to find the current AI.'
         str
             The interrupt code
         """
+        if preferTiny:
+            ls = [i for i in self.AIs if isinstance(i, tinyllm)]
+            if len(ls) != 0:
+                c = deepcopy(self.cur)
+                self.cur = ls[0]
+                txt = PARSE([(3, 0), 2], description, conv, 'Bot')
+                ret = await self.cur.should_interrupt(txt)
+                self.cur = c
+                return ret
+        if isinstance(self.cur, tinyllm):
+            txt = PARSE([(3, 0), 2], description, conv, 'Bot')
+            return await self.cur.should_interrupt(txt)
         conv = PARSE([(3, 0), 2], description+\
                      Summary('*\n*`You are to `(```make a statement about```|*reply to*)* this conversation*``;``*\n**USE ONE OF THE FOLLOWING CHARACTERS IN YOUR RESPONSE:\n**i=interrupt;q=ask "what?";y=yes;n=no;o=ok;s=say something (that is not part of this list)*').get(0)\
                      , conv, 'Bot') #TODO: change params
