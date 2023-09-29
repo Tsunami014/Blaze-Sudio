@@ -19,11 +19,13 @@ def set_preferences(prefs):
     eprefs = get_preferences()
     eprefs.update(prefs)
     with open(f'{bef}preferences.json', 'w') as f:
-        json.dump(eprefs, f, indent=4)
+        d = json.load(f)
+        d['models'].update(eprefs)
+        json.dump(d, f, indent=4)
 
 def get_preferences(specifics=None):
     with open(f'{bef}preferences.json', 'r') as f:
-        prefs = json.load(f)
+        prefs = json.load(f)['models']
     if specifics:
         try: return prefs[specifics]
         except: return 5
