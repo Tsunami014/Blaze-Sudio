@@ -6,8 +6,11 @@ except ImportError:
         from bot.AIs import AI
     except ImportError:
         from AIs import AI
-incwd = lambda txt: (txt+'/' if txt not in os.getcwd() else '')
-bef = incwd('utils') + incwd('bot') # if you put this file in a directory called utils or bt this won't like you
+
+import os, re
+# "((utils\/bot)|(bot))?\/(?=[^\/]*\.py)" would be if the input ended in the filename.py
+bef = re.findall(r'((((utils\/bot)|(bot)))?\n)', os.getcwd()+'\n')[0][:-1] # inp ends in newline
+if bef != '': bef += '/'
 
 def get_all_ais():
     return AI().AIs

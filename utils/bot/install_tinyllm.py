@@ -1,4 +1,10 @@
 import languagemodels as lm
+
+import os, re
+# "((utils\/bot)|(bot))?\/(?=[^\/]*\.py)" would be if the input ended in the filename.py
+bef = re.findall(r'((((utils\/bot)|(bot)))?\n)', os.getcwd()+'\n')[0][:-1] # inp ends in newline
+if bef != '': bef += '/'
+
 def install_all_fast():
     # basically, this just runs everything that is in the library so it installs all the models it needs for all the tasks
     lm.set_max_ram('base')
