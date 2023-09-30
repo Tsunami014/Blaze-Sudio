@@ -7,6 +7,8 @@ Also known as:
 
 # CURRENT VERSION: v0.0.1 ✨
 
+# PLEASE NOTE: AS OF RIGHT NOW, `AIs.py` IS DEPRACATED. PLEASE MOVE ON TO OTHER THINGS IN LIFE
+
 Things to note:
 1. # **<u>still in progress</u>**
 3. This is probably my best formed git repo I've ever made :)

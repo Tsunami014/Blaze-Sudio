@@ -1,10 +1,5 @@
 import time, asyncio, aiohttp
 import os, sys
-from threading import Thread
-
-def tokenize_text(text, token_length=2): # ChatGPTed func
-    tokens = [text[i:i+token_length] for i in range(0, len(text), token_length)]
-    return tokens
 
 if os.getcwd().endswith('bot'): # set path 2 folders above
     newpath = os.path.abspath(os.path.join(os.getcwd(), '../../'))
@@ -17,7 +12,7 @@ elif os.getcwd().endswith('utils'): # set folder to one above
 
 sys.path.append(os.getcwd())
 
-from utils.conversation_parse import PARSE, Summary
+from utils.conversation_parse import PARSE
 
 class BaseBot:
     shorten = True # Whether or not the length of the input affects the speed of response
@@ -27,21 +22,12 @@ class BaseBot:
         An AI chatbot, a vessel for responses.
         """
         self.resp = ''
-        self.out = ''
         self.thread = None
         self.stop = False
     
     async def _call_ai(self, cnvrs):
         out = 'hello!'#str(cnvrs)
         return out
-    
-    def _stream_ai(self, tostream):
-        self.resp = ''
-        ts = tokenize_text(tostream)
-        for i in ts:
-            self.resp += i
-            time.sleep(0.25 if ' .,/?!' in i else 0.15)
-            if self.stop: break
     
     def still_generating(self):
         if self.thread == None: return False
@@ -55,9 +41,7 @@ class BaseBot:
         out = await self._call_ai(inp)
         self.out = out
         self.stop_generating()
-        self.stop = False
-        self.thread = Thread(target=self._stream_ai, args=(out,), daemon=True)
-        self.thread.start()
+        
     
     async def is_online(self):
         """
@@ -72,26 +56,6 @@ class BaseBot:
             return True
         except:
             return False
-    
-    async def should_interrupt(self, conv, description=''):
-        """
-        Parameters
-        ----------
-        conv : str
-            The conversation so far
-        description : str, optional
-            The description of the conversation, by default ''
-        
-        Returns
-        -------
-        str
-            The interrupt code
-        """
-        conv = PARSE([(3, 0), 2], description+\
-                     Summary('*\n*`You are to `(```make a statement about```|*reply to*)* this conversation*``;``*\n**Respond with one character from the following list:\n**a=agree;i=interrupt;l=leave;s=*(``say something``|*speak*)').get(0)\
-                     , conv, 'Bot') #TODO: change params
-        await self(conv)
-        return self.out
     
     def stop_generating(self):
         if self.thread != None:

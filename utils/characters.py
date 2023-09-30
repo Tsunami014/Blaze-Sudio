@@ -1,8 +1,10 @@
 import os
 try:
     from utils.discussions import *
+    from utils.conversation_parse import PARSE2
 except ImportError:
     from discussions import *
+    from conversation_parse import PARSE2
 
 class Character:
     def __init__(self, AI, name, personality, start=1):
@@ -52,7 +54,7 @@ class Character:
         """
         # TODO: update now to include the fact that it streams the results
         self.seen = ''
-        await self.AI(self.current_discussion.get_messages())
+        await self.AI(PARSE2('', self.current_discussion.get_messages(), True))
         message = self.AI.resp
         if isinstance(who, dict):
             pass
@@ -75,9 +77,9 @@ class Character:
     async def got_told(self, message, from_who):
         # TODO: update now due to the streaming changes
         self.current_discussion.add_message(str(from_who), message)
-        await self.AI(self.current_discussion.get_messages())
-        self.current_discussion.add_message(self.name, self.AI.out)
-        return self.AI.out
+        resp = await self.AI(PARSE2('', self.current_discussion.get_messages(), True))
+        self.current_discussion.add_message(self.name, resp)
+        return resp
 
     def get_messages(self):
         """Gets a list of messages information
@@ -106,9 +108,9 @@ class Character:
     def new_discussion(self):
         self.current_discussion = self.discus.create_discussion()
     
-    async def should_interrupt(self, said, who):
+    async def interrupt(self, said, who):
         id = self.current_discussion.add_message(str(who), said)
-        out = await self.AI.should_interrupt(self.current_discussion.get_messages())
+        out = await self.AI.interrupt(PARSE2('', self.current_discussion.get_messages()))
         self.current_discussion.delete_message(id)
         return out
     
