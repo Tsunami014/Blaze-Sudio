@@ -275,7 +275,7 @@ class Knowledge():
          - is_adjs OR is_a OR who
         
         Examples for this function:
-         - Grapefruit is kind and nice = (name='Grapefruit', adjs='kind \`\`nice\`\`') (you can see the summary syntax is applied here too)
+         - Grapefruit is kind and nice = (name='Grapefruit', adjs='kind ``nice``') (you can see the summary syntax is applied here too)
          - Hinix is a lovelly and kind brown dog who licks the floor clean = (name='Hinix', is_adjs='lovelly kind', is_a='brown dog', who='licks the floor clean')
         """
         parseKWs(kwargs, ['is_adjs', 'is_a', 'who'], [('is_adjs', 'is_a', 'who')])
@@ -429,6 +429,16 @@ def PARSE(start, desc, prompt, bot_name):
             raise ValueError(
                 f'Invalid role "bot" for start param {start[1]} which cannot take multi inputs. And this error is very rare and should not happen.'
             )
+    return end
+
+def PARSE2(systemmsg, prompt, end_with_assistant=False):
+    if isinstance(prompt, str): prompt = [{'role': 'System', 'content': systemmsg}, {'role': 'User', 'content': prompt}]
+    elif systemmsg != '': prompt = [{'role': 'System', 'content': systemmsg}] + list(prompt)
+    prompt = parse_prompt(prompt, 'Assistant', 'User', [(3, 0), 2])
+    end = ''
+    for i in prompt:
+        end += f'\n{i["role"]}: {i["content"]}'
+    end += '\nAssistant:'
     return end
 
 def parse_prompt(prompt, botNAME, userNAME, start):

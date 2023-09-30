@@ -1,5 +1,5 @@
 from utils import Character
-from utils.bot.AIs import *
+from utils.bot import TinyLLM, UserBot
 from graphics.GUI import InputBox, RESIZE_H, TextBoxFrame
 from graphics.GUI.textboxify.borders import LIGHT
 from graphics import Progressbar
@@ -48,7 +48,7 @@ class Sparky:
         self.dialog_group.add(self.dialog_box)
 
         self.AIs = [ # for duplicate AIs
-            AI(),
+            TinyLLM(),
             UserBot()
         ]
 
@@ -70,19 +70,6 @@ class Sparky:
         self.characters[1].AI._call_ai = _
         self.txt = pygame.font.SysFont('Arial', 20)
         self.clock = pygame.time.Clock()
-    
-    """def _interrupt(self, who, ongoing_who):
-        loudness = ongoing_who.should_keep_talking(who)
-        if loudness == 0: # They stop talking
-            idx = self.ongoing[0].index(ongoing_who)
-            del self.ongoing[0][idx]
-            del self.ongoing[1][idx]
-        else:
-            
-    
-    def __call__(self, who, said):
-        if self.ongoing != None:
-            self._interrupt(who, self.ongoing[0])"""
 
     async def call(self, who, characters_listening):
         await who(characters_listening)
@@ -102,7 +89,7 @@ class Sparky:
                 t = random.choice(['excuse me.', 'Um, I have something to say'])
                 await self.call(i, [self.ongoing[0][0]])
             elif d[i] == 's':
-                await self.call(i, [self.characters[0]])
+                await self.call(i, [j for j in self.characters if j != i])
                 continue
             else:
                 print(t)
@@ -125,7 +112,7 @@ class Sparky:
                 interrupts = {}
                 for i in self.characters:
                     if i != who:
-                        interrupts[i] = await i.should_interrupt(said, who) # change params for multi-conversation/people support
+                        interrupts[i] = await i.interrupt(said, who) # change params for multi-conversation/people support
                         figured[i] = figured.get(i, 0) + len(said)
                 await self.interrupts(interrupts, said)
                 self.finished(place)
@@ -139,11 +126,10 @@ class Sparky:
             interrupts = {}
             for i in self.characters:
                 if i != who:
-                    spd = 20 if isinstance(i, G4A) else 0
                     prev = figured.get(i, 0)
-                    if prev > endpuncnum-spd and '.?!' in said or prev > puncnum-spd and ',./?!"\'' in said or prev > endnum-spd:
+                    if prev > endpuncnum and '.?!' in said or prev > puncnum and ',./?!"\'' in said or prev > endnum:
                         if not i.still_generating():
-                            interrupts[i] = await i.should_interrupt(said, who) # change params for multi-conversation/people support
+                            interrupts[i] = await i.interrupt(said, who) # change params for multi-conversation/people support
                             figured[i] = prev + len(said)
             await self.interrupts(interrupts, said)
             txt.append(str(who) + ': ' + said)
@@ -175,7 +161,7 @@ class Sparky:
         self.clock.tick(60)
         return True
 
-    async def load(self): #TODO: make a loading bar
+    """async def load(self):
         for ai in self.AIs:
             if isinstance(ai, AI):
                 self.WIN.fill((255, 255, 255))
@@ -183,12 +169,12 @@ class Sparky:
                 bar = Progressbar(600, 50)
                 l, tasks = await ai.list_all(False)
                 res = bar(WIN, (WIN.get_width() - 600) // 2, (WIN.get_height() - 50) // 2, 5, tasks, 'Loading AI... Please wait... {2}%')
-                await ai.results(l, res, False, True)
+                await ai.results(l, res, False, True)"""
 
 if __name__ == '__main__':
     WIN = pygame.display.set_mode((800, 500))
     GE = Sparky(WIN)
-    asyncio.run(GE.load())
+    #asyncio.run(GE.load())
     run = True
     while run:
         run = asyncio.run(GE())

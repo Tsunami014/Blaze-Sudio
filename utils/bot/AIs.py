@@ -1,6 +1,4 @@
 import os, sys, time
-from threading import Thread
-from typing import Any
 import g4f
 
 import asyncio, aiohttp
@@ -19,13 +17,11 @@ elif os.getcwd().endswith('utils'): # set folder to one above
 
 sys.path.append(os.getcwd())
 
-from utils.conversation_parse import PARSE, Summary
+from utils.conversation_parse import PARSE
 from utils.characters import *
 from api_keys import loadAPIkeys
 from utils.bot.gpt4real import G4A
 from utils.bot.basebots import *
-from utils.bot.tinyllm import tinyllm
-from utils.bot.install_tinyllm import installed
 
 class ChatGPTBot(NetBaseBot):
     speed = 1 # don't need the other as it is the same
@@ -88,14 +84,7 @@ class G4FBot(CacheBaseBot):
             inp = cnvrs
         if isinstance(inp, str):
             inp = [{'role': 'user', 'content': inp}]
-        out = await self._call_ai(inp)
-        self.out = out
-        if self.thread != None:
-            self.stop = True
-            self.thread.join()
-        self.stop = False
-        self.thread = Thread(target=self._stream_ai, args=(out,), daemon=True)
-        self.thread.start()
+        return await self._call_ai(inp)
     
     async def is_online(self):
         """
@@ -185,7 +174,6 @@ class AI:
         for i in provs: self.AIs.extend(get_models(i))
         for i in all_ais:
             self.AIs.append(i())
-        self.AIs.extend([tinyllm(i) for i in installed()])
     
     async def reevaluate(self):
         responses = [
@@ -205,9 +193,7 @@ class AI:
             return (await asyncio.gather(*responses)), modelsl2
         async def test(i):
             try:
-                await i('Q: How are you?\nA: ')
-                i.stop = True
-                return (str(i), i.out), time.time()
+                return (str(i), await i('Q: How are you?\nA: ')), time.time()
             except: return None, time.time()
         l = [i for i in self.AIs if not isinstance(i, G4A)]
         n = time.time()
@@ -257,7 +243,7 @@ Please use `await AI.find_current()` to find the current AI.'
 
     async def results(self, l, responses, used_gpt4real=False, use_gpt4real_if_all_else_fails=True):
         outs = [l[i] for i in range(len(l)) if responses[i]]
-        responses = [l[i].out for i in range(len(l)) if responses[i]]
+        responses = [l[i] for i in range(len(l)) if responses[i]]
         if outs == []:
             if use_gpt4real_if_all_else_fails:
                 try:
@@ -300,45 +286,3 @@ Please use `await AI.find_current()` to find the current AI.'
             args = list(args)
             args[0] = PARSE([(3, 0), 2], '', args[0], 'Bot') # TODO: change params
         await self.cur(*args, **kwargs)
-    
-    async def should_interrupt(self, conv, description='', preferTiny=True):
-        """
-        Parameters
-        ----------
-        conv : str
-            The conversation so far
-        description : str, optional
-            The description of the conversation, by default ''
-        
-        Returns
-        -------
-        str
-            The interrupt code
-        """
-        if preferTiny:
-            ls = [i for i in self.AIs if isinstance(i, tinyllm)]
-            if len(ls) != 0:
-                c = self.cur.copy()
-                self.cur = ls[0]
-                txt = PARSE([(3, 0), 2], description, conv, 'Bot')
-                ret = await self.cur.should_interrupt(txt)
-                self.cur = c
-                return ret
-        if isinstance(self.cur, tinyllm):
-            txt = PARSE([(3, 0), 2], description, conv, 'Bot')
-            return await self.cur.should_interrupt(txt)
-        conv = PARSE([(3, 0), 2], description+\
-                     Summary('*\n*`You are to `(```make a statement about```|*reply to*)* this conversation*``;``*\n**USE ONE OF THE FOLLOWING CHARACTERS IN YOUR RESPONSE:\n**i=interrupt;q=ask "what?";y=yes;n=no;o=ok;s=say something (that is not part of this list)*').get(0)\
-                     , conv, 'Bot') #TODO: change params
-        conv = conv[:-2] + "'s single character response: "
-        if isinstance(self.cur, G4A):
-            await self.cur(conv)
-            while self.cur.still_generating():
-                await asyncio.sleep(0.1)
-            return self.cur.resp
-        
-        await self.cur.should_interrupt(conv)
-        return self.out
-    
-    def stop_generating(self):
-        self.cur.stop_generating()
