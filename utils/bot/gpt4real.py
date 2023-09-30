@@ -93,4 +93,6 @@ class G4A:
     def __repr__(self): return self.__str__()
 
     def copy(self):
-        return G4A(self.model, self.typ, self.gptj != None)
+        new = G4A(self.model, self.typ, False)
+        new.gptj = self.gptj
+        return new
