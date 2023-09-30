@@ -102,11 +102,11 @@ class Sparky:
                 t = random.choice(['excuse me.', 'Um, I have something to say'])
                 await self.call(i, [self.ongoing[0][0]])
             elif d[i] == 's':
-                self.ongoing.append([i, '', {}])
+                await self.call(i, [self.characters[0]])
                 continue
             else:
                 print(t)
-                self.ongoing = [[i, '', {}]]
+                #self.ongoing = [[i, '', {}]]
                 continue
             print(i.name, ':', t)
             self.rwords.append(randowords(t, self.WIN.get_size(), self.txt))

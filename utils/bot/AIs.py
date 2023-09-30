@@ -1,5 +1,6 @@
 import os, sys, time
 from threading import Thread
+from typing import Any
 import g4f
 
 import asyncio, aiohttp
@@ -180,16 +181,11 @@ class AI:
         self.allthings = []
         for i in provs: self.allthings.extend([(i, j) for j in prov_models[i]])
 
+        provs.remove('ChatBase') # IT SUCKS
         for i in provs: self.AIs.extend(get_models(i))
         for i in all_ais:
             self.AIs.append(i())
         self.AIs.extend([tinyllm(i) for i in installed()])
-        self.sort()
-    
-    def sort(self):
-        from utils.bot.set_preferences import get_preferences # it is here to avoid circular imports
-        self.AIs.sort(key=lambda x: get_preferences([str(x)]))
-        return self.AIs
     
     async def reevaluate(self):
         responses = [
@@ -230,6 +226,13 @@ class AI:
         responses = [i for i in responses if i != None]
         if times_too: return responses, times
         return responses # all the working AIs' resopnses
+
+    def __getattribute__(self, name): # so whenever anything wants to get self.AIs it responds with the sorted list
+        if name == 'AIs':
+            from utils.bot.set_preferences import get_preferences # it is here to avoid circular imports
+            object.__getattribute__(self, 'AIs').sort(key=lambda x: get_preferences([str(x)]))
+            return object.__getattribute__(self, 'AIs')
+        return object.__getattribute__(self, name)
 
     def __getattr__(self, name):
         if 'cur' not in dir(self):
@@ -294,6 +297,7 @@ Please use `await AI.find_current()` to find the current AI.'
 
     async def __call__(self, *args, **kwargs):
         if self.cur.shorten or kwargs.get('change', True):
+            args = list(args)
             args[0] = PARSE([(3, 0), 2], '', args[0], 'Bot') # TODO: change params
         await self.cur(*args, **kwargs)
     
