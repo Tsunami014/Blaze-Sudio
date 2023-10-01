@@ -27,7 +27,7 @@ class Sparky:
         
         self.WIN = WIN
         self.rwords = []
-        self.ongoing = []
+        self.runningAI = False
         self.dialog_box = TextBoxFrame(
             text="",
             text_width=320,
@@ -63,7 +63,7 @@ class Sparky:
             self.dialog_group.update()
             rects = self.dialog_group.draw(screen)
             pygame.display.update(rects)
-        async def _(cnvrs):
+        async def _():
             self.input_box.rect.move_ip(0-self.input_box.rect.topleft[0], 0-self.input_box.rect.topleft[1])
             self.input_box.rect.move_ip(*pygame.mouse.get_pos())
             return self.input_box.interrupt(self.WIN, run_too=__)
@@ -71,71 +71,21 @@ class Sparky:
         self.txt = pygame.font.SysFont('Arial', 20)
         self.clock = pygame.time.Clock()
 
-    async def call(self, who, characters_listening):
-        await who(characters_listening)
-        self.ongoing = [[who, '', {}]] # TODO: Make multiple people chatting at same time support
-    
-    def finished(self, num):
-        del self.ongoing[num]
+    async def call(self, who, characters_listening, out=None):
+        if out == None: self.dialog_box.set_text(await who(characters_listening))
+        else: self.dialog_box.set_text(out)
+        self.runningAI = who
+        self.dialog_box.update()
     
     async def interrupts(self, d, said):
         for i in d:
-            t = d[i]
-            if d[i] == 'q': t = random.choice(['what?', 'huh?', 'what did you say?'])
-            elif d[i] == 'o': t = random.choice(['okay.', 'sure.', 'alright.'])
-            elif d[i] == 'n': t = random.choice(['no.', 'nope.', 'nah.'])
-            elif d[i] == 'y': t = random.choice(['yes.', 'yep.', 'yeah.'])
-            elif d[i] == 'i':
-                t = random.choice(['excuse me.', 'Um, I have something to say'])
-                await self.call(i, [self.ongoing[0][0]])
-            elif d[i] == 's':
-                await self.call(i, [j for j in self.characters if j != i])
-                continue
+            out = await i([j for j in self.characters if j != i])
+            print(f'{str(i)} : {out} ({d[i]})')
+            if d[i] == 's':
+                self.rwords.append(randowords(out, self.WIN.get_size(), self.txt))
             else:
-                print(t)
-                #self.ongoing = [[i, '', {}]]
-                continue
-            print(i.name, ':', t)
-            self.rwords.append(randowords(t, self.WIN.get_size(), self.txt))
-
-    async def update(self): # TODO: Make multiple conversations at same time support
-        txt = []
-        sep = '            '
-        for who, said, figured in self.ongoing:
-            place = self.ongoing.index([who, said, figured])
-            said += who.any_more()
-            self.ongoing[place][1] = said
-            if not who.still_generating():
-                for i in self.characters:
-                    if i != who:
-                        i.stop_generating()
-                interrupts = {}
-                for i in self.characters:
-                    if i != who:
-                        interrupts[i] = await i.interrupt(said, who) # change params for multi-conversation/people support
-                        figured[i] = figured.get(i, 0) + len(said)
-                await self.interrupts(interrupts, said)
-                self.finished(place)
-                continue
-
-            # defining some vars
-            endpuncnum = 20
-            puncnum = 30
-            endnum = 40
-
-            interrupts = {}
-            for i in self.characters:
-                if i != who:
-                    prev = figured.get(i, 0)
-                    if prev > endpuncnum and '.?!' in said or prev > puncnum and ',./?!"\'' in said or prev > endnum:
-                        if not i.still_generating():
-                            interrupts[i] = await i.interrupt(said, who) # change params for multi-conversation/people support
-                            figured[i] = prev + len(said)
-            await self.interrupts(interrupts, said)
-            txt.append(str(who) + ': ' + said)
-        self.dialog_box.very_soft_reset()
-        self.dialog_box.set_text(sep.join(txt))
-        self.dialog_box.update()
+                await self.call(i, [j for j in self.characters if j != i], out)
+            
 
     async def __call__(self):
         for event in pygame.event.get():
@@ -146,11 +96,21 @@ class Sparky:
                     return False
                 if event.key == pygame.K_SPACE:
                     await self.call(self.characters[1], [])#self.characters[0])
+                if event.key == pygame.K_RETURN:
+                    if self.input_box._TextBoxFrame__textbox.idle:
+                        self.input_box._TextBoxFrame__textbox.reset()
+                        self.input_box._TextBoxFrame__textbox.update()
+                        if self.dialog_box._TextBoxFrame__textbox.idle:
+                            self.runningAI = False
+        if self.runningAI != False and self.dialog_box._TextBoxFrame__textbox.idle:
+            interrupts = {}
+            print(str(self.dialog_box._TextBoxFrame__textbox.words))
+            for i in self.characters:
+                if i != self.runningAI:
+                    interrupts[i] = await i.interrupt(str(self.dialog_box._TextBoxFrame__textbox.words), self.runningAI) # change params for multi-conversation/people support
+            await self.interrupts(interrupts, str(self.dialog_box._TextBoxFrame__textbox.words))
         
         self.WIN.fill((0, 0, 0))
-        await self.update()
-        for _, said, __ in self.ongoing:
-            self.WIN.blit(self.txt.render(said, True, (255, 255, 255)), (0, 0))
         # Update the changes so the user sees the text.
         self.dialog_group.update()
         rects = self.dialog_group.draw(self.WIN)
