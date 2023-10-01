@@ -5,6 +5,10 @@ bef = re.findall(r'((utils\/?)?(bot)?\n)', os.getcwd().replace('\\','/')+'\n')[0
 bef = '/'.join([i for i in ['utils', 'bot'] if i not in bef.split('/')])
 if bef != '': bef += '/'
 
+# NOTE: The chat models for anything lower than 4 GB SUCK LIKE HELL
+# I TRIED TO MAKE THEM WORK AND THEY WON'T
+# KEEP THE CHAT AT 4GB
+
 def installed(new=None): # if new == None, don't change anything
     with open(f'{bef}preferences.json', 'r+') as f:
         d = json.load(f)
@@ -23,17 +27,9 @@ def install_tinyllm(ram):
     b = 5
     # Swap a and b
     """)
-    lm.chat('''
-    System: Respond as a helpful assistant.
-    User: What time is it?
-    Assistant:''')
     lm.get_wiki('Chemistry')
     lm.get_weather(41.8, -87.6)
     lm.get_date()
-    lm.chat(f'''
-    System: Respond as a helpful assistant. It is {lm.get_date()}
-    User: What time is it?
-    Assistant:''')
     context = "There is a green ball and a red box"
     lm.extract_answer("What color is the ball?", context).lower()
     lm.classify("That movie was terrible.","positive","negative")
@@ -46,6 +42,11 @@ def install_tinyllm(ram):
     lm.store_doc(lm.get_wiki("C language"), "C")
     lm.store_doc(lm.get_wiki("Javascript"), "Javascript")
     lm.get_doc_context("What does it mean for batteries to be included in a language?")
+    ram = lm.set_max_ram(4)
+    lm.chat(f'''
+    System: Respond as a helpful assistant. It is {lm.get_date()}
+    User: What time is it?
+    Assistant:''')
     installed(installed() + [ram])
 
 def install_all_fast():
@@ -70,17 +71,21 @@ def test_tinyllm():
     b = 5
     # Swap a and b
     """))
+    install_tinyllm('4gb')
     print(lm.chat('''
     System: Respond as a helpful assistant.
     User: What time is it?
     Assistant:'''))
+    lm.set_max_ram('base')
     print(lm.get_wiki('Chemistry'))
     print(lm.get_weather(41.8, -87.6))
     print(lm.get_date())
+    install_tinyllm('4gb')
     print(lm.chat(f'''
     System: Respond as a helpful assistant. It is {lm.get_date()}
     User: What time is it?
     Assistant:'''))
+    lm.set_max_ram('base')
     context = "There is a green ball and a red box"
     print(lm.extract_answer("What color is the ball?", context).lower())
     print(lm.classify("That movie was terrible.","positive","negative"))

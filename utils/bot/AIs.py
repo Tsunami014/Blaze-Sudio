@@ -45,8 +45,10 @@ class UserBot(BaseBot):
         Will need to be updated to work with a UI
         """
         super().__init__()
-    def _call_ai(self, cnvrs):
+    def _call_ai(self, *args):
         return input('User : ')
+    async def interrupt(self, *args): return ''
+    def __call__(self, *args): return self._call_ai()
     async def is_online(self):
         return True
 

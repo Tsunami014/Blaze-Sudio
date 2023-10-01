@@ -1,6 +1,4 @@
 import languagemodels as lm
-from threading import Thread
-import time
 try:
     from utils.bot.install_tinyllm import installed
 except:
@@ -17,52 +15,34 @@ def classify(doc: str, *labels: list[str]):
 
     return results[0]
 
-optionsd = {
-    "ask 'what?'": "q",
-    "interrupt": "i",
-    "say yes": "y",
-    "say no": "n",
-    "say OK": "o"
-}
-
-def tokenize_text(text, token_length=2): # ChatGPTed func
-    tokens = [text[i:i+token_length] for i in range(0, len(text), token_length)]
-    return tokens
-
 class TinyLLM:
     def __init__(self):
         self.rams = installed()
-        self.stop = False
         self.resp = ''
-        self.thread = None
     
-    def _stream_ai(self, tostream):
-        self.resp = ''
-        ts = tokenize_text(tostream)
-        for i in ts:
-            self.resp += i
-            time.sleep((0.5 if '.' in i else 0.25) if ' ,/?!' in i else 0.15)
-            if self.stop: break
-    
-    def stop_generating(self):
-        if self.thread != None:
-            self.stop = True
-            self.thread.join()
-    
-    def still_generating(self):
-        if self.thread == None: return False
-        return self.thread.is_alive()
-    
-    async def __call__(self, cnvrs, ram='base'):
-        if ram not in self.rams:
-            raise ValueError(
-                f'RAM {ram} IS NOT INSTALLED'
-            )
+    async def __call__(self, cnvrs, ram=None):
+        if ram == None: ram = 4 # for this we need 4 because anything lower SUCKS LIKE HELL
+        # I TRIED WITH LOWER THAN 4. WAS TRASH. DON'T USE. TRUST ME.
         lm.set_max_ram(ram)
-        self.stop = False
-        self.thread = Thread(target=self._stream_ai, args=(lm.chat(cnvrs),), daemon=True)
-        self.thread.start()
+        return lm.chat(cnvrs)
     
-    async def interrupt(self, txt):
-        if lm.classify(txt,"listen along","say something") == 'say something': return 's'
-        return optionsd[classify(txt, *list(optionsd.keys()))]
+    async def interrupt(self, txt, ram=None):
+        if ram == None: ram = self.rams[0]
+        lm.set_max_ram(ram)
+        if lm.classify(txt,"simple reply","complex reply") == 'complex reply': return 'l'
+        return 's'
+
+if __name__ == '__main__':
+    import asyncio
+    tllm = TinyLLM()
+    prompt = f"System: Reply as a helpful assistant. Currently {lm.get_date()}."
+    while True:
+        inp = input('> ')
+        if inp == '': break
+        prompt += f"\n\nUser: {inp}"
+        i = asyncio.run(tllm.interrupt(inp))
+        prompt += "\n\nAssistant:"
+        end = asyncio.run(tllm(prompt))
+        print(i)
+        print(end)
+        prompt += f" {end}"
