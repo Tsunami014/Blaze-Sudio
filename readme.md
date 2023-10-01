@@ -1,11 +1,11 @@
-# Welcome to ✨ Spark Sudios!
-(Thanks to the one and only (@Imzafish) for the name!)
+# Welcome to 🔶 Ember Sudios!
+(Thanks to the one and only Riley Dowsenator (@Imzafish) for the name!)
 
 Also known as:
  - The putgamecreatorsoutofbusinessanator (Thanks to @Faunder.real for that one)
  - One piece of code to rule them all!
 
-# CURRENT VERSION: v0.0.1 ✨
+# CURRENT VERSION: v1.0.0-alpha 🔶
 
 Things to note:
 1. # **<u>still in progress</u>**
@@ -26,7 +26,6 @@ pip install -r requirements.txt
 [Discord server link](https://discord.gg/9zrGKtF6Cs) for any information, queries, bugs, conversations, etc. that you may have!
 
 ## Next versions coming soon:
- - v1.0.0 - 🔶`Ember Sudio` - all main AI and chatting functionality complete!
- - v2.0.0 - 💥`Flare Sudio` - got a world and storyline!
+ - v2.0.0 - 💥`Flare Sudio` - got a world and storyline and actually is playable!!!!
  - v3.0.0 - 🌋`Fire Sudio` - cos by then it'll be on fire :grin: - all functionality complete!
  - v4.0.0 - 🔥`Blaze Sudio` - Unity integration! (And for all those who love catchphrases: `Oh, I want to make a game the easy way! How?` `I'll Blaze it!` (like "I'll chatGPT it" but cooler 😎))
