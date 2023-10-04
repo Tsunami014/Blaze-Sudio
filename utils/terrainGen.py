@@ -21,7 +21,7 @@ elif inp == '.':
 else:
     map_seed = int(inp)
 np.random.seed(map_seed)
-useall = input('Type anything here to show all steps in terrain generation, or leave this blank and press enter to just show the finished product. > ') == ''
+useall = input('Type anything here to show all steps in terrain generation, or leave this blank and press enter to just show the finished product. > ') != ''
 
 # Voronoi diagram
 print('Creating Voronoi diagram...')
