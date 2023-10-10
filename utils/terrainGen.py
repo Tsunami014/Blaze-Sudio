@@ -36,6 +36,8 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
         Whether or not to use matplotlib to save all steps of the process or just the finished result, by default False (just show finished result)
     showAtEnd : bool, optional
         Whether or not to show using matplotlib the finished result (and possibly the rest of the steps, see `useall`), by default False
+    generateTrees : bool, optional
+        Whether or not to generate trees. If no then will output blanks where the trees output should be below, defaults to True
 
     Returns
     -------
@@ -47,11 +49,11 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
             adjusted_height_river_map, (numpy array, ???)
             adjusted_height_river_map, (numpy array, ???)
             river_land_mask (numpy array, ???)
-        ], trees (numpy array, ???)
+        ], trees (list[numpy array (for each biome name)], this has all the biomes and the trees positions in them.)
     """
     if map_seed == None: map_seed = randint(0, 999999)
     np.random.seed(map_seed)
-    parseKWs(kwargs, ['useall', 'showAtEnd'])
+    parseKWs(kwargs, ['useall', 'showAtEnd', 'generateTrees'])
     useall = kwargs.get('useall', False)
     # Voronoi diagram
     print('Creating Voronoi diagram...')
@@ -689,57 +691,60 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
     # im.save("figures/10.png")
 
     ## Trees and Vegetation
-    print('Generating Height Map Filters: Trees and Vegetation... (may take a while...)')
+    if kwargs.get('generateTrees', True):
+        print('Generating Height Map Filters: Trees and Vegetation... (may take a while...)')
 
-    def filter_inbox(pts):
-        inidx = np.all(pts < size, axis=1)
-        return pts[inidx]
+        def filter_inbox(pts):
+            inidx = np.all(pts < size, axis=1)
+            return pts[inidx]
 
-    def generate_trees(n):
-        trees = np.random.randint(0, size-1, (n, 2))
-        trees = relax(trees, size, k=10).astype(np.uint32)
-        trees = filter_inbox(trees)
-        return trees
+        def generate_trees(n):
+            trees = np.random.randint(0, size-1, (n, 2))
+            trees = relax(trees, size, k=10).astype(np.uint32)
+            trees = filter_inbox(trees)
+            return trees
 
-    # Example
-    if useall:
-        low_density_trees = generate_trees(1000)
-        medium_density_trees = generate_trees(5000)
-        high_density_trees = generate_trees(25000)
+        # Example
+        if useall:
+            low_density_trees = generate_trees(1000)
+            medium_density_trees = generate_trees(5000)
+            high_density_trees = generate_trees(25000)
 
-        plt.figure(dpi=150, figsize=(10, 3))
-        plt.subplot(131)
-        plt.scatter(*low_density_trees.T, s=1)
-        plt.title("Low Density Trees")
-        plt.xlim(0, 256)
-        plt.ylim(0, 256)
+            plt.figure(dpi=150, figsize=(10, 3))
+            plt.subplot(131)
+            plt.scatter(*low_density_trees.T, s=1)
+            plt.title("Low Density Trees")
+            plt.xlim(0, 256)
+            plt.ylim(0, 256)
 
-        plt.subplot(132)
-        plt.scatter(*medium_density_trees.T, s=1)
-        plt.title("Medium Density Trees")
-        plt.xlim(0, 256)
-        plt.ylim(0, 256)
+            plt.subplot(132)
+            plt.scatter(*medium_density_trees.T, s=1)
+            plt.title("Medium Density Trees")
+            plt.xlim(0, 256)
+            plt.ylim(0, 256)
 
-        plt.subplot(133)
-        plt.scatter(*high_density_trees.T, s=1)
-        plt.title("High Density Trees")
-        plt.xlim(0, 256)
-        plt.ylim(0, 256)
+            plt.subplot(133)
+            plt.scatter(*high_density_trees.T, s=1)
+            plt.title("High Density Trees")
+            plt.xlim(0, 256)
+            plt.ylim(0, 256)
 
-    def place_trees(n, mask, a=0.5):
-        trees= generate_trees(n)
-        rr, cc = trees.T
+        def place_trees(n, mask, a=0.5):
+            trees= generate_trees(n)
+            rr, cc = trees.T
 
-        output_trees = np.zeros((size, size), dtype=bool)
-        output_trees[rr, cc] = True
-        output_trees = output_trees*(mask>a)*river_land_mask*(adjusted_height_river_map<0.5)
+            output_trees = np.zeros((size, size), dtype=bool)
+            output_trees[rr, cc] = True
+            output_trees = output_trees*(mask>a)*river_land_mask*(adjusted_height_river_map<0.5)
 
-        output_trees = np.array(np.where(output_trees == 1))[::-1].T    
-        return output_trees
+            output_trees = np.array(np.where(output_trees == 1))[::-1].T    
+            return output_trees
 
-    tree_densities = [4000, 1500, 8000, 1000, 10000, 25000, 10000, 20000, 5000]
-    trees = [np.array(place_trees(tree_densities[i], biome_masks[i]))
-            for i in range(len(biome_names))]
+        tree_densities = [4000, 1500, 8000, 1000, 10000, 25000, 10000, 20000, 5000]
+        trees = [np.array(place_trees(tree_densities[i], biome_masks[i]))
+                for i in range(len(biome_names))]
+    else:
+        trees = [np.array([]) for _ in range(len(biome_names))]
 
     colour_map = apply_height_map(rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask)
 
@@ -759,7 +764,7 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
     return [out, colour_map, rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask], trees
 
 if __name__ == '__main__':
-    size = 256
+    size = 1500
     n = 256
     inp = input('Input nothing to use random seed, input "." to use a preset good seed, or input your own INTEGER seed > ')
     if inp == '':
