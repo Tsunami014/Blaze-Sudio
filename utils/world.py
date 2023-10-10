@@ -53,20 +53,26 @@ class World:
             self.data = json.load(open(path, 'r'))
         else:
             self.data = empty.copy()
-            self.data['tutorialDesc'] = 'ERROR!!' # So that if you look at the file and this hasn't finished it's setup then... Oh no!
+            self.data['tutorialDesc'] = 'ERROR!!' # So that if you look at the file and this hasn't finished it's setup then... Oh no! MAYBE TODO: error codes (300 error)
             self.data['worldLayout'] = choice(['Gridvania', 'Free'])
             self.data['levels'] = [
                 empty['levels'][0].copy() for i in range(size)
             ]
             j = 0
             m = Map(quality, None, generateTrees=False)
+            print('Generating levels...')
             for level in self.data['levels']:
                 level['identifier'] = 'Level_'+str(j)
                 level['iid'] = create_iid()
+                level['uid'] = j
+                level['worldX'] = j * size2 * 16
                 layer = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('World')]
                 l = m(size2, size2, j*size2)
                 layer['intGridCsv'] = []
                 for i in l: layer['intGridCsv'].extend(i)
+                for i in level['layerInstances']:
+                    i['iid'] = create_iid()
+
                 j += 1
             self.data['tutorialDesc'] = 'This is your generated world! Feel free to edit anything!'
             # save to file
@@ -80,5 +86,5 @@ class World:
             txt = txt.replace('                            ]', ']')
             open(path, 'w+').write(txt)
 
-w = World('test', '', 1, override=True)
+w = World('test', '', 2, override=True)
 pass
