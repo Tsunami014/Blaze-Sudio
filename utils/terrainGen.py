@@ -15,6 +15,13 @@ try:
 except:
     from conversation_parse import parseKWs
 
+class Map:
+    def __init__(self, *args, **kwargs):
+        self.conf = create_map(*args, **kwargs)
+        self.map = self.conf[0][0]
+    def __call__(self, w, h, x=0, y=0):
+        return [i[x:x+w] for i in self.map[y:y+h]]
+
 def create_map(size, map_seed=762345, n=256, **kwargs):
     """
     Generates a map! :)
@@ -744,13 +751,14 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
         trees = [np.array(place_trees(tree_densities[i], biome_masks[i]))
                 for i in range(len(biome_names))]
     else:
-        trees = [np.array([]) for _ in range(len(biome_names))]
+        trees = []
 
     colour_map = apply_height_map(rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask)
 
     plt.figure(dpi=150, figsize=(5, 5))
-    for k in range(len(biome_names)):
-        plt.scatter(*trees[k].T, s=0.15, c="red")
+    if kwargs.get('generateTrees', True):
+        for k in range(len(biome_names)):
+            plt.scatter(*trees[k].T, s=0.15, c="red")
 
     if kwargs.pop('showAtEnd', False):
         plt.imshow(colour_map[0])
