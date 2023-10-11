@@ -2,7 +2,7 @@ import json, re
 from noise import pnoise2
 from os.path import exists
 from random import choice
-from math import floor
+from math import floor, sqrt
 from copy import deepcopy
 
 try:
@@ -61,14 +61,16 @@ class World:
             self.data['levels'] = [
                 deepcopy(empty['levels'][0]) for _ in range(size)
             ]
+            size3 = floor(sqrt(size))
             j = 0
             for level in self.data['levels']:
                 level['identifier'] = 'Level_'+str(j)
                 level['iid'] = create_iid()
                 level['uid'] = j
-                level['worldX'] = j * size2 * 16
+                level['worldX'] = (j%size3) * size2 * 16
+                level['worldY'] = floor(j/size3) * size2 * 16
                 layer = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('World')]
-                l = m(size2, size2, j*size2)
+                l = m(size2, size2, (j%size3)*size2, floor(j/size3)*size2)
                 layer['intGridCsv'] = []
                 for i in l: layer['intGridCsv'].extend(i)
                 level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('World')] = layer
@@ -86,8 +88,8 @@ class World:
             #for i in re.findall(r'((\d,){70})', txt):
             #    txt = txt.replace(i[0], '\n						'+i[0])
             #txt = txt.replace('"~', '[').replace('~"', ']')
-            txt = txt.replace('                            ]', ']')
+            txt = txt.replace('                            ]', ']').replace('                    ]', ']')
             open(path, 'w+').write(txt)
 
-w = World('test', '', 2, override=True)
+w = World('test', '', 16, override=True)
 pass
