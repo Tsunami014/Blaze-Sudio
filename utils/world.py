@@ -3,6 +3,7 @@ from noise import pnoise2
 from os.path import exists
 from random import choice
 from math import floor
+from copy import deepcopy
 
 try:
     from utils.characters import *
@@ -22,7 +23,7 @@ except:
 def create_iid():
     # 8d9217c0-3b70-11ee-849e-1d317aac187d
     r = lambda: choice('1234567890qwertyuiopasdfghjklzxcvbnm')
-    return f'{"".join([r() for _ in range(8)])}-{"".join([r() for _ in range(4)])}-{"".join([r() for _ in range(4)])}-{"".join([r() for _ in range(4)])}-{"".join([r() for _ in range(12)])}'
+    return f'{"".join([r() for _ in range(8)])}-{"".join([r() for _ in range(4)])}-11ee-{"".join([r() for _ in range(4)])}-{"".join([r() for _ in range(12)])}'
 
 class World:
     def __init__(self, name, idea, size, size2=50, quality=500, override=False):
@@ -52,15 +53,15 @@ class World:
         if exists(path) and not override:
             self.data = json.load(open(path, 'r'))
         else:
+            m = Map(quality, None, generateTrees=False)
+            print('Generating file...')
             self.data = empty.copy()
             self.data['tutorialDesc'] = 'ERROR!!' # So that if you look at the file and this hasn't finished it's setup then... Oh no! MAYBE TODO: error codes (300 error)
             self.data['worldLayout'] = choice(['Gridvania', 'Free'])
             self.data['levels'] = [
-                empty['levels'][0].copy() for i in range(size)
+                deepcopy(empty['levels'][0]) for _ in range(size)
             ]
             j = 0
-            m = Map(quality, None, generateTrees=False)
-            print('Generating levels...')
             for level in self.data['levels']:
                 level['identifier'] = 'Level_'+str(j)
                 level['iid'] = create_iid()
@@ -70,9 +71,11 @@ class World:
                 l = m(size2, size2, j*size2)
                 layer['intGridCsv'] = []
                 for i in l: layer['intGridCsv'].extend(i)
+                level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('World')] = layer
                 for i in level['layerInstances']:
                     i['iid'] = create_iid()
-
+                    #TODO: randomise seed of each level
+                self.data['levels'][j] = level
                 j += 1
             self.data['tutorialDesc'] = 'This is your generated world! Feel free to edit anything!'
             # save to file
