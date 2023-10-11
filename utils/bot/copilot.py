@@ -1,17 +1,23 @@
 import AIs, asyncio
 
-print('setup...')
-ai = AIs.AI()
-def print_generation(txt):
-    print('running...')
-    asyncio.run(ai(txt))
-    seen = ''
-    while ai.still_generating():
-        if ai.resp != seen:
-            print(ai.resp[len(seen):], end='')
-            seen = ai.resp
+class Copilot:
+    def __init__(self):
+        print('setup...')
+        self.ai = AIs.AI()
+        print('evaluating...')
+        asyncio.run(self.ai.find_current())
+        print('Done :)')
+    
+    def __call__(self, txt):
+        print('running...')
+        asyncio.run(self.ai(txt))
+        seen = ''
+        while self.ai.still_generating():
+            if self.ai.resp != seen:
+                print(self.ai.resp[len(seen):], end='')
+                seen = self.ai.resp
+        print()
 
-print('evaluating...')
-asyncio.run(ai.find_current())
-print_generation('Hello! how are you?')
+c = Copilot()
+c('Hello! how are you?')
 pass
