@@ -5,9 +5,21 @@ Also known as:
  - The putgamecreatorsoutofbusinessanator (Thanks to @Faunder.real for that one)
  - One piece of code to rule them all!
 
-# CURRENT VERSION: v1.0.0-alpha 🔶
+# CURRENT VERSION: v1.1.0-alpha 🔶
 
-# PLEASE NOTE: AS OF RIGHT NOW, `AIs.py` IS DEPRACATED. PLEASE MOVE ON TO OTHER THINGS IN LIFE
+## CURRENT THINGS THAT WORK THAT YOU CAN TEST:
+ - world.py
+ - conversation_parser.py
+## CURRENT THINGS THAT WORK:
+ - terrainGen.py
+ - discussions.py
+ - GPT4All (I think)
+ - tinyLLM
+## CURRENT BROKEN THINGS THAT DON'T OR MAY NOT WORK:
+ - characters.py
+ - main.py
+ - converse.py
+ - AIs.py (and all other AI related files)
 
 Things to note:
 1. # **<u>still in progress</u>**
@@ -17,10 +29,9 @@ Things to note:
     3. I can modify it myself
     4. You guys don't have to install another package
 
-(ignore the missing numbers)
-
 # How to install
 TODO: show how to install with git
+Please note: requirements file may be wrong. Please contact me if they are.
 ```bash
 pip install -r requirements.txt
 ```
