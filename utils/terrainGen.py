@@ -17,10 +17,99 @@ except:
 
 class Map:
     def __init__(self, *args, **kwargs):
+        self.size = args[0] or kwargs.get('size')
         self.conf = create_map(*args, **kwargs)
         self.map = self.conf[0][0]
+        self.generate_structures()
     def __call__(self, w, h, x=0, y=0):
         return [i[x:x+w] for i in self.map[y:y+h]]
+    def get_structs(self, w, h, x=0, y=0):
+        return [i[x:x+w] for i in self.structures[y:y+h]]
+
+    def generate_structures(self):
+        structures = create_trees(self.size, self.conf[0][4], self.conf[0][3], self.conf[0][5], housing_densities)
+        structures = [[(int(j[0]), int(j[1])) for j in i] for i in structures]
+        out = np.zeros((self.size, self.size))
+        for j in structures:
+            for i in j:
+                out[i[0]][i[1]] = 1
+        self.structures = [[int(j) for j in i] for i in out]
+
+def find_plateaus(input_map): # chatgpted func
+    rows, cols = len(input_map), len(input_map[0])
+    plateau_map = [[0] * cols for _ in range(rows)]
+
+    for i in range(1, rows - 1):
+        for j in range(1, cols - 1):
+            current = input_map[i][j]
+            neighbors = [
+                input_map[i - 1][j],
+                input_map[i + 1][j],
+                input_map[i][j - 1],
+                input_map[i][j + 1],
+            ]
+            if all(round(neighbor/2) == round(current/2) for neighbor in neighbors):
+                plateau_map[i][j] = 1
+
+    return plateau_map
+
+def voronoi(points, size): # voroni diagram
+    # Add points at edges to eliminate infinite ridges
+    edge_points = size*np.array([[-1, -1], [-1, 2], [2, -1], [2, 2]])
+    new_points = np.vstack([points, edge_points])
+    
+    # Calculate Voronoi tessellation
+    vor = Voronoi(new_points)
+    
+    return vor
+
+def relax(points, size, k=10):   #Lloyd's relaxation algorithm
+    new_points = points.copy()
+    for _ in range(k):
+        vor = voronoi(new_points, size)
+        new_points = []
+        for i, region in enumerate(vor.regions):
+            if len(region) == 0 or -1 in region: continue
+            poly = np.array([vor.vertices[i] for i in region])
+            center = poly.mean(axis=0)
+            new_points.append(center)
+        new_points = np.array(new_points).clip(0, size)
+    return new_points
+
+def filter_inbox(pts, size):
+    inidx = np.all(pts < size, axis=1)
+    return pts[inidx]
+
+def generate_trees(n, size):
+    trees = np.random.randint(0, size-1, (n, 2))
+    trees = relax(trees, size, k=10).astype(np.uint32)
+    trees = filter_inbox(trees, size)
+    return trees
+
+biome_names = [
+    "desert",
+    "savanna",
+    "tropical_woodland",
+    "tundra",
+    "seasonal_forest",
+    "rainforest",
+    "temperate_forest",
+    "temperate_rainforest",
+    "boreal_forest"
+    ]
+biome_colours = [
+    [255, 255, 178],
+    [184, 200, 98],
+    [188, 161, 53],
+    [190, 255, 242],
+    [106, 144, 38],
+    [33, 77, 41],
+    [86, 179, 106],
+    [34, 61, 53],
+    [35, 114, 94]
+    ]
+tree_densities = [4000, 1500, 8000, 1000, 10000, 25000, 10000, 20000, 5000]
+housing_densities = [1, 1, 8000, 1000, 10000, 2500, 1000, 2000, 50000]
 
 def create_map(size, map_seed=762345, n=256, **kwargs):
     """
@@ -52,10 +141,10 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
         [
             out (rounded and scaled from 1-10, list), 
             colour_map (numpy array, out before rounding and scaling, also contains colours), 
-            rivers_biome_colour_map, (numpy array, ???)
-            adjusted_height_river_map, (numpy array, ???)
-            adjusted_height_river_map, (numpy array, ???)
-            river_land_mask (numpy array, ???)
+            rivers_biome_colour_map, (numpy array, ???),
+            adjusted_height_river_map, (numpy array, ???),
+            river_land_mask (numpy array, ???),
+            biome_masks (numpy array, ???)
         ], trees (list[numpy array (for each biome name)], this has all the biomes and the trees positions in them.)
     """
     if map_seed == None: map_seed = randint(0, 999999)
@@ -64,16 +153,6 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
     useall = kwargs.get('useall', False)
     # Voronoi diagram
     print('Creating Voronoi diagram...')
-    def voronoi(points, size):
-        # Add points at edges to eliminate infinite ridges
-        edge_points = size*np.array([[-1, -1], [-1, 2], [2, -1], [2, 2]])
-        new_points = np.vstack([points, edge_points])
-        
-        # Calculate Voronoi tessellation
-        vor = Voronoi(new_points)
-        
-        return vor
-
     def voronoi_map(vor, size):
         # Calculate Voronoi map
         vor_map = np.zeros((size, size), dtype=np.uint32)
@@ -103,21 +182,6 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
 
     # Lloyd's relaxation
     print('Relaxing...')
-    def relax(points, size, k=10):  
-        new_points = points.copy()
-        for _ in range(k):
-            vor = voronoi(new_points, size)
-            new_points = []
-            for i, region in enumerate(vor.regions):
-                if len(region) == 0 or -1 in region: continue
-                poly = np.array([vor.vertices[i] for i in region])
-                center = poly.mean(axis=0)
-                new_points.append(center)
-            new_points = np.array(new_points).clip(0, size)
-        return new_points
-
-
-
     points = relax(points, size, k=100)
     vor = voronoi(points, size)
     vor_map = voronoi_map(vor, size)
@@ -345,29 +409,6 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
 
     im = np.array(Image.open("TP_map.png"))[:, :, :3]
     biomes = np.zeros((256, 256))
-
-    biome_names = [
-    "desert",
-    "savanna",
-    "tropical_woodland",
-    "tundra",
-    "seasonal_forest",
-    "rainforest",
-    "temperate_forest",
-    "temperate_rainforest",
-    "boreal_forest"
-    ]
-    biome_colours = [
-    [255, 255, 178],
-    [184, 200, 98],
-    [188, 161, 53],
-    [190, 255, 242],
-    [106, 144, 38],
-    [33, 77, 41],
-    [86, 179, 106],
-    [34, 61, 53],
-    [35, 114, 94]
-    ]
 
     for i, colour in enumerate(biome_colours):
         indices = np.where(np.all(im == colour, axis=-1))
@@ -699,23 +740,12 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
 
     ## Trees and Vegetation
     if kwargs.get('generateTrees', True):
-        print('Generating Height Map Filters: Trees and Vegetation... (may take a while...)')
-
-        def filter_inbox(pts):
-            inidx = np.all(pts < size, axis=1)
-            return pts[inidx]
-
-        def generate_trees(n):
-            trees = np.random.randint(0, size-1, (n, 2))
-            trees = relax(trees, size, k=10).astype(np.uint32)
-            trees = filter_inbox(trees)
-            return trees
-
+        trees = create_trees(river_land_mask, adjusted_height_river_map, biome_masks, tree_densities)
         # Example
         if useall:
-            low_density_trees = generate_trees(1000)
-            medium_density_trees = generate_trees(5000)
-            high_density_trees = generate_trees(25000)
+            low_density_trees = generate_trees(1000, size)
+            medium_density_trees = generate_trees(5000, size)
+            high_density_trees = generate_trees(25000, size)
 
             plt.figure(dpi=150, figsize=(10, 3))
             plt.subplot(131)
@@ -735,30 +765,14 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
             plt.title("High Density Trees")
             plt.xlim(0, 256)
             plt.ylim(0, 256)
+            plt.figure(dpi=150, figsize=(5, 5))
 
-        def place_trees(n, mask, a=0.5):
-            trees= generate_trees(n)
-            rr, cc = trees.T
-
-            output_trees = np.zeros((size, size), dtype=bool)
-            output_trees[rr, cc] = True
-            output_trees = output_trees*(mask>a)*river_land_mask*(adjusted_height_river_map<0.5)
-
-            output_trees = np.array(np.where(output_trees == 1))[::-1].T    
-            return output_trees
-
-        tree_densities = [4000, 1500, 8000, 1000, 10000, 25000, 10000, 20000, 5000]
-        trees = [np.array(place_trees(tree_densities[i], biome_masks[i]))
-                for i in range(len(biome_names))]
+            for k in range(len(biome_names)):
+                plt.scatter(*trees[k].T, s=0.15, c="red")
     else:
         trees = []
 
     colour_map = apply_height_map(rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask)
-
-    plt.figure(dpi=150, figsize=(5, 5))
-    if kwargs.get('generateTrees', True):
-        for k in range(len(biome_names)):
-            plt.scatter(*trees[k].T, s=0.15, c="red")
 
     if kwargs.pop('showAtEnd', False):
         plt.imshow(colour_map[0])
@@ -769,7 +783,23 @@ def create_map(size, map_seed=762345, n=256, **kwargs):
     scaling_factor = 10
     height_map = norm_map * scaling_factor  # Convert to heights
     out = [[round(j) for j in i] for i in height_map]
-    return [out, colour_map, rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask], trees
+    return [out, colour_map, rivers_biome_colour_map, adjusted_height_river_map, river_land_mask, biome_masks], trees
+
+def create_trees(size, river_land_mask, adjusted_height_river_map, biome_masks, densities):
+    print('Generating Height Map Filters: Trees and Vegetation... (may take a while...)')
+
+    def place_trees(n, mask, a=0.5):
+        trees= generate_trees(n, size)
+        rr, cc = trees.T
+
+        output_trees = np.zeros((size, size), dtype=bool)
+        output_trees[rr, cc] = True
+        output_trees = output_trees*(mask>a)*river_land_mask*(adjusted_height_river_map<0.5)
+
+        output_trees = np.array(np.where(output_trees == 1))[::-1].T    
+        return output_trees
+    return [np.array(place_trees(densities[i], biome_masks[i]))
+            for i in range(len(biome_names))]
 
 if __name__ == '__main__':
     size = 1500
