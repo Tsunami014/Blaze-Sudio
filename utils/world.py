@@ -53,7 +53,7 @@ class World:
         if exists(path) and not override:
             self.data = json.load(open(path, 'r'))
         else:
-            m = Map(quality, None, generateTrees=False)
+            m = Map(quality, None)
             print('Generating file...')
             self.data = empty.copy()
             self.data['tutorialDesc'] = 'ERROR!!' # So that if you look at the file and this hasn't finished it's setup then... Oh no! MAYBE TODO: error codes (300 error)
