@@ -29,15 +29,15 @@ class Map:
         self.conf = self.g.outs
         self.map = self.conf[0][0]
         self.trees = self.tolist(self.conf[1])
-        #self.generate_structures()
+        self.generate_structures()
     def __call__(self, w, h, x=0, y=0):
         return [i[x:x+w] for i in self.map[y:y+h]]
     def get_structs(self, w, h, x=0, y=0):
-        return [i[x:x+w] for i in self.trees[y:y+h]]
+        #return [i[x:x+w] for i in self.trees[y:y+h]]
         return [i[x:x+w] for i in self.structures[y:y+h]]
 
-    def tolist(self, l):
-        nl = [[(int(j[0]), int(j[1])) for j in i] for i in l]
+    def tolist(self, nl, do_tolist=True):
+        if do_tolist: nl = [[(int(j[0]), int(j[1])) for j in i] for i in nl]
         out = np.zeros((self.size, self.size))
         for j in nl:
             for i in j:
@@ -45,32 +45,36 @@ class Map:
         return [[int(j) for j in i] for i in out]
 
     def generate_structures(self):
-        #structures = self.g.create_trees(self.size, self.conf[0][4], self.conf[0][3], self.conf[0][5], tree_densities)
-        #structures = [[(int(j[0]), int(j[1])) for j in i] for i in structures]
-        #out = np.zeros((self.size, self.size))
-        #for j in structures:
-        #    for i in j:
-        #        out[i[0]][i[1]] = 1
-        #self.structures = [[int(j) for j in i] for i in out]
-        pass
+        print('Generating structures...')
+        outs = []
+        done = []
+        for x in range(len(self.map)):
+            for y in range(len(self.map[x])):
+                if (x, y) not in done:
+                    l = floodfill(self.map, x, y)
+                    outs.append(l)
+                    done.extend(l)
+        outs.sort(key=lambda x: len(x), reverse=True)
+        self.structures = [self.tolist(outs[0])]
 
-def find_plateaus(input_map): # chatgpted func
-    rows, cols = len(input_map), len(input_map[0])
-    plateau_map = [[0] * cols for _ in range(rows)]
-
-    for i in range(1, rows - 1):
-        for j in range(1, cols - 1):
-            current = input_map[i][j]
-            neighbors = [
-                input_map[i - 1][j],
-                input_map[i + 1][j],
-                input_map[i][j - 1],
-                input_map[i][j + 1],
-            ]
-            if all(round(neighbor/2) == round(current/2) for neighbor in neighbors):
-                plateau_map[i][j] = 1
-
-    return plateau_map
+def floodfill(matrix, x, y):
+    tofill = [(x, y)]
+    filled = []
+    start = matrix[x][y]
+    while tofill:
+        x, y = tofill.pop(0)
+        if matrix[x][y] == start and (x, y) not in filled:
+            filled.append((x, y))
+            #recursively invoke flood fill on all surrounding cells:
+            if x > 0:
+                tofill.append((x-1, y))
+            if x < len(matrix[y]) - 1:
+                tofill.append((x+1, y))
+            if y > 0:
+                tofill.append((x, y-1))
+            if y < len(matrix) - 1:
+                tofill.append((x, y+1))
+    return filled
 
 biome_names = [
     "desert",
