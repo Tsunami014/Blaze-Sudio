@@ -23,10 +23,10 @@ def install_tinyllm(ram):
     lm.do("What color is the sky?")
     lm.complete("She hid in her room until")
     lm.code("""
-    a = 2
-    b = 5
-    # Swap a and b
-    """)
+a = 2
+b = 5
+# Swap a and b
+""")
     lm.get_wiki('Chemistry')
     lm.get_weather(41.8, -87.6)
     lm.get_date()
@@ -67,11 +67,11 @@ def test_tinyllm():
     #lm.set_max_ram('base')
     print(lm.complete("She hid in her room until"))
     print(lm.code("""
-    a = 2
-    b = 5
-    # Swap a and b
-    """))
-    install_tinyllm('4gb')
+a = 2
+b = 5
+# Swap a and b
+"""))
+    lm.set_max_ram('4gb')
     print(lm.chat('''
     System: Respond as a helpful assistant.
     User: What time is it?
@@ -80,11 +80,11 @@ def test_tinyllm():
     print(lm.get_wiki('Chemistry'))
     print(lm.get_weather(41.8, -87.6))
     print(lm.get_date())
-    install_tinyllm('4gb')
+    lm.set_max_ram('4gb')
     print(lm.chat(f'''
-    System: Respond as a helpful assistant. It is {lm.get_date()}
-    User: What time is it?
-    Assistant:'''))
+System: Respond as a helpful assistant. It is {lm.get_date()}
+User: What time is it?
+Assistant:'''))
     lm.set_max_ram('base')
     context = "There is a green ball and a red box"
     print(lm.extract_answer("What color is the ball?", context).lower())
