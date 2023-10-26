@@ -9,9 +9,18 @@
     "python.testing.pytestEnabled": false,
     "python.testing.unittestEnabled": true,
     "conventionalCommits.scopes": [
-        "small",
-        "medium",
-        "large",
-        "huge!"
-    ]
+        "docs",
+        "build",
+        "AIs",
+        "conversation",
+        "main",
+        "GUI",
+        "graphics",
+        "terrain",
+        "STT",
+        "characters",
+        "sound gen",
+        "other"
+    ],
+    "wolf.disableHotModeWarning": true
 }
