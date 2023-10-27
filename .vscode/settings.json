@@ -16,7 +16,7 @@
         "main",
         "GUI",
         "graphics",
-        "terrain",
+        "worlds",
         "STT",
         "characters",
         "sound gen",
