@@ -79,7 +79,7 @@ class Game:
             self.clock.tick(60)
     def world_select(self):
         titletxt = title.render('World selection', 2, BLACK)
-        worlds = [i for i in os.scandir('data/worlds') if i.is_file() and i.name.endswith('.ldtk')]
+        worlds = [i for i in os.scandir('data/worlds') if i.is_file() and i.name.endswith('.ldtk') and 'AIHub info' in json.load(open('data/worlds/'+i.name))]
         worldinfo = [json.load(open('data/worlds/'+i.name))['AIHub info'] for i in worlds]
         subs = ['Go back to the previous page', 'Make a new world from scratch'] + [i[2] for i in worldinfo]
         btns = [btngen('Back', (125, 125, 125)), btngen('Make new world', GREEN)]
