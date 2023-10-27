@@ -30,7 +30,7 @@ Please note: requirements file may be wrong. Please contact me if they are.
 pip install -r requirements.txt
 ```
 
-[Discord server link](https://discord.gg/9zrGKtF6Cs) for any information, queries, bugs, conversations, etc. that you may have!
+Please join our [Discord server](https://discord.gg/9zrGKtF6Cs) for any information, queries, bugs, conversations, etc. that you may have!
 
 ## Next versions coming soon:
  - v2.0.0 - 💥`Flare Sudio` - got a world and storyline and actually is playable!!!!
