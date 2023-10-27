@@ -14,11 +14,14 @@ except ImportError:
     from storyline import *
     from terrainGen import *
 
+folder = 'data/worlds/'
+
 # because sometimes this needs to be separate from the try and except above
 try:
     empty = json.load(open('utils/blank.ldtk'))
 except:
     empty = json.load(open('empty.ldtk'))
+    folder = '../' + folder
 
 def create_iid():
     # 8d9217c0-3b70-11ee-849e-1d317aac187d
@@ -26,14 +29,16 @@ def create_iid():
     return f'{"".join([r() for _ in range(8)])}-{"".join([r() for _ in range(4)])}-11ee-{"".join([r() for _ in range(4)])}-{"".join([r() for _ in range(12)])}'
 
 class World:
-    def __init__(self, name, idea, size, size2=50, quality=500, override=False):
+    def __init__(self, filename, name, idea, size, size2=50, quality=500, override=False):
         """
         A World!
 
         Parameters
         ----------
+        filename : str
+            The name of the file. Does not affect anything. Must be unique.
         name : str
-            the name of the world. Can be anything that you would name a file. *foreshadowing* Needs to be unique with other worlds.
+            the name of the world. Can be anything.
         idea : str
             the idea of the world.
         size : int
@@ -46,7 +51,7 @@ class World:
         override : bool, optional
             Whether or not to override the currently saved level with the same name (if there is one), by default False
         """
-        path = name+'.ldtk'
+        path = folder+filename+'.ldtk'
         self.path = path
         self.idea = idea
         self.data = None
@@ -113,6 +118,11 @@ class World:
                     i['seed'] = randint(1000000, 9999999)
                 self.data['levels'][j] = level
                 j += 1
+            self.data['AIHub info'] = [
+                'v1.1.0-alpha', # first value MUST be current version of AIHub
+                name, # must be name
+                idea
+            ]
             self.data['tutorialDesc'] = 'This is your generated world! Feel free to edit anything!'
             # save to file
             print('Stringing file into JSON...')
@@ -127,5 +137,5 @@ class World:
             print('Saving to file...')
             open(path, 'w+').write(txt)
 
-w = World('test', '', 16, quality=500, override=True)
+w = World('test', 'Test World', 'A world for testing random stuff', 16, quality=500, override=True)
 pass
