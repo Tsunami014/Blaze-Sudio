@@ -10,16 +10,10 @@ Also known as:
 ## CURRENT THINGS THAT WORK THAT YOU CAN TEST:
  - world.py
  - conversation_parser.py
-## CURRENT THINGS THAT WORK:
- - terrainGen.py
- - discussions.py
- - GPT4All (I think)
- - tinyLLM
-## CURRENT BROKEN THINGS THAT DON'T OR MAY NOT WORK:
- - characters.py
- - main.py
- - converse.py
- - AIs.py (and all other AI related files)
+ - __main__.py (tho it does not do much) (please note: NOT main.py; they are 2 SEPARATE FILES)
+## There are some things that may/may not work, and are currently being modified to work with __main__.py
+
+Also please note that this is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! I would love to have some help with this project!
 
 Things to note:
 1. # **<u>still in progress</u>**
@@ -36,7 +30,7 @@ Please note: requirements file may be wrong. Please contact me if they are.
 pip install -r requirements.txt
 ```
 
-[Discord server link](https://discord.gg/9zrGKtF6Cs) for any information, queries, bugs, conversations, etc. that you may have!
+Please join our [Discord server](https://discord.gg/9zrGKtF6Cs) for any information, queries, bugs, conversations, etc. that you may have!
 
 ## Next versions coming soon:
  - v2.0.0 - 💥`Flare Sudio` - got a world and storyline and actually is playable!!!!
