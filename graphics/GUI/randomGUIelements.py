@@ -33,8 +33,9 @@ def renderTextCenteredAt(text, font, allowed_width): # modified from https://sta
     return lines
 
 class Button:
-    def __init__(self, screen, txt, colour, txtcolour=(255, 255, 255), max_width=100, font=pygame.font.Font(None, 24), roundness=8):
+    def __init__(self, screen, txt, colour, txtcolour=(255, 255, 255), max_width=100, font=pygame.font.Font(None, 24), roundness=8, on_hover_enlarge=-1):
         self.roundness = roundness
+        self.onHoverEnlarge = on_hover_enlarge
         self.colour = colour
         self.max_width = max_width
         self.txt = txt
@@ -69,6 +70,8 @@ class Button:
             top += i.get_height()+10
 
         btn = pygame.Rect(x, y, self.nsurface.get_width() + 20, self.nsurface.get_height() + 20)
+        if self.onHoverEnlarge != -1 and btn.collidepoint(pygame.mouse.get_pos()):
+            btn = pygame.Rect(x-self.onHoverEnlarge, y-self.onHoverEnlarge, self.nsurface.get_width() + 20 + self.onHoverEnlarge*2, self.nsurface.get_height() + 20 + self.onHoverEnlarge*2)
         pygame.draw.rect(self.screen, self.colour, btn, border_radius=self.roundness)
         self.screen.blit(self.nsurface, (x+10, y+10))
         return btn.collidepoint(pygame.mouse.get_pos())

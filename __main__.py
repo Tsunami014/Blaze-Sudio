@@ -17,7 +17,7 @@ font = pygame.font.SysFont('', 52)
 title = pygame.font.SysFont('Comic Sans MS', 64, True)
 codefont = pygame.font.SysFont('Lucida Sans Typewriter', 16)
 
-btngen = lambda txt, col, txtcol=BLACK: Button(WIN, txt, col, txtcol, font=font, max_width=300)
+btngen = lambda txt, col, txtcol=BLACK, on_hover_enlarge=True: Button(WIN, txt, col, txtcol, font=font, max_width=300, on_hover_enlarge=(-1 if on_hover_enlarge == False else 10))
 
 class TerminalBar:
     def __init__(self, win, font, spacing=5):
@@ -58,18 +58,40 @@ class Game:
     def __init__(self):
         self.clock = pygame.time.Clock()
         self.TB = TerminalBar(WIN, codefont)
+    def world(self, world):
+        titletxt = title.render('World '+world, 2, BLACK)
+        while True:
+            WIN.fill(WHITE)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        return
+                    elif self.TB.active != -1:
+                        self.TB.pressed(event)
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == pygame.BUTTON_LEFT:
+                        self.TB.toggleactive(not self.TB.collides(*event.pos))
+            WIN.blit(titletxt, (WIN.get_width()/2-titletxt.get_width()/2, 0))
+            self.TB.update()
+            pygame.display.flip()
+            self.clock.tick(60)
     def world_select(self):
-        welcome = title.render('World selection', 2, BLACK)
+        titletxt = title.render('World selection', 2, BLACK)
         worlds = [i for i in os.scandir('data/worlds') if i.is_file() and i.name.endswith('.ldtk')]
         worldinfo = [json.load(open('data/worlds/'+i.name))['AIHub info'] for i in worlds]
-        btns = [btngen('Back', (125, 125, 125))]
+        subs = ['Go back to the previous page', 'Make a new world from scratch'] + [i[2] for i in worldinfo]
+        btns = [btngen('Back', (125, 125, 125)), btngen('Make new world', GREEN)]
         btns.extend([btngen(i[1], BLUE) for i in worldinfo])
         blank = font.render(' ', 2, BLACK)
         t = blank
         while True:
             WIN.fill(WHITE)
-            updates = [btns[i].update(0, welcome.get_height() + t.get_height() + 20 + sum([btns[j].nsurface.get_height() + 20 for j in range(i)])) for i in range(len(btns))]
-            if any(updates) and not updates[0]: t = font.render(worldinfo[updates[1:].index(True)][2], 2, BLACK)
+            updates = [btns[i].update(20, titletxt.get_height() + t.get_height() + 20 + sum([btns[j].nsurface.get_height() + 30 for j in range(i)])) for i in range(len(btns))]
+            for i in range(len(btns)):
+                if updates[i]: btns[i].update(20, titletxt.get_height() + t.get_height() + 20 + sum([btns[j].nsurface.get_height() + 30 for j in range(i)]))
+            if any(updates): t = font.render(subs[updates.index(True)], 2, BLACK)
             else: t = blank
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -84,10 +106,13 @@ class Game:
                         for i in [btns[j] for j in range(len(btns)) if updates[j]]:
                             if i == btns[0]: # back
                                 return None
-                            else: print(i)
+                            elif i == btns[1]: # make new world
+                                return self.world('new world') # TODO: change
+                            else:
+                                return self.world(i.txt) # TODO: change to World(worlds[btns.index(i)-2])
                         self.TB.toggleactive(not self.TB.collides(*event.pos))
-            WIN.blit(welcome, (WIN.get_width()/2-welcome.get_width()/2, 0))
-            WIN.blit(t, (WIN.get_width()/2-t.get_width()/2, welcome.get_height()+10))
+            WIN.blit(titletxt, (WIN.get_width()/2-titletxt.get_width()/2, 0))
+            WIN.blit(t, (WIN.get_width()/2-t.get_width()/2, titletxt.get_height()+10))
             self.TB.update()
             pygame.display.flip()
             self.clock.tick(60)
@@ -97,7 +122,9 @@ class Game:
         run = True
         while run:
             WIN.fill(WHITE)
-            updates = [btns[i].update(0, 0 + sum([btns[j].nsurface.get_height() + 20 for j in range(i)])) for i in range(len(btns))]
+            updates = [btns[i].update(20, 20 + sum([btns[j].nsurface.get_height() + 30 for j in range(i)])) for i in range(len(btns))]
+            for i in range(len(btns)):
+                if updates[i]: btns[i].update(20, 20 + sum([btns[j].nsurface.get_height() + 30 for j in range(i)]))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
