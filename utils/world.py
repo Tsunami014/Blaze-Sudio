@@ -1,5 +1,5 @@
 import json, re
-from noise import pnoise2
+import Pyldtk as ldtk
 from os.path import exists
 from random import choice
 from math import floor, sqrt
@@ -136,6 +136,8 @@ class World:
             txt = txt.replace('                            ]', ']').replace('                    ]', ']')
             print('Saving to file...')
             open(path, 'w+').write(txt)
+    def get_pygame(self):
+        return ldtk.get_data()
 
 w = World('test', 'Test World', 'A world for testing random stuff', 16, quality=500, override=True)
 pass
