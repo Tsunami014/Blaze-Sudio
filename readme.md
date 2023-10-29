@@ -17,11 +17,14 @@ Also please note that this is a very early version, and there are many things th
 
 Things to note:
 1. # **<u>still in progress</u>**
-5. This project comes with 2 python libraries built into it, [pyguix](https://github.com/DarthData410/PyGames-pyguix) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). This is for a couple of reasons:
+5. This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix), Pyldtk and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). This is for a couple of reasons:
     1. (the main big one) It can't be installed with pip (maybe it got taken down? I don't know)
     2. I don't have to wory about dependancy issues with those two packages
     3. I can modify it myself
     4. You guys don't have to install another package
+    5. It won't ever change (unless I change it myself)
+
+TODO: get link to Pyldtk
 
 # How to install
 TODO: show how to install with git

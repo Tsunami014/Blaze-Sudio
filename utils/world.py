@@ -1,5 +1,4 @@
 import json, re
-import Pyldtk as ldtk
 from os.path import exists
 from random import choice
 from math import floor, sqrt
@@ -9,10 +8,12 @@ try:
     from utils.characters import *
     from utils.storyline import *
     from utils.terrainGen import *
+    import utils.Pyldtk as ldtk
 except ImportError:
     from characters import *
     from storyline import *
     from terrainGen import *
+    import Pyldtk as ldtk
 
 folder = 'data/worlds/'
 
