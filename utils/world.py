@@ -136,10 +136,10 @@ class World:
             #txt = txt.replace('"~', '[').replace('~"', ']')
             txt = txt.replace('                            ]', ']').replace('                    ]', ']')
             print('Saving to file...')
-            open(path, 'w+').write(txt)
+            open(os.getcwd()+'\\'+path, 'w+').write(txt)
     def get_pygame(self):
         return ldtk.get_data()
     # TODO: have a number in the intgrid specifically for oceans, and get that from the terrain gen
 
-w = World('test', 'Test World', 'A world for testing random stuff', 16, quality=500, override=True)
+w = World('test', 'Test World', 'A world for testing random stuff', 25, quality=500, override=True)
 pass
