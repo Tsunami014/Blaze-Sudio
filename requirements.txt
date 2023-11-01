@@ -5,3 +5,7 @@ gpt4all
 languagemodels
 noise
 scikit-image
+matplotlib
+g4f
+bs4
+googlesearch-python
