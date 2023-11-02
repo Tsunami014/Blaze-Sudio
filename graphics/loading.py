@@ -9,16 +9,12 @@ class thread_with_exception(Thread):
         Thread.__init__(self, daemon=True)
              
     def run(self):
- 
-        # target function of the thread class
         try:
             self.target(*self.args)
         finally:
             pass
           
     def get_id(self):
- 
-        # returns id of the respective thread
         if hasattr(self, '_thread_id'):
             return self._thread_id
         for id, thread in _active.items():
@@ -33,9 +29,12 @@ class thread_with_exception(Thread):
             ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
             print('Exception raise failure')
 
-def WithHi(func):
-    def func2(WIN, font):
-        Hi(WIN, font)
+def Loading(func):
+    def func(WIN, font):
+        t = font.render('Loading...', 2, (0, 0, 0))
+        WIN.fill((255, 255, 255))
+        WIN.blit(t, (WIN.get_width()//2-t.get_width()//2, 0))
+        pygame.display.flip()
         t = thread_with_exception(func)
         t.start()
         run = True
@@ -49,16 +48,10 @@ def WithHi(func):
         end = t.is_alive()
         t.raise_exception()
         return not end
-    return func2
-
-def Hi(WIN, font):
-    t = font.render('Loading...', 2, (0, 0, 0))
-    WIN.fill((255, 255, 255))
-    WIN.blit(t, (WIN.get_width()//2-t.get_width()//2, 0))
-    pygame.display.flip()
+    return func
 
 if __name__ == '__main__':
-    @WithHi
+    @Loading
     def f():
         sleep(10)
     pygame.init()
