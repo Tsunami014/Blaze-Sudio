@@ -10,7 +10,6 @@ def get_data(file):
 ## This is object holds all the data for a .ldtk file
 class Ldtk:
     def __init__(self, ldtkfile): ## It takes in the file path
-        self.fileloc = ldtkfile
         self.ldtkData = get_data(ldtkfile) ## Loads the JSON
         self.header = self.ldtkData['__header__'] ## Sets the header info to something more convenient
 
@@ -23,11 +22,10 @@ class Ldtk:
         self.levels = []
 
         for l in self.ldtkData['levels']:
-            self.levels.append(Ldtklevel(l))
+            self.levels.append(Ldtklevel(l, ldtkfile))
 
 class LdtkJSON:
     def __init__(self, jsoninf, fileloc=''): ## It takes in JSON
-        self.fileloc = fileloc
         self.ldtkData = jsoninf
         self.header = self.ldtkData['__header__'] ## Sets the header info to something more convenient
 
@@ -40,10 +38,11 @@ class LdtkJSON:
         self.levels = []
 
         for l in self.ldtkData['levels']:
-            self.levels.append(Ldtklevel(l))
+            self.levels.append(Ldtklevel(l, fileloc))
 
 class Ldtklevel:
-    def __init__(self, data):
+    def __init__(self, data, fileloc):
+        self.fileloc = fileloc
         self.data = data
         for k, v in self.data.items():
             self.__dict__[k] = v
@@ -73,7 +72,7 @@ class layer:
     def loadTileSheet(self):
         self.tilesetPath = self._tilesetRelPath
         if self.tilesetPath.startswith('..'):
-            self.tilesetPath = os.path.abspath(os.path.join(os.getcwd(), 'data/worlds', self.tilesetPath))
+            self.tilesetPath = os.path.abspath(os.path.join(os.getcwd(), self.fileloc, self.tilesetPath))
         if self.gridTiles == []:
             self.tiles = [tile(t, self) for t in self.autoLayerTiles]
         else:
