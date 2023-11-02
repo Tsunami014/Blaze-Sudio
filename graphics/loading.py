@@ -6,11 +6,12 @@ class thread_with_exception(Thread):
     def __init__(self, target, *args):
         self.target = target
         self.args = args
+        self.retargs = None
         Thread.__init__(self, daemon=True)
              
     def run(self):
         try:
-            self.target(*self.args)
+            self.retargs = self.target(*self.args)
         finally:
             pass
           
@@ -30,32 +31,39 @@ class thread_with_exception(Thread):
             print('Exception raise failure')
 
 def Loading(func):
-    def func2(WIN, font):
+    def func2(self, WIN, font):
         t = font.render('Loading...', 2, (0, 0, 0))
         WIN.fill((255, 255, 255))
         WIN.blit(t, (WIN.get_width()//2-t.get_width()//2, 0))
         pygame.display.flip()
-        t = thread_with_exception(func)
+        t = thread_with_exception(func, self)
         t.start()
         run = True
         while t.is_alive() and run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
+                    pygame.quit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         run = False
+                        pygame.quit()
         end = t.is_alive()
         t.raise_exception()
-        return not end
+        return (not end), t.retargs
     return func2
 
 if __name__ == '__main__':
-    @Loading
-    def f():
-        sleep(10)
+    class Main:
+        def __init__(self): self.i = -1
+        @Loading
+        def f(self):
+            for self.i in range(10):
+                sleep(1)
     pygame.init()
     WIN = pygame.display.set_mode()
     font = pygame.font.Font(None, 64)
-    if f(WIN, font): print('Done successfully :)')
+    m = Main()
+    ret = m.f(WIN, font)
+    print('Ran for %i seconds%s' % (m.i, (' Successfully! :)' if ret[0] else ' And failed :(')))
     print('end')
