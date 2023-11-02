@@ -1,6 +1,6 @@
 from threading import Thread, _active
 from time import sleep
-import ctypes
+import ctypes, pygame
 
 class thread_with_exception(Thread):
     def __init__(self, target, *args):
@@ -34,49 +34,35 @@ class thread_with_exception(Thread):
             print('Exception raise failure')
 
 def WithHi(func):
-    # Returns: Whether the th thread quit (True) or the input function exited normally (False)
-    def func2():
-        with Hi() as h:
-            t = thread_with_exception(func, h)
-            th = h.t
-            t.start()
-            while t.is_alive() and h.run:
-                pass
-            end = t.is_alive()
+    def func2(WIN, font):
+        Hi(WIN, font)
+        t = thread_with_exception(func)
+        t.start()
+        run = True
+        while t.is_alive() and run:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
+        end = t.is_alive()
         t.raise_exception()
-        return end
+        return not end
     return func2
 
-class Hi:
-    def __enter__(self):
-        self.run = True
-        self.inp = ''
-        self.t = Thread(target=self.whiles, daemon=True)
-        self.t.start()
-        return self
-    
-    def whiles(self):
-        while self.run:
-            sleep(0.1)
-            print('hi')
-            if self.inp == 'tuna':
-                sleep(2)
-                self.run = False
-                return
-    
-    def __call__(self, inp):
-        self.inp = inp
-    
-    def __exit__(self, *args):
-        self.run = False
-        try: self.t.join()
-        except: pass
+def Hi(WIN, font):
+    t = font.render('Loading...', 2, (0, 0, 0))
+    WIN.fill((255, 255, 255))
+    WIN.blit(t, (WIN.get_width()//2-t.get_width()//2, 0))
+    pygame.display.flip()
 
 if __name__ == '__main__':
     @WithHi
-    def f(h):
-        h(input('hi'))
-        sleep(4)
-        print('You did not type tuna')
-    f()
+    def f():
+        sleep(10)
+    pygame.init()
+    WIN = pygame.display.set_mode()
+    font = pygame.font.Font(None, 64)
+    if f(WIN, font): print('Done successfully :)')
     print('end')
