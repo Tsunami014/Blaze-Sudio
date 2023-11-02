@@ -1,7 +1,7 @@
 # https://github.com/BilHim/minecraft-world-generation/blob/main/src/Minecraft%20Terrain%20Generation%20in%20Python%20-%20By%20Bilal%20Himite.ipynb
 
 # Imports and parameters
-print('Importing...')
+# print('Importing...')
 
 from random import randint
 import numpy as np
