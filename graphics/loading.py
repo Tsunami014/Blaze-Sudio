@@ -35,11 +35,18 @@ class LoadingScreen:
     def __init__(self, WIN, font):
         self.WIN = WIN
         self.font = font
+        self.pic = pygame.font.Font(None, 256).render('C', 2, (0, 50, 50))
+        #for i in range(10): self.pic = pygame.transform.rotate(self.pic, random()*2)
+        #self.pic = pygame.transform.scale(self.pic, (256, 256))
+        self.rot = 0
     def update(self):
         try:
+            self.rot -= 0.5
+            p = pygame.transform.rotate(self.pic, self.rot)
             self.WIN.fill((255, 255, 255))
             t = self.font.render('Loading...', 2, (0, 0, 0))
             self.WIN.blit(t, (self.WIN.get_width()//2-t.get_width()//2, 0))
+            self.WIN.blit(p, (self.WIN.get_width()//2-p.get_width()//2, self.WIN.get_height()//2-p.get_height()//2))
             pygame.display.flip()
         except: pass
 
