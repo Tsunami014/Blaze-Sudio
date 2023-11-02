@@ -30,7 +30,7 @@ class thread_with_exception(Thread):
             print('Exception raise failure')
 
 def Loading(func):
-    def func(WIN, font):
+    def func2(WIN, font):
         t = font.render('Loading...', 2, (0, 0, 0))
         WIN.fill((255, 255, 255))
         WIN.blit(t, (WIN.get_width()//2-t.get_width()//2, 0))
@@ -48,7 +48,7 @@ def Loading(func):
         end = t.is_alive()
         t.raise_exception()
         return not end
-    return func
+    return func2
 
 if __name__ == '__main__':
     @Loading
