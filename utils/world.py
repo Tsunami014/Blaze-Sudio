@@ -30,7 +30,7 @@ def create_iid():
     return f'{"".join([r() for _ in range(8)])}-{"".join([r() for _ in range(4)])}-11ee-{"".join([r() for _ in range(4)])}-{"".join([r() for _ in range(12)])}'
 
 class World:
-    def __init__(self, filename, name, idea, size, size2=50, quality=500, override=False):
+    def __init__(self, filename, name='', idea='', size=None, size2=50, quality=500, override=False, make_new=True):
         """
         A World!
 
@@ -51,14 +51,23 @@ class World:
             Think of this as the amount of pixels the output generates, and the size is the size of the chunks.
         override : bool, optional
             Whether or not to override the currently saved level with the same name (if there is one), by default False
+        make_new : bool, optional
+            Whether or not to make a new world if the name specified does not exist. Defaults to True
         """
-        path = folder+filename+'.ldtk'
+        path = folder+filename
+        if not path.endswith('.ldtk'): path += '.ldtk'
         self.path = path
-        self.idea = idea
-        self.data = None
+        if (not exists(path) or override) and not make_new:
+            if name == '' or idea == '' or size == None:
+                raise KeyError('You MUST have name, idea and size args OR turn make_new on OR turn override off because the file does not exist or overrride is on!')
+            self.name = name
+            self.idea = idea
+        self.data = {}
         if exists(path) and not override:
             self.data = json.load(open(path, 'r'))
-        else:
+            self.name = self.data['AIHub info'][1]
+            self.idea = self.data['AIHub info'][2]
+        elif make_new:
             m = Map(quality, None)
             print('Generating file...')
             self.data = empty.copy()
@@ -137,9 +146,10 @@ class World:
             txt = txt.replace('                            ]', ']').replace('                    ]', ']')
             print('Saving to file...')
             open(os.getcwd()+'\\'+path, 'w+').write(txt)
-    def get_pygame(self):
-        return ldtk.get_data()
+    def get_pygame(self, lvl=0):
+        if self.data != {}: return ldtk.LdtkJSON(self.data).levels[lvl].layers[1].getImg()
     # TODO: have a number in the intgrid specifically for oceans, and get that from the terrain gen
 
-w = World('test', 'Test World', 'A world for testing random stuff', 25, quality=500, override=True)
-pass
+if __name__ == '__main__':
+    w = World('test', 'Test World', 'A world for testing random stuff', 25, quality=500, override=True)
+    pass

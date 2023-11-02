@@ -1,6 +1,7 @@
 # TODO: make each file not need to be dependant on python files from above folders
 import pygame, os, json
 from graphics.GUI import Button
+from utils import World
 pygame.init()
 
 WIN = pygame.display.set_mode()
@@ -58,9 +59,10 @@ class Game:
     def __init__(self):
         self.clock = pygame.time.Clock()
         self.TB = TerminalBar(WIN, codefont)
-    def world(self, world):
-        titletxt = title.render('World '+world, 2, BLACK)
+    def world(self, world, newworld=False):
+        lvl = 0
         while True:
+            titletxt = title.render('World '+world.name+' level:%i'%lvl, 2, BLACK)
             WIN.fill(WHITE)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -70,14 +72,19 @@ class Game:
                         return
                     elif self.TB.active != -1:
                         self.TB.pressed(event)
+                    elif event.key == pygame.K_LEFT:
+                        lvl -= 1
+                    elif event.key == pygame.K_RIGHT:
+                        lvl += 1
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == pygame.BUTTON_LEFT:
                         self.TB.toggleactive(not self.TB.collides(*event.pos))
             WIN.blit(titletxt, (WIN.get_width()/2-titletxt.get_width()/2, 0))
+            if not newworld: WIN.blit(world.get_pygame(lvl), (0, 0))
             self.TB.update()
             pygame.display.flip()
             self.clock.tick(60)
-    def world_select(self):
+    def world_select(self): # TODO: make it not need AIHub info, or encode it into the file so LDTK doesn't delete it. Could just make the name the same as the filename
         titletxt = title.render('World selection', 2, BLACK)
         worlds = [i for i in os.scandir('data/worlds') if i.is_file() and i.name.endswith('.ldtk') and 'AIHub info' in json.load(open('data/worlds/'+i.name))]
         worldinfo = [json.load(open('data/worlds/'+i.name))['AIHub info'] for i in worlds]
@@ -107,9 +114,9 @@ class Game:
                             if i == btns[0]: # back
                                 return None
                             elif i == btns[1]: # make new world
-                                return self.world('new world') # TODO: change
+                                return self.world(World('', 'new world', '', make_new=False), True) # TODO: change
                             else:
-                                return self.world(i.txt) # TODO: change to World(worlds[btns.index(i)-2])
+                                return self.world(World(worlds[btns.index(i)-2].name)) # TODO: change to World(worlds[btns.index(i)-2])
                         self.TB.toggleactive(not self.TB.collides(*event.pos))
             WIN.blit(titletxt, (WIN.get_width()/2-titletxt.get_width()/2, 0))
             WIN.blit(t, (WIN.get_width()/2-t.get_width()/2, titletxt.get_height()+10))
