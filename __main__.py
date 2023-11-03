@@ -1,6 +1,7 @@
 # TODO: make each file not need to be dependant on python files from above folders
 import pygame, os, json
 from graphics.GUI import Button
+from graphics import Loading
 from utils import World
 pygame.init()
 
@@ -85,12 +86,21 @@ class Game:
             pygame.display.flip()
             self.clock.tick(60)
     def world_select(self): # TODO: make it not need AIHub info, or encode it into the file so LDTK doesn't delete it. Could just make the name the same as the filename
-        titletxt = title.render('World selection', 2, BLACK)
-        worlds = [i for i in os.scandir('data/worlds') if i.is_file() and i.name.endswith('.ldtk') and 'AIHub info' in json.load(open('data/worlds/'+i.name))]
-        worldinfo = [json.load(open('data/worlds/'+i.name))['AIHub info'] for i in worlds]
-        subs = ['Go back to the previous page', 'Make a new world from scratch'] + [i[2] for i in worldinfo]
-        btns = [btngen('Back', (125, 125, 125)), btngen('Make new world', GREEN)]
-        btns.extend([btngen(i[1], BLUE) for i in worldinfo])
+        @Loading
+        def load(self):
+            self.titletxt = title.render('World selection', 2, BLACK)
+            self.worlds = [i for i in os.scandir('data/worlds') if i.is_file() and i.name.endswith('.ldtk') and 'AIHub info' in json.load(open('data/worlds/'+i.name))]
+            self.worldinfo = [json.load(open('data/worlds/'+i.name))['AIHub info'] for i in self.worlds]
+            self.subs = ['Go back to the previous page', 'Make a new world from scratch'] + [i[2] for i in self.worldinfo]
+            self.btns = [btngen('Back', (125, 125, 125)), btngen('Make new world', GREEN)]
+            self.btns.extend([btngen(i[1], BLUE) for i in self.worldinfo])
+        cont, res = load(WIN, title)
+        if not cont:
+            return
+        titletxt = res['titletxt']
+        worlds = res['worlds']
+        subs = res['subs']
+        btns = res['btns']
         blank = font.render(' ', 2, BLACK)
         t = blank
         while True:
