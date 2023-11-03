@@ -89,11 +89,11 @@ class Game:
         @Loading
         def load(self):
             self.titletxt = title.render('World selection', 2, BLACK)
-            self.worlds = [i for i in os.scandir('data/worlds') if i.is_file() and i.name.endswith('.ldtk') and 'AIHub info' in json.load(open('data/worlds/'+i.name))]
-            self.worldinfo = [json.load(open('data/worlds/'+i.name))['AIHub info'] for i in self.worlds]
-            self.subs = ['Go back to the previous page', 'Make a new world from scratch'] + [i[2] for i in self.worldinfo]
+            self.worlds = [i for i in os.scandir('data/worlds') if i.is_dir() and os.path.exists('data/worlds/%s/dat.json'%i.name) and os.path.exists('data/worlds/%s/world.ldtk'%i.name)]
+            self.worldinfo = [json.load(open('data/worlds/%s/dat.json'%i.name)) for i in self.worlds]
+            self.subs = ['Go back to the previous page', 'Make a new world from scratch'] + [i['idea'] for i in self.worldinfo]
             self.btns = [btngen('Back', (125, 125, 125)), btngen('Make new world', GREEN)]
-            self.btns.extend([btngen(i[1], BLUE) for i in self.worldinfo])
+            self.btns.extend([btngen(i['name'], BLUE) for i in self.worldinfo])
         cont, res = load(WIN, title)
         if not cont:
             return
