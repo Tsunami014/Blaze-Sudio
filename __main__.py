@@ -62,6 +62,15 @@ class Game:
         self.TB = TerminalBar(WIN, codefont)
     def world(self, world, newworld=False):
         lvl = 0
+        def load():
+            @Loading
+            def l(self):
+                self.ret = world.get_pygame(lvl)
+            out = l(WIN, title)
+            if not out[0]: return False
+            return out[1]['ret']
+        pg = load()
+        if pg == False: return
         while True:
             titletxt = title.render('World '+world.name+' level:%i'%lvl, 2, BLACK)
             WIN.fill(WHITE)
@@ -75,13 +84,17 @@ class Game:
                         self.TB.pressed(event)
                     elif event.key == pygame.K_LEFT:
                         lvl -= 1
+                        pg = load()
+                        if pg == False: return
                     elif event.key == pygame.K_RIGHT:
                         lvl += 1
+                        pg = load()
+                        if pg == False: return
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == pygame.BUTTON_LEFT:
                         self.TB.toggleactive(not self.TB.collides(*event.pos))
             WIN.blit(titletxt, (WIN.get_width()/2-titletxt.get_width()/2, 0))
-            if not newworld: WIN.blit(world.get_pygame(lvl), (0, 0))
+            if not newworld: WIN.blit(pg, (0, 0))
             self.TB.update()
             pygame.display.flip()
             self.clock.tick(60)
