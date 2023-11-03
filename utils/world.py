@@ -37,7 +37,7 @@ class World:
         Parameters
         ----------
         filename : str
-            The name of the file. Does not affect anything. Must be unique.
+            The name of the path. Does not affect anything. Must be unique.
         name : str
             the name of the world. Can be anything.
         idea : str
@@ -54,8 +54,8 @@ class World:
         make_new : bool, optional
             Whether or not to make a new world if the name specified does not exist. Defaults to True
         """
-        path = folder+filename
-        if not path.endswith('.ldtk'): path += '.ldtk'
+        path = (folder+filename).replace('/', '\\')
+        if not path.endswith('\\'): path += '\\'
         self.path = path
         if (not exists(path) or override) and not make_new:
             if name == '' or idea == '' or size == None:
@@ -64,9 +64,10 @@ class World:
             self.idea = idea
         self.data = {}
         if exists(path) and not override:
-            self.data = json.load(open(path, 'r'))
-            self.name = self.data['AIHub info'][1]
-            self.idea = self.data['AIHub info'][2]
+            self.data = json.load(open(path+'world.ldtk', 'r'))
+            dat = json.load(open(path+'dat.json', 'r'))
+            self.name = dat['name']
+            self.idea = dat['idea']
         elif make_new:
             m = Map(quality, None)
             print('Generating file...')
@@ -128,11 +129,6 @@ class World:
                     i['seed'] = randint(1000000, 9999999)
                 self.data['levels'][j] = level
                 j += 1
-            self.data['AIHub info'] = [
-                'v1.1.0-alpha', # first value MUST be current version of AIHub
-                name, # must be name
-                idea
-            ]
             self.data['tutorialDesc'] = 'This is your generated world! Feel free to edit anything!'
             # save to file
             print('Stringing file into JSON...')
@@ -145,7 +141,14 @@ class World:
             #txt = txt.replace('"~', '[').replace('~"', ']')
             txt = txt.replace('                            ]', ']').replace('                    ]', ']')
             print('Saving to file...')
-            open(os.getcwd()+'\\'+path, 'w+').write(txt)
+            json.dump({
+                'version': 1.0, # Change every time the version OF THE JSON/LDTK FILES UPDATES;
+                # MINOR version update = anything to do with world loading changes
+                # MAJOR version update = something updates and is so bad it breaks any feature
+                'name': name,
+                'idea': idea
+                }, os.getcwd()+'\\'+path+'dat.json')
+            open(os.getcwd()+'\\'+path+'world.ldtk', 'w+').write(txt)
     def get_pygame(self, lvl=0):
         if self.data != {}: return ldtk.LdtkJSON(self.data, folder).levels[lvl].layers[1].getImg()
     # TODO: have a number in the intgrid specifically for oceans, and get that from the terrain gen
