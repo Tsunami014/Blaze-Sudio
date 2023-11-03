@@ -66,11 +66,9 @@ def Loading(func):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-                    pygame.quit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         run = False
-                        pygame.quit()
             ls.update()
         end = t.is_alive()
         t.raise_exception()
@@ -86,5 +84,6 @@ if __name__ == '__main__':
     WIN = pygame.display.set_mode()
     font = pygame.font.Font(None, 64)
     succeeded, ret = f(WIN, font)
+    pygame.quit()
     print('Ran for %i seconds%s' % (ret['i'], (' Successfully! :)' if succeeded else ' And failed :(')))
     print('end')
