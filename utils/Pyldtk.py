@@ -72,7 +72,7 @@ class layer:
     def loadTileSheet(self):
         self.tilesetPath = self._tilesetRelPath
         if self.tilesetPath.startswith('..'):
-            self.tilesetPath = os.path.abspath(os.path.join(os.getcwd(), self.fileloc, self.tilesetPath))
+            self.tilesetPath = os.path.abspath(os.path.join(os.getcwd(), self.level.fileloc, self.tilesetPath))
         if self.gridTiles == []:
             self.tiles = [tile(t, self) for t in self.autoLayerTiles]
         else:
