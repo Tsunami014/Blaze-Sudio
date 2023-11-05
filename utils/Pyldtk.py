@@ -35,15 +35,37 @@ class LdtkJSON:
             else:
                 print(v)
         
+        self.tilesets = {}
+        for i in self.defs['tilesets']:
+            t = Tileset(fileloc, i)
+            self.tilesets[t.uid] = t
+        
         self.levels = []
 
         for l in self.ldtkData['levels']:
-            self.levels.append(Ldtklevel(l, fileloc))
+            self.levels.append(Ldtklevel(l, self.tilesets))
+
+class Tileset:
+    def __init__(self, fileloc, data):
+        self.data = data
+        for k, v in self.data.items():
+            if k.startswith('__'): 
+                k = k[1:]
+            self.__dict__[k] = v
+        if self.relPath != None:
+            self.tilesetPath = self.relPath
+            if self.tilesetPath.startswith('..'):
+                self.tilesetPath = os.path.abspath(os.path.join(os.getcwd(), fileloc, self.tilesetPath))
+            self.tileSet = pygame.image.load(self.tilesetPath).convert_alpha()
+    
+    def getTile(self, x, y, gridsize):
+        end = self.tileSet.subsurface(pygame.Rect(x*self.tileGridSize, y*self.tileGridSize, self.tileGridSize, self.tileGridSize))
+        return pygame.transform.scale(end, (gridsize, gridsize))
 
 class Ldtklevel:
-    def __init__(self, data, fileloc):
-        self.fileloc = fileloc
+    def __init__(self, data, tilesets):
         self.data = data
+        self.tilesets = tilesets
         for k, v in self.data.items():
             self.__dict__[k] = v
         
@@ -59,6 +81,7 @@ class layer:
     def __init__(self, data, level):
         self.data = data
         self.level = level
+        self.tilesets = level.tilesets
         self.tiles = None
         for k, v in self.data.items():
             if k[0:2] == '__':      ## Note this part where python seems to dislike the use of __ so I reduced it to a single underscore
@@ -70,14 +93,10 @@ class layer:
             self.loadTileSheet()
 
     def loadTileSheet(self):
-        self.tilesetPath = self._tilesetRelPath
-        if self.tilesetPath.startswith('..'):
-            self.tilesetPath = os.path.abspath(os.path.join(os.getcwd(), self.level.fileloc, self.tilesetPath))
         if self.gridTiles == []:
             self.tiles = [tile(t, self) for t in self.autoLayerTiles]
         else:
             self.tiles = [tile(t, self) for t in self.gridTiles]
-        self.tileSet = pygame.image.load(self.tilesetPath).convert_alpha()
     
     def getImg(self):
         if self.tiles == None: self.loadTileSheet()
@@ -86,13 +105,14 @@ class layer:
         #    i = self.tiles[j]
         #    end.blit(i.getImg(), ((j%self._cWid)*self._gridSize, floor(j/self._cWid)*self._gridSize))
         #return end
-        self.tileSet = pygame.transform.scale(self.tileSet, (8*self._gridSize, 8*self._gridSize)) #TODO: change this
+        #self.tileSet = pygame.transform.scale(self.tileSet, (8*self._gridSize, 8*self._gridSize)) #TODO: change this
         if self._type == 'IntGrid':
-            y = floor(self.tileSet.get_width() // self._gridSize)
+            tset = self.tilesets[self._tilesetDefUid]
+            y = tset._cWid
             end = pygame.Surface((self._cWid * self._gridSize, self._cHei * self._gridSize))
             for j in range(len(self.intGridCsv)):
                 i = self.intGridCsv[j]
-                end.blit(self.tileSet.subsurface(pygame.Rect((i%y)*self._gridSize, floor(i/y)*self._gridSize, self._gridSize, self._gridSize)), ((j%self._cWid)*self._gridSize, floor(j/self._cWid)*self._gridSize))
+                end.blit(tset.getTile((i%y), floor(i/y), self._gridSize), ((j%self._cWid)*self._gridSize, floor(j/self._cWid)*self._gridSize))
             return end
 
 class tile:
@@ -107,7 +127,6 @@ class tile:
 
         self.pos = pygame.Vector2(tuple(self.px))
         self.src = pygame.Vector2(tuple(self.src))
-        self.srcRect = (self.src.x, self.src.y, self.layer._gridSize, self.layer._gridSize)
     
     def getImg(self):
-        return self.layer.tileSet.subsurface(self.srcRect)
+        return self.layer.tileSet[self.layer._tilesetDefUid].getTile(self.src.x, self.src.y, self.layer._gridSize)
