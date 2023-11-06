@@ -58,8 +58,8 @@ class Tileset:
                 self.tilesetPath = os.path.abspath(os.path.join(os.getcwd(), fileloc, self.tilesetPath))
             self.tileSet = pygame.image.load(self.tilesetPath).convert_alpha()
     
-    def getTile(self, x, y, gridsize):
-        end = self.tileSet.subsurface(pygame.Rect(x*self.tileGridSize, y*self.tileGridSize, self.tileGridSize, self.tileGridSize))
+    def getTile(self, tile, gridsize):
+        end = self.tileSet.subsurface(pygame.Rect(tile.src.x, tile.src.y, self.tileGridSize, self.tileGridSize))
         return pygame.transform.scale(end, (gridsize, gridsize))
 
 class Ldtklevel:
@@ -99,21 +99,13 @@ class layer:
             self.tiles = [tile(t, self) for t in self.gridTiles]
     
     def getImg(self):
+        tset = self.tilesets[self._tilesetDefUid]
         if self.tiles == None: self.loadTileSheet()
-        #end = pygame.Surface((self._cWid * self._gridSize, self._cHei * self._gridSize))
-        #for j in range(len(self.tiles)):
-        #    i = self.tiles[j]
-        #    end.blit(i.getImg(), ((j%self._cWid)*self._gridSize, floor(j/self._cWid)*self._gridSize))
-        #return end
-        #self.tileSet = pygame.transform.scale(self.tileSet, (8*self._gridSize, 8*self._gridSize)) #TODO: change this
-        if self._type == 'IntGrid':
-            tset = self.tilesets[self._tilesetDefUid]
-            y = tset._cWid
-            end = pygame.Surface((self._cWid * self._gridSize, self._cHei * self._gridSize))
-            for j in range(len(self.intGridCsv)):
-                i = self.intGridCsv[j]
-                end.blit(tset.getTile((i%y), floor(i/y), self._gridSize), ((j%self._cWid)*self._gridSize, floor(j/self._cWid)*self._gridSize))
-            return end
+        end = pygame.Surface((self._cWid * self._gridSize, self._cHei * self._gridSize))
+        for j in range(len(self.tiles)):
+            i = self.tiles[j]
+            end.blit(tset.getTile(i, self._gridSize), i.pos)
+        return end
 
 class tile:
     def __init__(self, data, layer):
@@ -127,6 +119,12 @@ class tile:
 
         self.pos = pygame.Vector2(tuple(self.px))
         self.src = pygame.Vector2(tuple(self.src))
+        
+        # THINGS TO KNOW:
+        # self.f = flip: 0=no flip, 1=flip x, 2=flip y, 3=flip both
+        # self.src = position of the tile IN THE TILESET
+        # self.a = alpha (opacity) of the tile (1=full,0=invisible)
+        # self.px (as from above, self.pos) = coordinates of the tile IN THE LAYER. Don't forget layer offsets, if they exist!
     
     def getImg(self):
         return self.layer.tileSet[self.layer._tilesetDefUid].getTile(self.src.x, self.src.y, self.layer._gridSize)
