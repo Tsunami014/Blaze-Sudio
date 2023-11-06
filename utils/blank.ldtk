@@ -39,7 +39,7 @@
 	"levelNamePattern": "Level_%idx",
 	"tutorialDesc": "DO NOT CHANGE THIS FILE UNLESS YOU ARE ME",
 	"customCommands": [],
-	"flags": [],
+	"flags": ["IgnoreBackupSuggest"],
 	"defs": { "layers": [
 		{
 			"__type": "IntGrid",
