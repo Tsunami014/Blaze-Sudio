@@ -137,7 +137,12 @@ class Game:
                             if i == btns[0]: # back
                                 return None
                             elif i == btns[1]: # make new world
-                                return self.world(World('', 'new world', '', make_new=False), True) # TODO: change
+                                @Loading
+                                def NW(self): # TODO: make a GUI screen to ask fr title and description
+                                    self.world = World('newworld', 'New World', 'a new world', 25, quality=500)
+                                cont, res = NW(WIN, title)
+                                if cont:
+                                     self.world(res['world'], True)
                             else:
                                 return self.world(World(worlds[btns.index(i)-2].name)) # TODO: change to World(worlds[btns.index(i)-2])
                         self.TB.toggleactive(not self.TB.collides(*event.pos))

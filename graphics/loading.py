@@ -53,7 +53,7 @@ class LoadingScreen:
         except: pass
 
 def Loading(func):
-    def func2(WIN, font):
+    def func2(WIN, font): # TODO: get window and use own font. Font can be override.
         class main:
             def __call__(self, *args):
                 func(self, *args)
