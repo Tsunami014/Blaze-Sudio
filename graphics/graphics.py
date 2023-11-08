@@ -13,6 +13,7 @@ class Graphic:
         self.clock = pygame.time.Clock()
         self.statics = []
         self.buttons = []
+        self.store = {}
     def set_caption(caption):
         pygame.display.set_caption(caption)
     
@@ -38,7 +39,7 @@ class Graphic:
                 touchingbtns = []
                 for btn in self.buttons:
                     r, sur = Button(*btn[0])
-                    sze = btn[1](self.WIN.get_size(), r.size)
+                    sze = self.pos_store(btn[1](self.WIN.get_size(), r.size), r.size, btn[1], add=False)
                     r.move_ip(*sze)
                     col = r.collidepoint(pygame.mouse.get_pos())
                     if btn[0][-1] != -1 and col:
@@ -49,7 +50,7 @@ class Graphic:
                     if col: touchingbtns.append(btn)
                 for btn in touchingbtns: # repeat so the buttons you are touching appear on top
                     r, sur = Button(*btn[0])
-                    sze = btn[1](self.WIN.get_size(), r.size)
+                    sze = self.pos_store(btn[1](self.WIN.get_size(), r.size), r.size, btn[1], add=False)
                     r.move_ip(*sze)
                     if btn[0][-1] != -1:
                         r = pygame.Rect(-btn[0][-1], -btn[0][-1], sur.get_width() + 20 + btn[0][-1]*2, sur.get_height() + 20 + btn[0][-1]*2)
@@ -75,21 +76,34 @@ class Graphic:
     
     def add_text(self, txt, colour, position, font=GO.FFONT):
         obj = font.render(txt, 2, colour)
-        self.statics.append((obj, position(self.WIN.get_size(), obj.get_size())))
+        pos = self.pos_store(position(self.WIN.get_size(), obj.get_size()), obj.get_size(), position)
+        self.statics.append((obj, pos))
     
     def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, on_hover_enlarge=True):
         self.buttons.append(((txt, col, txtcol, 900, font, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge))), position))
     
+    def pos_store(self, pos, sze, func, add=True):
+        if func not in self.store:
+            if add: self.store[func] = [0, sze[1]]
+            return pos
+        pos = [pos[0], pos[1]+self.store[func][1]+10]
+        if add: self.store[func] = [0, self.store[func][1]+10+sze[1]]
+        return pos
+    
     def clear(self):
         self.statics = []
+        self.buttons = []
+        self.store = {}
 
 if __name__ == '__main__':
     G = Graphic()
     @G.graphic
     def test(ui):
         if ui == True: # Load the graphics
+            G.clear()
             G.add_text('HI :)', GO.CGREEN, GO.PTOPCENTER, GO.FTITLE)
             G.add_text('This is a cool thing', GO.CBLUE, GO.PCENTER)
+            G.add_text('Sorry, I meant a cool TEST', GO.CRED, GO.PCENTER)
             G.add_button('Button 1 :D', GO.CBLUE, GO.PBOTTOMCENTER)
         elif ui == False: # This runs every 1/60 secs
             pass
