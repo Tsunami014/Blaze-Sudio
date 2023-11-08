@@ -15,3 +15,4 @@ FFONT = pygame.font.SysFont(None, 52)
 # Positions
 PCENTER = lambda size, sizeofobj: (round(size[0]/2-sizeofobj[0]/2), round(size[1]/2-sizeofobj[1]/2))
 PTOPCENTER = lambda size, sizeofobj: (round(size[0]/2-sizeofobj[0]/2), 0)
+PBOTTOMCENTER = lambda size, sizeofobj: (round(size[0]/2-sizeofobj[0]/2), size[1]-sizeofobj[1])
