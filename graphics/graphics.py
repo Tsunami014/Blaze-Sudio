@@ -44,19 +44,13 @@ class Graphic:
                     r.move_ip(*sze)
                     col = r.collidepoint(pygame.mouse.get_pos())
                     if btn[0][-1] != -1 and col:
-                        r = pygame.Rect(-btn[0][-1], -btn[0][-1], sur.get_width() + 20 + btn[0][-1], sur.get_height() + 20 + btn[0][-1])
+                        r = pygame.Rect(-btn[0][-1], -btn[0][-1], sur.get_width() + 20 + btn[0][-1]*2, sur.get_height() + 20 + btn[0][-1]*2)
                         r.move_ip(*sze)
                     pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
-                    if col: touchingbtns.append(btn)
+                    if col: touchingbtns.append((btn, r, sur, sze))
                 self.store = st.copy()
-                for btn in touchingbtns: # repeat so the buttons you are touching appear on top
-                    r, sur = Button(*btn[0])
-                    sze = self.pos_store(GO.PSTACKS[btn[1]][1](self.WIN.get_size(), r.size), r.size, btn[1])
-                    r.move_ip(*sze)
-                    if btn[0][-1] != -1:
-                        r = pygame.Rect(-btn[0][-1], -btn[0][-1], sur.get_width() + 20 + btn[0][-1]*2, sur.get_height() + 20 + btn[0][-1]*2)
-                        r.move_ip(*sze)
+                for btn, r, sur, sze in touchingbtns: # repeat so the buttons you are touching appear on top
                     pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
                 self.store = st
