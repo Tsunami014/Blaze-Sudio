@@ -216,16 +216,16 @@ if __name__ == '__main__':
     
     # Copy this scaffold for your own code :)
     @G.graphic
-    def funcname(event, element=None):
+    def funcname(event, element=None, aborted=False):
         if event == GO.TFIRST:
             pass
         elif event == GO.TLOADUI:
             G.clear()
         elif event == GO.TTICK:
             return True # Return whether or not the loop should continue.
-        elif event == GO.TELEMENTCLICK:
+        elif event == GO.TELEMENTCLICK: # Passed 'element'
             pass
-        elif event == GO.TLAST:
+        elif event == GO.TLAST: # Passed 'aborted'
             pass # Whatever you return here will be returned by the function
     print(test())
     pygame.quit() # this here for very fast quitting
