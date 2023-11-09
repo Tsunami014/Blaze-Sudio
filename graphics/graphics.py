@@ -2,9 +2,11 @@ import pygame
 pygame.init()
 try:
     import graphics.graphics_options as GO
+    from graphics.loading import Loading
     from graphics.GUI.randomGUIelements import Button
 except:
     import graphics_options as GO
+    from loading import Loading
     from GUI.randomGUIelements import Button
 
 class TerminalBar:
@@ -44,12 +46,17 @@ class TerminalBar:
 class Graphic:
     def __init__(self):
         self.WIN = pygame.display.set_mode()
+        pygame.display.toggle_fullscreen()
         self.TB = TerminalBar(self.WIN)
         self.size = (self.WIN.get_width(), self.WIN.get_height()-26)
         self.clock = pygame.time.Clock()
         self.statics = []
         self.buttons = []
         self.store = {}
+        self.rel = False
+        # This next bit is so users can store their own data and not have it interfere with anything
+        class Container: pass
+        self.container = Container()
     def set_caption(caption):
         pygame.display.set_caption(caption)
     
@@ -61,13 +68,19 @@ class Graphic:
             s.blit(i[0], i[1])
         return s
     
+    def Loading(self, func):
+        def func2():
+            return Loading(func)(self.WIN, GO.FTITLE)
+        return func2
+    
     def graphic(self, func):
         def func2():
             prevs = [self.statics.copy(), self.buttons.copy()]
             run = True
             s = self.render(func)
             while run:
-                if prevs != [self.statics, self.buttons]:
+                if prevs != [self.statics, self.buttons] or self.rel:
+                    self.rel = False
                     s = self.render(func)
                     prevs = [self.statics.copy(), self.buttons.copy()]
                 self.WIN.fill((255, 255, 255))
@@ -114,11 +127,7 @@ class Graphic:
         self.statics.append((obj, pos))
     
     def add_empty_space(self, position, wid, hei):
-        empty = (255,255,255,0) 
-        obj = pygame.Surface((wid, hei))
-        obj.fill(empty)
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
-        self.statics.append((obj, pos))
+        self.pos_store(GO.PSTACKS[position][1](self.size, (wid, hei)), (wid, hei), position)
     
     def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, on_hover_enlarge=True):
         btnconstruct = (txt, col, txtcol, 900, font, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
@@ -139,33 +148,49 @@ class Graphic:
         self.store[func] = [self.store[func][0] + sze[0]*sizeing[0], self.store[func][1] + sze[1]*sizeing[1]]
         return pos2
     
+    def reload(self):
+        self.rel = True
+    
     def clear(self):
         self.statics = []
         self.buttons = []
         self.store = {}
 
 if __name__ == '__main__':
+    from time import sleep
     G = Graphic()
+    @G.Loading
+    def test_loading(self):
+        for self.i in range(10):
+            sleep(1)
+    
+    G.container.txt = 'Try pressing a button!'
     @G.graphic
     def test(ui):
         if ui == True: # Load the graphics
             G.clear()
             G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
             G.add_text(':) ', GO.CBLACK, GO.PRBOTTOM, GO.FTITLE)
+            G.add_empty_space(GO.PCCENTER, 0, -150) # Yes, you can have negative space. This makes the next things move up.
             G.add_text('This is a cool thing', GO.CBLUE, GO.PCCENTER)
             G.add_text('Sorry, I meant a cool TEST', GO.CRED, GO.PCCENTER)
-            G.add_empty_space(GO.PCBOTTOM, 10, 20)
+            G.add_text(G.container.txt, GO.CGREEN, GO.PCCENTER)
+            G.add_empty_space(GO.PCBOTTOM, 0, 20)
             G.add_button('Button 1 :D', GO.CYELLOW, GO.PCBOTTOM)
             G.add_text('Buttons above [^] and below [v]', GO.CBLUE, GO.PCBOTTOM)
             G.add_button('Button 2 :(  hi', GO.CBLUE, GO.PCBOTTOM)
-            G.add_button('Button 3 :P', GO.CGREEN, GO.PCBOTTOM)
+            G.add_button('Loading test', GO.CGREEN, GO.PCBOTTOM)
             G.add_text('Are you ', GO.CBLACK, GO.PLTOP)
             G.add_text('happy? ', GO.CGREEN, GO.PLTOP)
             G.add_text('Or sad?', GO.CRED, GO.PLTOP)
         elif ui == False: # This runs every 1/60 secs
             pass
         else: # Some UI element got clicked! (currently only buttons, so we know what to do here)
-            print(ui[0][0][0]) # print name of button
+            if ui[0][0][0] == 'Loading test':
+                succeeded, ret = test_loading()
+                G.container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+            else: G.container.txt = ui[0][0][0] # print name of button
+            G.reload()
         return True
     test()
     pygame.quit() # this here for very fast quitting
