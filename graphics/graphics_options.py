@@ -36,3 +36,10 @@ PSTACKS = {
     PRCENTER: ([-1, 0], lambda size, sizeofobj: (size[0]-sizeofobj[0], round(size[1]/2-sizeofobj[1]/2))),
     PRBOTTOM: ([-1, 0], lambda size, sizeofobj: (size[0]-sizeofobj[0], size[1]-sizeofobj[1]))
 }
+
+# Events
+TFIRST = 0
+TLOADUI = 1
+TTICK = 2
+TELEMENTCLICK = 3
+TLAST = 4
