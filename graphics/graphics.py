@@ -37,10 +37,9 @@ class Graphic:
                 self.WIN.fill((255, 255, 255))
                 self.WIN.blit(s, (0, 0))
                 touchingbtns = []
-                st = self.store.copy()
                 for btn in self.buttons:
                     r, sur = Button(*btn[0])
-                    sze = self.pos_store(GO.PSTACKS[btn[1]][1](self.WIN.get_size(), r.size), r.size, btn[1])
+                    sze = btn[1]
                     r.move_ip(*sze)
                     col = r.collidepoint(pygame.mouse.get_pos())
                     if btn[0][-1] != -1 and col:
@@ -49,11 +48,9 @@ class Graphic:
                     pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
                     if col: touchingbtns.append((btn, r, sur, sze))
-                self.store = st.copy()
                 for btn, r, sur, sze in touchingbtns: # repeat so the buttons you are touching appear on top
                     pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
-                self.store = st
                 run = func(False)
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -84,7 +81,10 @@ class Graphic:
         self.statics.append((obj, pos))
     
     def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, on_hover_enlarge=True):
-        self.buttons.append(((txt, col, txtcol, 900, font, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge))), position))
+        btnconstruct = (txt, col, txtcol, 900, font, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
+        r, _ = Button(*btnconstruct)
+        sze = self.pos_store(GO.PSTACKS[position][1](self.WIN.get_size(), r.size), r.size, position)
+        self.buttons.append((btnconstruct, sze))
     
     def pos_store(self, pos, sze, func):
         sizeing = GO.PSTACKS[func][0]
@@ -116,14 +116,16 @@ if __name__ == '__main__':
             G.add_text('Sorry, I meant a cool TEST', GO.CRED, GO.PCCENTER)
             G.add_empty_space(GO.PCBOTTOM, 10, 20)
             G.add_button('Button 1 :D', GO.CYELLOW, GO.PCBOTTOM)
+            G.add_text('Buttons above [^] and below [v]', GO.CBLUE, GO.PCBOTTOM)
             G.add_button('Button 2 :(  hi', GO.CBLUE, GO.PCBOTTOM)
+            G.add_button('Button 3 :P', GO.CGREEN, GO.PCBOTTOM)
             G.add_text('Are you ', GO.CBLACK, GO.PLTOP)
             G.add_text('happy? ', GO.CGREEN, GO.PLTOP)
             G.add_text('Or sad?', GO.CRED, GO.PLTOP)
         elif ui == False: # This runs every 1/60 secs
             pass
-        else: # Some UI element got clicked!
-            print(ui)
+        else: # Some UI element got clicked! (currently only buttons, so we know what to do here)
+            print(ui[0][0][0]) # print name of button
         return True
     test()
     pygame.quit() # this here for very fast quitting
