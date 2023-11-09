@@ -75,6 +75,7 @@ class Graphic:
     
     def graphic(self, func):
         def func2():
+            func(GO.TFIRST)
             prevs = [self.statics.copy(), self.buttons.copy()]
             run = True
             s = self.render(func)
@@ -119,6 +120,7 @@ class Graphic:
                 self.TB.update()
                 pygame.display.flip()
                 self.clock.tick(60)
+            return func(GO.TLAST)
         return func2
     
     def add_text(self, txt, colour, position, font=GO.FFONT):
@@ -164,14 +166,15 @@ if __name__ == '__main__':
         for self.i in range(10):
             sleep(1)
     
-    G.container.txt = 'Try pressing a button!'
     @G.graphic
-    def test(ui):
-        if ui == True: # Load the graphics
+    def test(event, element=None):
+        if event == GO.TFIRST: # First, before anything else happens in the function
+            G.container.txt = 'Try pressing a button!'
+        if event == GO.TLOADUI: # Load the graphics
             G.clear()
             G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
             G.add_text(':) ', GO.CBLACK, GO.PRBOTTOM, GO.FTITLE)
-            G.add_empty_space(GO.PCCENTER, 0, -150) # Yes, you can have negative space. This makes the next things move up.
+            G.add_empty_space(GO.PCCENTER, 0, -150) # Yes, you can have negative space. This makes the next things shifted the other direction.
             G.add_text('This is a cool thing', GO.CBLUE, GO.PCCENTER)
             G.add_text('Sorry, I meant a cool TEST', GO.CRED, GO.PCCENTER)
             G.add_text(G.container.txt, GO.CGREEN, GO.PCCENTER)
@@ -183,14 +186,15 @@ if __name__ == '__main__':
             G.add_text('Are you ', GO.CBLACK, GO.PLTOP)
             G.add_text('happy? ', GO.CGREEN, GO.PLTOP)
             G.add_text('Or sad?', GO.CRED, GO.PLTOP)
-        elif ui == False: # This runs every 1/60 secs
-            pass
-        else: # Some UI element got clicked! (currently only buttons, so we know what to do here)
-            if ui[0][0][0] == 'Loading test':
+        elif event == GO.TTICK: # This runs every 1/60 secs (each tick)
+            return True # Return whether or not the loop should continue.
+        elif event == GO.TELEMENTCLICK: # Some UI element got clicked! (currently only buttons, so we know what to do here)
+            if element[0][0][0] == 'Loading test':
                 succeeded, ret = test_loading()
                 G.container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
-            else: G.container.txt = ui[0][0][0] # print name of button
+            else: G.container.txt = element[0][0][0] # print name of button
             G.reload()
-        return True
+        elif event == GO.TLAST:
+            pass # Whatever you return here will be returned by the function
     test()
     pygame.quit() # this here for very fast quitting
