@@ -196,5 +196,19 @@ if __name__ == '__main__':
             G.reload()
         elif event == GO.TLAST:
             pass # Whatever you return here will be returned by the function
+    
+    # Copy this scaffold for your own code :)
+    @G.graphic
+    def funcname(event, element=None):
+        if event == GO.TFIRST:
+            pass
+        if event == GO.TLOADUI:
+            G.clear()
+        elif event == GO.TTICK:
+            return True # Return whether or not the loop should continue.
+        elif event == GO.TELEMENTCLICK:
+            pass
+        elif event == GO.TLAST:
+            pass # Whatever you return here will be returned by the function
     test()
     pygame.quit() # this here for very fast quitting
