@@ -54,6 +54,7 @@ class Graphic:
         self.buttons = []
         self.store = {}
         self.rel = False
+        self.ab = False
         # This next bit is so users can store their own data and not have it interfere with anything
         class Container: pass
         self.container = Container()
@@ -83,8 +84,9 @@ class Graphic:
             func(GO.TFIRST)
             prevs = [self.statics.copy(), self.buttons.copy()]
             run = True
+            self.ab = False
             s = self.render(func)
-            while run:
+            while run and not self.ab:
                 if prevs != [self.statics, self.buttons] or self.rel:
                     self.rel = False
                     s = self.render(func)
@@ -125,7 +127,9 @@ class Graphic:
                 self.TB.update()
                 pygame.display.flip()
                 self.clock.tick(60)
-            return func(GO.TLAST)
+            ret = func(GO.TLAST, aborted=self.ab)
+            self.ab = False
+            return ret
         return func2
     
     def add_text(self, txt, colour, position, font=GO.FFONT):
@@ -162,6 +166,9 @@ class Graphic:
         self.statics = []
         self.buttons = []
         self.store = {}
+    
+    def Abort(self):
+        self.ab = True
 
 if __name__ == '__main__':
     from time import sleep
@@ -172,7 +179,7 @@ if __name__ == '__main__':
             sleep(1)
     
     @G.graphic
-    def test(event, element=None): # If this was a class you could do `def test(self, event, element=None)` as it can work for that
+    def test(event, element=None, aborted=False): # If this was a class you could do `def test(self, event, element=None)` as it can work for that
         if event == GO.TFIRST: # First, before anything else happens in the function
             G.container.txt = 'Try pressing a button!'
         if event == GO.TLOADUI: # Load the graphics
@@ -188,19 +195,24 @@ if __name__ == '__main__':
             G.add_text('Buttons above [^] and below [v]', GO.CBLUE, GO.PCBOTTOM)
             G.add_button('Button 2 :(  hi', GO.CBLUE, GO.PCBOTTOM)
             G.add_button('Loading test', GO.CGREEN, GO.PCBOTTOM)
+            G.add_button('EXIT', GO.CRED, GO.PCBOTTOM)
             G.add_text('Are you ', GO.CBLACK, GO.PLTOP)
             G.add_text('happy? ', GO.CGREEN, GO.PLTOP)
             G.add_text('Or sad?', GO.CRED, GO.PLTOP)
         elif event == GO.TTICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.TELEMENTCLICK: # Some UI element got clicked! (currently only buttons, so we know what to do here)
+            # This gets passed 'element': the element that got clicked. TODO: make an Element class
             if element[0][0][0] == 'Loading test':
                 succeeded, ret = test_loading()
                 G.container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+            elif element[0][0][0] == 'EXIT':
+                G.Abort()
             else: G.container.txt = element[0][0][0] # print name of button
             G.reload()
         elif event == GO.TLAST:
-            pass # Whatever you return here will be returned by the function
+            # This also gets passed 'aborted': Whether you aborted or exited the screen
+            return aborted # Whatever you return here will be returned by the function
     
     # Copy this scaffold for your own code :)
     @G.graphic
@@ -215,5 +227,5 @@ if __name__ == '__main__':
             pass
         elif event == GO.TLAST:
             pass # Whatever you return here will be returned by the function
-    test()
+    print(test())
     pygame.quit() # this here for very fast quitting
