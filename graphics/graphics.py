@@ -74,13 +74,18 @@ class Graphic:
             return Loading(func)(self.WIN, GO.FTITLE)
         return func2
     
-    def graphic(self, funcy):
-        def func2(slf=None):
-            def func(*args):
-                if slf != None:
-                    return funcy(slf, *args)
+    def CGraphic(self, funcy):
+        def func2(slf, *args, **kwargs):
+            Graphic(funcy, slf)(*args, **kwargs)
+        return func2
+    
+    def Graphic(self, funcy, slf=None):
+        def func2(*args, **kwargs):
+            def func(event, element=None, aborted=False):
+                if slf == None:
+                    return funcy(event, *args, element=element, aborted=aborted, **kwargs)
                 else:
-                    return funcy(*args)
+                    return funcy(slf, event, *args, element=element, aborted=aborted, **kwargs)
             func(GO.TFIRST)
             prevs = [self.statics.copy(), self.buttons.copy()]
             run = True
@@ -172,16 +177,17 @@ class Graphic:
 
 if __name__ == '__main__':
     from time import sleep
+    t = input('Please input the starting text for the middle: ')
     G = Graphic()
     @G.Loading
     def test_loading(self):
         for self.i in range(10):
             sleep(1)
     
-    @G.graphic
-    def test(event, element=None, aborted=False): # If this was a class you could do `def test(self, event, element=None)` as it can work for that
+    @G.Graphic
+    def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
         if event == GO.TFIRST: # First, before anything else happens in the function
-            G.container.txt = 'Try pressing a button!'
+            G.container.txt = txt
         if event == GO.TLOADUI: # Load the graphics
             G.clear()
             G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
@@ -214,9 +220,11 @@ if __name__ == '__main__':
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             return aborted # Whatever you return here will be returned by the function
     
+    print(test(t))
+    
     # Copy this scaffold for your own code :)
-    @G.graphic
-    def funcname(event, element=None, aborted=False):
+    @G.Graphic # If you use classes, make this CGraphics and add a `self` argument to the function
+    def funcname(event, *args, element=None, aborted=False, **kwargs): # Args and kwargs are passed through from the initial call of the func
         if event == GO.TFIRST:
             pass
         elif event == GO.TLOADUI:
@@ -227,5 +235,4 @@ if __name__ == '__main__':
             pass
         elif event == GO.TLAST: # Passed 'aborted'
             pass # Whatever you return here will be returned by the function
-    print(test())
     pygame.quit() # this here for very fast quitting
