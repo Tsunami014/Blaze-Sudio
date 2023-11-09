@@ -7,9 +7,45 @@ except:
     import graphics_options as GO
     from GUI.randomGUIelements import Button
 
+class TerminalBar:
+    def __init__(self, win, spacing=5):
+        self.win = win
+        self.spacing = spacing
+        self.active = -1
+        self.txt = ''
+    def pressed(self, event):
+        if event.key == pygame.K_RETURN:
+            pass
+        elif event.key == pygame.K_BACKSPACE:
+            self.txt = self.txt[:-1]
+        else:
+            self.txt += event.unicode
+    def toggleactive(self, forceactive=None):
+        if forceactive != None:
+            if forceactive: self.active = 60
+            else: self.active = -1
+        if self.active == -1: self.active = 60
+        else: self.active = -1
+    def update(self):
+        t = '>/'+self.txt
+        if self.active >= 30: t += '_'
+        if self.active >= 0:
+            self.active -= 1
+            if self.active <= 0: self.active = 60
+        r = GO.FCODEFONT.render(t, 1, GO.CWHITE)
+        h = r.get_height()+self.spacing*2
+        pygame.draw.rect(self.win, GO.CBLACK, pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h))
+        self.win.blit(r, (self.spacing, self.win.get_height()-h+self.spacing))
+    def collides(self, x, y):
+        r = GO.FCODEFONT.render('>/', 1, GO.CWHITE)
+        h = r.get_height()+self.spacing*2
+        return pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h).collidepoint(x, y)
+
 class Graphic:
     def __init__(self):
         self.WIN = pygame.display.set_mode()
+        self.TB = TerminalBar(self.WIN)
+        self.size = (self.WIN.get_width(), self.WIN.get_height()-26)
         self.clock = pygame.time.Clock()
         self.statics = []
         self.buttons = []
@@ -18,7 +54,7 @@ class Graphic:
         pygame.display.set_caption(caption)
     
     def render(self, func=None):
-        s = pygame.Surface(self.WIN.get_size())
+        s = pygame.Surface(self.size)
         s.fill((255, 255, 255))
         if func != None: func(True)
         for i in self.statics:
@@ -60,30 +96,34 @@ class Graphic:
                         if event.key == pygame.K_ESCAPE:
                             run = False
                             return
+                        elif self.TB.active != -1:
+                            self.TB.pressed(event)
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == pygame.BUTTON_LEFT:
+                            self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in touchingbtns:
                                 func(i)
+                self.TB.update()
                 pygame.display.flip()
                 self.clock.tick(60)
         return func2
     
     def add_text(self, txt, colour, position, font=GO.FFONT):
         obj = font.render(txt, 2, colour)
-        pos = self.pos_store(GO.PSTACKS[position][1](self.WIN.get_size(), obj.get_size()), obj.get_size(), position)
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
         self.statics.append((obj, pos))
     
     def add_empty_space(self, position, wid, hei):
         empty = (255,255,255,0) 
         obj = pygame.Surface((wid, hei))
         obj.fill(empty)
-        pos = self.pos_store(GO.PSTACKS[position][1](self.WIN.get_size(), obj.get_size()), obj.get_size(), position)
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
         self.statics.append((obj, pos))
     
     def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, on_hover_enlarge=True):
         btnconstruct = (txt, col, txtcol, 900, font, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
         r, _ = Button(*btnconstruct)
-        sze = self.pos_store(GO.PSTACKS[position][1](self.WIN.get_size(), r.size), r.size, position)
+        sze = self.pos_store(GO.PSTACKS[position][1](self.size, r.size), r.size, position)
         self.buttons.append((btnconstruct, sze))
     
     def pos_store(self, pos, sze, func):
