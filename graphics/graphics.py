@@ -63,7 +63,7 @@ class Graphic:
     def render(self, func=None):
         s = pygame.Surface(self.size)
         s.fill((255, 255, 255))
-        if func != None: func(True)
+        if func != None: func(GO.TLOADUI)
         for i in self.statics:
             s.blit(i[0], i[1])
         return s
@@ -73,8 +73,13 @@ class Graphic:
             return Loading(func)(self.WIN, GO.FTITLE)
         return func2
     
-    def graphic(self, func):
-        def func2():
+    def graphic(self, funcy):
+        def func2(slf=None):
+            def func(*args):
+                if slf != None:
+                    return funcy(slf, *args)
+                else:
+                    return funcy(*args)
             func(GO.TFIRST)
             prevs = [self.statics.copy(), self.buttons.copy()]
             run = True
@@ -101,7 +106,7 @@ class Graphic:
                 for btn, r, sur, sze in touchingbtns: # repeat so the buttons you are touching appear on top
                     pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
-                run = func(False)
+                run = func(GO.TTICK)
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         run = False
@@ -116,7 +121,7 @@ class Graphic:
                         if event.button == pygame.BUTTON_LEFT:
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in touchingbtns:
-                                func(i)
+                                func(GO.TELEMENTCLICK, i)
                 self.TB.update()
                 pygame.display.flip()
                 self.clock.tick(60)
@@ -167,7 +172,7 @@ if __name__ == '__main__':
             sleep(1)
     
     @G.graphic
-    def test(event, element=None):
+    def test(event, element=None): # If this was a class you could do `def test(self, event, element=None)` as it can work for that
         if event == GO.TFIRST: # First, before anything else happens in the function
             G.container.txt = 'Try pressing a button!'
         if event == GO.TLOADUI: # Load the graphics
@@ -202,7 +207,7 @@ if __name__ == '__main__':
     def funcname(event, element=None):
         if event == GO.TFIRST:
             pass
-        if event == GO.TLOADUI:
+        elif event == GO.TLOADUI:
             G.clear()
         elif event == GO.TTICK:
             return True # Return whether or not the loop should continue.
