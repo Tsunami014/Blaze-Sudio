@@ -1,0 +1,23 @@
+name: tags
+run-name: ${{ github.actor }} is making a tag
+on:
+  workflow_call:
+    inputs:
+      name:
+        description: 'The name of the thing to run'
+        default: ''
+        required: true
+        type: string
+      works:
+        description: 'Whether or not it successfully works'
+        default: false
+        required: true
+        type: boolean
+jobs:
+  Maketag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Try to fail
+      - run: exit 1
+        if: works
