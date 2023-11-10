@@ -55,9 +55,10 @@ class Graphic:
         self.store = {}
         self.rel = False
         self.ab = False
+        self.touchingbtns = []
         # This next bit is so users can store their own data and not have it interfere with anything
         class Container: pass
-        self.container = Container()
+        self.Container = Container()
     def set_caption(caption):
         pygame.display.set_caption(caption)
     
@@ -76,7 +77,7 @@ class Graphic:
     
     def CGraphic(self, funcy):
         def func2(slf, *args, **kwargs):
-            Graphic(funcy, slf)(*args, **kwargs)
+            self.Graphic(funcy, slf)(*args, **kwargs)
         return func2
     
     def Graphic(self, funcy, slf=None):
@@ -90,6 +91,7 @@ class Graphic:
             prevs = [self.statics.copy(), self.buttons.copy()]
             run = True
             self.ab = False
+            self.touchingbtns = []
             s = self.render(func)
             while run and not self.ab:
                 if prevs != [self.statics, self.buttons] or self.rel:
@@ -98,7 +100,7 @@ class Graphic:
                     prevs = [self.statics.copy(), self.buttons.copy()]
                 self.WIN.fill((255, 255, 255))
                 self.WIN.blit(s, (0, 0))
-                touchingbtns = []
+                self.touchingbtns = []
                 for btn in self.buttons:
                     r, sur = Button(*btn[0])
                     sze = btn[1]
@@ -109,8 +111,8 @@ class Graphic:
                         r.move_ip(*sze)
                     pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
-                    if col: touchingbtns.append((btn, r, sur, sze))
-                for btn, r, sur, sze in touchingbtns: # repeat so the buttons you are touching appear on top
+                    if col: self.touchingbtns.append((btn, r, sur, sze))
+                for btn, r, sur, sze in self.touchingbtns: # repeat so the buttons you are touching appear on top
                     pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
                 run = func(GO.TTICK)
@@ -127,7 +129,7 @@ class Graphic:
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == pygame.BUTTON_LEFT:
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
-                            for i in touchingbtns:
+                            for i in self.touchingbtns:
                                 func(GO.TELEMENTCLICK, i)
                 self.TB.update()
                 pygame.display.flip()
@@ -139,6 +141,10 @@ class Graphic:
     
     def add_text(self, txt, colour, position, font=GO.FFONT):
         obj = font.render(txt, 2, colour)
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
+        self.statics.append((obj, pos))
+    
+    def add_surface(self, obj, position):
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
         self.statics.append((obj, pos))
     
@@ -164,10 +170,13 @@ class Graphic:
         self.store[func] = [self.store[func][0] + sze[0]*sizeing[0], self.store[func][1] + sze[1]*sizeing[1]]
         return pos2
     
-    def reload(self):
+    def get_idx(self, element):
+        return self.buttons.index(element[0])
+    
+    def Reload(self):
         self.rel = True
     
-    def clear(self):
+    def Clear(self):
         self.statics = []
         self.buttons = []
         self.store = {}
@@ -187,35 +196,37 @@ if __name__ == '__main__':
     @G.Graphic
     def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
         if event == GO.TFIRST: # First, before anything else happens in the function
-            G.container.txt = txt
+            G.Container.txt = txt
         if event == GO.TLOADUI: # Load the graphics
-            G.clear()
+            CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1], 0) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
+            G.Clear()
             G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
             G.add_text(':) ', GO.CBLACK, GO.PRBOTTOM, GO.FTITLE)
             G.add_empty_space(GO.PCCENTER, 0, -150) # Yes, you can have negative space. This makes the next things shifted the other direction.
             G.add_text('This is a cool thing', GO.CBLUE, GO.PCCENTER)
             G.add_text('Sorry, I meant a cool TEST', GO.CRED, GO.PCCENTER)
-            G.add_text(G.container.txt, GO.CGREEN, GO.PCCENTER)
+            G.add_text(G.Container.txt, GO.CGREEN, GO.PCCENTER)
             G.add_empty_space(GO.PCBOTTOM, 0, 20)
             G.add_button('Button 1 :D', GO.CYELLOW, GO.PCBOTTOM)
             G.add_text('Buttons above [^] and below [v]', GO.CBLUE, GO.PCBOTTOM)
             G.add_button('Button 2 :(  hi', GO.CBLUE, GO.PCBOTTOM)
             G.add_button('Loading test', GO.CGREEN, GO.PCBOTTOM)
             G.add_button('EXIT', GO.CRED, GO.PCBOTTOM)
-            G.add_text('Are you ', GO.CBLACK, GO.PLTOP)
-            G.add_text('happy? ', GO.CGREEN, GO.PLTOP)
-            G.add_text('Or sad?', GO.CRED, GO.PLTOP)
+            G.add_empty_space(CTOP, -150, 0) # Center it a little more
+            G.add_text('Are you ', GO.CBLACK, CTOP)
+            G.add_text('happy? ', GO.CGREEN, CTOP)
+            G.add_text('Or sad?', GO.CRED, CTOP)
         elif event == GO.TTICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.TELEMENTCLICK: # Some UI element got clicked! (currently only buttons, so we know what to do here)
             # This gets passed 'element': the element that got clicked. TODO: make an Element class
             if element[0][0][0] == 'Loading test':
                 succeeded, ret = test_loading()
-                G.container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+                G.Container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
             elif element[0][0][0] == 'EXIT':
                 G.Abort()
-            else: G.container.txt = element[0][0][0] # print name of button
-            G.reload()
+            else: G.Container.txt = element[0][0][0] # print name of button
+            G.Reload()
         elif event == GO.TLAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             return aborted # Whatever you return here will be returned by the function
@@ -223,12 +234,13 @@ if __name__ == '__main__':
     print(test(t))
     
     # Copy this scaffold for your own code :)
+    # Args and kwargs are passed through from the initial call of the func
     @G.Graphic # If you use classes, make this CGraphics and add a `self` argument to the function
-    def funcname(event, *args, element=None, aborted=False, **kwargs): # Args and kwargs are passed through from the initial call of the func
+    def funcname(event, *args, element=None, aborted=False, **kwargs):
         if event == GO.TFIRST:
             pass
         elif event == GO.TLOADUI:
-            G.clear()
+            G.Clear()
         elif event == GO.TTICK:
             return True # Return whether or not the loop should continue.
         elif event == GO.TELEMENTCLICK: # Passed 'element'
