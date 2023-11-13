@@ -71,7 +71,7 @@ class Graphic:
     def render(self, func=None):
         s = pygame.Surface(self.size)
         s.fill((255, 255, 255))
-        if func != None: func(GO.TLOADUI)
+        if func != None: func(GO.ELOADUI)
         for i in self.statics:
             s.blit(i[0], i[1])
         return s
@@ -93,7 +93,7 @@ class Graphic:
                     return funcy(event, *args, element=element, aborted=aborted, **kwargs)
                 else:
                     return funcy(slf, event, *args, element=element, aborted=aborted, **kwargs)
-            func(GO.TFIRST)
+            func(GO.EFIRST)
             prevs = [self.statics.copy(), self.buttons.copy()]
             run = True
             self.ab = False
@@ -123,7 +123,7 @@ class Graphic:
                 for btn, r, sur, sze in self.touchingbtns: # repeat so the buttons you are touching appear on top
                     pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
-                run = func(GO.TTICK)
+                run = func(GO.ETICK)
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         run = False
@@ -147,14 +147,14 @@ class Graphic:
                         if event.button == pygame.BUTTON_LEFT:
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in self.touchingbtns:
-                                func(GO.TELEMENTCLICK, i)
+                                func(GO.EELEMENTCLICK, i)
                 self.TB.update()
                 self.sprites.update()
                 rects = self.sprites.draw(self.WIN)
                 pygame.display.update(rects)
                 pygame.display.flip()
                 self.clock.tick(60)
-            ret = func(GO.TLAST, aborted=self.ab)
+            ret = func(GO.ELAST, aborted=self.ab)
             self.ab = False
             return ret
         return func2
@@ -237,9 +237,9 @@ if __name__ == '__main__':
     
     @G.Graphic
     def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
-        if event == GO.TFIRST: # First, before anything else happens in the function
+        if event == GO.EFIRST: # First, before anything else happens in the function
             G.Container.txt = txt
-        if event == GO.TLOADUI: # Load the graphics
+        if event == GO.ELOADUI: # Load the graphics
             CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1], 0) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
             G.Clear()
             G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
@@ -258,9 +258,9 @@ if __name__ == '__main__':
             G.add_text('Are you ', GO.CBLACK, CTOP)
             G.add_text('happy? ', GO.CGREEN, CTOP)
             G.add_text('Or sad?', GO.CRED, CTOP)
-        elif event == GO.TTICK: # This runs every 1/60 secs (each tick)
+        elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
-        elif event == GO.TELEMENTCLICK: # Some UI element got clicked! (currently only buttons, so we know what to do here)
+        elif event == GO.EELEMENTCLICK: # Some UI element got clicked! (currently only buttons, so we know what to do here)
             # This gets passed 'element': the element that got clicked. TODO: make an Element class
             if element[0][0][0] == 'Loading test':
                 succeeded, ret = test_loading()
@@ -272,7 +272,7 @@ if __name__ == '__main__':
                 bot = GO.PNEW([0, 0], GO.PSTACKS[GO.PCBOTTOM][1], 1)
                 G.add_TextBox('HALLOOOO! :)', bot)
             else: G.Container.txt = element[0][0][0] # print name of button
-        elif event == GO.TLAST:
+        elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             return aborted # Whatever you return here will be returned by the function
     
@@ -282,14 +282,14 @@ if __name__ == '__main__':
     # Args and kwargs are passed through from the initial call of the func
     @G.Graphic # If you use classes, make this CGraphics and add a `self` argument to the function
     def funcname(event, *args, element=None, aborted=False, **kwargs):
-        if event == GO.TFIRST:
+        if event == GO.EFIRST:
             pass
-        elif event == GO.TLOADUI:
+        elif event == GO.ELOADUI:
             G.Clear()
-        elif event == GO.TTICK:
+        elif event == GO.ETICK:
             return True # Return whether or not the loop should continue.
-        elif event == GO.TELEMENTCLICK: # Passed 'element'
+        elif event == GO.EELEMENTCLICK: # Passed 'element'
             pass
-        elif event == GO.TLAST: # Passed 'aborted'
+        elif event == GO.ELAST: # Passed 'aborted'
             pass # Whatever you return here will be returned by the function
     pygame.quit() # this here for very fast quitting
