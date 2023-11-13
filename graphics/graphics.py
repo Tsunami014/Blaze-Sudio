@@ -4,10 +4,14 @@ try:
     import graphics.graphics_options as GO
     from graphics.loading import Loading
     from graphics.GUI.randomGUIelements import Button
+    from graphics.GUI import TextBoxFrame
+    from graphics.GUI.textboxify.borders import LIGHT
 except:
     import graphics_options as GO
     from loading import Loading
     from GUI.randomGUIelements import Button
+    from GUI import TextBoxFrame
+    from GUI.textboxify.borders import LIGHT
 
 class TerminalBar:
     def __init__(self, win, spacing=5):
@@ -56,6 +60,8 @@ class Graphic:
         self.rel = False
         self.ab = False
         self.touchingbtns = []
+        self.pause = False
+        self.sprites = pygame.sprite.LayeredDirty()
         # This next bit is so users can store their own data and not have it interfere with anything
         class Container: pass
         self.Container = Container()
@@ -105,10 +111,12 @@ class Graphic:
                     r, sur = Button(*btn[0])
                     sze = btn[1]
                     r.move_ip(*sze)
-                    col = r.collidepoint(pygame.mouse.get_pos())
-                    if btn[0][-1] != -1 and col:
-                        r = pygame.Rect(-btn[0][-1], -btn[0][-1], sur.get_width() + 20 + btn[0][-1]*2, sur.get_height() + 20 + btn[0][-1]*2)
-                        r.move_ip(*sze)
+                    if not self.pause:
+                        col = r.collidepoint(pygame.mouse.get_pos())
+                        if btn[0][-1] != -1 and col:
+                            r = pygame.Rect(-btn[0][-1], -btn[0][-1], sur.get_width() + 20 + btn[0][-1]*2, sur.get_height() + 20 + btn[0][-1]*2)
+                            r.move_ip(*sze)
+                    else: col = False
                     pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
                     if col: self.touchingbtns.append((btn, r, sur, sze))
@@ -126,12 +134,24 @@ class Graphic:
                             return
                         elif self.TB.active != -1:
                             self.TB.pressed(event)
+                        if event.key == pygame.K_RETURN:
+                            for sprite in self.sprites:
+                                if isinstance(sprite, TextBoxFrame):
+                                    if sprite.words:
+                                        sprite.reset()
+                                    else:
+                                        self.sprites.remove(sprite)
+                            if not any([isinstance(i, TextBoxFrame) for i in self.sprites]):
+                                self.pause = False
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == pygame.BUTTON_LEFT:
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in self.touchingbtns:
                                 func(GO.TELEMENTCLICK, i)
                 self.TB.update()
+                self.sprites.update()
+                rects = self.sprites.draw(self.WIN)
+                pygame.display.update(rects)
                 pygame.display.flip()
                 self.clock.tick(60)
             ret = func(GO.TLAST, aborted=self.ab)
@@ -180,9 +200,31 @@ class Graphic:
         self.statics = []
         self.buttons = []
         self.store = {}
+        self.sprites.empty()
+        self.pause = False
     
     def Abort(self):
         self.ab = True
+    
+    def add_TextBox(self, txt, position, border=LIGHT, indicator=None, portrait=None):
+        dialog_box = TextBoxFrame(
+            text=txt,
+            text_width=320,
+            lines=2,
+            pos=(0, 0),
+            padding=(150, 100),
+            font_color=(92, 53, 102),
+            font_size=26,
+            bg_color=(173, 127, 168),
+            border=border,
+        )
+        
+        dialog_box.set_indicator(indicator)
+        dialog_box.set_portrait(portrait)
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, dialog_box.rect.size), dialog_box.rect.size, position)
+        dialog_box.rect.topleft = pos
+        self.sprites.add(dialog_box)
+        self.pause = True
 
 if __name__ == '__main__':
     from time import sleep
@@ -209,7 +251,7 @@ if __name__ == '__main__':
             G.add_empty_space(GO.PCBOTTOM, 0, 20)
             G.add_button('Button 1 :D', GO.CYELLOW, GO.PCBOTTOM)
             G.add_text('Buttons above [^] and below [v]', GO.CBLUE, GO.PCBOTTOM)
-            G.add_button('Button 2 :(  hi', GO.CBLUE, GO.PCBOTTOM)
+            G.add_button('Textbox test', GO.CBLUE, GO.PCBOTTOM)
             G.add_button('Loading test', GO.CGREEN, GO.PCBOTTOM)
             G.add_button('EXIT', GO.CRED, GO.PCBOTTOM)
             G.add_empty_space(CTOP, -150, 0) # Center it a little more
@@ -223,10 +265,13 @@ if __name__ == '__main__':
             if element[0][0][0] == 'Loading test':
                 succeeded, ret = test_loading()
                 G.Container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+                G.Reload()
             elif element[0][0][0] == 'EXIT':
                 G.Abort()
+            elif element[0][0][0] == 'Textbox test':
+                bot = GO.PNEW([0, 0], GO.PSTACKS[GO.PCBOTTOM][1], 1)
+                G.add_TextBox('HALLOOOO! :)', bot)
             else: G.Container.txt = element[0][0][0] # print name of button
-            G.Reload()
         elif event == GO.TLAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             return aborted # Whatever you return here will be returned by the function
