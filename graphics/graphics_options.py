@@ -50,8 +50,8 @@ def PNEW(stack, func, idx=None): # To create new layouts
     return idx+10
 
 # Events
-TFIRST = 0
-TLOADUI = 1
-TTICK = 2
-TELEMENTCLICK = 3
-TLAST = 4
+EFIRST = 0
+ELOADUI = 1
+ETICK = 2
+EELEMENTCLICK = 3
+ELAST = 4
