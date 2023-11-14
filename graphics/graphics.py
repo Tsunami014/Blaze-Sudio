@@ -48,11 +48,12 @@ class TerminalBar:
         return pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h).collidepoint(x, y)
 
 class Element: # Button or TextBoxFrame
-    def __init__(self, typ, G, **kwargs): # TODO: UID
+    def __init__(self, typ, uid, G, **kwargs):
         if typ not in [getattr(GO, i) for i in dir(GO) if i.startswith('T')]:
             raise TypeError(
                 f'Input \'type\' MUST be GO.T___ (e.g. GO.TBUTTON), not {str(typ)}!'
             )
+        self.uid = uid
         self.name = [i for i in dir(GO) if i.startswith('T')][[getattr(GO, i) for i in dir(GO) if i.startswith('T')].index(typ)]
         self.type = typ
         self.G = G
@@ -83,6 +84,9 @@ class Element: # Button or TextBoxFrame
             raise NotImplementedError(
                 f'Remove has not been implemented for this element with type {self.name}!'
             )
+    
+    def __eq__(self, other):
+        return self.uid == other
 
 class Graphic:
     def __init__(self):
@@ -99,6 +103,8 @@ class Graphic:
         self.touchingbtns = []
         self.pause = False
         self.sprites = pygame.sprite.LayeredDirty()
+        self.nextuid = 0
+        self.uids = []
         # This next bit is so users can store their own data and not have it interfere with anything
         class Container: pass
         self.Container = Container()
@@ -177,14 +183,14 @@ class Graphic:
                                     if sprite.words:
                                         sprite.reset()
                                     else:
-                                        func(GO.EELEMENTCLICK, Element(GO.TTEXTBOX, self, sprite=sprite))
+                                        func(GO.EELEMENTCLICK, Element(GO.TTEXTBOX, self.uids.index(sprite), self, sprite=sprite))
                             if not any([isinstance(i, TextBoxFrame) for i in self.sprites]):
                                 self.pause = False
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == pygame.BUTTON_LEFT:
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in self.touchingbtns:
-                                func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self, btn=i))
+                                func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
                 self.TB.update()
                 self.sprites.update()
                 rects = self.sprites.draw(self.WIN)
@@ -213,6 +219,30 @@ class Graphic:
         r, _ = Button(*btnconstruct)
         sze = self.pos_store(GO.PSTACKS[position][1](self.size, r.size), r.size, position)
         self.buttons.append((btnconstruct, sze))
+        self.uids.append((btnconstruct, sze))
+        return len(self.uids) - 1
+    
+    def add_TextBox(self, txt, position, border=LIGHT, indicator=None, portrait=None):
+        dialog_box = TextBoxFrame(
+            text=txt,
+            text_width=320,
+            lines=2,
+            pos=(0, 0),
+            padding=(150, 100),
+            font_color=(92, 53, 102),
+            font_size=26,
+            bg_color=(173, 127, 168),
+            border=border,
+        )
+        
+        dialog_box.set_indicator(indicator)
+        dialog_box.set_portrait(portrait)
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, dialog_box.rect.size), dialog_box.rect.size, position)
+        dialog_box.rect.topleft = pos
+        self.sprites.add(dialog_box)
+        self.pause = True
+        self.uids.append(dialog_box)
+        return len(self.uids) - 1
     
     def pos_store(self, pos, sze, func):
         sizeing = GO.PSTACKS[func][0]
@@ -239,29 +269,11 @@ class Graphic:
         self.store = {}
         self.sprites.empty()
         self.pause = False
+        self.nextuid = 0
+        self.uids = []
     
     def Abort(self):
         self.ab = True
-    
-    def add_TextBox(self, txt, position, border=LIGHT, indicator=None, portrait=None):
-        dialog_box = TextBoxFrame(
-            text=txt,
-            text_width=320,
-            lines=2,
-            pos=(0, 0),
-            padding=(150, 100),
-            font_color=(92, 53, 102),
-            font_size=26,
-            bg_color=(173, 127, 168),
-            border=border,
-        )
-        
-        dialog_box.set_indicator(indicator)
-        dialog_box.set_portrait(portrait)
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, dialog_box.rect.size), dialog_box.rect.size, position)
-        dialog_box.rect.topleft = pos
-        self.sprites.add(dialog_box)
-        self.pause = True
 
 if __name__ == '__main__':
     from time import sleep
@@ -290,7 +302,7 @@ if __name__ == '__main__':
             G.add_text('Buttons above [^] and below [v]', GO.CBLUE, GO.PCBOTTOM)
             G.add_button('Textbox test', GO.CBLUE, GO.PCBOTTOM)
             G.add_button('Loading test', GO.CGREEN, GO.PCBOTTOM)
-            G.add_button('EXIT', GO.CRED, GO.PCBOTTOM)
+            G.Container.exitbtn = G.add_button('EXIT', GO.CRED, GO.PCBOTTOM)
             G.add_empty_space(CTOP, -150, 0) # Center it a little more
             G.add_text('Are you ', GO.CBLACK, CTOP)
             G.add_text('happy? ', GO.CGREEN, CTOP)
@@ -300,13 +312,17 @@ if __name__ == '__main__':
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
             if element.type == GO.TBUTTON:
                 # This gets passed 'element': the element that got clicked. TODO: make an Element class
-                if element.txt == 'Loading test':
+                # The == means element's uid == __
+                # UID gets generated based off order: so UID of 2 means second thing created that makes a UID.
+                # When you create a thing that makes a UID it returns it. e.g. button1 = G.add_button(etc.)
+                # So in that example button1 is the UID. Maybe try saving it to the container tho! Example shown by the exit button.
+                if element == 2:
                     succeeded, ret = test_loading()
                     G.Container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
                     G.Reload()
-                elif element.txt == 'EXIT':
+                elif element == G.Container.exitbtn:
                     G.Abort()
-                elif element.txt == 'Textbox test':
+                elif element == 1:
                     bot = GO.PNEW([0, 0], GO.PSTACKS[GO.PCBOTTOM][1], 1)
                     G.add_TextBox('HALLOOOO! :)', bot)
                     G.Container.idx = 0
