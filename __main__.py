@@ -36,17 +36,17 @@ class Game:
             G.add_surface(G.Container.pg, GO.PFILL)
             G.add_text('World '+world.name+' level:%i'%G.Container.lvl, GO.CBLACK, GO.PCTOP, GO.FTITLE)
         elif event == GO.ETICK:
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_LEFT:
-                        G.Container.lvl -= 1
-                        load()
-                        G.Reload()
-                    elif event.key == pygame.K_RIGHT:
-                        G.Container.lvl += 1
-                        load()
-                        G.Reload()
             return True
+        elif event == GO.EEVENT: # Passed 'element' (but is event)
+            if element.type == pygame.KEYDOWN:
+                if element.key == pygame.K_LEFT:
+                    G.Container.lvl -= 1
+                    load()
+                    G.Reload()
+                elif element.key == pygame.K_RIGHT:
+                    G.Container.lvl += 1
+                    load()
+                    G.Reload()
         elif event == GO.ELAST:
             pass
     @G.CGraphic
@@ -78,10 +78,9 @@ class Game:
                 G.Reload()
             return True
         elif event == GO.EELEMENTCLICK: # Passed 'element'
-            idx = G.get_idx(element)
-            if idx == 0: # back
+            if element == 0: # back
                 return None
-            elif idx == 1: # make new world
+            elif element == 1: # make new world
                 @G.Loading
                 def NW(self): # TODO: make a GUI screen to ask fr title and description
                     self.world = World('newworld', 'New World', 'a new world', 25, quality=500)
@@ -89,7 +88,7 @@ class Game:
                 if cont:
                     self.world(res['world'], True)
             else:
-                return self.world(World(G.Container.res['worlds'][idx-2].name))
+                return self.world(World(G.Container.res['worlds'][element.uid-2].name))
         elif event == GO.ELAST:
             pass
     @G.CGraphic
@@ -106,9 +105,8 @@ class Game:
             G.add_button('Tutorial', GO.CRED, CBOT)
         elif event == GO.ETICK:
             return True
-        elif event == GO.EELEMENTCLICK: # Passed 'element'
-            idx = G.get_idx(element)
-            if idx == 0:
+        elif event == GO.EELEMENTCLICK:
+            if element == 0:
                 self.world_select()
             else: print('Tutorial coming soon :)')
         elif event == GO.ELAST:
