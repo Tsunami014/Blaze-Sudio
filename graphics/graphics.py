@@ -332,8 +332,8 @@ if __name__ == '__main__':
                 else:
                     element.remove()
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+            if element.type == pygame.KEYDOWN:
+                if element.key == pygame.K_SPACE:
                     G.Container.txt = 'You pressed space!'
                     G.Reload()
         elif event == GO.ELAST:
