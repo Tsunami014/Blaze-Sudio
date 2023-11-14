@@ -170,11 +170,9 @@ class Graphic:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         run = False
-                        return
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             run = False
-                            return
                         elif self.TB.active != -1:
                             self.TB.pressed(event)
                         if event.key == pygame.K_RETURN:
