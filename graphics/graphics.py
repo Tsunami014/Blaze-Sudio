@@ -47,6 +47,43 @@ class TerminalBar:
         h = r.get_height()+self.spacing*2
         return pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h).collidepoint(x, y)
 
+class Element: # Button or TextBoxFrame
+    def __init__(self, typ, G, **kwargs): # TODO: UID
+        if typ not in [getattr(GO, i) for i in dir(GO) if i.startswith('T')]:
+            raise TypeError(
+                f'Input \'type\' MUST be GO.T___ (e.g. GO.TBUTTON), not {str(typ)}!'
+            )
+        self.name = [i for i in dir(GO) if i.startswith('T')][[getattr(GO, i) for i in dir(GO) if i.startswith('T')].index(typ)]
+        self.type = typ
+        self.G = G
+        try:
+            if self.type == GO.TBUTTON:
+                self.btn = kwargs['btn']
+                self.txt = self.btn[0][0][0]
+            elif self.type == GO.TTEXTBOX:
+                self.sprite = kwargs['sprite']
+        except KeyError as e:
+            raise TypeError(
+                f'{self.name} Element requires kwarg "{str(e)}" but was not provided!'
+            )
+    
+    def remove(self):
+        if self.type == GO.TTEXTBOX:
+            self.G.sprites.remove(self.sprite)
+        else:
+            raise NotImplementedError(
+                f'Remove has not been implemented for this element with type {self.name}!'
+            )
+    
+    def set_text(self, txt):
+        if self.type == GO.TTEXTBOX:
+            self.sprite.reset(hard=True)
+            self.sprite.set_text(txt)
+        else:
+            raise NotImplementedError(
+                f'Remove has not been implemented for this element with type {self.name}!'
+            )
+
 class Graphic:
     def __init__(self):
         self.WIN = pygame.display.set_mode()
@@ -140,14 +177,14 @@ class Graphic:
                                     if sprite.words:
                                         sprite.reset()
                                     else:
-                                        self.sprites.remove(sprite)
+                                        func(GO.EELEMENTCLICK, Element(GO.TTEXTBOX, self, sprite=sprite))
                             if not any([isinstance(i, TextBoxFrame) for i in self.sprites]):
                                 self.pause = False
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         if event.button == pygame.BUTTON_LEFT:
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in self.touchingbtns:
-                                func(GO.EELEMENTCLICK, i)
+                                func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self, btn=i))
                 self.TB.update()
                 self.sprites.update()
                 rects = self.sprites.draw(self.WIN)
@@ -260,18 +297,28 @@ if __name__ == '__main__':
             G.add_text('Or sad?', GO.CRED, CTOP)
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
-        elif event == GO.EELEMENTCLICK: # Some UI element got clicked! (currently only buttons, so we know what to do here)
-            # This gets passed 'element': the element that got clicked. TODO: make an Element class
-            if element[0][0][0] == 'Loading test':
-                succeeded, ret = test_loading()
-                G.Container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
-                G.Reload()
-            elif element[0][0][0] == 'EXIT':
-                G.Abort()
-            elif element[0][0][0] == 'Textbox test':
-                bot = GO.PNEW([0, 0], GO.PSTACKS[GO.PCBOTTOM][1], 1)
-                G.add_TextBox('HALLOOOO! :)', bot)
-            else: G.Container.txt = element[0][0][0] # print name of button
+        elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
+            if element.type == GO.TBUTTON:
+                # This gets passed 'element': the element that got clicked. TODO: make an Element class
+                if element.txt == 'Loading test':
+                    succeeded, ret = test_loading()
+                    G.Container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+                    G.Reload()
+                elif element.txt == 'EXIT':
+                    G.Abort()
+                elif element.txt == 'Textbox test':
+                    bot = GO.PNEW([0, 0], GO.PSTACKS[GO.PCBOTTOM][1], 1)
+                    G.add_TextBox('HALLOOOO! :)', bot)
+                    G.Container.idx = 0
+                else:
+                    G.Container.txt = element.txt # put name of button in middle
+                    G.Reload()
+            elif element.type == GO.TTEXTBOX:
+                if G.Container.idx == 0:
+                    element.set_text("Happy coding!")
+                    G.Container.idx = 1
+                else:
+                    element.remove()
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             return aborted # Whatever you return here will be returned by the function
