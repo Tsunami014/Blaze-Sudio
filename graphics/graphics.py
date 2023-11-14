@@ -189,6 +189,7 @@ class Graphic:
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in self.touchingbtns:
                                 func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
+                    if not self.pause: func(GO.EEVENT, event)
                 self.TB.update()
                 self.sprites.update()
                 rects = self.sprites.draw(self.WIN)
@@ -254,9 +255,6 @@ class Graphic:
         else: pos2[1] = pos[1]+self.store[func][1]
         self.store[func] = [self.store[func][0] + sze[0]*sizeing[0], self.store[func][1] + sze[1]*sizeing[1]]
         return pos2
-    
-    def get_idx(self, element):
-        return self.buttons.index(element[0])
     
     def Reload(self):
         self.rel = True
@@ -333,6 +331,11 @@ if __name__ == '__main__':
                     G.Container.idx = 1
                 else:
                     element.remove()
+        elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    G.Container.txt = 'You pressed space!'
+                    G.Reload()
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             return aborted # Whatever you return here will be returned by the function
@@ -350,6 +353,8 @@ if __name__ == '__main__':
         elif event == GO.ETICK:
             return True # Return whether or not the loop should continue.
         elif event == GO.EELEMENTCLICK: # Passed 'element'
+            pass
+        elif event == GO.EEVENT: # Passed 'element' (but is event)
             pass
         elif event == GO.ELAST: # Passed 'aborted'
             pass # Whatever you return here will be returned by the function
