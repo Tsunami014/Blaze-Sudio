@@ -69,6 +69,11 @@ class Element: # Button or TextBoxFrame
             )
     
     def remove(self):
+        """Removes an element.
+
+        Only works on:
+         - GO.TTEXTBOX (A TextBox element)
+        """
         if self.type == GO.TTEXTBOX:
             self.G.sprites.remove(self.sprite)
         else:
@@ -77,12 +82,20 @@ class Element: # Button or TextBoxFrame
             )
     
     def set_text(self, txt):
+        """Sets text of an element.
+
+        Only works on:
+         - GO.TTEXTBOX (A TextBox element)
+         
+        Parameters:
+        txt : str
+        """
         if self.type == GO.TTEXTBOX:
             self.sprite.reset(hard=True)
             self.sprite.set_text(txt)
         else:
             raise NotImplementedError(
-                f'Remove has not been implemented for this element with type {self.name}!'
+                f'Set text has not been implemented for this element with type {self.name}!'
             )
     
     def __eq__(self, other):
@@ -108,10 +121,22 @@ class Graphic:
         # This next bit is so users can store their own data and not have it interfere with anything
         class Container: pass
         self.Container = Container()
-    def set_caption(caption):
-        pygame.display.set_caption(caption)
+    def set_caption(caption=None, iconsur=None):
+        """Sets the caption of the screen! Highly recommend to use at the start of your code.
+        Also highly recommend that when you use this function you modify at least one thing as otherwise it is a waste of your time.
+
+        Parameters
+        ----------
+        caption : str, optional
+            The caption to display, by default this is not modified
+        iconsur : pygame.Surface, optional
+            The icon of the window, by default this is not modified
+        """
+        if caption != None: pygame.display.set_caption(caption)
+        if iconsur != None: pygame.display.set_icon(iconsur)
     
     def render(self, func=None):
+        """You probably don't want to use this unless you really know what it is you are doing."""
         s = pygame.Surface(self.size)
         s.fill((255, 255, 255))
         if func != None: func(GO.ELOADUI)
@@ -119,17 +144,17 @@ class Graphic:
             s.blit(i[0], i[1])
         return s
     
-    def Loading(self, func):
+    def Loading(self, func): # Function decorator, not to be called
         def func2():
             return Loading(func)(self.WIN, GO.FTITLE)
         return func2
     
-    def CGraphic(self, funcy):
+    def CGraphic(self, funcy): # Function decorator, not to be called
         def func2(slf, *args, **kwargs):
-            self.Graphic(funcy, slf)(*args, **kwargs)
+            self.Graphic(funcy, slf)(*args, **kwargs) # Yes I know I'm calling it here. Deal with it.
         return func2
     
-    def Graphic(self, funcy, slf=None):
+    def Graphic(self, funcy, slf=None): # Function decorator, not to be called
         def func2(*args, **kwargs):
             def func(event, element=None, aborted=False):
                 if slf == None:
@@ -202,18 +227,74 @@ class Graphic:
         return func2
     
     def add_text(self, txt, colour, position, font=GO.FFONT):
+        """Adds text to the GUI!
+
+        Parameters
+        ----------
+        txt : str
+            The text that will be added to the GUI.
+        colour : tuple[int, int, int]
+            The colour of the button. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+        font : pygame.Font, optional
+            The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
+        """
         obj = font.render(txt, 2, colour)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
         self.statics.append((obj, pos))
     
     def add_surface(self, obj, position):
+        """Adds a surface to the GUI!
+
+        Parameters
+        ----------
+        obj : pygame.Surface
+            The surface to add to the screen!
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+        """
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
         self.statics.append((obj, pos))
     
     def add_empty_space(self, position, wid, hei):
+        """Makes a piece of empty space.
+
+        Parameters
+        ----------
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+            This is VERY IMPORTANT as the ONLY use of this element is when there is a stack, so you can push the stack in a direction with this.
+        wid : int
+            The width of the empty space (can be negative to push the elements back)
+        hei : int
+            The height of the empty space (can be negative to push the elements back)
+        """
         self.pos_store(GO.PSTACKS[position][1](self.size, (wid, hei)), (wid, hei), position)
     
     def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, on_hover_enlarge=True):
+        """Adds a button to the GUI!
+
+        Parameters
+        ----------
+        txt : str
+            The text ON the button
+        col : tuple[int, int, int]
+            The colour of the button. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+        txtcol : tuple[int, int, int], optional
+            The colour of the text. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN), by default GO.CBLACK
+        font : pygame.Font, optional
+            The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
+        on_hover_enlarge : bool/int, optional
+            Whether to enlarge the button on hover. If this is an int it will be used as the size increase of said button. By default True
+
+        Returns
+        -------
+        int
+            The UID of the created element
+        """
         btnconstruct = (txt, col, txtcol, 900, font, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
         r, _ = Button(*btnconstruct)
         sze = self.pos_store(GO.PSTACKS[position][1](self.size, r.size), r.size, position)
@@ -222,6 +303,26 @@ class Graphic:
         return len(self.uids) - 1
     
     def add_TextBox(self, txt, position, border=LIGHT, indicator=None, portrait=None):
+        """Makes a new TextBox in the GUI!
+
+        Parameters
+        ----------
+        txt : str
+            The text to be displayed in the textbox.
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+        border : graphics.GUI.textboxify.borders._____, optional
+            The border to use on the textbox, by default LIGHT
+        indicator : str, optional
+            The path to the indicator file that will be used, by default None
+        portrait : str, optional
+            the path to the portrait file that will be used, by default None
+
+        Returns
+        -------
+        int
+            the UID of this element
+        """
         dialog_box = TextBoxFrame(
             text=txt,
             text_width=320,
