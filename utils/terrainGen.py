@@ -1,8 +1,5 @@
 # https://github.com/BilHim/minecraft-world-generation/blob/main/src/Minecraft%20Terrain%20Generation%20in%20Python%20-%20By%20Bilal%20Himite.ipynb
-
 # Imports and parameters
-# print('Importing...')
-
 from random import randint
 import numpy as np
 from matplotlib import pyplot as plt
@@ -17,10 +14,7 @@ from scipy.interpolate import interp1d
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.morphology import binary_dilation
 
-try:
-    from utils.conversation_parse import parseKWs
-except:
-    from conversation_parse import parseKWs
+from utils.conversation_parse import parseKWs
 
 class Map:
     def __init__(self, *args, **kwargs):

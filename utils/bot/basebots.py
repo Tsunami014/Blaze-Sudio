@@ -1,16 +1,5 @@
 import time, asyncio, aiohttp
-import os, sys
-
-if os.getcwd().endswith('bot'): # set path 2 folders above
-    newpath = os.path.abspath(os.path.join(os.getcwd(), '../../'))
-    os.chdir(newpath)
-elif os.getcwd().endswith('utils'): # set folder to one above
-    newpath = os.path.abspath(os.path.join(os.getcwd(), '../'))
-    os.chdir(newpath)
-
-# now current folder should be '\AIHub' and not '\AIHub\utils' or '\AIHub\utils\bot' anymore!
-
-sys.path.append(os.getcwd())
+import os
 
 from utils.conversation_parse import PARSE
 

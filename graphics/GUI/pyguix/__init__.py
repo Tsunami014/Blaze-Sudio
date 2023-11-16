@@ -16,10 +16,4 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-try:
-    from graphics.GUI.pyguix.ui import elements as gui
-except ImportError:
-    try:
-        from GUI.pyguix.ui import elements as gui
-    except ImportError:
-        from pyguix.ui import elements as gui
+from graphics.GUI.pyguix.ui import elements as gui
