@@ -472,57 +472,37 @@ def cycle(my_list, start_at=None):
         yield my_list[start_at]
         start_at = (start_at + 1) % len(my_list)
 
-if __name__ == '__main__':
-    from random import shuffle, choice, randint
-    class Generator:
-        def __init__(self):
-            l = list(range(91, 96))
-            shuffle(l)
-            self.order = cycle(l)
-            self.order2 = cycle(l, 2)
-        def generate_desc(self):
-            K = Knowledge('Grapefruit')
-            self.args = {'is_adjs':choice([None, 'nice', 'nice/kind', 'nice/kind/happy/beautiful']), 
-                'is_a':choice([None, 'dragon', 'human', 'elf', 'wizard', 'brown dog']), 
-                'who':choice([None, 'loves life', 'reads lots/codes', 'gets bored easily/loves life/reads a lot/codes', 'always wears brown clothing'])
-            }
-            K.add_clause(**self.args)
-            return K.get(0)
-        def __call__(self, start=None):
-            out = ''
-            if start == None: start = [(randint(0, 3), randint(0, 4)), randint(0, len(STARTPARAM1)-1)]
-            sample_prompt = choice([
-                [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'bot', 'content': 'I am good, how are you?'}, {'role': 'user', 'content': 'I am good too! What did you do today?'}],
-                [{'role': 'user', 'content': 'Hello'}, {'role': 'bot', 'content': 'Hello! What can I help you with today?'}, {'role': 'user', 'content': 'I dunno...'}, {'role': 'bot', 'content': 'Well, I can help you with anything! Just pick a topic!'}, {'role': 'user', 'content': 'I like books'}, {'role': 'bot', 'content': 'I like books too! What is your favourite book?'}, {'role': 'user', 'content': 'I like Harry Potter'}],
-                [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'bot', 'content': 'What can I help you with?'}, {'role': 'user', 'content': 'I need help with a Python project.'}],
-                [{'role': 'user', 'content': 'What is the best way to handle errors in Python?'}, {'role': 'bot', 'content': 'There are several ways to handle errors in Python, such as using try-except blocks or raising exceptions. What kind of errors are you trying to handle?'}, {'role': 'user', 'content': 'I\'m trying to handle file I/O errors.'}],
-                [{'role': 'user', 'content': 'How do I install a Python package using pip?'}, {'role': 'bot', 'content': 'You can install a Python package using pip by running the command "pip install package_name" in your terminal. Have you used pip before?'}, {'role': 'user', 'content': 'No, I haven\'t. Can you walk me through it?'}]
-            ])
-            sample_desc = 'You are Grapefruit. '+self.generate_desc()
-            self.args['start'] = start
-            out += '\033[%sm| ' % str(next(self.order2))
-            pretty = lambda x: '"' if isinstance(x, str) else ''
-            for i in self.args: out += i+' : '+pretty(self.args[i])+str(self.args[i])+pretty(self.args[i])+' | '
-            out += '\033[0m\n'
-            out += PARSE(start, sample_desc, sample_prompt, 'Grapefruit')+'\n'
-            out += '\033[%sm~~~~~~~~~~~~~~~~~~~~~~~~~\033[0m' % str(next(self.order))
-            return out
-    # If you run this file you can see these next statements at work
-    # Each you can see is separated, by a like of ~~~~~~~~~~
-    # You can see the different start params at work, with the same sample prompt
-    def gen():
-        g = Generator()
-        yield g([(1, 2), 2])
-        yield g([(0, 0), 3])
-        yield g([(0, 3), 1])
-        yield g([(3, 1), 2])
-        yield g([(0, 2), 0])
-        yield '\nAnd here are some randomly generated ones:\n' + g()
-        while True:
-            yield g()
-    g = gen()
-    print('Here are some I prepared earlier:\n')
-    while True:
-        print(next(g))
-        if input() != '':
-            break
+from random import shuffle, choice, randint
+class Generator:
+    def __init__(self):
+        l = list(range(91, 96))
+        shuffle(l)
+        self.order = cycle(l)
+        self.order2 = cycle(l, 2)
+    def generate_desc(self):
+        K = Knowledge('Grapefruit')
+        self.args = {'is_adjs':choice([None, 'nice', 'nice/kind', 'nice/kind/happy/beautiful']), 
+            'is_a':choice([None, 'dragon', 'human', 'elf', 'wizard', 'brown dog']), 
+            'who':choice([None, 'loves life', 'reads lots/codes', 'gets bored easily/loves life/reads a lot/codes', 'always wears brown clothing'])
+        }
+        K.add_clause(**self.args)
+        return K.get(0)
+    def __call__(self, start=None):
+        out = ''
+        if start == None: start = [(randint(0, 3), randint(0, 4)), randint(0, len(STARTPARAM1)-1)]
+        sample_prompt = choice([
+            [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'bot', 'content': 'I am good, how are you?'}, {'role': 'user', 'content': 'I am good too! What did you do today?'}],
+            [{'role': 'user', 'content': 'Hello'}, {'role': 'bot', 'content': 'Hello! What can I help you with today?'}, {'role': 'user', 'content': 'I dunno...'}, {'role': 'bot', 'content': 'Well, I can help you with anything! Just pick a topic!'}, {'role': 'user', 'content': 'I like books'}, {'role': 'bot', 'content': 'I like books too! What is your favourite book?'}, {'role': 'user', 'content': 'I like Harry Potter'}],
+            [{'role': 'user', 'content': 'Hello! How are you?'}, {'role': 'bot', 'content': 'What can I help you with?'}, {'role': 'user', 'content': 'I need help with a Python project.'}],
+            [{'role': 'user', 'content': 'What is the best way to handle errors in Python?'}, {'role': 'bot', 'content': 'There are several ways to handle errors in Python, such as using try-except blocks or raising exceptions. What kind of errors are you trying to handle?'}, {'role': 'user', 'content': 'I\'m trying to handle file I/O errors.'}],
+            [{'role': 'user', 'content': 'How do I install a Python package using pip?'}, {'role': 'bot', 'content': 'You can install a Python package using pip by running the command "pip install package_name" in your terminal. Have you used pip before?'}, {'role': 'user', 'content': 'No, I haven\'t. Can you walk me through it?'}]
+        ])
+        sample_desc = 'You are Grapefruit. '+self.generate_desc()
+        self.args['start'] = start
+        out += '\033[%sm| ' % str(next(self.order2))
+        pretty = lambda x: '"' if isinstance(x, str) else ''
+        for i in self.args: out += i+' : '+pretty(self.args[i])+str(self.args[i])+pretty(self.args[i])+' | '
+        out += '\033[0m\n'
+        out += PARSE(start, sample_desc, sample_prompt, 'Grapefruit')+'\n'
+        out += '\033[%sm~~~~~~~~~~~~~~~~~~~~~~~~~\033[0m' % str(next(self.order))
+        return out
