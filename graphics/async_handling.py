@@ -66,33 +66,3 @@ class Progressbar:
         self.whileloading(x, y, self.bar.get_width(), self.bar.get_height(), border_width, window, update_func, loadingtxt, loadingtxtColour)
         #loop.stop()
         return self.results
-
-if __name__ == '__main__':
-    import random
-    # Define a coroutine function that waits a random amount of time
-    async def wait_random():
-        # Get a random number of seconds between 2 and 20
-        seconds = random.randint(200, 2000) / 100
-        # Print a message
-        #print(f"Waiting for {seconds} seconds...")
-        # Wait for that amount of time
-        await asyncio.sleep(seconds)
-        # Print another message
-        #print(f"Done waiting for {seconds} seconds!")
-        return seconds
-    
-    # now we initialise pygame and load the window for our demo
-    pygame.init()
-    WIN = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption("Loading Bar Example")
-    WIN.fill(WHITE)
-    pygame.display.update()
-    # create a loading bar object
-    bar = Progressbar(600, 50)
-    # create a list of tasks to be completed
-    tasks = [wait_random() for _ in range(500)]
-    # run the loading bar
-    print(bar(WIN, (WIN.get_width() - 600) // 2, (WIN.get_height() - 50) // 2, 5, tasks))
-    asyncio.get_event_loop().stop()
-    # exit pygame
-    pygame.quit()
