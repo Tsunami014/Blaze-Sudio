@@ -55,7 +55,3 @@ async def rate_all(resps=None):
         else: out[name] = int(rating)
         i += 1
     set_preferences(out)
-
-if __name__ == '__main__':
-    import asyncio
-    asyncio.run(rate_all())

@@ -67,18 +67,3 @@ class TinyLLM:
         lm.set_max_ram(ram)
         if lm.classify(txt,"simple reply","complex reply") == 'complex reply': return 'l'
         return 's'
-
-if __name__ == '__main__':
-    import asyncio
-    tllm = TinyLLM()
-    prompt = f"System: Reply as a helpful assistant. Currently {lm.get_date()}."
-    while True:
-        inp = input('> ')
-        if inp == '': break
-        prompt += f"\n\nUser: {inp}"
-        i = asyncio.run(tllm.interrupt(inp))
-        prompt += "\n\nAssistant:"
-        end = asyncio.run(tllm(prompt))
-        print(i)
-        print(end)
-        prompt += f" {end}"
