@@ -1,10 +1,4 @@
-try:
-    from utils.conversation_parse.consts import *
-except ImportError:
-    try:
-        from conversation_parse.consts import *
-    except ImportError:
-        from consts import *
+from utils.conversation_parse.consts import *
 import re
 from math import inf
 

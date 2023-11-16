@@ -4,16 +4,10 @@ from random import choice
 from math import floor, sqrt
 from copy import deepcopy
 
-try:
-    from utils.characters import *
-    from utils.storyline import *
-    from utils.terrainGen import *
-    import utils.Pyldtk as ldtk
-except ImportError:
-    from characters import *
-    from storyline import *
-    from terrainGen import *
-    import Pyldtk as ldtk
+from utils.characters import *
+from utils.storyline import *
+from utils.terrainGen import *
+import utils.Pyldtk as ldtk
 
 folder = 'data/worlds/'
 

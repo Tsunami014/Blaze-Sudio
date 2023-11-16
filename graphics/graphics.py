@@ -1,19 +1,11 @@
 import pygame, asyncio
 pygame.init()
-try:
-    import graphics.graphics_options as GO
-    from graphics.loading import Loading
-    from graphics.async_handling import Progressbar
-    from graphics.GUI.randomGUIelements import Button
-    from graphics.GUI import TextBoxFrame
-    from graphics.GUI.textboxify.borders import LIGHT
-except:
-    import graphics_options as GO
-    from loading import Loading
-    from async_handling import Progressbar
-    from GUI.randomGUIelements import Button
-    from GUI import TextBoxFrame
-    from GUI.textboxify.borders import LIGHT
+import graphics.graphics_options as GO
+from graphics.loading import Loading
+from graphics.async_handling import Progressbar
+from graphics.GUI.randomGUIelements import Button
+from graphics.GUI import TextBoxFrame
+from graphics.GUI.textboxify.borders import LIGHT
 
 class TerminalBar:
     def __init__(self, win, spacing=5):
