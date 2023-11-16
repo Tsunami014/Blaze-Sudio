@@ -1,44 +1,19 @@
 import pygame, asyncio
 pygame.init()
-import graphics.graphics_options as GO
-from graphics.loading import Loading
-from graphics.async_handling import Progressbar
-from graphics.GUI import Button, TextBoxFrame
-from graphics.GUI.textboxify.borders import LIGHT
-
-class GScrollable(Scrollable):
-    def __init__(self, WIN, pos, goalrect, sizeOfScreen, outline, bar):
-        self.WIN = WIN
-        self.pos = pos
-        self.goalrect = goalrect
-        self.events = []
-        s = pygame.Surface(sizeOfScreen)
-        self.G = Graphic(win=s, TB=False)
-        def func(event, *args, aborted=True, **kwargs):
-            if event == GO.ETICK: return True
-            return aborted
-        self.GR = self.G.Graphic(func, generator=True, update=False, events=self.getevents, mousepos=self.getmouse)()
-        super().__init__(self.G.WIN, pos, goalrect, (0, sizeOfScreen[1]-goalrect[1]), outline, bar)
-    
-    def getevents(self):
-        for i in self.events:
-            try:
-                i.pos = self.getmouse()
-            except: pass
-        return self.events
-    def getmouse(self):
-        p = pygame.mouse.get_pos()
-        np = (p[0]-self.pos[0], p[1]-self.pos[1]-self.scroll)
-        if np[0] > self.goalrect[0] or p[1]-self.pos[1] > self.goalrect[1]: return (float('-inf'), float('-inf'))
-        return np
-    
-    def __call__(self, events):
-        self.events = events
-        r = next(self.GR)
-        self.sur = self.G.WIN
-        super().__call__(self.WIN)
-        if r != None: return r
-        return False
+try:
+    import graphics.graphics_options as GO
+    from graphics.loading import Loading
+    from graphics.async_handling import Progressbar
+    from graphics.GUI.randomGUIelements import Button
+    from graphics.GUI import TextBoxFrame
+    from graphics.GUI.textboxify.borders import LIGHT
+except:
+    import graphics_options as GO
+    from loading import Loading
+    from async_handling import Progressbar
+    from GUI.randomGUIelements import Button
+    from GUI import TextBoxFrame
+    from GUI.textboxify.borders import LIGHT
 
 class TerminalBar:
     def __init__(self, win, spacing=5):
@@ -233,7 +208,7 @@ class Graphic:
             return Loading(func)(self.WIN, GO.FTITLE)
         return func2
     
-    def PBLoading(self, tasks): # TODO: allow aborting
+    def PBLoading(self, tasks):
         """Have a loading screen! Like G.Loading, but with a progressbar!
 
         Parameters

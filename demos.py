@@ -111,9 +111,11 @@ def terrainGenDemo():
     print(outs[0])
     pass
 
-def async_handlingDemo(): # TODO: Improve this demo
+def async_handlingDemo():
     import random, asyncio, pygame
-    from graphics import Progressbar
+    from graphics import Graphic
+    G = Graphic()
+    
     async def wait_random():
         seconds = random.randint(200, 2000) / 100
         #print(f"Waiting for {seconds} seconds...")
@@ -121,15 +123,8 @@ def async_handlingDemo(): # TODO: Improve this demo
         #print(f"Done waiting for {seconds} seconds!")
         return seconds
     
-    pygame.init()
-    WIN = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption("Loading Bar Example")
-    WIN.fill((255, 255, 255))
-    pygame.display.update()
-    bar = Progressbar(600, 50)
     tasks = [wait_random() for _ in range(500)]
-    print(bar(WIN, (WIN.get_width() - 600) // 2, (WIN.get_height() - 50) // 2, 5, tasks))
-    asyncio.get_event_loop().stop()
+    G.PBLoading(tasks)
     pygame.quit()
 
 if __name__ == '__main__':
