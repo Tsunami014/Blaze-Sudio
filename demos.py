@@ -124,7 +124,7 @@ def async_handlingDemo():
         return seconds
     
     tasks = [wait_random() for _ in range(500)]
-    G.PBLoading(tasks)
+    print(G.PBLoading(tasks))
     pygame.quit()
 
 if __name__ == '__main__':
