@@ -174,6 +174,10 @@ def rateAIsDemo():
     from utils.bot import rate_all
     asyncio.run(rate_all())
 
+def api_keysDemo():
+    from api_keys import SaveAPIKeysDialog
+    SaveAPIKeysDialog()
+
 if __name__ == '__main__':
     root = Tk.Tk()
     def cmd(cmdd):
@@ -188,4 +192,5 @@ if __name__ == '__main__':
     Tk.Button(root, text='TinyLLM Demo', command=lambda: cmd(tinyLLMDemo)).pack()
     Tk.Button(root, text='Test LLM Demo', command=lambda: cmd(testLLMDemo)).pack()
     Tk.Button(root, text='Rate AIs Demo', command=lambda: cmd(rateAIsDemo)).pack()
+    Tk.Button(root, text='API keys Demo', command=lambda: cmd(rateAIsDemo)).pack()
     root.mainloop()
