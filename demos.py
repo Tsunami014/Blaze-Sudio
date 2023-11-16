@@ -128,6 +128,28 @@ def inputBoxDemo(): # TODO: make part of Graphic class
     print('output:', input_box.interrupt(screen))
     pg.quit()
 
+def conversation_parserDemo():
+    from utils.conversation_parse import Generator
+    # If you run this file you can see these next statements at work
+    # Each you can see is separated, by a like of ~~~~~~~~~~
+    # You can see the different start params at work, with the same sample prompt
+    def gen():
+        g = Generator()
+        yield g([(1, 2), 2])
+        yield g([(0, 0), 3])
+        yield g([(0, 3), 1])
+        yield g([(3, 1), 2])
+        yield g([(0, 2), 0])
+        yield '\nAnd here are some randomly generated ones:\n' + g()
+        while True:
+            yield g()
+    g = gen()
+    print('Here are some I prepared earlier:\n')
+    while True:
+        print(next(g))
+        if input() != '':
+            break
+
 if __name__ == '__main__':
     root = Tk.Tk()
     def cmd(cmdd):
@@ -138,4 +160,5 @@ if __name__ == '__main__':
     Tk.Button(root, text='Generate World Demo', command=lambda: cmd(worldsDemo)).pack()
     Tk.Button(root, text='Generate Terrain Demo', command=lambda: cmd(terrainGenDemo)).pack()
     Tk.Button(root, text='Input Box Demo', command=lambda: cmd(inputBoxDemo)).pack()
+    Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(conversation_parserDemo)).pack()
     root.mainloop()
