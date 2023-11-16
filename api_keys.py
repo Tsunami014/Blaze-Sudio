@@ -158,6 +158,3 @@ class SaveAPIKeysDialog:
 
         # Start the Tkinter main loop
         self.root.mainloop()
-
-if __name__ == '__main__':
-    SaveAPIKeysDialog()
