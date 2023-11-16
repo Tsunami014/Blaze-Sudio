@@ -179,7 +179,10 @@ def api_keysDemo():
     SaveAPIKeysDialog()
 
 def node_editorDemo():
-    pass
+    from graphics import Graphic
+    from elementGen import NodeEditor
+    G = Graphic()
+    NodeEditor(G)
 
 if __name__ == '__main__':
     root = Tk.Tk()
