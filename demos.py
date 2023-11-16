@@ -127,6 +127,14 @@ def async_handlingDemo():
     print(G.PBLoading(tasks))
     pygame.quit()
 
+def inputBoxDemo(): # TODO: make part of Graphic class
+    import pygame as pg
+    from graphics.GUI import InputBox
+    screen = pg.display.set_mode((640, 480))
+    input_box = InputBox(100, 100, 140, 32, 'type here!')
+    print('output:', input_box.interrupt(screen))
+    pg.quit()
+
 if __name__ == '__main__':
     root = Tk.Tk()
     def cmd(cmdd):
@@ -137,4 +145,5 @@ if __name__ == '__main__':
     Tk.Button(root, text='Generate World Demo', command=lambda: cmd(worldsDemo)).pack()
     Tk.Button(root, text='Generate Terrain Demo', command=lambda: cmd(terrainGenDemo)).pack()
     Tk.Button(root, text='Async Progressbar Demo', command=lambda: cmd(async_handlingDemo)).pack()
+    Tk.Button(root, text='Input Box Demo', command=lambda: cmd(inputBoxDemo)).pack()
     root.mainloop()
