@@ -130,8 +130,3 @@ class InputBox:
             pg.display.flip()
             clock.tick(30)
         return self.text
-
-if __name__ == '__main__':
-    screen = pg.display.set_mode((640, 480))
-    input_box = InputBox(100, 100, 140, 32, 'type here!')
-    print('output:', input_box.interrupt(screen))
