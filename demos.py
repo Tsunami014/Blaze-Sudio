@@ -130,7 +130,7 @@ def async_handlingDemo():
 if __name__ == '__main__':
     root = Tk.Tk()
     def cmd(cmdd):
-        root.quit()
+        root.destroy()
         cmdd()
     Tk.Button(root, text='Loading Demo', command=lambda: cmd(loadingDemo)).pack()
     Tk.Button(root, text='Graphics Demo', command=lambda: cmd(GraphicsDemo)).pack()
