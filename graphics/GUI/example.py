@@ -1,13 +1,8 @@
 import pygame
 from pygame import locals
-try:
-    from __init__ import InputBox, RESIZE_H, TextBoxFrame
-    from __init__ import gui as ui
-    from textboxify.borders import LIGHT, BARBER_POLE
-except ImportError:
-    from graphics.GUI import InputBox, RESIZE_H, TextBoxFrame
-    from graphics.GUI.pyguix import gui as ui
-    from graphics.GUI.textboxify.borders import LIGHT, BARBER_POLE
+from graphics.GUI import InputBox, RESIZE_H, TextBoxFrame
+from graphics.GUI.pyguix import gui as ui
+from graphics.GUI.textboxify.borders import LIGHT, BARBER_POLE
 
 class SnapHUDPartInfoExample(ui.SnapHUDPartInfo):
 

@@ -17,13 +17,7 @@
 #  limitations under the License.
 
 import pygame
-try:
-    import graphics.GUI.pyguix.utils as utils
-except ImportError:
-    try:
-        import GUI.pyguix.utils as utils
-    except ImportError:
-        import pyguix.utils as utils
+import graphics.GUI.pyguix.utils as utils
 
 uth = utils.helper()
 # NOTE: When an action class is created, the base scope class adds its targetclasses as keys

@@ -1,7 +1,7 @@
 import json
 from math import floor
 import pygame
-import os, sys
+import os
 
 def get_data(file):
     with open(file, "r") as data:

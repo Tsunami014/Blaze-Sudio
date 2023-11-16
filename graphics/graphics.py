@@ -1,17 +1,10 @@
 import pygame, asyncio
 pygame.init()
-try:
-    import graphics.graphics_options as GO
-    from graphics.loading import Loading
-    from graphics.GUI import TextBoxFrame, InputBox, Button
-    from graphics.async_handling import Progressbar
-    from graphics.GUI.textboxify.borders import LIGHT
-except:
-    import graphics_options as GO
-    from loading import Loading
-    from async_handling import Progressbar
-    from GUI import TextBoxFrame, InputBox, Button
-    from GUI.textboxify.borders import LIGHT
+import graphics.graphics_options as GO
+from graphics.loading import Loading
+from graphics.async_handling import Progressbar
+from graphics.GUI import Button, TextBoxFrame
+from graphics.GUI.textboxify.borders import LIGHT
 
 class GScrollable(Scrollable):
     def __init__(self, WIN, pos, goalrect, sizeOfScreen, outline, bar):
