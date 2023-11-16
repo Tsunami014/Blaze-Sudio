@@ -98,6 +98,3 @@ Assistant:'''))
     lm.store_doc(lm.get_wiki("C language"), "C")
     lm.store_doc(lm.get_wiki("Javascript"), "Javascript")
     print(lm.get_doc_context("What does it mean for batteries to be included in a language?"))
-
-if __name__ == '__main__':
-    test_tinyllm()

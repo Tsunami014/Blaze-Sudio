@@ -149,6 +149,30 @@ def conversation_parserDemo():
         print(next(g))
         if input() != '':
             break
+def tinyLLMDemo():
+    import asyncio
+    from utils.bot import TinyLLM, lm
+    tllm = TinyLLM()
+    prompt = f"System: Reply as a helpful assistant. Currently {lm.get_date()}."
+    while True:
+        inp = input('> ')
+        if inp == '': break
+        prompt += f"\n\nUser: {inp}"
+        i = asyncio.run(tllm.interrupt(inp))
+        prompt += "\n\nAssistant:"
+        end = asyncio.run(tllm(prompt))
+        print(i)
+        print(end)
+        prompt += f" {end}"
+
+def testLLMDemo():
+    from utils.bot import test_tinyllm
+    test_tinyllm()
+
+def rateAIsDemo():
+    import asyncio
+    from utils.bot import rate_all
+    asyncio.run(rate_all())
 
 if __name__ == '__main__':
     root = Tk.Tk()
@@ -161,4 +185,7 @@ if __name__ == '__main__':
     Tk.Button(root, text='Generate Terrain Demo', command=lambda: cmd(terrainGenDemo)).pack()
     Tk.Button(root, text='Input Box Demo', command=lambda: cmd(inputBoxDemo)).pack()
     Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(conversation_parserDemo)).pack()
+    Tk.Button(root, text='TinyLLM Demo', command=lambda: cmd(tinyLLMDemo)).pack()
+    Tk.Button(root, text='Test LLM Demo', command=lambda: cmd(testLLMDemo)).pack()
+    Tk.Button(root, text='Rate AIs Demo', command=lambda: cmd(rateAIsDemo)).pack()
     root.mainloop()
