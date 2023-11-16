@@ -1,14 +1,16 @@
-import pygame
+import pygame, asyncio
 pygame.init()
 try:
     import graphics.graphics_options as GO
     from graphics.loading import Loading
-    from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox, Scrollable, ColourPickerBTN
+    from graphics.GUI import TextBoxFrame, InputBox, Button
+    from graphics.async_handling import Progressbar
     from graphics.GUI.textboxify.borders import LIGHT
 except:
     import graphics_options as GO
     from loading import Loading
-    from GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox, Scrollable, ColourPickerBTN
+    from async_handling import Progressbar
+    from GUI import TextBoxFrame, InputBox, Button
     from GUI.textboxify.borders import LIGHT
 
 class GScrollable(Scrollable):
@@ -237,6 +239,26 @@ class Graphic:
         def func2():
             return Loading(func)(self.WIN, GO.FTITLE)
         return func2
+    
+    def PBLoading(self, tasks):
+        """Have a loading screen! Like G.Loading, but with a progressbar!
+
+        Parameters
+        ----------
+        tasks : list[async functions]
+            The list of async functions to run.
+
+        Returns
+        -------
+        list
+            The output list of all the return values of each of the functions inputted
+        """
+        self.WIN.fill(GO.CWHITE)
+        pygame.display.update()
+        pbar = Progressbar(600, 50)
+        res = pbar(self.WIN, (self.size[0] - 600) // 2, (self.size[1] - 50) // 2, 5, tasks)
+        asyncio.get_event_loop().stop()
+        return res
     
     def CGraphic(self, funcy): # Function decorator, not to be called
         def func2(slf, *args, **kwargs):
