@@ -240,7 +240,7 @@ class Graphic:
             return Loading(func)(self.WIN, GO.FTITLE)
         return func2
     
-    def PBLoading(self, tasks):
+    def PBLoading(self, tasks): # TODO: allow aborting
         """Have a loading screen! Like G.Loading, but with a progressbar!
 
         Parameters
