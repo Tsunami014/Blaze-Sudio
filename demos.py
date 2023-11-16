@@ -178,6 +178,9 @@ def api_keysDemo():
     from api_keys import SaveAPIKeysDialog
     SaveAPIKeysDialog()
 
+def node_editorDemo():
+    pass
+
 if __name__ == '__main__':
     root = Tk.Tk()
     def cmd(cmdd):
@@ -192,5 +195,6 @@ if __name__ == '__main__':
     Tk.Button(root, text='TinyLLM Demo', command=lambda: cmd(tinyLLMDemo)).pack()
     Tk.Button(root, text='Test LLM Demo', command=lambda: cmd(testLLMDemo)).pack()
     Tk.Button(root, text='Rate AIs Demo', command=lambda: cmd(rateAIsDemo)).pack()
-    Tk.Button(root, text='API keys Demo', command=lambda: cmd(rateAIsDemo)).pack()
+    Tk.Button(root, text='API Keys Demo', command=lambda: cmd(api_keysDemo)).pack()
+    Tk.Button(root, text='Node Editor Demo', command=lambda: cmd(node_editorDemo)).pack()
     root.mainloop()
