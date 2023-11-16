@@ -90,11 +90,34 @@ def GraphicsDemo():
     print(test(t))
     pygame.quit() # this here for very fast quitting
 
+def worldsDemo():
+    from utils import World
+    World('test', 'Test World', 'A world for testing random stuff', 25, quality=500, override=True)
+
+def terrainGenDemo():
+    from random import randint
+    from utils import MapGen
+    size = 1500
+    n = 256
+    inp = input('Input nothing to use random seed, input "." to use a preset good seed, or input your own INTEGER seed > ')
+    if inp == '':
+        map_seed = randint(0, 999999)
+    elif inp == '.':
+        map_seed = 762345
+    else:
+        map_seed = int(inp)
+    useall = input('Type anything here to show all steps in terrain generation, or leave this blank and press enter to just show the finished product. > ') != ''
+    outs, trees = MapGen(size, map_seed, n, useall=useall, showAtEnd=True).outs
+    print(outs[0])
+    pass
+
 if __name__ == '__main__':
     root = Tk.Tk()
     def cmd(cmdd):
         root.quit()
         cmdd()
-    Tk.Button(root, text='Loading demo', command=lambda: cmd(loadingDemo)).pack()
+    Tk.Button(root, text='Loading Demo', command=lambda: cmd(loadingDemo)).pack()
     Tk.Button(root, text='Graphics Demo', command=lambda: cmd(GraphicsDemo)).pack()
+    Tk.Button(root, text='Generate World Demo', command=lambda: cmd(worldsDemo)).pack()
+    Tk.Button(root, text='Generate Terrain Demo', command=lambda: cmd(terrainGenDemo)).pack()
     root.mainloop()
