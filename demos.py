@@ -1,21 +1,5 @@
 import tkinter as Tk # Because everyone has tkinter
 
-def loadingDemo():
-    import pygame
-    from graphics import Loading
-    from time import sleep
-    @Loading
-    def f(self):
-        for self.i in range(10):
-            sleep(1)
-    pygame.init()
-    WIN = pygame.display.set_mode()
-    font = pygame.font.Font(None, 64)
-    succeeded, ret = f(WIN, font)
-    pygame.quit()
-    print('Ran for %i seconds%s' % (ret['i'], (' Successfully! :)' if succeeded else ' And failed :(')))
-    print('end')
-
 def GraphicsDemo():
     import pygame
     import graphics.graphics_options as GO
@@ -111,9 +95,10 @@ def terrainGenDemo():
     print(outs[0])
     pass
 
-def async_handlingDemo():
+def LoadingDemo():
     import random, asyncio, pygame
     from graphics import Graphic
+    from time import sleep
     G = Graphic()
     
     async def wait_random():
@@ -125,7 +110,15 @@ def async_handlingDemo():
     
     tasks = [wait_random() for _ in range(500)]
     print(G.PBLoading(tasks))
+    
+    @G.Loading
+    def test_loading(self):
+        for self.i in range(10):
+            sleep(1)
+    
+    succeeded, ret = test_loading()
     pygame.quit()
+    print('Ran for %i seconds%s' % (ret['i'], (' Successfully! :)' if succeeded else ' And failed :(')))
 
 def inputBoxDemo(): # TODO: make part of Graphic class
     import pygame as pg
@@ -140,10 +133,9 @@ if __name__ == '__main__':
     def cmd(cmdd):
         root.destroy()
         cmdd()
-    Tk.Button(root, text='Loading Demo', command=lambda: cmd(loadingDemo)).pack()
+    Tk.Button(root, text='Loading Demo', command=lambda: cmd(LoadingDemo)).pack()
     Tk.Button(root, text='Graphics Demo', command=lambda: cmd(GraphicsDemo)).pack()
     Tk.Button(root, text='Generate World Demo', command=lambda: cmd(worldsDemo)).pack()
     Tk.Button(root, text='Generate Terrain Demo', command=lambda: cmd(terrainGenDemo)).pack()
-    Tk.Button(root, text='Async Progressbar Demo', command=lambda: cmd(async_handlingDemo)).pack()
     Tk.Button(root, text='Input Box Demo', command=lambda: cmd(inputBoxDemo)).pack()
     root.mainloop()
