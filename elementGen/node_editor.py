@@ -42,8 +42,9 @@ NodeSelector(G)
             G.add_text(G.Container.txt, GO.CBLUE, GO.PCTOP)
             G.add_button('Back', GO.CGREY, GO.PLTOP)
             G.add_button('New Item', GO.CGREEN, GO.PLTOP)
+            cols = GO.CRAINBOW()
             for i in G.Container.res['iteminfo']:
-                G.add_button(i['name'], GO.CBLUE, GO.PLCENTER)
+                G.add_button(i['name'], next(cols), GO.PLCENTER)
         elif event == GO.ETICK:
             if G.touchingbtns != G.Container.prevpresses:
                 G.Container.prevpresses = G.touchingbtns.copy()
@@ -65,8 +66,9 @@ NodeSelector(G)
             G.add_text('Category selection', GO.CBLACK, GO.PCTOP)
             G.add_button('Back', GO.CGREY, GO.PLTOP)
             G.add_button('New Category', GO.CGREEN, GO.PLTOP)
+            cols = GO.CRAINBOW()
             for i in categories:
-                G.add_button(i, GO.CBLUE, GO.PLCENTER)
+                G.add_button(i, next(cols), GO.PLCENTER)
         elif event == GO.ETICK:
             return True
         elif event == GO.EELEMENTCLICK: # Passed 'element'
