@@ -15,6 +15,18 @@ def CNEW(name):
 CINACTIVE = CNEW('lightskyblue3')
 CACTIVE = CNEW('dodgerblue2')
 
+def CRAINBOW():
+    l = [
+        CRED,
+        CYELLOW,
+        CGREEN,
+        CBLUE,
+        CBLACK,
+        CGREY
+    ]
+    while True:
+        for i in l: yield i
+
 # Fonts
 FTITLE = pygame.font.SysFont('Comic Sans MS', 64, True)
 FCODEFONT = pygame.font.SysFont('Lucida Sans Typewriter', 16)

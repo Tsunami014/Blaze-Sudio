@@ -68,8 +68,9 @@ class Game:
             G.add_text(G.Container.txt, GO.CBLUE, GO.PCTOP)
             G.add_button('Back', GO.CGREY, GO.PLTOP)
             G.add_button('New World', GO.CGREEN, GO.PLTOP)
+            cols = GO.CRAINBOW()
             for i in G.Container.res['worldinfo']:
-                G.add_button(i['name'], GO.CBLUE, GO.PLCENTER)
+                G.add_button(i['name'], next(cols), GO.PLCENTER)
         elif event == GO.ETICK:
             if G.touchingbtns != G.Container.prevpresses:
                 G.Container.prevpresses = G.touchingbtns.copy()
