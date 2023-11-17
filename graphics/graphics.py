@@ -239,7 +239,9 @@ class Graphic:
                         if event.button == pygame.BUTTON_LEFT:
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in self.touchingbtns:
-                                func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
+                                r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
+                                if r != None:
+                                    return r
                     if not self.pause and not blocked: func(GO.EEVENT, event)
                 self.TB.update()
                 for ibox in self.input_boxes:

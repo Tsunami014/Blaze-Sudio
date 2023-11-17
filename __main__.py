@@ -79,14 +79,14 @@ class Game:
             return True
         elif event == GO.EELEMENTCLICK: # Passed 'element'
             if element == 0: # back
-                return None
+                return False
             elif element == 1: # make new world
                 @G.Loading
                 def NW(self): # TODO: make a GUI screen to ask fr title and description
                     self.world = World('newworld', 'New World', 'a new world', 25, quality=500)
                 cont, res = NW()
                 if cont:
-                    self.world(res['world'], True)
+                    return self.world(res['world'], True)
             else:
                 return self.world(World(G.Container.res['worlds'][element.uid-2].name))
         elif event == GO.ELAST:

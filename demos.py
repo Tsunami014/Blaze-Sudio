@@ -180,9 +180,9 @@ def api_keysDemo():
 
 def node_editorDemo():
     from graphics import Graphic
-    from elementGen import NodeEditor
+    from elementGen import NodeSelector
     G = Graphic()
-    NodeEditor(G)
+    print(NodeSelector(G))
 
 if __name__ == '__main__':
     root = Tk.Tk()
