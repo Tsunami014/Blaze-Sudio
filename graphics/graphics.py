@@ -344,9 +344,9 @@ class Graphic:
                                 except: pass
                             self.TB.toggleactive(not self.TB.collides(*mousepos()))
                             for i in self.touchingbtns:
-                                func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
-                    elif event.type == pygame.MOUSEWHEEL and not self.pause:
-                        for i in self.scrollsables: i.update(event)
+                                r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
+                                if r != None:
+                                    return r
                     if not self.pause and not blocked: func(GO.EEVENT, event)
                 for i in self.scrollsables:
                     r = i(evs)
