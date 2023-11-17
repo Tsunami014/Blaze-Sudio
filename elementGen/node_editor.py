@@ -2,6 +2,10 @@ import graphics.graphics_options as GO
 import pygame
 from time import sleep
 
+# Select element to edit screen (copy world select)
+# Each category of elements is a sub-folder under data/elements/
+# As well as a NodeEditor screen have a NodeRenderer screen, which is also used in NodeEditor
+
 def NodeEditor(G):
     """Makes a Node Editor screen! Still in progress. Come back later!
 
