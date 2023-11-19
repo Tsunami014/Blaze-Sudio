@@ -62,6 +62,7 @@ class InputBox:
             lines.append(GO.FSMALL.render(line, True, self.color))
         if lines == []: lines = [GO.FSMALL.render('', True, self.color)]
         nsurface = pg.Surface((max([i.get_width() for i in lines]), sum([i.get_height() for i in lines])))
+        nsurface.fill(GO.CTRANSPARENT)
         top = 0
         for i in lines:
             nsurface.blit(i, (0, top))

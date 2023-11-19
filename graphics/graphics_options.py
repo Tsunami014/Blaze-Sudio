@@ -1,6 +1,7 @@
 import pygame
 
 # Colours
+CTRANSPARENT = (255, 255, 255, 1)
 CWHITE = (255, 255, 255)
 CGREEN = (10, 255, 50)
 CRED = (255, 10, 50)
