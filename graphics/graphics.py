@@ -358,7 +358,7 @@ class Graphic:
         return len(self.uids) - 1
     
     def add_input(self, position):
-        ibox = InputBox(100, 100, 140, 32, 'type here!') # TODO: Positioning and custom width & height & resize
+        ibox = InputBox(100, 100, 140, 32) # TODO: Positioning and custom width & height & resize
         self.input_boxes.append(ibox)
         self.uids.append(ibox)
         return len(self.uids) - 1
