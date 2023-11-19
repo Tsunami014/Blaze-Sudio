@@ -8,11 +8,17 @@ CBLUE = (10, 50, 255)
 CBLACK = (0, 0, 0)
 CYELLOW = (255, 200, 50)
 CGREY = (125, 125, 125)
+def CNEW(name):
+    c = pygame.color.Color(name)
+    return (c.r, c.g, c.b)
+CINACTIVE = CNEW('lightskyblue3')
+CACTIVE = CNEW('dodgerblue2')
 
 # Fonts
 FTITLE = pygame.font.SysFont('Comic Sans MS', 64, True)
 FCODEFONT = pygame.font.SysFont('Lucida Sans Typewriter', 16)
 FFONT = pygame.font.SysFont(None, 52)
+FSMALL = pygame.font.SysFont(None, 32)
 
 # Positions
 PLTOP = 0
@@ -60,3 +66,9 @@ ELAST = 5
 # Types
 TBUTTON = 0
 TTEXTBOX = 1
+TINPUTBOX = 2
+
+# Resizes
+RWIDTH = 0
+RHEIGHT = 1
+RNONE = 2

@@ -1,16 +1,9 @@
 # modified from https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame 
-
 import pygame as pg
-
-pg.init()
-
-COLOR_INACTIVE = pg.Color('lightskyblue3')
-COLOR_ACTIVE = pg.Color('dodgerblue2')
-FONT = pg.font.Font(None, 32)
-
-RESIZE_W = 0
-RESIZE_H = 1
-RESIZE_NONE = 2
+try:
+    import graphics.graphics_options as GO
+except:
+    import graphics_options as GO
 
 def renderTextCenteredAt(text, font, allowed_width): # modified from https://stackoverflow.com/questions/49432109/how-to-wrap-text-in-pygame-using-pygame-font-font 
     # first, split the text into words
@@ -45,10 +38,9 @@ def renderTextCenteredAt(text, font, allowed_width): # modified from https://sta
     return lines
 
 class InputBox:
-
-    def __init__(self, x, y, w, h, text='', resize=RESIZE_W, maxim=None):
+    def __init__(self, x, y, w, h, text='', resize=GO.RWIDTH, maxim=None):
         self.rect = pg.Rect(x, y, w, h)
-        self.color = COLOR_INACTIVE
+        self.color = GO.CINACTIVE
         self.text = text
         self.active = False
         self.resize = resize
@@ -59,25 +51,25 @@ class InputBox:
     def render_txt(self):
         self.txt = self.txt[:self.maxim]
         lines = []
-        if self.resize == RESIZE_W:
+        if self.resize == GO.RWIDTH:
             ls = [self.text]
         else:
-            ls = renderTextCenteredAt(self.text, FONT, self.rect.w - 5)
-            if self.resize == RESIZE_NONE:
+            ls = renderTextCenteredAt(self.text, GO.FSMALL, self.rect.w - 5)
+            if self.resize == GO.RNONE:
                 ls = [ls[0]]
 
         for line in ls:
-            lines.append(FONT.render(line, True, self.color))
-        if lines == []: lines = [FONT.render('', True, self.color)]
+            lines.append(GO.FSMALL.render(line, True, self.color))
+        if lines == []: lines = [GO.FSMALL.render('', True, self.color)]
         nsurface = pg.Surface((max([i.get_width() for i in lines]), sum([i.get_height() for i in lines])))
         top = 0
         for i in lines:
             nsurface.blit(i, (0, top))
             top += i.get_height()
         self.txt_surface = nsurface
-        if self.resize == RESIZE_W:
+        if self.resize == GO.RWIDTH:
             self.rect.w = self.txt_surface.get_width() + 10
-        elif self.resize == RESIZE_H:
+        elif self.resize == GO.RHEIGHT:
             self.rect.h = self.txt_surface.get_height() + 10
 
     def handle_event(self, event, end_on=None):
@@ -89,7 +81,7 @@ class InputBox:
             else:
                 self.active = False
             # Change the current color of the input box.
-            self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
+            self.color = GO.CACTIVE if self.active else GO.CINACTIVE
             self.render_txt()
         if event.type == pg.KEYDOWN:
             if self.active:
@@ -130,8 +122,3 @@ class InputBox:
             pg.display.flip()
             clock.tick(30)
         return self.text
-
-if __name__ == '__main__':
-    screen = pg.display.set_mode((640, 480))
-    input_box = InputBox(100, 100, 140, 32, 'type here!')
-    print('output:', input_box.interrupt(screen))

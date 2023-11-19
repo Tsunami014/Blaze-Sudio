@@ -3,14 +3,12 @@ pygame.init()
 try:
     import graphics.graphics_options as GO
     from graphics.loading import Loading
-    from graphics.GUI.randomGUIelements import Button
-    from graphics.GUI import TextBoxFrame
+    from graphics.GUI import TextBoxFrame, InputBox, Button
     from graphics.GUI.textboxify.borders import LIGHT
 except:
     import graphics_options as GO
     from loading import Loading
-    from GUI.randomGUIelements import Button
-    from GUI import TextBoxFrame
+    from GUI import TextBoxFrame, InputBox, Button
     from GUI.textboxify.borders import LIGHT
 
 class TerminalBar:
@@ -63,6 +61,9 @@ class Element: # Button or TextBoxFrame
                 self.txt = self.btn[0][0][0]
             elif self.type == GO.TTEXTBOX:
                 self.sprite = kwargs['sprite']
+            elif self.type == GO.TINPUTBOX:
+                self.sprite = kwargs['sprite']
+                self.txt = kwargs['txt']
         except KeyError as e:
             raise TypeError(
                 f'{self.name} Element requires kwarg "{str(e)}" but was not provided!'
@@ -73,9 +74,12 @@ class Element: # Button or TextBoxFrame
 
         Only works on:
          - GO.TTEXTBOX (A TextBox element)
+         - GO.TINPUTBOX
         """
         if self.type == GO.TTEXTBOX:
             self.G.sprites.remove(self.sprite)
+        elif self.type == GO.TINPUTBOX:
+            self.G.input_boxes.remove(self.sprite)
         else:
             raise NotImplementedError(
                 f'Remove has not been implemented for this element with type {self.name}!'
@@ -110,6 +114,7 @@ class Graphic:
         self.clock = pygame.time.Clock()
         self.statics = []
         self.buttons = []
+        self.input_boxes = []
         self.store = {}
         self.rel = False
         self.ab = False
@@ -193,14 +198,20 @@ class Graphic:
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
                 run = func(GO.ETICK)
                 for event in pygame.event.get():
+                    blocked = False
                     if event.type == pygame.QUIT:
                         run = False
-                    elif event.type == pygame.KEYDOWN:
+                    for ibox in self.input_boxes:
+                        if ibox.handle_event(event, pygame.K_RETURN) == False:
+                            func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=ibox.text))
+                            blocked = True
+                    if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             run = False
                         elif self.TB.active != -1:
                             self.TB.pressed(event)
-                        if event.key == pygame.K_RETURN:
+                            blocked = True
+                        if event.key == pygame.K_RETURN and self.TB.active == -1 and not any([i.active for i in self.input_boxes]):
                             for sprite in self.sprites:
                                 if isinstance(sprite, TextBoxFrame):
                                     if sprite.words:
@@ -214,8 +225,10 @@ class Graphic:
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in self.touchingbtns:
                                 func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
-                    if not self.pause: func(GO.EEVENT, event)
+                    if not self.pause and not blocked: func(GO.EEVENT, event)
                 self.TB.update()
+                for ibox in self.input_boxes:
+                    ibox.draw(self.WIN)
                 self.sprites.update()
                 rects = self.sprites.draw(self.WIN)
                 pygame.display.update(rects)
@@ -344,6 +357,12 @@ class Graphic:
         self.uids.append(dialog_box)
         return len(self.uids) - 1
     
+    def add_input(self, position):
+        ibox = InputBox(100, 100, 140, 32, 'type here!') # TODO: Positioning and custom width & height & resize
+        self.input_boxes.append(ibox)
+        self.uids.append(ibox)
+        return len(self.uids) - 1
+    
     def pos_store(self, pos, sze, func):
         sizeing = GO.PSTACKS[func][0]
         if func not in self.store:
@@ -363,6 +382,7 @@ class Graphic:
     def Clear(self):
         self.statics = []
         self.buttons = []
+        self.input_boxes = []
         self.store = {}
         self.sprites.empty()
         self.pause = False
@@ -404,6 +424,7 @@ if __name__ == '__main__':
             G.add_text('Are you ', GO.CBLACK, CTOP)
             G.add_text('happy? ', GO.CGREEN, CTOP)
             G.add_text('Or sad?', GO.CRED, CTOP)
+            G.add_input(GO.PCCENTER)
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
@@ -432,10 +453,14 @@ if __name__ == '__main__':
                     G.Container.idx = 1
                 else:
                     element.remove()
+            elif element.type == GO.TINPUTBOX:
+                G.Container.txt = element.txt
+                element.remove()
+                G.Reload()
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.KEYDOWN:
-                if element.key == pygame.K_SPACE:
-                    G.Container.txt = 'You pressed space!'
+                if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
+                    G.Container.txt = 'Saved! (Don\'t worry - this does nothing)'
                     G.Reload()
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
