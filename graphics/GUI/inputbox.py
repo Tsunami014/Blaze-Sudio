@@ -38,13 +38,14 @@ def renderTextCenteredAt(text, font, allowed_width): # modified from https://sta
     return lines
 
 class InputBox:
-    def __init__(self, x, y, w, h, resize=GO.RWIDTH, placeholder='Type here!', maxim=None, starting_text=''):
+    def __init__(self, x, y, w, h, resize=GO.RWIDTH, placeholder='Type here!', font=GO.FSMALL, maxim=None, starting_text=''):
         self.rect = pg.Rect(x, y, w, h)
         self.color = GO.CINACTIVE
         self.text = starting_text
         self.active = False
         self.resize = resize
         self.maxim = maxim
+        self.font = font
         self.blanktxt = placeholder
         self.render_txt()
     
@@ -58,13 +59,13 @@ class InputBox:
         if self.resize == GO.RWIDTH:
             ls = [self.text]
         else:
-            ls = renderTextCenteredAt(self.text, GO.FSMALL, self.rect.w - 5)
+            ls = renderTextCenteredAt(self.text, self.font, self.rect.w - 5)
             if self.resize == GO.RNONE:
                 ls = [ls[0]]
 
         for line in ls:
-            lines.append(GO.FSMALL.render(line, True, self.color))
-        if lines == []: lines = [GO.FSMALL.render('', True, self.color)]
+            lines.append(self.font.render(line, True, self.color))
+        if lines == []: lines = [self.font.render('', True, self.color)]
         nsurface = pg.Surface((max([i.get_width() for i in lines]), sum([i.get_height() for i in lines])))
         nsurface.fill(GO.CTRANSPARENT)
         top = 0
