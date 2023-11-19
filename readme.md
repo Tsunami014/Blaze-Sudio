@@ -36,6 +36,6 @@ pip install -r requirements.txt
 Please join our [Discord server](https://discord.gg/9zrGKtF6Cs) for any information, queries, bugs, conversations, etc. that you may have!
 
 ## Next versions coming soon:
- - v2.0.0 - 💥`Flare Sudio` - got a world and storyline and actually is playable!!!!
- - v3.0.0 - 🌋`Fire Sudio` - cos by then it'll be on fire :grin: - all functionality complete!
+ - v2.0.0 - 💥`Flare Sudio` - Is able to make a simple simple simple game, no real functionality yet but just the basics
+ - v3.0.0 - 🌋`Fire Sudio` - cos by then it'll be on fire 😁 - all functionality complete!
  - v4.0.0 - 🔥`Blaze Sudio` - Unity integration! (And for all those who love catchphrases: `Oh, I want to make a game the easy way! How?` `I'll Blaze it!` (like "I'll chatGPT it" but cooler 😎))
