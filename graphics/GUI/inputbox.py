@@ -38,18 +38,22 @@ def renderTextCenteredAt(text, font, allowed_width): # modified from https://sta
     return lines
 
 class InputBox:
-    def __init__(self, x, y, w, h, text='', resize=GO.RWIDTH, maxim=None):
+    def __init__(self, x, y, w, h, resize=GO.RWIDTH, placeholder='Type here!', maxim=None, starting_text=''):
         self.rect = pg.Rect(x, y, w, h)
         self.color = GO.CINACTIVE
-        self.text = text
+        self.text = starting_text
         self.active = False
         self.resize = resize
         self.maxim = maxim
-        self.txt = text
+        self.blanktxt = placeholder
         self.render_txt()
     
     def render_txt(self):
-        self.txt = self.txt[:self.maxim]
+        repl = False
+        if (not self.active) and self.text == '':
+            self.text = self.blanktxt
+            repl = True
+        self.text = self.text[:self.maxim]
         lines = []
         if self.resize == GO.RWIDTH:
             ls = [self.text]
@@ -72,6 +76,8 @@ class InputBox:
             self.rect.w = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
             self.rect.h = self.txt_surface.get_height() + 10
+        if repl:
+            self.text = ''
 
     def handle_event(self, event, end_on=None):
         if event.type == pg.MOUSEBUTTONDOWN:
