@@ -182,7 +182,7 @@ def node_editorDemo():
     from graphics import Graphic
     from elementGen import NodeSelector
     G = Graphic()
-    print(NodeSelector(G))
+    print(NodeSelector(G, 2))
 
 if __name__ == '__main__':
     root = Tk.Tk()
