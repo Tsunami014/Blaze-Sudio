@@ -428,7 +428,7 @@ if __name__ == '__main__':
             G.add_text('Are you ', GO.CBLACK, CTOP)
             G.add_text('happy? ', GO.CGREEN, CTOP)
             G.add_text('Or sad?', GO.CRED, CTOP)
-            G.add_input(GO.PCCENTER, GO.FFONT, maximum=16)
+            G.Container.inp = G.add_input(GO.PCCENTER, GO.FFONT, maximum=16)
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
@@ -468,7 +468,7 @@ if __name__ == '__main__':
                     G.Reload()
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
-            return aborted # Whatever you return here will be returned by the function
+            return (aborted, G.uids[G.Container.inp].text) # Whatever you return here will be returned by the function
     
     print(test(t))
     
