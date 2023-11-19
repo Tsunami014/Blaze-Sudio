@@ -357,8 +357,12 @@ class Graphic:
         self.uids.append(dialog_box)
         return len(self.uids) - 1
     
-    def add_input(self, position):
-        ibox = InputBox(100, 100, 140, 32) # TODO: Positioning and custom width & height & resize
+    def add_input(self, position, font=GO.FSMALL, width=None, resize=GO.RHEIGHT, placeholder='Type Here', maximum=100):
+        sze = font.size(placeholder)
+        if maximum == None: maximum = sze
+        if width != None: sze[0] = width
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
+        ibox = InputBox(*pos, *sze, resize, placeholder, font, maximum) # TODO: Positioning and custom width & height & resize
         self.input_boxes.append(ibox)
         self.uids.append(ibox)
         return len(self.uids) - 1
@@ -424,7 +428,7 @@ if __name__ == '__main__':
             G.add_text('Are you ', GO.CBLACK, CTOP)
             G.add_text('happy? ', GO.CGREEN, CTOP)
             G.add_text('Or sad?', GO.CRED, CTOP)
-            G.add_input(GO.PCCENTER)
+            G.add_input(GO.PCCENTER, GO.FFONT, maximum=16)
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
