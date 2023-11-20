@@ -3,8 +3,7 @@ pygame.init()
 import graphics.graphics_options as GO
 from graphics.loading import Loading
 from graphics.async_handling import Progressbar
-from graphics.GUI.randomGUIelements import Button
-from graphics.GUI import TextBoxFrame
+from graphics.GUI import Button, TextBoxFrame, InputBox
 from graphics.GUI.textboxify.borders import LIGHT
 
 class TerminalBar:
