@@ -4,7 +4,7 @@ class Switch(pygame.sprite.DirtySprite):
     def __init__(self, win, x, y, default=False):
         self.WIN = win
         self.pos = (x, y)
-        self.cirpos = [(x+5, y+5), (x+15, y+5)]
+        self.cirpos = [(x+5, y+5), (x+20, y+5)]
         self.state = default
         super().__init__()
         self.rect = pygame.Rect(x, y, 20, 20)
@@ -26,8 +26,19 @@ if __name__ == '__main__':
     
     run = True
     while run:
-        pygame.event.pump()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == pygame.BUTTON_LEFT:
+                    for i in sprites:
+                        if i.rect.collidepoint(*pygame.mouse.get_pos()):
+                            i.state = not i.state
         win.fill((255, 255, 255))
         sprites.update()
         pygame.display.update()
+    pygame.quit()
     
