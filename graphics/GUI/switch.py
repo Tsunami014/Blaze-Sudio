@@ -4,14 +4,21 @@ class Switch(pygame.sprite.DirtySprite):
     def __init__(self, win, x, y, default=False):
         self.WIN = win
         self.pos = (x, y)
-        self.cirpos = [(x+5, y+5), (x+20, y+5)]
+        self.anim = 0
         self.state = default
         super().__init__()
         self.rect = pygame.Rect(x, y, 20, 20)
         self.barrect = pygame.Rect(x+5, y, 20, 10)
     def update(self):
+        if self.anim < 0: self.anim = 0
+        if self.anim > 150: self.anim = 150
+        if self.anim != (0 if not self.state else 150):
+            if self.state: self.anim += 1
+            else: self.anim -= 1
         pygame.draw.rect(self.WIN, (125, 125, 125), self.barrect, border_radius=20)
-        pygame.draw.circle(self.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), self.cirpos[int(self.state)], 10)
+        pygame.draw.circle(self.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (self.pos[0]+5+self.anim/10, self.pos[1]+5), 10)
+    def get(self):
+        return self.state
 
 if __name__ == '__main__':
     pygame.init()
