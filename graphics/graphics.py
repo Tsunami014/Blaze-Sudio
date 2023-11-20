@@ -216,10 +216,13 @@ class Graphic:
                     blocked = False
                     if event.type == pygame.QUIT:
                         run = False
-                    for ibox in self.input_boxes:
-                        if ibox.handle_event(event, pygame.K_RETURN) == False:
-                            func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=ibox.text))
-                            blocked = True
+                    if not self.pause:
+                        for ibox in self.input_boxes:
+                            if ibox.handle_event(event, pygame.K_RETURN) == False:
+                                func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=ibox.text))
+                                blocked = True
+                    else:
+                        for ibox in self.input_boxes: ibox.active = False
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             run = False
