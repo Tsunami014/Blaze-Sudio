@@ -1,22 +1,23 @@
 import pygame
 
 class Switch(pygame.sprite.DirtySprite):
-    def __init__(self, win, x, y, default=False):
+    def __init__(self, win, x, y, size=20, default=False):
         self.WIN = win
         self.pos = (x, y)
+        self.size = size
         self.anim = 0
         self.state = default
         super().__init__()
-        self.rect = pygame.Rect(x, y, 20, 20)
-        self.barrect = pygame.Rect(x+5, y, 20, 10)
+        self.rect = pygame.Rect(x, y, size, size)
+        self.barrect = pygame.Rect(x+size/4, y, size, size/2)
     def update(self):
         if self.anim < 0: self.anim = 0
         if self.anim > 150: self.anim = 150
         if self.anim != (0 if not self.state else 150):
             if self.state: self.anim += 1
             else: self.anim -= 1
-        pygame.draw.rect(self.WIN, (125, 125, 125), self.barrect, border_radius=20)
-        pygame.draw.circle(self.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (self.pos[0]+5+self.anim/10, self.pos[1]+5), 10)
+        pygame.draw.rect(self.WIN, (125, 125, 125), self.barrect, border_radius=self.size)
+        pygame.draw.circle(self.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (self.pos[0]+self.size/4+(self.anim/10)*(self.size/20), self.pos[1]+self.size/4), self.size/2)
     def get(self):
         return self.state
 
@@ -24,12 +25,12 @@ if __name__ == '__main__':
     pygame.init()
     win = pygame.display.set_mode()
     sprites = pygame.sprite.LayeredDirty()
-    curpos = (0, 0)
-    for _ in range(20):
-        s = Switch(win, *curpos)
+    curpos = (10, 10)
+    for _ in range(19):
+        s = Switch(win, *curpos, size=10+2*_)
         sprites.add(s)
         sze = s.rect.size
-        curpos = (curpos[0] + sze[0], curpos[1] + sze[1])
+        curpos = (curpos[0] + sze[0] + 10, curpos[1] + sze[1] + 10)
     
     run = True
     while run:
