@@ -35,6 +35,7 @@ def GraphicsDemo():
             G.add_text('Are you ', GO.CBLACK, CTOP)
             G.add_text('happy? ', GO.CGREEN, CTOP)
             G.add_text('Or sad?', GO.CRED, CTOP)
+            G.Container.inp = G.add_input(GO.PCCENTER, GO.FFONT, maximum=16)
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
@@ -63,14 +64,18 @@ def GraphicsDemo():
                     G.Container.idx = 1
                 else:
                     element.remove()
+            elif element.type == GO.TINPUTBOX:
+                G.Container.txt = element.txt
+                element.remove()
+                G.Reload()
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.KEYDOWN:
-                if element.key == pygame.K_SPACE:
-                    G.Container.txt = 'You pressed space!'
+                if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
+                    G.Container.txt = 'Saved! (Don\'t worry - this does nothing)'
                     G.Reload()
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
-            return aborted # Whatever you return here will be returned by the function
+            return (aborted, G.uids[G.Container.inp].text) # Whatever you return here will be returned by the function
     print(test(t))
     pygame.quit() # this here for very fast quitting
 
