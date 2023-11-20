@@ -3,12 +3,12 @@ pygame.init()
 try:
     import graphics.graphics_options as GO
     from graphics.loading import Loading
-    from graphics.GUI import TextBoxFrame, InputBox, Button
+    from graphics.GUI import TextBoxFrame, InputBox, Button, Switch
     from graphics.GUI.textboxify.borders import LIGHT
 except:
     import graphics_options as GO
     from loading import Loading
-    from GUI import TextBoxFrame, InputBox, Button
+    from GUI import TextBoxFrame, InputBox, Button, Switch
     from GUI.textboxify.borders import LIGHT
 
 class TerminalBar:
@@ -220,8 +220,13 @@ class Graphic:
                                         func(GO.EELEMENTCLICK, Element(GO.TTEXTBOX, self.uids.index(sprite), self, sprite=sprite))
                             if not any([isinstance(i, TextBoxFrame) for i in self.sprites]):
                                 self.pause = False
-                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                    elif event.type == pygame.MOUSEBUTTONDOWN and not self.pause:
                         if event.button == pygame.BUTTON_LEFT:
+                            for i in self.sprites:
+                                try:
+                                    if i.rect.collidepoint(*pygame.mouse.get_pos()):
+                                        i.state = not i.state
+                                except: pass # When a sprite that does not have this functionality enters the list
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in self.touchingbtns:
                                 func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
@@ -392,6 +397,12 @@ class Graphic:
         self.uids.append(ibox)
         return len(self.uids) - 1
     
+    def add_switch(self, position, size=20, default=False):
+        sze = (size*1.5, size*1.5)
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
+        sw = Switch(self.WIN, pos[0]+size/4, pos[1]+size/4, size, 2, default)
+        self.sprites.add(sw)
+    
     def pos_store(self, pos, sze, func):
         sizeing = GO.PSTACKS[func][0]
         if func not in self.store:
@@ -454,6 +465,8 @@ if __name__ == '__main__':
             G.add_text('happy? ', GO.CGREEN, CTOP)
             G.add_text('Or sad?', GO.CRED, CTOP)
             G.Container.inp = G.add_input(GO.PCCENTER, GO.FFONT, maximum=16)
+            G.add_switch(GO.PRTOP, 40)
+            G.add_switch(GO.PRTOP)
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
