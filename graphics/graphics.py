@@ -358,6 +358,31 @@ class Graphic:
         return len(self.uids) - 1
     
     def add_input(self, position, font=GO.FSMALL, width=None, resize=GO.RHEIGHT, placeholder='Type Here', maximum=100):
+        """Adds an input box :)
+
+        Parameters
+        ----------
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+        font : pygame.Font, optional
+            The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
+        width : int, optional
+            The width of the text box, by default the width of the placeholder text
+            This is important as if the resize is height, it will wrap around this width. If the resize is width this doesn't matter.
+        resize : GO.R___ (e.g. GO.RHEIGHT), optional
+            The resize to use, by default GO.RHEIGHT
+            This means that if you reach the end of the box it will either resize the box width ways or wrap the text around height
+        placeholder : str, optional
+            The text displayed if nothing is entered, by default 'Type Here'
+        maximum : int, optional
+            The maximum NUMBER OF CHARACTERS you can input, by default 100
+            Make this None to have no limit
+
+        Returns
+        -------
+        int
+            the UID of this element
+        """
         sze = font.size(placeholder)
         if maximum == None: maximum = sze
         if width != None: sze[0] = width
