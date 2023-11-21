@@ -60,7 +60,7 @@ class InputBox:
             ls = [self.text]
         else:
             ls = renderTextCenteredAt(self.text, self.font, self.rect.w - 5)
-            if self.resize == GO.RNONE:
+            if self.resize == GO.RNONE and ls != []:
                 ls = [ls[0]]
 
         for line in ls:
