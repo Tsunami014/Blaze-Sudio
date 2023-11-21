@@ -423,6 +423,22 @@ class Graphic:
         return len(self.uids) - 1
     
     def add_switch(self, position, size=20, default=False):
+        """Adds a switch to the GUI! :)
+
+        Parameters
+        ----------
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+        size : int, optional
+            The size of the switch, by default 20
+        default : bool, optional
+            Whether the switch starts as on or off, by default False
+
+        Returns
+        -------
+        int
+            the UID of this element
+        """
         sze = (size*1.5, size*1.5)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         sw = Switch(self.WIN, pos[0]+size/4, pos[1]+size/4, size, 2, default)
