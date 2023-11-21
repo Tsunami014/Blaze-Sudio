@@ -107,6 +107,7 @@ class Element:
         
         Only works on:
          - GO.TSWITCH
+         - GO.TINPUTBOX
         
         Returns
         -------
@@ -115,6 +116,8 @@ class Element:
         """
         if self.type == GO.TSWITCH:
             return self.sprite.get()
+        elif self.type == GO.TINPUTBOX:
+            return self.sprite.text
         else:
             raise NotImplementedError(
                 f'Set text has not been implemented for this element with type {self.name}!'
@@ -527,10 +530,8 @@ class Graphic:
             the UID of this element
         """
         sze = list(font.size(placeholder))
-        if maximum == None: maximum = sze+5
-        if width != None: sze[0] = width+5
-        else: sze[0] += 5
         sze[1] += 10
+        if width != None: sze[0] = width
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         ibox = InputBox(*pos, *sze, resize, placeholder, font, maximum, start) # TODO: Positioning and custom width & height & resize
         self.input_boxes.append(ibox)
