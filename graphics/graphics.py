@@ -3,7 +3,7 @@ pygame.init()
 import graphics.graphics_options as GO
 from graphics.loading import Loading
 from graphics.async_handling import Progressbar
-from graphics.GUI import Button, TextBoxFrame, InputBox
+from graphics.GUI import TextBoxFrame, InputBox, Button, Switch
 from graphics.GUI.textboxify.borders import LIGHT
 
 class TerminalBar:
@@ -59,6 +59,8 @@ class Element: # Button or TextBoxFrame
             elif self.type == GO.TINPUTBOX:
                 self.sprite = kwargs['sprite']
                 self.txt = kwargs['txt']
+            elif self.type == GO.TSWITCH:
+                self.sprite = kwargs['sw']
         except KeyError as e:
             raise TypeError(
                 f'{self.name} Element requires kwarg "{str(e)}" but was not provided!'
@@ -68,13 +70,16 @@ class Element: # Button or TextBoxFrame
         """Removes an element.
 
         Only works on:
-         - GO.TTEXTBOX (A TextBox element)
+         - GO.TTEXTBOX
          - GO.TINPUTBOX
+         - GO.TSWITCH
         """
         if self.type == GO.TTEXTBOX:
             self.G.sprites.remove(self.sprite)
         elif self.type == GO.TINPUTBOX:
             self.G.input_boxes.remove(self.sprite)
+        elif self.type == GO.TSWITCH:
+            self.G.sprites.remove(self.sprite)
         else:
             raise NotImplementedError(
                 f'Remove has not been implemented for this element with type {self.name}!'
@@ -92,6 +97,24 @@ class Element: # Button or TextBoxFrame
         if self.type == GO.TTEXTBOX:
             self.sprite.reset(hard=True)
             self.sprite.set_text(txt)
+        else:
+            raise NotImplementedError(
+                f'Set text has not been implemented for this element with type {self.name}!'
+            )
+    
+    def get(self):
+        """Gets the state of this element.
+        
+        Only works on:
+         - GO.TSWITCH
+        
+        Returns
+        -------
+        bool
+            Whether the switch is on or not 
+        """
+        if self.type == GO.TSWITCH:
+            return self.sprite.get()
         else:
             raise NotImplementedError(
                 f'Set text has not been implemented for this element with type {self.name}!'
@@ -238,8 +261,15 @@ class Graphic:
                                         func(GO.EELEMENTCLICK, Element(GO.TTEXTBOX, self.uids.index(sprite), self, sprite=sprite))
                             if not any([isinstance(i, TextBoxFrame) for i in self.sprites]):
                                 self.pause = False
-                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                    elif event.type == pygame.MOUSEBUTTONDOWN and not self.pause:
                         if event.button == pygame.BUTTON_LEFT:
+                            for i in self.sprites:
+                                try:
+                                    assert i.isswitch
+                                    if i.rect.collidepoint(*pygame.mouse.get_pos()):
+                                        i.state = not i.state
+                                        func(GO.EELEMENTCLICK, Element(GO.TSWITCH, self.uids.index(i[0]), self, sw=i))
+                                except: pass
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in self.touchingbtns:
                                 r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
@@ -410,6 +440,30 @@ class Graphic:
         ibox = InputBox(*pos, *sze, resize, placeholder, font, maximum) # TODO: Positioning and custom width & height & resize
         self.input_boxes.append(ibox)
         self.uids.append(ibox)
+        return len(self.uids) - 1
+    
+    def add_switch(self, position, size=20, default=False):
+        """Adds a switch to the GUI! :)
+
+        Parameters
+        ----------
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+        size : int, optional
+            The size of the switch, by default 20
+        default : bool, optional
+            Whether the switch starts as on or off, by default False
+
+        Returns
+        -------
+        int
+            the UID of this element
+        """
+        sze = (size*1.5, size*1.5)
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
+        sw = Switch(self.WIN, pos[0]+size/4, pos[1]+size/4, size, 2, default)
+        self.sprites.add(sw)
+        self.uids.append(sw)
         return len(self.uids) - 1
     
     def pos_store(self, pos, sze, func):

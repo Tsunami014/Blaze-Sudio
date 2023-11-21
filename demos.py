@@ -36,6 +36,10 @@ def GraphicsDemo():
             G.add_text('happy? ', GO.CGREEN, CTOP)
             G.add_text('Or sad?', GO.CRED, CTOP)
             G.Container.inp = G.add_input(GO.PCCENTER, GO.FFONT, maximum=16)
+            G.Container.switches = [
+                G.add_switch(GO.PRTOP, 40),
+                G.add_switch(GO.PRTOP)
+            ]
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
@@ -75,7 +79,13 @@ def GraphicsDemo():
                     G.Reload()
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
-            return (aborted, G.uids[G.Container.inp].text) # Whatever you return here will be returned by the function
+            return {
+                'Aborted?': aborted, 
+                'Text in textbox': G.uids[G.Container.inp].text,
+                'Big switch state': G.uids[G.Container.switches[0]].get(),
+                'Small switch state': G.uids[G.Container.switches[1]].get()
+                } # Whatever you return here will be returned by the function
+    
     print(test(t))
     pygame.quit() # this here for very fast quitting
 
