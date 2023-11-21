@@ -203,6 +203,8 @@ def node_parserDemo():
     from elementGen import allCategories, allNodes, Parse
     alls = allCategories()
     print('All categories and nodes:', {i: allNodes(i) for i in alls})
+    tests = Parse('test')
+    print('Test results of function Add with inputs 3 & 4:', tests('Add', 3, 4))
 
 def switchDemo():
     import pygame
