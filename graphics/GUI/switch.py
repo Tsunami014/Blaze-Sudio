@@ -2,6 +2,7 @@ import pygame
 
 class Switch(pygame.sprite.DirtySprite):
     def __init__(self, win, x, y, size=20, speed=10, default=False):
+        self.isswitch = True
         self.WIN = win
         self.pos = (x, y)
         self.size = size

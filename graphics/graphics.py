@@ -64,6 +64,8 @@ class Element: # Button or TextBoxFrame
             elif self.type == GO.TINPUTBOX:
                 self.sprite = kwargs['sprite']
                 self.txt = kwargs['txt']
+            elif self.type == GO.TSWITCH:
+                self.sprite = kwargs['sw']
         except KeyError as e:
             raise TypeError(
                 f'{self.name} Element requires kwarg "{str(e)}" but was not provided!'
@@ -73,13 +75,16 @@ class Element: # Button or TextBoxFrame
         """Removes an element.
 
         Only works on:
-         - GO.TTEXTBOX (A TextBox element)
+         - GO.TTEXTBOX
          - GO.TINPUTBOX
+         - GO.TSWITCH
         """
         if self.type == GO.TTEXTBOX:
             self.G.sprites.remove(self.sprite)
         elif self.type == GO.TINPUTBOX:
             self.G.input_boxes.remove(self.sprite)
+        elif self.type == GO.TSWITCH:
+            self.G.sprites.remove(self.sprite)
         else:
             raise NotImplementedError(
                 f'Remove has not been implemented for this element with type {self.name}!'
@@ -97,6 +102,24 @@ class Element: # Button or TextBoxFrame
         if self.type == GO.TTEXTBOX:
             self.sprite.reset(hard=True)
             self.sprite.set_text(txt)
+        else:
+            raise NotImplementedError(
+                f'Set text has not been implemented for this element with type {self.name}!'
+            )
+    
+    def get(self):
+        """Gets the state of this element.
+        
+        Only works on:
+         - GO.TSWITCH
+        
+        Returns
+        -------
+        bool
+            Whether the switch is on or not 
+        """
+        if self.type == GO.TSWITCH:
+            return self.sprite.get()
         else:
             raise NotImplementedError(
                 f'Set text has not been implemented for this element with type {self.name}!'
@@ -224,9 +247,11 @@ class Graphic:
                         if event.button == pygame.BUTTON_LEFT:
                             for i in self.sprites:
                                 try:
+                                    assert i.isswitch
                                     if i.rect.collidepoint(*pygame.mouse.get_pos()):
                                         i.state = not i.state
-                                except: pass # When a sprite that does not have this functionality enters the list
+                                        func(GO.EELEMENTCLICK, Element(GO.TSWITCH, self.uids.index(i[0]), self, sw=i))
+                                except: pass
                             self.TB.toggleactive(not self.TB.collides(*event.pos))
                             for i in self.touchingbtns:
                                 func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
@@ -402,6 +427,8 @@ class Graphic:
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         sw = Switch(self.WIN, pos[0]+size/4, pos[1]+size/4, size, 2, default)
         self.sprites.add(sw)
+        self.uids.append(sw)
+        return len(self.uids) - 1
     
     def pos_store(self, pos, sze, func):
         sizeing = GO.PSTACKS[func][0]
@@ -465,8 +492,10 @@ if __name__ == '__main__':
             G.add_text('happy? ', GO.CGREEN, CTOP)
             G.add_text('Or sad?', GO.CRED, CTOP)
             G.Container.inp = G.add_input(GO.PCCENTER, GO.FFONT, maximum=16)
-            G.add_switch(GO.PRTOP, 40)
-            G.add_switch(GO.PRTOP)
+            G.Container.switches = [
+                G.add_switch(GO.PRTOP, 40),
+                G.add_switch(GO.PRTOP)
+            ]
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
@@ -506,7 +535,12 @@ if __name__ == '__main__':
                     G.Reload()
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
-            return (aborted, G.uids[G.Container.inp].text) # Whatever you return here will be returned by the function
+            return {
+                'Aborted?': aborted, 
+                'Text in textbox': G.uids[G.Container.inp].text,
+                'Big switch state': G.uids[G.Container.switches[0]].get(),
+                'Small switch state': G.uids[G.Container.switches[1]].get()
+                } # Whatever you return here will be returned by the function
     
     print(test(t))
     
