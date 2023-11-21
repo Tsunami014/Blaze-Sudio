@@ -2,11 +2,14 @@ import graphics.graphics_options as GO
 import pygame, os, json
 from time import sleep
 
-categories = [
-    'characters',
-    'tilemaps',
-    'others'
-]
+categories = [i.name for i in os.scandir('data/elements') if i.is_dir()]
+
+def mouseDown(button=1):
+    i = False
+    while True:
+        r = pygame.mouse.get_pressed(3)[button-1]
+        yield ((i != r and r), r)
+        i = r
 
 def NodeSelector(G, continue_to_edit=0):
     """Makes a Node Selector screen! Still in progress. Come back later!
@@ -117,6 +120,10 @@ NodeEditor(G)
     def editor(event, path, element=None, aborted=False):
         if event == GO.EFIRST:
             G.Container.saved = False
+            G.Container.md = [
+                mouseDown(), # Left mouse button
+                mouseDown(3) # Right mouse button
+            ]
             if path.endswith('.elm'):
                 path = path[:-4]
             if not os.path.exists('data/elements/'+path+'.elm'):
@@ -144,19 +151,28 @@ NodeEditor(G)
                 elif event == GO.ETICK: return True
                 elif event == GO.EELEMENTCLICK:
                     if element == G.Container.go:
-                        print('GO!')
+                        G.Container.went = True
                         G.Abort()
                     elif element == G.Container.exit:
-                        print('Cancel. :(')
+                        G.Container.went = False
                         G.Abort()
                 elif event == GO.ELAST:
-                    res = G.uids[G.Container.inpname].text
-                    if res != '':
-                        G.Container.name = res
-                        G.Container.contents['name'] = res
-                    pass # Whatever you return here will be returned by the function
+                    if G.Container.went: # Not cancelled
+                        res = G.uids[G.Container.inpname].text
+                        if res != '':
+                            G.Container.name = res
+                            G.Container.contents['name'] = res
+                        pass # Whatever you return here will be returned by the function
             settings()
         elif event == GO.ETICK:
+            lf, l = next(G.Container.md[0])
+            # lf = left mouse button first press, l = left mouse button is being pressed
+            rf, r = next(G.Container.md[1])
+            # Same with r
+            if lf:
+                pygame.draw.circle(G.WIN, GO.CGREEN, pygame.mouse.get_pos(), 20)
+            elif l:
+                pygame.draw.circle(G.WIN, GO.CNEW('orange'), pygame.mouse.get_pos(), 10)
             return True
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.KEYDOWN:
