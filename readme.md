@@ -28,6 +28,7 @@ Things to note:
     3. I can modify it myself
     4. You guys don't have to install another package
     5. It won't ever change (unless I change it myself)
+6. `git merge [branch2]` will not delete the second branch. DO NOT USE `git rebase [branch2]` AS A REPLACEMENT
 
 TODO: get link to Pyldtk
 
