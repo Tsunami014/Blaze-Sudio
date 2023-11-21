@@ -199,6 +199,37 @@ def node_editorDemo():
     G = Graphic()
     print(NodeSelector(G, 2))
 
+def switchDemo():
+    import pygame
+    from graphics.GUI import Switch
+    pygame.init()
+    win = pygame.display.set_mode()
+    sprites = pygame.sprite.LayeredDirty()
+    curpos = (10, 10)
+    for _ in range(19):
+        s = Switch(win, *curpos, size=10+2*_)
+        sprites.add(s)
+        sze = s.rect.size
+        curpos = (curpos[0] + sze[0] + 10, curpos[1] + sze[1] + 10)
+    
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == pygame.BUTTON_LEFT:
+                    for i in sprites:
+                        if i.rect.collidepoint(*pygame.mouse.get_pos()):
+                            i.state = not i.state
+        win.fill((255, 255, 255))
+        sprites.update()
+        pygame.display.update()
+    pygame.quit()
+
 if __name__ == '__main__':
     root = Tk.Tk()
     def cmd(cmdd):
@@ -214,5 +245,6 @@ if __name__ == '__main__':
     Tk.Button(root, text='Test LLM Demo', command=lambda: cmd(testLLMDemo)).pack()
     Tk.Button(root, text='Rate AIs Demo', command=lambda: cmd(rateAIsDemo)).pack()
     Tk.Button(root, text='API Keys Demo', command=lambda: cmd(api_keysDemo)).pack()
+    Tk.Button(root, text='Switch Demo', command=lambda: cmd(switchDemo)).pack()
     Tk.Button(root, text='Node Editor Demo', command=lambda: cmd(node_editorDemo)).pack()
     root.mainloop()
