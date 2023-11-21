@@ -200,9 +200,9 @@ def node_editorDemo():
     print(NodeSelector(G, 2))
 
 def node_parserDemo():
-    from elementGen import allCategories
+    from elementGen import allCategories, allNodes, Parse
     alls = allCategories()
-    print('All categories:', alls)
+    print('All categories and nodes:', {i: allNodes(i) for i in alls})
 
 def switchDemo():
     import pygame
