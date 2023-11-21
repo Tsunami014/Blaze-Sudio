@@ -199,6 +199,11 @@ def node_editorDemo():
     G = Graphic()
     print(NodeSelector(G, 2))
 
+def node_parserDemo():
+    from elementGen import allCategories
+    alls = allCategories()
+    print('All categories:', alls)
+
 def switchDemo():
     import pygame
     from graphics.GUI import Switch
@@ -236,6 +241,7 @@ if __name__ == '__main__':
         root.destroy()
         cmdd()
     Tk.Button(root, text='Node Editor Demo',        command=lambda: cmd(node_editorDemo)        ).pack()
+    Tk.Button(root, text='Node Parser Demo',        command=lambda: cmd(node_parserDemo)        ).pack()
     Tk.Button(root, text='Loading Demo',            command=lambda: cmd(LoadingDemo)            ).pack()
     Tk.Button(root, text='Graphics Demo',           command=lambda: cmd(GraphicsDemo)           ).pack()
     Tk.Button(root, text='Generate World Demo',     command=lambda: cmd(worldsDemo)             ).pack()
