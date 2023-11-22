@@ -1,10 +1,12 @@
 import pygame
 
-def dropdown(win, elements, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 255, 255)):
+def dropdown(win, elements, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 255, 255), selectedcol=(0, 0, 255)):
     if font == None: font = pygame.font.SysFont(None, 20)
     elements = [font.render(i, 2, txtcolour) for i in elements]
     mx = max([i.get_width() + spacing*2 for i in elements])
+    my = sum([i.get_height() + spacing*2 for i in elements])
     rects = []
+    mpos = pygame.mouse.get_pos()
     pos = pygame.mouse.get_pos()
     for i in elements:
         sze = i.get_size()
@@ -23,10 +25,12 @@ def dropdown(win, elements, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=
                 run = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
                 pass
+        pygame.draw.rect(win, bgcolour, pygame.Rect(*mpos, mx, my))
         for i in range(len(rects)):
-            pygame.draw.rect(win, bgcolour, rects[i])
-            pos = rects[i].topleft
-            win.blit(elements[i], (pos[0] + spacing, pos[1] + spacing))
+            if rects[i].collidepoint(*pygame.mouse.get_pos()):
+                pygame.draw.rect(win, selectedcol, rects[i])
+            p = rects[i].topleft
+            win.blit(elements[i], (p[0] + spacing, p[1] + spacing))
         pygame.display.update()
 
 if __name__ == '__main__':
