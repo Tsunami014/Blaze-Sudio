@@ -42,6 +42,8 @@ The purpose of this bit here is ideas so that later when I am wondering what fea
  - Dragon animation studio
  - Newest Super Mario bros ~~WII~~
  - Bluey AI
+ - Hey Grapefruit desktop
+ - Wings of fire Jade Mountain adventures
 
 Please ignore the fact these sound like rip-offs or that it's copying. I don't care. This is meant to be a fun project. These'll all be fan-made. I'm not planning to become rich off of those games. 
 
