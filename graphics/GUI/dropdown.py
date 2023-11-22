@@ -1,8 +1,8 @@
 import pygame
 
-def dropdown(win, elements, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 255, 255), selectedcol=(0, 0, 255)):
-    if font == None: font = pygame.font.SysFont(None, 20)
-    elements = [font.render(i, 2, txtcolour) for i in elements]
+def dropdown(win, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 255, 255), selectedcol=(0, 0, 255)):
+    if font == None: font = pygame.font.SysFont(None, 30)
+    elements = [font.render(i, 2, txtcolour) for i in elms]
     mx = max([i.get_width() + spacing*2 for i in elements])
     my = sum([i.get_height() + spacing*2 for i in elements])
     rects = []
@@ -24,11 +24,14 @@ def dropdown(win, elements, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 run = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
-                pass
-        pygame.draw.rect(win, bgcolour, pygame.Rect(*mpos, mx, my))
+                for i in range(len(rects)):
+                    if rects[i].collidepoint(*pygame.mouse.get_pos()):
+                        return i
+                return None
+        pygame.draw.rect(win, bgcolour, pygame.Rect(*mpos, mx, my), border_radius=8)
         for i in range(len(rects)):
             if rects[i].collidepoint(*pygame.mouse.get_pos()):
-                pygame.draw.rect(win, selectedcol, rects[i])
+                pygame.draw.rect(win, selectedcol, rects[i], border_radius=8)
             p = rects[i].topleft
             win.blit(elements[i], (p[0] + spacing, p[1] + spacing))
         pygame.display.update()
