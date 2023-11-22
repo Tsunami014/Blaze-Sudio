@@ -13,16 +13,15 @@ def dropdown(win, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255
         sze = (mx, sze[1] + spacing*2)
         rects.append(pygame.Rect(*pos, *sze))
         pos = (pos[0], pos[1] + sze[1])
-    run = True
     sur = win.copy()
-    while run:
+    while True:
         win.fill((255, 255, 255))
         win.blit(sur, (0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                return False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                run = False
+                return False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
                 for i in range(len(rects)):
                     if rects[i].collidepoint(*pygame.mouse.get_pos()):

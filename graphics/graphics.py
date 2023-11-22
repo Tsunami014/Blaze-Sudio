@@ -3,12 +3,12 @@ pygame.init()
 try:
     import graphics.graphics_options as GO
     from graphics.loading import Loading
-    from graphics.GUI import TextBoxFrame, InputBox, Button, Switch
+    from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown
     from graphics.GUI.textboxify.borders import LIGHT
 except:
     import graphics_options as GO
     from loading import Loading
-    from GUI import TextBoxFrame, InputBox, Button, Switch
+    from GUI import TextBoxFrame, InputBox, Button, Switch, dropdown
     from GUI.textboxify.borders import LIGHT
 
 class TerminalBar:
@@ -191,11 +191,11 @@ class Graphic:
                     return funcy(slf, event, *args, element=element, aborted=aborted, **kwargs)
             func(GO.EFIRST)
             prevs = [self.statics.copy(), self.buttons.copy()]
-            run = True
+            self.run = True
             self.ab = False
             self.touchingbtns = []
             s = self.render(func)
-            while run and not self.ab:
+            while self.run and not self.ab:
                 if prevs != [self.statics, self.buttons] or self.rel:
                     self.rel = False
                     s = self.render(func)
@@ -219,18 +219,24 @@ class Graphic:
                 for btn, r, sur, sze in self.touchingbtns: # repeat so the buttons you are touching appear on top
                     pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
-                run = func(GO.ETICK)
+                self.TB.update()
+                for ibox in self.input_boxes:
+                    ibox.draw(self.WIN)
+                self.sprites.update()
+                rects = self.sprites.draw(self.WIN)
+                pygame.display.update(rects)
+                self.run = func(GO.ETICK)
                 for event in pygame.event.get():
                     blocked = False
                     if event.type == pygame.QUIT:
-                        run = False
+                        self.run = False
                     for ibox in self.input_boxes:
                         if ibox.handle_event(event, pygame.K_RETURN) == False:
                             func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=ibox.text))
                             blocked = True
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
-                            run = False
+                            self.run = False
                         elif self.TB.active != -1:
                             self.TB.pressed(event)
                             blocked = True
@@ -256,18 +262,43 @@ class Graphic:
                             for i in self.touchingbtns:
                                 func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
                     if not self.pause and not blocked: func(GO.EEVENT, event)
-                self.TB.update()
-                for ibox in self.input_boxes:
-                    ibox.draw(self.WIN)
-                self.sprites.update()
-                rects = self.sprites.draw(self.WIN)
-                pygame.display.update(rects)
                 pygame.display.flip()
                 self.clock.tick(60)
             ret = func(GO.ELAST, aborted=self.ab)
             self.ab = False
             return ret
         return func2
+
+    def Dropdown(self, elements, spacing=5, font=GO.FFONT, activecol=GO.CACTIVE, bgcol=GO.CBLACK, txtcol=GO.CWHITE):
+        """Spawns a dropdown!
+        This will pause everything else! You will need to click out of the dropdown to exit it.
+
+        Parameters
+        ----------
+        elements : list
+            The choices that you can select
+        spacing : int, optional
+            The spacing between each element, by default 5
+        font : pygame.Font, optional
+            The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
+        activecol : tuple[int, int, int], optional
+            The colour when you hover your mouse over an option, by default GO.CACTIVE
+        bgcol : tuple[int, int, int], optional
+            The colour of the background of the dropdown, by default GO.CBLACK
+        txtcol : tuple[int, int, int], optional
+            The colour of the text of the dropdown, by default GO.CWHITE
+        For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
+
+        Returns
+        -------
+        int/None/False
+            The index of the input elements list that was selected, else None if nothing selected
+            False if you exited from the menu using escape or closing the window. This will also exit the GUI.
+        """
+        d = dropdown(self.WIN, elements, spacing, font, bgcol, txtcol, activecol)
+        if d is False: self.run = False
+        return d
+    
     
     def add_text(self, txt, colour, position, font=GO.FFONT):
         """Adds text to the GUI!
@@ -549,6 +580,12 @@ if __name__ == '__main__':
                 if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
                     G.Container.txt = 'Saved! (Don\'t worry - this does nothing)'
                     G.Reload()
+            elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
+                opts = ['HI', 'BYE', 'HI AGAIN']
+                resp = G.Dropdown(opts)
+                if isinstance(resp, int):
+                    G.Container.txt = opts[resp]
+                    G.Reload()
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             return {
@@ -558,7 +595,7 @@ if __name__ == '__main__':
                 'Small switch state': G.uids[G.Container.switches[1]].get()
                 } # Whatever you return here will be returned by the function
     
-    print(test(t))
+    print(test('Right click! ' + t))
     
     # Copy this scaffold for your own code :)
     # Args and kwargs are passed through from the initial call of the func
