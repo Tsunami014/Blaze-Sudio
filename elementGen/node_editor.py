@@ -100,6 +100,36 @@ NodeSelector(G)
 # Make delete category/node file
 # As well as a NodeEditor screen have a NodeRenderer screen, which is also used in NodeEditor
 
+def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled=False): # Circle And Text
+    t = GO.FFONT.render(txt, 2, GO.CBLACK)
+    sze = GO.FFONT.size('a')[1]
+    poschange = t.get_height() - sze
+    sur = pygame.Surface((t.get_width() + sze + 5, t.get_height()+poschange))
+    sur.fill(bgcol)
+    if front:
+        pygame.draw.circle(sur, GO.CWHITE, (sze//2, t.get_height()//2), sze//2-2)
+        pygame.draw.circle(sur, colour, (sze//2, t.get_height()//2), sze//2-2, 5)
+        if colour2 != None:
+            csur = pygame.Surface((sze, sze//2))
+            csur.fill(GO.CWHITE)
+            pygame.draw.circle(csur, colour2, (sze//2, 0), sze//2-2, 5)
+            sur.blit(csur, (0, t.get_height()//2))
+        if filled: pygame.draw.circle(sur, GO.CGREY, (sze//2, t.get_height()//2), sze//4)
+        pygame.draw.circle(sur, GO.CBLACK, (sze//2, t.get_height()//2), sze//2, 2)
+        sur.blit(t, (sze + 5, poschange))
+    else:
+        pygame.draw.circle(sur, GO.CWHITE, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2)
+        pygame.draw.circle(sur, colour, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2, 5)
+        if colour2 != None:
+            csur = pygame.Surface((sze, sze//2))
+            csur.fill(GO.CWHITE)
+            pygame.draw.circle(csur, colour2, (sze//2, 0), sze//2-2, 5)
+            sur.blit(csur, (t.get_width() + 5, t.get_height()//2))
+        if filled: pygame.draw.circle(sur, GO.CGREY, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//4)
+        pygame.draw.circle(sur, GO.CBLACK, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2, 2)
+        sur.blit(t, (0, poschange))
+    return sur
+
 def NodeEditor(G, path):
     """Makes a Node Editor screen!
 
@@ -171,9 +201,23 @@ NodeEditor(G)
             settings()
         elif event == GO.ETICK:
             for p, node in G.Container.nodes:
+                col = GO.CBLUE
                 txt = GO.FFONT.render(str(node), 2, GO.CBLACK)
-                pygame.draw.rect(G.WIN, GO.CBLUE, pygame.Rect(*p, txt.get_width()+10, txt.get_height()+10), border_radius=8)
-                G.WIN.blit(txt, (p[0]+5, p[1]+5))
+                sur = pygame.Surface(G.size)
+                sur.fill(col)
+                sur.blit(txt, (0, 0))
+                i = txt.get_height() + 5
+                mx = txt.get_width()
+                for name, typ in node.inputs:
+                    s = CAT(name, bgcol=col)
+                    sur.blit(s, (0, i))
+                    mx = max(mx, s.get_width())
+                    i += s.get_height() + 2
+                sur2 = pygame.Surface((mx, i))
+                sur2.fill(col)
+                sur2.blit(sur, (0, 0))
+                pygame.draw.rect(G.WIN, col, pygame.Rect(*p, mx+10, i+10), border_radius=8)
+                G.WIN.blit(sur2, (p[0]+5, p[1]+5))
             lf, l = next(G.Container.md[0])
             # lf = left mouse button first press, l = left mouse button is being pressed
             rf, r = next(G.Container.md[1])
