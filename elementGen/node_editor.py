@@ -1,8 +1,10 @@
+import pygame, os, pickle
 import graphics.graphics_options as GO
-import pygame, os, json
-from time import sleep
+import elementGen.node_parser as np
 
 categories = [i.name for i in os.scandir('data/elements') if i.is_dir()]
+
+nodes = [np.Parse(i) for i in np.allCategories()]
 
 def mouseDown(button=1):
     i = False
@@ -12,7 +14,7 @@ def mouseDown(button=1):
         i = r
 
 def NodeSelector(G, continue_to_edit=0):
-    """Makes a Node Selector screen! Still in progress. Come back later!
+    """Makes a Node Selector screen!
 
     Parameters
     ----------
@@ -34,7 +36,7 @@ NodeSelector(G)
             @G.Loading
             def load(self):
                 self.items = [i for i in os.scandir('data/elements/'+category) if i.is_file()]
-                self.iteminfo = [json.load(open('data/elements/%s/%s'%(category, i.name))) for i in self.items]
+                self.iteminfo = [pickle.load(open('data/elements/%s/%s'%(category, i.name), 'rb')) for i in self.items]
                 self.subs = ['Go back to the previous page', 'Make a new item from scratch'] + [i['idea'] for i in self.iteminfo]
             cont, res = load()
             G.Container.res = res
@@ -95,12 +97,11 @@ NodeSelector(G)
                         return pth
     return category_select()
 
-# Select element to edit screen (copy world select)
-# Each category of elements is a sub-folder under data/elements/
+# Make delete category/node file
 # As well as a NodeEditor screen have a NodeRenderer screen, which is also used in NodeEditor
 
 def NodeEditor(G, path):
-    """Makes a Node Editor screen! Still in progress. Come back later!
+    """Makes a Node Editor screen!
 
     Parameters
     ----------
@@ -127,8 +128,12 @@ NodeEditor(G)
             if path.endswith('.elm'):
                 path = path[:-4]
             if not os.path.exists('data/elements/'+path+'.elm'):
-                open('data/elements/'+path+'.elm', 'w+').write('{"idea": "BLANK", "name": "New File"}')
-            G.Container.contents = json.load(open('data/elements/'+path+'.elm'))
+                pickle.dump({"idea": "BLANK", "name": "New File", "version": 2}, open('data/elements/'+path+'.elm', 'wb+'))
+            G.Container.contents = pickle.load(open('data/elements/'+path+'.elm', 'rb'))
+            if 'nodes' in G.Container.contents:
+                G.Container.nodes = G.Container.contents['nodes']
+            else:
+                G.Container.nodes = []
             G.Container.name = G.Container.contents['name']
         if event == GO.ELOADUI:
             G.Clear()
@@ -165,6 +170,10 @@ NodeEditor(G)
                         pass # Whatever you return here will be returned by the function
             settings()
         elif event == GO.ETICK:
+            for p, node in G.Container.nodes:
+                txt = GO.FFONT.render(str(node), 2, GO.CBLACK)
+                pygame.draw.rect(G.WIN, GO.CBLUE, pygame.Rect(*p, txt.get_width()+10, txt.get_height()+10), border_radius=8)
+                G.WIN.blit(txt, (p[0]+5, p[1]+5))
             lf, l = next(G.Container.md[0])
             # lf = left mouse button first press, l = left mouse button is being pressed
             rf, r = next(G.Container.md[1])
@@ -179,8 +188,22 @@ NodeEditor(G)
                 if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
                     if path.endswith('.elm'):
                         path = path[:-4]
+                    G.Container.contents['nodes'] = G.Container.nodes
+                    pickle.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+')) # Save
                     G.Container.saved = True
-                    json.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'w+')) # Save
+            elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
+                p = pygame.mouse.get_pos()
+                kgo = True
+                while kgo:
+                    resp = G.Dropdown([str(i) for i in nodes], pos=p)
+                    if isinstance(resp, int):
+                        resp2 = G.Dropdown(['Back']+[str(i) for i in nodes[resp].getall()], pos=p)
+                        if isinstance(resp2, int):
+                            if resp2 != 0:
+                                G.Container.nodes.append((p, nodes[resp].getall()[resp2-1]))
+                                kgo = False
+                        else: kgo = False
+                    else: kgo = False
         elif event == GO.ELAST:
             if G.Container.saved:
                 if path.endswith('.elm'):
@@ -188,6 +211,6 @@ NodeEditor(G)
                 if G.Container.name != path.split('/')[1]:
                     os.remove('data/elements/'+path+'.elm')
                     path = path.split('/')[0] + '/' + G.Container.name
-                    open('data/elements/'+path+'.elm', 'w+')
-                    json.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'w+'))
+                    open('data/elements/'+path+'.elm', 'wb+')
+                    pickle.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+'))
     return editor(path)
