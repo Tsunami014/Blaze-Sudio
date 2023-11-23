@@ -107,22 +107,22 @@ def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled
     sur = pygame.Surface((t.get_width() + sze + 5, t.get_height()+poschange))
     sur.fill(bgcol)
     if front:
-        pygame.draw.circle(sur, GO.CWHITE, (sze//2, t.get_height()//2), sze//2-2)
+        pygame.draw.circle(sur, GO.CAWHITE, (sze//2, t.get_height()//2), sze//2-2)
         pygame.draw.circle(sur, colour, (sze//2, t.get_height()//2), sze//2-2, 5)
         if colour2 != None:
             csur = pygame.Surface((sze, sze//2))
-            csur.fill(GO.CWHITE)
+            csur.fill(GO.CAWHITE)
             pygame.draw.circle(csur, colour2, (sze//2, 0), sze//2-2, 5)
             sur.blit(csur, (0, t.get_height()//2))
         if filled: pygame.draw.circle(sur, GO.CGREY, (sze//2, t.get_height()//2), sze//4)
         pygame.draw.circle(sur, GO.CBLACK, (sze//2, t.get_height()//2), sze//2, 2)
         sur.blit(t, (sze + 5, poschange))
     else:
-        pygame.draw.circle(sur, GO.CWHITE, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2)
+        pygame.draw.circle(sur, GO.CAWHITE, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2)
         pygame.draw.circle(sur, colour, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2, 5)
         if colour2 != None:
             csur = pygame.Surface((sze, sze//2))
-            csur.fill(GO.CWHITE)
+            csur.fill(GO.CAWHITE)
             pygame.draw.circle(csur, colour2, (sze//2, 0), sze//2-2, 5)
             sur.blit(csur, (t.get_width() + 5, t.get_height()//2))
         if filled: pygame.draw.circle(sur, GO.CGREY, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//4)
