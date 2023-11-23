@@ -331,17 +331,11 @@ class Graphic:
                     self.clock.tick(60)
             ret = func(GO.ELAST, aborted=self.ab)
             self.ab = False
-            yield [ret]
-        def func3(*args, **kwargs):
-            f = func2(*args, **kwargs)
-            while True:
-                y = next(f)
-                if y != None:
-                    return y[0]
-        if generator: return func2
-        else: return func3
+            self.run = True
+            return ret
+        return func2
 
-    def Dropdown(self, elements, spacing=5, font=GO.FFONT, activecol=GO.CACTIVE, bgcol=GO.CBLACK, txtcol=GO.CWHITE):
+    def Dropdown(self, elements, spacing=5, font=GO.FFONT, activecol=GO.CACTIVE, bgcol=GO.CBLACK, txtcol=GO.CWHITE, pos=None):
         """Spawns a dropdown!
         This will pause everything else! You will need to click out of the dropdown to exit it.
 
@@ -359,6 +353,8 @@ class Graphic:
             The colour of the background of the dropdown, by default GO.CBLACK
         txtcol : tuple[int, int, int], optional
             The colour of the text of the dropdown, by default GO.CWHITE
+        pos : tuple[int, int], optional
+            The position of the dropdown, by default the mouse location
         For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
 
         Returns
@@ -367,7 +363,7 @@ class Graphic:
             The index of the input elements list that was selected, else None if nothing selected
             False if you exited from the menu using escape or closing the window. This will also exit the GUI.
         """
-        d = dropdown(self.WIN, elements, spacing, font, bgcol, txtcol, activecol)
+        d = dropdown(self.WIN, elements, spacing, font, bgcol, txtcol, activecol, pos)
         if d is False: self.run = False
         return d
     

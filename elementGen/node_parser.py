@@ -8,16 +8,25 @@ class Names:
         self.rdata = data.strip(' \n')
         spl = self.rdata.split(' ')
         self.name = spl[0]
-        self.args = []
+        self.inputs = []
+        self.outputs = []
+        input = True
         for i in spl[1:]:
+            if i == '|':
+                input = False
+                continue
             s = i.split('@')
-            self.args.append((s[1], s[0]))
+            if input:
+                self.inputs.append((s[1], s[0]))
+            else:
+                self.outputs.append((s[1], s[0]))
     def __str__(self): return self.name
     def __repr__(self): return str(self)
 
 class Parse:
     def __init__(self, category):
         if not category.endswith('.py'): category += '.py'
+        self.category = category
         self.rdata = open('data/nodes/'+category).read()
         self.data = {}
         pattern = 0
@@ -35,6 +44,10 @@ class Parse:
     def __call__(self, funcname, *args):
         exec(self.data[self.names[funcname]])
         return eval('node(*args)')
+    
+    def __str__(self): return self.category[:-3]
+    def __repr__(self): return str(self)
+    
     def getall(self):
         return list(self.data.keys())
 
