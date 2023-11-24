@@ -206,17 +206,28 @@ NodeEditor(G)
                 sur = pygame.Surface(G.size)
                 sur.fill(col)
                 sur.blit(txt, (0, 0))
-                i = txt.get_height() + 5
+                start = txt.get_height() + 5
+                i = start
                 mx = txt.get_width()
                 for name, typ in node.inputs:
                     s = CAT(name, bgcol=col)
                     sur.blit(s, (0, i))
                     mx = max(mx, s.get_width())
                     i += s.get_height() + 2
-                sur2 = pygame.Surface((mx, i))
+                if node.outputs != []:
+                    mx += 20
+                i2 = start
+                mx2 = 0
+                for name, typ in node.outputs:
+                    s = CAT(name, front=False, bgcol=col)
+                    sur.blit(s, (mx, i2))
+                    mx2 = max(mx2, s.get_width())
+                    i2 += s.get_height() + 2
+                mx2 += mx
+                sur2 = pygame.Surface((mx2, max(i, i2)))
                 sur2.fill(col)
                 sur2.blit(sur, (0, 0))
-                pygame.draw.rect(G.WIN, col, pygame.Rect(*p, mx+10, i+10), border_radius=8)
+                pygame.draw.rect(G.WIN, col, pygame.Rect(*p, mx2+10, max(i, i2)+10), border_radius=8)
                 G.WIN.blit(sur2, (p[0]+5, p[1]+5))
             lf, l = next(G.Container.md[0])
             # lf = left mouse button first press, l = left mouse button is being pressed
