@@ -106,7 +106,9 @@ def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled
     poschange = t.get_height() - sze
     sur = pygame.Surface((t.get_width() + sze + 5, t.get_height()+poschange))
     sur.fill(bgcol)
+    cir = None
     if front:
+        cir = pygame.Rect(0, 0, sze, sze)
         pygame.draw.circle(sur, GO.CAWHITE, (sze//2, t.get_height()//2), sze//2-2)
         pygame.draw.circle(sur, colour, (sze//2, t.get_height()//2), sze//2-2, 5)
         if colour2 != None:
@@ -118,6 +120,7 @@ def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled
         pygame.draw.circle(sur, GO.CBLACK, (sze//2, t.get_height()//2), sze//2, 2)
         sur.blit(t, (sze + 5, poschange))
     else:
+        cir = pygame.Rect(t.get_width() + 5, 0, sze, sze)
         pygame.draw.circle(sur, GO.CAWHITE, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2)
         pygame.draw.circle(sur, colour, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2, 5)
         if colour2 != None:
@@ -128,7 +131,7 @@ def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled
         if filled: pygame.draw.circle(sur, GO.CGREY, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//4)
         pygame.draw.circle(sur, GO.CBLACK, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2, 2)
         sur.blit(t, (0, poschange))
-    return sur
+    return sur, cir
 
 def NodeEditor(G, path):
     """Makes a Node Editor screen!
@@ -209,8 +212,11 @@ NodeEditor(G)
                 start = txt.get_height() + 5
                 i = start
                 mx = txt.get_width()
+                cirs = []
                 for name, typ in node.inputs:
-                    s = CAT(name, bgcol=col)
+                    s, c = CAT(name, bgcol=col)
+                    c.move_ip(0+p[0], i+p[1])
+                    cirs.append(c)
                     sur.blit(s, (0, i))
                     mx = max(mx, s.get_width())
                     i += s.get_height() + 2
@@ -219,7 +225,9 @@ NodeEditor(G)
                 i2 = start
                 mx2 = 0
                 for name, typ in node.outputs:
-                    s = CAT(name, front=False, bgcol=col)
+                    s, c = CAT(name, front=False, bgcol=col)
+                    c.move_ip(mx+p[0], i2+p[1])
+                    cirs.append(c)
                     sur.blit(s, (mx, i2))
                     mx2 = max(mx2, s.get_width())
                     i2 += s.get_height() + 2
@@ -229,6 +237,9 @@ NodeEditor(G)
                 sur2.blit(sur, (0, 0))
                 pygame.draw.rect(G.WIN, col, pygame.Rect(*p, mx2+10, max(i, i2)+10), border_radius=8)
                 G.WIN.blit(sur2, (p[0]+5, p[1]+5))
+                for i in cirs:
+                    if i.collidepoint(pygame.mouse.get_pos()):
+                        G.WIN.blit(CAT('', filled=True, bgcol=col)[0], (i.topleft[0]+5, i.topleft[1]+7))
             lf, l = next(G.Container.md[0])
             # lf = left mouse button first press, l = left mouse button is being pressed
             rf, r = next(G.Container.md[1])
