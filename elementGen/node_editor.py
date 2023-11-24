@@ -159,6 +159,7 @@ NodeEditor(G)
                 mouseDown(3) # Right mouse button
             ]
             G.Container.selecting = None
+            G.Container.connections = {}
             if path.endswith('.elm'):
                 path = path[:-4]
             if not os.path.exists('data/elements/'+path+'.elm'):
@@ -243,7 +244,12 @@ NodeEditor(G)
             rf, r = next(G.Container.md[1])
             # Same with r
             
-            if not l: G.Container.selecting = None
+            if not l:
+                if G.Container.selecting != None:
+                    for i in cirs:
+                        if i[0].collidepoint(pygame.mouse.get_pos()):
+                            G.Container.connections[G.Container.selecting[1]] = (G.Container.selecting[0], (i[0].center[0]+5, i[0].center[1]+7), i[1])
+                G.Container.selecting = None
             for i in cirs:
                 if i[0].collidepoint(pygame.mouse.get_pos()):
                     G.WIN.blit(CAT('', filled=True, bgcol=col)[0], (i[0].topleft[0]+5, i[0].topleft[1]+7))
@@ -252,6 +258,9 @@ NodeEditor(G)
             
             if G.Container.selecting != None:
                 pygame.draw.line(G.WIN, GO.CRED, G.Container.selecting[1], pygame.mouse.get_pos(), 10)
+            
+            for i in G.Container.connections:
+                pygame.draw.line(G.WIN, GO.CNEW('orange'), i, G.Container.connections[i][1], 10)
             return True
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.KEYDOWN:
