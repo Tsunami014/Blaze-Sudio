@@ -156,6 +156,7 @@ NodeEditor(G)
                 mouseDown(), # Left mouse button
                 mouseDown(3) # Right mouse button
             ]
+            G.Container.selecting = None
             if path.endswith('.elm'):
                 path = path[:-4]
             if not os.path.exists('data/elements/'+path+'.elm'):
@@ -201,6 +202,7 @@ NodeEditor(G)
                         pass # Whatever you return here will be returned by the function
             settings()
         elif event == GO.ETICK:
+            cirs = []
             for p, node in G.Container.nodes:
                 col = GO.CBLUE
                 txt = GO.FFONT.render(str(node), 2, GO.CBLACK)
@@ -210,11 +212,10 @@ NodeEditor(G)
                 start = txt.get_height() + 5
                 i = start
                 mx = txt.get_width()
-                cirs = []
                 for name, typ in node.inputs:
                     s, c = CAT(name, bgcol=col)
                     c.move_ip(0+p[0], i+p[1])
-                    cirs.append(c)
+                    cirs.append((c, node))
                     sur.blit(s, (0, i))
                     mx = max(mx, s.get_width())
                     i += s.get_height() + 2
@@ -225,7 +226,7 @@ NodeEditor(G)
                 for name, typ in node.outputs:
                     s, c = CAT(name, front=False, bgcol=col)
                     c.move_ip(mx+p[0], i2+p[1])
-                    cirs.append(c)
+                    cirs.append((c, node))
                     sur.blit(s, (mx, i2))
                     mx2 = max(mx2, s.get_width())
                     i2 += s.get_height() + 2
@@ -235,17 +236,20 @@ NodeEditor(G)
                 sur2.blit(sur, (0, 0))
                 pygame.draw.rect(G.WIN, col, pygame.Rect(*p, mx2+10, max(i, i2)+10), border_radius=8)
                 G.WIN.blit(sur2, (p[0]+5, p[1]+5))
-                for i in cirs:
-                    if i.collidepoint(pygame.mouse.get_pos()):
-                        G.WIN.blit(CAT('', filled=True, bgcol=col)[0], (i.topleft[0]+5, i.topleft[1]+7))
             lf, l = next(G.Container.md[0])
             # lf = left mouse button first press, l = left mouse button is being pressed
             rf, r = next(G.Container.md[1])
             # Same with r
-            if lf:
-                pygame.draw.circle(G.WIN, GO.CGREEN, pygame.mouse.get_pos(), 20)
-            elif l:
-                pygame.draw.circle(G.WIN, GO.CNEW('orange'), pygame.mouse.get_pos(), 10)
+            
+            if not l: G.Container.selecting = None
+            for i in cirs:
+                if i[0].collidepoint(pygame.mouse.get_pos()):
+                    G.WIN.blit(CAT('', filled=True, bgcol=col)[0], (i[0].topleft[0]+5, i[0].topleft[1]+7))
+                    if lf:
+                        G.Container.selecting = (i[1], (i[0].center[0]+5, i[0].center[1]+7))
+            
+            if G.Container.selecting != None:
+                pygame.draw.line(G.WIN, GO.CRED, G.Container.selecting[1], pygame.mouse.get_pos(), 10)
             return True
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.KEYDOWN:
