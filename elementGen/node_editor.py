@@ -247,9 +247,11 @@ NodeEditor(G)
             
             if not l:
                 if G.Container.selecting != None:
+                    conned = False
                     for i in cirs:
                         if G.Container.selecting[2] != i[2]:
                             if i[0].collidepoint(pygame.mouse.get_pos()):
+                                conned = True
                                 d = False
                                 po = (i[0].center[0]+5, i[0].center[1]+7)
                                 for j in range(len(G.Container.connections)):
@@ -261,6 +263,12 @@ NodeEditor(G)
                                 if not d:
                                     G.Container.connections.append([G.Container.selecting[1], po])
                                     G.Container.connectionsinfo.append([G.Container.selecting[0], i[1]])
+                    if not conned and G.Container.selecting[2]:
+                        for i in range(len(G.Container.connections)):
+                            if G.Container.selecting[1] in G.Container.connections[i]:
+                                del G.Container.connections[i]
+                                del G.Container.connectionsinfo[i]
+                                break
                 G.Container.selecting = None
             for i in cirs:
                 if G.Container.selecting == None or G.Container.selecting[2] != i[2]:
