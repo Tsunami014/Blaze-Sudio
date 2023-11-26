@@ -148,6 +148,19 @@ G = Graphic()
 NodeEditor(G)
 ```
     """
+    def dropdown():
+        p = pygame.mouse.get_pos()
+        while True:
+            resp = G.Dropdown([str(i) for i in nodes], pos=p)
+            if isinstance(resp, int) and not isinstance(resp, bool):
+                resp2 = G.Dropdown(['Back']+[str(i) for i in nodes[resp].getall()], pos=p)
+                if isinstance(resp2, int) and not isinstance(resp, bool):
+                    if resp2 != 0:
+                        G.Container.nodes.append((p, nodes[resp].getall()[resp2-1]))
+                        return True
+                else: return False
+            else: return False
+    
     @G.Graphic
     def editor(event, path, element=None, aborted=False):
         if event == GO.EFIRST:
@@ -264,9 +277,10 @@ NodeEditor(G)
                     if not conned and G.Container.selecting[2]:
                         for i in range(len(G.Container.connections)):
                             if G.Container.selecting[1] in G.Container.connections[i]:
-                                del G.Container.connections[i]
-                                del G.Container.connectionsinfo[i]
-                                break
+                                if dropdown() == False:
+                                    del G.Container.connections[i]
+                                    del G.Container.connectionsinfo[i]
+                                    break
                 G.Container.selecting = None
             for i in cirs:
                 if G.Container.selecting == None or G.Container.selecting[2] != i[2]:
@@ -290,18 +304,7 @@ NodeEditor(G)
                     pickle.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+')) # Save
                     G.Container.saved = True
             elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
-                p = pygame.mouse.get_pos()
-                kgo = True
-                while kgo:
-                    resp = G.Dropdown([str(i) for i in nodes], pos=p)
-                    if isinstance(resp, int):
-                        resp2 = G.Dropdown(['Back']+[str(i) for i in nodes[resp].getall()], pos=p)
-                        if isinstance(resp2, int):
-                            if resp2 != 0:
-                                G.Container.nodes.append((p, nodes[resp].getall()[resp2-1]))
-                                kgo = False
-                        else: kgo = False
-                    else: kgo = False
+                dropdown()
         elif event == GO.ELAST:
             if G.Container.saved:
                 if path.endswith('.elm'):
