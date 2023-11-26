@@ -159,7 +159,8 @@ NodeEditor(G)
                 mouseDown(3) # Right mouse button
             ]
             G.Container.selecting = None
-            G.Container.connections = {}
+            G.Container.connections = [] # The start pos-end pos
+            G.Container.connectionsinfo = [] # The nodes which contain these said start and end poses
             if path.endswith('.elm'):
                 path = path[:-4]
             if not os.path.exists('data/elements/'+path+'.elm'):
@@ -218,7 +219,7 @@ NodeEditor(G)
                 for name, typ in node.inputs:
                     s, c = CAT(name, bgcol=col)
                     c.move_ip(0+p[0], i+p[1])
-                    cirs.append((c, node))
+                    cirs.append((c, node, True))
                     sur.blit(s, (0, i))
                     mx = max(mx, s.get_width())
                     i += s.get_height() + 2
@@ -229,7 +230,7 @@ NodeEditor(G)
                 for name, typ in node.outputs:
                     s, c = CAT(name, front=False, bgcol=col)
                     c.move_ip(mx+p[0], i2+p[1])
-                    cirs.append((c, node))
+                    cirs.append((c, node, False))
                     sur.blit(s, (mx, i2))
                     mx2 = max(mx2, s.get_width())
                     i2 += s.get_height() + 2
@@ -247,20 +248,32 @@ NodeEditor(G)
             if not l:
                 if G.Container.selecting != None:
                     for i in cirs:
-                        if i[0].collidepoint(pygame.mouse.get_pos()):
-                            G.Container.connections[G.Container.selecting[1]] = (G.Container.selecting[0], (i[0].center[0]+5, i[0].center[1]+7), i[1])
+                        if G.Container.selecting[2] != i[2]:
+                            if i[0].collidepoint(pygame.mouse.get_pos()):
+                                d = False
+                                po = (i[0].center[0]+5, i[0].center[1]+7)
+                                for j in range(len(G.Container.connections)):
+                                    if G.Container.connections[j][1] == po:
+                                        G.Container.connections[j] = [G.Container.selecting[1], po]
+                                        G.Container.connectionsinfo[j] = [G.Container.selecting[0], i[1]]
+                                        d = True
+                                        break
+                                if not d:
+                                    G.Container.connections.append([G.Container.selecting[1], po])
+                                    G.Container.connectionsinfo.append([G.Container.selecting[0], i[1]])
                 G.Container.selecting = None
             for i in cirs:
-                if i[0].collidepoint(pygame.mouse.get_pos()):
-                    G.WIN.blit(CAT('', filled=True, bgcol=col)[0], (i[0].topleft[0]+5, i[0].topleft[1]+7))
-                    if lf:
-                        G.Container.selecting = (i[1], (i[0].center[0]+5, i[0].center[1]+7))
+                if G.Container.selecting == None or G.Container.selecting[2] != i[2]:
+                    if i[0].collidepoint(pygame.mouse.get_pos()):
+                        G.WIN.blit(CAT('', filled=True, bgcol=col)[0], (i[0].topleft[0]+5, i[0].topleft[1]+7))
+                        if lf:
+                            G.Container.selecting = (i[1], (i[0].center[0]+5, i[0].center[1]+7), i[2])
             
             if G.Container.selecting != None:
                 pygame.draw.line(G.WIN, GO.CRED, G.Container.selecting[1], pygame.mouse.get_pos(), 10)
             
             for i in G.Container.connections:
-                pygame.draw.line(G.WIN, GO.CNEW('orange'), i, G.Container.connections[i][1], 10)
+                pygame.draw.line(G.WIN, GO.CNEW('orange'), i[0], i[1], 10)
             return True
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.KEYDOWN:
