@@ -225,7 +225,7 @@ NodeEditor(G)
             # Same with r
             
             rd = []
-            conned = False
+            #conned = False
             cirs = []
             for p, node in G.Container.nodes:
                 cirs = []
@@ -264,7 +264,7 @@ NodeEditor(G)
                 for i in cirs:
                     if not l and isinstance(G.Container.selecting, tuple) and G.Container.selecting[2] != i[2] and not (G.Container.selecting[3] is i[3]):
                         if i[0].collidepoint(pygame.mouse.get_pos()):
-                            conned = True
+                            #conned = True
                             d = False
                             po = (i[0].center[0]+5, i[0].center[1]+7)
                             for j in range(len(G.Container.connections)):
