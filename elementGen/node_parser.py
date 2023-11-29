@@ -3,6 +3,15 @@ import os
 def allCategories():
     return [i.name for i in os.scandir('data/nodes') if i.is_file()]
 
+class Node:
+    def __init__(self, parent, isinp, name, typ):
+        self.parent = parent
+        self.isinp = isinp
+        self.name = name
+        self.type = typ
+    def __str__(self): return f'<Node "{self.name}" ({self.type}), parent: {str(self.parent)}, is an {"input" if self.isinp else "output"}>'
+    def __repr__(self): return str(self)
+
 class Names:
     def __init__(self, data):
         self.rdata = data.strip(' \n')
@@ -17,9 +26,9 @@ class Names:
                 continue
             s = i.split('@')
             if input:
-                self.inputs.append((s[1], s[0]))
+                self.inputs.append(Node(self, True, s[1], s[0]))
             else:
-                self.outputs.append((s[1], s[0]))
+                self.outputs.append(Node(self, False, s[1], s[0]))
     def __str__(self): return self.name
     def __repr__(self): return str(self)
 

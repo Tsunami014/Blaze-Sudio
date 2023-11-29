@@ -1,6 +1,7 @@
 import pygame, os, pickle
 import graphics.graphics_options as GO
 import elementGen.node_parser as np
+from copy import deepcopy
 
 categories = [i.name for i in os.scandir('data/elements') if i.is_dir()]
 
@@ -158,7 +159,7 @@ NodeEditor(G)
                 resp2 = G.Dropdown(['Back']+[str(i) for i in nodes[resp].getall()], pos=p)
                 if isinstance(resp2, int) and not isinstance(resp, bool):
                     if resp2 != 0:
-                        G.Container.nodes.append((p, nodes[resp].getall()[resp2-1]))
+                        G.Container.nodes.append((p, deepcopy(nodes[resp].getall()[resp2-1])))
                         return True
                 else: return False
             else: return False
@@ -177,7 +178,8 @@ NodeEditor(G)
             if path.endswith('.elm'):
                 path = path[:-4]
             if not os.path.exists('data/elements/'+path+'.elm'):
-                pickle.dump({"idea": "BLANK", "name": "New File", "version": 2}, open('data/elements/'+path+'.elm', 'wb+'))
+                # Version: major.minor
+                pickle.dump({"idea": "BLANK", "name": "New File", "version": 0.3}, open('data/elements/'+path+'.elm', 'wb+'))
             G.Container.contents = pickle.load(open('data/elements/'+path+'.elm', 'rb'))
             if 'nodes' in G.Container.contents:
                 G.Container.nodes = G.Container.contents['nodes']
@@ -219,8 +221,16 @@ NodeEditor(G)
                         pass # Whatever you return here will be returned by the function
             settings()
         elif event == GO.ETICK:
+            lf, l = next(G.Container.md[0])
+            # lf = left mouse button first press, l = left mouse button is being pressed
+            rf, r = next(G.Container.md[1])
+            # Same with r
+            
+            rd = []
+            conned = False
             cirs = []
             for p, node in G.Container.nodes:
+                cirs = []
                 col = GO.CBLUE
                 txt = GO.FFONT.render(str(node), 2, GO.CBLACK)
                 sur = pygame.Surface(G.size)
@@ -229,10 +239,10 @@ NodeEditor(G)
                 start = txt.get_height() + 5
                 i = start
                 mx = txt.get_width()
-                for name, typ in node.inputs:
-                    s, c = CAT(name, bgcol=col)
+                for n in node.inputs:
+                    s, c = CAT(n.name, bgcol=col)
                     c.move_ip(0+p[0], i+p[1])
-                    cirs.append((c, node, True))
+                    cirs.append((c, n, True, node))
                     sur.blit(s, (0, i))
                     mx = max(mx, s.get_width())
                     i += s.get_height() + 2
@@ -240,10 +250,10 @@ NodeEditor(G)
                     mx += 20
                 i2 = start
                 mx2 = 0
-                for name, typ in node.outputs:
-                    s, c = CAT(name, front=False, bgcol=col)
+                for n in node.outputs:
+                    s, c = CAT(n.name, front=False, bgcol=col)
                     c.move_ip(mx+p[0], i2+p[1])
-                    cirs.append((c, node, False))
+                    cirs.append((c, n, False, node))
                     sur.blit(s, (mx, i2))
                     mx2 = max(mx2, s.get_width())
                     i2 += s.get_height() + 2
@@ -251,48 +261,55 @@ NodeEditor(G)
                 sur2 = pygame.Surface((mx2, max(i, i2)))
                 sur2.fill(col)
                 sur2.blit(sur, (0, 0))
-                pygame.draw.rect(G.WIN, col, pygame.Rect(*p, mx2+10, max(i, i2)+10), border_radius=8)
-                G.WIN.blit(sur2, (p[0]+5, p[1]+5))
-            lf, l = next(G.Container.md[0])
-            # lf = left mouse button first press, l = left mouse button is being pressed
-            rf, r = next(G.Container.md[1])
-            # Same with r
-            
-            if not l:
-                if G.Container.selecting != None:
-                    conned = False
-                    for i in cirs:
-                        if G.Container.selecting[2] != i[2]:
-                            if i[0].collidepoint(pygame.mouse.get_pos()):
-                                conned = True
-                                d = False
-                                po = (i[0].center[0]+5, i[0].center[1]+7)
-                                for j in range(len(G.Container.connections)):
-                                    if G.Container.connections[j][1] == po:
-                                        G.Container.connections[j] = [G.Container.selecting[1], po]
-                                        G.Container.connectionsinfo[j] = [G.Container.selecting[0], i[1]]
-                                        d = True
-                                        break
-                                if not d:
-                                    G.Container.connections.append([G.Container.selecting[1], po])
-                                    G.Container.connectionsinfo.append([G.Container.selecting[0], i[1]])
-                    if not conned and G.Container.selecting[2]:
-                        for i in range(len(G.Container.connections)):
-                            if G.Container.selecting[1] in G.Container.connections[i]:
-                                if dropdown() == False:
-                                    del G.Container.connections[i]
-                                    del G.Container.connectionsinfo[i]
+                r = pygame.Rect(*p, mx2+10, max(i, i2)+10)
+                pygame.draw.rect(G.WIN, col, r, border_radius=8)
+                for i in cirs:
+                    if not l and isinstance(G.Container.selecting, tuple) and G.Container.selecting[2] != i[2] and not (G.Container.selecting[3] is i[3]):
+                        if i[0].collidepoint(pygame.mouse.get_pos()):
+                            conned = True
+                            d = False
+                            po = (i[0].center[0]+5, i[0].center[1]+7)
+                            for j in range(len(G.Container.connections)):
+                                k = [_ for _ in G.Container.connectionsinfo[j] if _.isinp][0]
+                                if i[1] is k or G.Container.selecting[0] is k:
+                                    G.Container.connections[j] = [G.Container.selecting[1], po]
+                                    G.Container.connectionsinfo[j] = [G.Container.selecting[0], i[1]]
+                                    d = True
                                     break
+                            if not d:
+                                G.Container.connections.append([G.Container.selecting[1], po])
+                                G.Container.connectionsinfo.append([G.Container.selecting[0], i[1]])
+                    elif G.Container.selecting == None or (isinstance(G.Container.selecting, tuple) and G.Container.selecting[2] != i[2] and not (G.Container.selecting[3] is i[3])):
+                        if i[0].collidepoint(pygame.mouse.get_pos()):
+                            rd.append((i[0].topleft[0]+5, i[0].topleft[1]+7))
+                            if lf:
+                                G.Container.selecting = (i[1], (i[0].center[0]+5, i[0].center[1]+7), i[2], i[3])
+                if G.Container.selecting == None and lf and r.collidepoint(pygame.mouse.get_pos()):
+                    G.Container.selecting = G.Container.nodes.index((p, node))
+                G.WIN.blit(sur2, (p[0]+5, p[1]+5))
+            for i in rd:
+                G.WIN.blit(CAT('', filled=True, bgcol=col)[0], i)
+            
+            if not l and G.Container.selecting != None:
+                #if not conned:# and G.Container.selecting[2]:
+                #    for i in range(len(G.Container.connections)):
+                #        if G.Container.selecting[1] in G.Container.connections[i]:
+                #            if dropdown() == False:
+                #                del G.Container.connections[i]
+                #                del G.Container.connectionsinfo[i]
+                #                break
                 G.Container.selecting = None
             for i in cirs:
-                if G.Container.selecting == None or G.Container.selecting[2] != i[2]:
+                if G.Container.selecting == None or (isinstance(G.Container.selecting, tuple) and not (G.Container.selecting[3] is i[3])):
                     if i[0].collidepoint(pygame.mouse.get_pos()):
                         G.WIN.blit(CAT('', filled=True, bgcol=col)[0], (i[0].topleft[0]+5, i[0].topleft[1]+7))
                         if lf:
-                            G.Container.selecting = (i[1], (i[0].center[0]+5, i[0].center[1]+7), i[2])
+                            G.Container.selecting = (i[1], (i[0].center[0]+5, i[0].center[1]+7), i[2], i[3])
             
-            if G.Container.selecting != None:
+            if isinstance(G.Container.selecting, tuple):
                 pygame.draw.line(G.WIN, GO.CRED, G.Container.selecting[1], pygame.mouse.get_pos(), 10)
+            elif isinstance(G.Container.selecting, int):
+                G.Container.nodes[G.Container.selecting] = (pygame.mouse.get_pos(), G.Container.nodes[G.Container.selecting][1])
             
             for i in G.Container.connections:
                 pygame.draw.line(G.WIN, GO.CNEW('orange'), i[0], i[1], 10)
