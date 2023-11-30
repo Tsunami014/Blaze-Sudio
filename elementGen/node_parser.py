@@ -3,14 +3,38 @@ import os
 def allCategories():
     return [i.name for i in os.scandir('data/nodes') if i.is_file()]
 
-class Node:
+class FakeDict(dict):
+    def __init__(self, func=lambda: None, clearfunc=lambda: None):
+        self.func = func
+        self.clearfunc = clearfunc
+    def __setitem__(self, __key, __value):
+        self.func(__key, __value)
+        return super().__setitem__(__key, __value)
+    def reset(self):
+        for i in self:
+            self.clearfunc(i, None)
+        self.clear()
+
+class Connector:
     def __init__(self, parent, isinp, name, typ):
         self.parent = parent
         self.isinp = isinp
         self.name = name
         self.type = typ
+        self.rect = None
+    def isntsimilar(self, other):
+        try:
+            return self.parent != other.parent and self.isinp != other.isinp
+        except: return False
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+        try:
+            A = lambda a: getattr(self, a) == getattr(other, a)
+            return A('isinp') and A('name') and A('type')# and A('parent') # We comment out this as it's annoying as hell to work with
+        except: return False # Didn't have one of the attributes
     def __str__(self): return f'<Node "{self.name}" ({self.type}), parent: {str(self.parent)}, is an {"input" if self.isinp else "output"}>'
     def __repr__(self): return str(self)
+    def __hash__(self): return hash(str(self))
 
 class Names:
     def __init__(self, data):
@@ -19,6 +43,7 @@ class Names:
         self.name = spl[0]
         self.inputs = []
         self.outputs = []
+        self.cirs = FakeDict(self.setter, self.setter) # Relying on externals to generate
         input = True
         for i in spl[1:]:
             if i == '|':
@@ -26,9 +51,18 @@ class Names:
                 continue
             s = i.split('@')
             if input:
-                self.inputs.append(Node(self, True, s[1], s[0]))
+                self.inputs.append(Connector(self, True, s[1], s[0]))
             else:
-                self.outputs.append(Node(self, False, s[1], s[0]))
+                self.outputs.append(Connector(self, False, s[1], s[0]))
+    def setter(self, key, value):
+        for i in range(len(self.inputs)):
+            if self.inputs[i] == key:
+                self.inputs[i].rect = value
+                return
+        for i in range(len(self.outputs)):
+            if self.outputs[i] == key:
+                self.outputs[i].rect = value
+                return
     def __str__(self): return self.name
     def __repr__(self): return str(self)
 
