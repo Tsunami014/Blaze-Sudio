@@ -1,4 +1,6 @@
 import os
+from random import random
+from copy import deepcopy
 
 def allCategories():
     return [i.name for i in os.scandir('data/nodes') if i.is_file()]
@@ -17,6 +19,7 @@ class FakeDict(dict):
 
 class Connector:
     def __init__(self, parent, isinp, name, typ):
+        self.num = random()
         self.parent = parent
         self.isinp = isinp
         self.name = name
@@ -26,6 +29,10 @@ class Connector:
         try:
             return self.parent != other.parent and self.isinp != other.isinp
         except: return False
+    def copy(self):
+        c = deepcopy(self)
+        c.num = random()
+        return c
     def __eq__(self, other):
         return hash(self) == hash(other)
         try:
@@ -34,10 +41,11 @@ class Connector:
         except: return False # Didn't have one of the attributes
     def __str__(self): return f'<Node "{self.name}" ({self.type}), parent: {str(self.parent)}, is an {"input" if self.isinp else "output"}>'
     def __repr__(self): return str(self)
-    def __hash__(self): return hash(str(self))
+    def __hash__(self): return hash(self.parent) + hash(self.num)
 
 class Names:
     def __init__(self, data):
+        self.num = random()
         self.rdata = data.strip(' \n')
         spl = self.rdata.split(' ')
         self.name = spl[0]
@@ -63,8 +71,25 @@ class Names:
             if self.outputs[i] == key:
                 self.outputs[i].rect = value
                 return
+        raise IndexError(
+            'Could not find key in list!!'
+        )
+    def copy(self):
+        c = deepcopy(self)
+        c.num = random()
+        """c.cirs = FakeDict(self.setter, self.setter)
+        iis = []
+        for i in c.inputs:
+            iis.append(i.copy())
+        c.inputs = iis
+        oos = []
+        for i in c.outputs:
+            oos.append(i.copy())
+        c.outputs = oos"""
+        return c
     def __str__(self): return self.name
     def __repr__(self): return str(self)
+    def __hash__(self): return hash(self.num)
 
 class Parse:
     def __init__(self, category):

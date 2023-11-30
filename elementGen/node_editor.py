@@ -1,7 +1,6 @@
 import pygame, os, pickle
 import graphics.graphics_options as GO
 import elementGen.node_parser as np
-from copy import deepcopy
 
 categories = [i.name for i in os.scandir('data/elements') if i.is_dir()]
 
@@ -159,7 +158,7 @@ NodeEditor(G)
                 resp2 = G.Dropdown(['Back']+[str(i) for i in nodes[resp].getall()], pos=p)
                 if isinstance(resp2, int) and not isinstance(resp, bool):
                     if resp2 != 0:
-                        G.Container.nodes.append((p, deepcopy(nodes[resp].getall()[resp2-1])))
+                        G.Container.nodes.append((p, nodes[resp].getall()[resp2-1].copy()))
                         return True
                 else: return False
             else: return False
