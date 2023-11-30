@@ -189,7 +189,6 @@ NodeEditor(G)
                 mouseDown(3) # Right mouse button
             ]
             G.Container.selecting = None
-            G.Container.connections = []
             if path.endswith('.elm'):
                 path = path[:-4]
             if not os.path.exists('data/elements/'+path+'.elm'):
@@ -201,6 +200,10 @@ NodeEditor(G)
                 G.Container.nodes = G.Container.contents['nodes']
             else:
                 G.Container.nodes = []
+            if 'connections' in G.Container.contents:
+                G.Container.connections = G.Container.contents['connections']
+            else:
+                G.Container.connections = []
             G.Container.name = G.Container.contents['name']
         if event == GO.ELOADUI:
             G.Clear()
@@ -307,6 +310,7 @@ NodeEditor(G)
                     if path.endswith('.elm'):
                         path = path[:-4]
                     G.Container.contents['nodes'] = G.Container.nodes
+                    G.Container.contents['connections'] = G.Container.connections
                     pickle.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+')) # Save
                     G.Container.saved = True
             elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
