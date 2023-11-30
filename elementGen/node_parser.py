@@ -10,7 +10,9 @@ class FakeDict(dict):
         self.func = func
         self.clearfunc = clearfunc
     def __setitem__(self, __key, __value):
-        self.func(__key, __value)
+        try:
+            self.func(__key, __value)
+        except AttributeError: pass
         return super().__setitem__(__key, __value)
     def reset(self):
         for i in self:
@@ -87,9 +89,15 @@ class Names:
             oos.append(i.copy())
         c.outputs = oos"""
         return c
-    def __str__(self): return self.name
+    def __str__(self):
+        try:
+            return self.name
+        except AttributeError: return 'A Name object'
     def __repr__(self): return str(self)
-    def __hash__(self): return hash(self.num)
+    def __hash__(self):
+        try:
+            return hash(self.num)
+        except AttributeError: return hash(str(self))
 
 class Parse:
     def __init__(self, category):
