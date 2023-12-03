@@ -1,0 +1,142 @@
+{
+    "blue": {
+        "B": {
+            "RLU": "00",
+            "RLD": "01",
+            "FLU": "02",
+            "FLD": "03",
+            "GLU": "04",
+            "GLD": "05",
+            "OLU": "13",
+            "OSU": "06",
+            "RSU": "07",
+            "RSD": "08",
+            "FSU": "09",
+            "FSD": "10",
+            "GSU": "11",
+            "GSD": "12"
+        },
+        "H": {
+            "T": "boxCheckmark",
+            "C": "boxCross"
+        },
+        "R": {
+            "S": "boxTick"
+        },
+        "O": {
+            "P": "panel"
+        }
+    },
+    "green": {
+        "B": {
+            "RLU": "00",
+            "RLD": "01",
+            "FLU": "02",
+            "FLD": "03",
+            "GLU": "04",
+            "GLD": "05",
+            "OLU": "13",
+            "OSU": "06",
+            "RSU": "07",
+            "RSD": "08",
+            "FSU": "09",
+            "FSD": "10",
+            "GSU": "11",
+            "GSD": "12"
+        },
+        "H": {
+            "T": "boxCheckmark",
+            "C": "boxCross"
+        },
+        "R": {
+            "S": "boxTick"
+        },
+        "O": {
+            "P": "panel"
+        }
+    },
+    "grey": {
+        "B": {
+            "RLU": "00",
+            "RLD": "00",
+            "FLU": "01",
+            "FLD": "02",
+            "GLU": "03",
+            "GLD": "04",
+            "OLU": "06",
+            "OSU": "07",
+            "RSU": "08",
+            "RSD": "09",
+            "FSU": "10",
+            "FSD": "11",
+            "GSU": "12",
+            "GSD": "13"
+        },
+        "H": {
+            "T": "boxCheckmark",
+            "C": "boxCross"
+        },
+        "R": {
+            "S": "boxTick"
+        },
+        "O": {
+            "P": "panel"
+        }
+    },
+    "red": {
+        "B": {
+            "RLU": "00",
+            "RLD": "01",
+            "FLU": "02",
+            "FLD": "03",
+            "GLU": "04",
+            "GLD": "05",
+            "OLU": "13",
+            "OSU": "06",
+            "RSU": "07",
+            "RSD": "08",
+            "FSU": "09",
+            "FSD": "10",
+            "GSU": "11",
+            "GSD": "12"
+        },
+        "H": {
+            "T": "boxCheckmark",
+            "C": "boxCross"
+        },
+        "R": {
+            "S": "boxTick"
+        },
+        "O": {
+            "P": "panel"
+        }
+    },
+    "yellow": {
+        "B": {
+            "RLU": "00",
+            "RLD": "01",
+            "FLU": "02",
+            "FLD": "03",
+            "GLU": "04",
+            "GLD": "05",
+            "OLU": "13",
+            "OSU": "06",
+            "RSU": "07",
+            "RSD": "08",
+            "FSU": "09",
+            "FSD": "10",
+            "GSU": "11",
+            "GSD": "12"
+        },
+        "H": {
+            "T": "boxCheckmark",
+            "C": "boxCross"
+        },
+        "R": {
+            "S": "boxTick"
+        },
+        "O": {
+            "P": "panel"
+        }
+    }
+}
