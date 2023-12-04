@@ -27,6 +27,7 @@ class Connector:
         self.name = name
         self.type = typ
         self.rect = None
+        self.connectedto = None # Relying on externs to generate
     def isntsimilar(self, other):
         try:
             return self.parent != other.parent and self.isinp != other.isinp
@@ -54,6 +55,7 @@ class Names:
         self.inputs = []
         self.outputs = []
         self.cirs = FakeDict(self.setter, self.setter) # Relying on externals to generate
+        self.func = None # Also relying on externals to generate, tho this time the 'externals' is the Parse class
         input = True
         for i in spl[1:]:
             if i == '|':
@@ -89,6 +91,21 @@ class Names:
             oos.append(i.copy())
         c.outputs = oos"""
         return c
+    def get(self):
+        ins = []
+        for i in self.inputs:
+            try:
+                ins.append(i.connectedto.parent.get()[i.connectedto.name])
+            except:
+                pass
+        try:
+            return self(*ins)
+        except:
+            return {}
+    def __call__(self, *args):
+        exec(self.func)
+        return eval('node(*args)')
+    
     def __str__(self):
         try:
             return self.name
@@ -116,6 +133,7 @@ class Parse:
                 self.names[str(i)] = i
             else:
                 self.data[pattern] = i
+                pattern.func = i
                 pattern = 0
     def __call__(self, funcname, *args):
         exec(self.data[self.names[funcname]])
