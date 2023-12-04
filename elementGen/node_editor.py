@@ -168,11 +168,17 @@ NodeEditor(G)
                 for j in range(len(G.Container.connections)):
                     k = [_ for _ in G.Container.connections[j] if _.isinp][0]
                     if i == k or G.Container.selecting[0] == k:
+                        G.Container.connections[j][0].connectedto = None
+                        G.Container.connections[j][1].connectedto = None
                         G.Container.connections[j] = [G.Container.selecting[0], i]
+                        G.Container.selecting[0].connectedto = i
+                        i.connectedto = G.Container.selecting[0]
                         d = True
                         break
                 if not d:
                     G.Container.connections.append([G.Container.selecting[0], i])
+                    G.Container.selecting[0].connectedto = i
+                    i.connectedto = G.Container.selecting[0]
         elif G.Container.selecting == None or (isinstance(G.Container.selecting, tuple) and i.isntsimilar(G.Container.selecting[0])):
             if i.rect.collidepoint(pygame.mouse.get_pos()):
                 rd.append((i.rect.topleft[0]+5, i.rect.topleft[1]+7))
@@ -249,6 +255,7 @@ NodeEditor(G)
             #conned = False
             cirs = []
             for p, node in G.Container.nodes:
+                g = node.get()
                 node.cirs.reset()
                 col = GO.CBLUE
                 txt = GO.FFONT.render(str(node), 2, GO.CBLACK)
@@ -271,7 +278,9 @@ NodeEditor(G)
                 i2 = start
                 mx2 = 0
                 for n in node.outputs:
-                    s, c = CAT(n.name, front=False, bgcol=col)
+                    name = n.name
+                    if n.name in g: name = str(g[n.name])
+                    s, c = CAT(name, front=False, bgcol=col)
                     c.move_ip(mx+p[0], i2+p[1])
                     node.cirs[n] = c
                     sur.blit(s, (mx, i2))
