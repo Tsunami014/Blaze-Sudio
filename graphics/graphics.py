@@ -3,7 +3,7 @@ pygame.init()
 import graphics.graphics_options as GO
 from graphics.loading import Loading
 from graphics.async_handling import Progressbar
-from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown
+from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox
 from graphics.GUI.textboxify.borders import LIGHT
 
 class TerminalBar:
@@ -251,7 +251,7 @@ class Graphic:
                     if not self.pause:
                         for ibox in self.input_boxes:
                             if ibox.handle_event(event, pygame.K_RETURN) == False:
-                                func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=ibox.text))
+                                func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=str(ibox.get())))
                                 blocked = True
                     else:
                         for ibox in self.input_boxes: ibox.active = False
@@ -475,6 +475,39 @@ class Graphic:
         if width != None: sze[0] = width
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         ibox = InputBox(*pos, *sze, resize, placeholder, font, maximum) # TODO: Positioning and custom width & height & resize
+        self.input_boxes.append(ibox)
+        self.uids.append(ibox)
+        return len(self.uids) - 1
+    
+    def add_num_input(self, position, font=GO.FSMALL, width=None, resize=GO.RHEIGHT, start=0, bounds=(float('-inf'), float('inf'))):
+        """Adds an input box for numbers :)
+
+        Parameters
+        ----------
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+        font : pygame.Font, optional
+            The font of the number. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
+        width : int, optional but recommended
+            The amount of numbers wide the input box is, by default as wide as the 'start' input number
+            This is important as if the resize is height, it will wrap around this width. If the resize is width this doesn't matter.
+        resize : GO.R___ (e.g. GO.RHEIGHT), optional
+            The resize to use, by default GO.RHEIGHT
+            This means that if you reach the end of the box it will either resize the box width ways or wrap the text around height
+        start : int, optional
+            The starting number, by default 0
+        bounds : tuple[int, int], optional
+            The maximum and minimum number you can input, by default (-inf, inf)
+
+        Returns
+        -------
+        int
+            the UID of this element
+        """
+        sze = list(font.size(str(start)))
+        if width != None: sze[0] = font.size('9'*width)[0]
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
+        ibox = NumInputBox(*pos, *sze, resize, start, *bounds, font) # TODO: Positioning and custom width & height & resize
         self.input_boxes.append(ibox)
         self.uids.append(ibox)
         return len(self.uids) - 1
