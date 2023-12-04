@@ -3,12 +3,12 @@ pygame.init()
 try:
     import graphics.graphics_options as GO
     from graphics.loading import Loading
-    from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown
+    from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox
     from graphics.GUI.textboxify.borders import LIGHT
 except:
     import graphics_options as GO
     from loading import Loading
-    from GUI import TextBoxFrame, InputBox, Button, Switch, dropdown
+    from GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox
     from GUI.textboxify.borders import LIGHT
 
 class TerminalBar:
@@ -453,6 +453,39 @@ class Graphic:
         self.uids.append(ibox)
         return len(self.uids) - 1
     
+    def add_num_input(self, position, font=GO.FSMALL, width=None, resize=GO.RHEIGHT, start=0, bounds=(float('-inf'), float('inf'))):
+        """Adds an input box for numbers :)
+
+        Parameters
+        ----------
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+        font : pygame.Font, optional
+            The font of the number. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
+        width : int, optional but recommended
+            The amount of numbers wide the input box is, by default as wide as the 'start' input number
+            This is important as if the resize is height, it will wrap around this width. If the resize is width this doesn't matter.
+        resize : GO.R___ (e.g. GO.RHEIGHT), optional
+            The resize to use, by default GO.RHEIGHT
+            This means that if you reach the end of the box it will either resize the box width ways or wrap the text around height
+        start : int, optional
+            The starting number, by default 0
+        bounds : tuple[int, int], optional
+            The maximum and minimum number you can input, by default (-inf, inf)
+
+        Returns
+        -------
+        int
+            the UID of this element
+        """
+        sze = list(font.size(str(start)))
+        if width != None: sze[0] = font.size('9'*width)[0]
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
+        ibox = NumInputBox(*pos, *sze, resize, start, *bounds, font) # TODO: Positioning and custom width & height & resize
+        self.input_boxes.append(ibox)
+        self.uids.append(ibox)
+        return len(self.uids) - 1
+    
     def add_switch(self, position, size=20, default=False):
         """Adds a switch to the GUI! :)
 
@@ -521,6 +554,7 @@ if __name__ == '__main__':
             G.Container.txt = txt
         if event == GO.ELOADUI: # Load the graphics
             CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1], 0) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
+            LBOT = GO.PNEW([0, -1], GO.PSTACKS[GO.PLBOTTOM][1], 1)
             G.Clear()
             G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
             G.add_text(':) ', GO.CBLACK, GO.PRBOTTOM, GO.FTITLE)
@@ -528,17 +562,19 @@ if __name__ == '__main__':
             G.add_text('This is a cool thing', GO.CBLUE, GO.PCCENTER)
             G.add_text('Sorry, I meant a cool TEST', GO.CRED, GO.PCCENTER)
             G.add_text(G.Container.txt, GO.CGREEN, GO.PCCENTER)
-            G.add_empty_space(GO.PCBOTTOM, 0, 20)
-            G.add_button('Button 1 :D', GO.CYELLOW, GO.PCBOTTOM)
-            G.add_text('Buttons above [^] and below [v]', GO.CBLUE, GO.PCBOTTOM)
-            G.add_button('Textbox test', GO.CBLUE, GO.PCBOTTOM)
-            G.add_button('Loading test', GO.CGREEN, GO.PCBOTTOM)
-            G.Container.exitbtn = G.add_button('EXIT', GO.CRED, GO.PCBOTTOM)
+            G.add_empty_space(LBOT, 0, 20)
+            G.add_button('Button 1 :D', GO.CYELLOW, LBOT)
+            G.add_text('Buttons above [^] and below [v]', GO.CBLUE, LBOT)
+            G.add_button('Textbox test', GO.CBLUE, LBOT)
+            G.add_button('Loading test', GO.CGREEN, LBOT)
+            G.Container.exitbtn = G.add_button('EXIT', GO.CRED, GO.PLCENTER)
             G.add_empty_space(CTOP, -150, 0) # Center it a little more
             G.add_text('Are you ', GO.CBLACK, CTOP)
             G.add_text('happy? ', GO.CGREEN, CTOP)
             G.add_text('Or sad?', GO.CRED, CTOP)
             G.Container.inp = G.add_input(GO.PCCENTER, GO.FFONT, maximum=16)
+            G.add_empty_space(GO.PCCENTER, 0, 50)
+            G.Container.numinp = G.add_num_input(GO.PCCENTER, GO.FFONT, 4, bounds=(-255, 255))
             G.Container.switches = [
                 G.add_switch(GO.PRTOP, 40),
                 G.add_switch(GO.PRTOP)
@@ -591,6 +627,7 @@ if __name__ == '__main__':
             return {
                 'Aborted?': aborted, 
                 'Text in textbox': G.uids[G.Container.inp].text,
+                'Num in num textbox': G.uids[G.Container.numinp].num,
                 'Big switch state': G.uids[G.Container.switches[0]].get(),
                 'Small switch state': G.uids[G.Container.switches[1]].get()
                 } # Whatever you return here will be returned by the function
