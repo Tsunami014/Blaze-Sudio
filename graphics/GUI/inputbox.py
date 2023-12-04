@@ -130,3 +130,93 @@ class InputBox:
             pg.display.flip()
             clock.tick(30)
         return self.text
+
+class NumInputBox:
+    def __init__(self, x, y, w, h, resize=GO.RWIDTH, start=0, max=float('inf'), min=float('-inf'), font=GO.FSMALL):
+        self.rect = pg.Rect(x, y, w, h)
+        self.color = GO.CINACTIVE
+        self.num = start
+        self.active = False
+        self.resize = resize
+        self.bounds = (max, min)
+        self.font = font
+        self.render_txt()
+    
+    def render_txt(self):
+        self.num = min(max(self.num, self.bounds[0]), self.bounds[1])
+        lines = []
+        if self.resize == GO.RWIDTH:
+            ls = [str(self.num)]
+        else:
+            ls = renderTextCenteredAt(str(self.num), self.font, self.rect.w - 5)
+            if self.resize == GO.RNONE:
+                ls = [ls[0]]
+
+        for line in ls:
+            if line.endswith('-'): line = line[:-1]
+            lines.append(self.font.render(line, True, self.color))
+        if lines == []: lines = [self.font.render('', True, self.color)]
+        nsurface = pg.Surface((max([i.get_width() for i in lines]), sum([i.get_height() for i in lines])))
+        nsurface.fill(GO.CTRANSPARENT)
+        top = 0
+        for i in lines:
+            nsurface.blit(i, (0, top))
+            top += i.get_height()
+        self.txt_surface = nsurface
+        if self.resize == GO.RWIDTH:
+            self.rect.w = self.txt_surface.get_width() + 10
+        elif self.resize == GO.RHEIGHT:
+            self.rect.h = self.txt_surface.get_height() + 10
+
+    def handle_event(self, event, end_on=None):
+        if event.type == pg.MOUSEBUTTONDOWN:
+            # If the user clicked on the input_box rect.
+            if self.rect.collidepoint(event.pos):
+                # Toggle the active variable.
+                self.active = not self.active
+            else:
+                self.active = False
+            # Change the current color of the input box.
+            self.color = GO.CACTIVE if self.active else GO.CINACTIVE
+            self.render_txt()
+        if event.type == pg.KEYDOWN:
+            if self.active:
+                if event.key == pg.K_RETURN:
+                    if pg.K_RETURN != end_on:
+                        print(self.num)
+                        self.num = ''
+                elif event.key == pg.K_BACKSPACE:
+                    try: self.num = int(str(self.num)[:-1])
+                    except: self.num = 0
+                else:
+                    try: self.num = int(str(self.num)+event.unicode)
+                    except: pass
+                # Re-render the text.
+                self.render_txt()
+                if end_on != None and event.key == end_on:
+                    return False
+
+    def draw(self, screen):
+        # Blit the text.
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        # Blit the rect.
+        pg.draw.rect(screen, self.color, self.rect, 2)
+    
+    def interrupt(self, screen, end_on=pg.K_RETURN, run_too=lambda screen: None, event_callback=lambda event: None):
+        clock = pg.time.Clock()
+        done = False
+
+        while not done:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    done = True
+                if self.handle_event(event, end_on) == False:
+                    done = True
+                event_callback(event)
+
+            screen.fill((30, 30, 30))
+            self.draw(screen)
+            run_too(screen)
+            pg.display.flip()
+            clock.tick(30)
+        return self.text
