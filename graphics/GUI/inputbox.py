@@ -49,6 +49,9 @@ class InputBox:
         self.blanktxt = placeholder
         self.render_txt()
     
+    def get(self):
+        return self.text
+    
     def render_txt(self):
         repl = False
         if (not self.active) and self.text == '':
@@ -135,20 +138,26 @@ class NumInputBox:
     def __init__(self, x, y, w, h, resize=GO.RWIDTH, start=0, max=float('inf'), min=float('-inf'), font=GO.FSMALL):
         self.rect = pg.Rect(x, y, w, h)
         self.color = GO.CINACTIVE
-        self.num = start
+        self.num = str(start)
         self.active = False
         self.resize = resize
         self.bounds = (max, min)
         self.font = font
         self.render_txt()
     
+    def get(self):
+        if self.num.startswith('-'):
+            self.num = '-' + self.num.strip('-') # remove any accidental extra -'s
+        self.num = str(min(max(int(self.num), self.bounds[0]), self.bounds[1]))
+        return int(self.num)
+    
     def render_txt(self):
-        self.num = min(max(self.num, self.bounds[0]), self.bounds[1])
+        self.get()
         lines = []
         if self.resize == GO.RWIDTH:
-            ls = [str(self.num)]
+            ls = [self.num]
         else:
-            ls = renderTextCenteredAt(str(self.num), self.font, self.rect.w - 5)
+            ls = renderTextCenteredAt(self.num, self.font, self.rect.w - 5)
             if self.resize == GO.RNONE:
                 ls = [ls[0]]
 
@@ -186,10 +195,15 @@ class NumInputBox:
                         print(self.num)
                         self.num = ''
                 elif event.key == pg.K_BACKSPACE:
-                    try: self.num = int(str(self.num)[:-1])
-                    except: self.num = 0
+                    try: self.num = ('-' if self.num.startswith('-') else '') + \
+                                    str(int(self.num[:-1]))
+                    except: self.num = '0'
+                elif event.key == pg.K_MINUS:
+                    if self.num.startswith('-'): self.num = self.num[1:]
+                    else: self.num = '-' + self.num
                 else:
-                    try: self.num = int(str(self.num)+event.unicode)
+                    try: self.num = ('-' if self.num.startswith('-') else '') + \
+                                    str(int(self.num+event.unicode))
                     except: pass
                 # Re-render the text.
                 self.render_txt()

@@ -232,7 +232,7 @@ class Graphic:
                         self.run = False
                     for ibox in self.input_boxes:
                         if ibox.handle_event(event, pygame.K_RETURN) == False:
-                            func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=ibox.text))
+                            func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=str(ibox.get())))
                             blocked = True
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
@@ -626,8 +626,8 @@ if __name__ == '__main__':
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             return {
                 'Aborted?': aborted, 
-                'Text in textbox': G.uids[G.Container.inp].text,
-                'Num in num textbox': G.uids[G.Container.numinp].num,
+                'Text in textbox': G.uids[G.Container.inp].get(),
+                'Num in num textbox': G.uids[G.Container.numinp].get(),
                 'Big switch state': G.uids[G.Container.switches[0]].get(),
                 'Small switch state': G.uids[G.Container.switches[1]].get()
                 } # Whatever you return here will be returned by the function
