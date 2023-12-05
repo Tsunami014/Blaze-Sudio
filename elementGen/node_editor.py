@@ -323,6 +323,14 @@ NodeEditor(G)
                 pygame.draw.line(G.WIN, GO.CNEW('orange'), \
                     (i[0].rect.center[0]+5, i[0].rect.center[1]+7), \
                     (i[1].rect.center[0]+5, i[1].rect.center[1]+7), 10)
+            
+            if G.Container.highlighting != None:
+                w, h = G.size[0] / 8 * 3, G.size[1] / 8 * 3
+                pygame.draw.rect(G.WIN, GO.CNEW('light grey'), pygame.Rect(8, G.size[1]-h-8, w, h), border_radius=8)
+                node = G.Container.highlighting
+                txt = GO.FFONT.render(str(node), 2, GO.CBLACK)
+                G.WIN.blit(txt, ((w - txt.get_width())/2+8, G.size[1]-h+10))
+            
             return True
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.MOUSEBUTTONDOWN:
