@@ -5,6 +5,7 @@ try:
     from graphics.GUI.randomGUIelements import *
     from graphics.GUI.switch import *
     from graphics.GUI.dropdown import *
+    from graphics.GUI.scrollable import *
 except ImportError:
     try:
         from GUI.inputbox import *
@@ -13,6 +14,7 @@ except ImportError:
         from GUI.randomGUIelements import *
         from GUI.switch import *
         from GUI.dropdown import *
+        from GUI.scrollable import *
     except ImportError:
         from inputbox import *
         from pyguix import *
@@ -20,3 +22,4 @@ except ImportError:
         from randomGUIelements import *
         from switch import *
         from dropdown import *
+        from scrollable import *
