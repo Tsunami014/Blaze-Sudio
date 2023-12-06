@@ -6,6 +6,14 @@ const { token } = process.env.DISCORD_TOKEN;
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent] });
 
+function processMessage(message, user) {
+  if (message.includes(`@${user}`)) {
+      return 'very';
+  } else {
+      return `hard.\n@${user} is working`;
+  }
+}
+
 let previousMessage = null;
 
 client.once(Events.ClientReady, (readyClient) => {
@@ -20,9 +28,13 @@ client.once(Events.ClientReady, (readyClient) => {
         previousMessage = messages.last(); // Get the second-to-last message
         console.log(`Previous message: ${previousMessage.content}`);
         // Send a new message in the same channel
-        const newMessageContent = previousMessage.content;
-        channel.send(newMessageContent)
+        const oldMsg = previousMessage.content;
+        const githubActor = process.env.GITHUB_ACTOR;
+        console.log(`GitHub actor: ${githubActor}`);
+        const newMsg = processMessage(oldMsg, githubActor)
+        channel.send(newMsg)
           .then(() => {
+            console.log(`Sent message: ${newMsg}`)
             process.exit(); // Exit the process after sending the message
           })
           .catch(error => {
