@@ -654,6 +654,7 @@ class Graphic:
         self.rel = True
     
     def Clear(self):
+        GO.PIDX = 0
         self.statics = []
         self.buttons = []
         self.input_boxes = []

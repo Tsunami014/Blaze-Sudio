@@ -227,9 +227,9 @@ NodeEditor(G)
             @G.Graphic
             def settings(event, element=None, aborted=False):
                 if event == GO.ELOADUI:
-                    CBOT = GO.PNEW([1, 0], GO.PSTACKS[GO.PCBOTTOM][1], 0)
-                    RTOP = GO.PNEW([0, 1], GO.PSTACKS[GO.PRTOP][1], 1)
-                    LTOP = GO.PNEW([0, 1], GO.PSTACKS[GO.PLTOP][1], 2)
+                    CBOT = GO.PNEW([1, 0], GO.PSTACKS[GO.PCBOTTOM][1])
+                    RTOP = GO.PNEW([0, 1], GO.PSTACKS[GO.PRTOP][1])
+                    LTOP = GO.PNEW([0, 1], GO.PSTACKS[GO.PLTOP][1])
                     G.Clear()
                     G.add_text('SETTINGS FOR NODE "%s":'%G.Container.name, GO.CGREEN, LTOP, GO.FFONT)
                     G.Container.inpname = G.add_input(LTOP, width=G.size[0]/3, resize=GO.RNONE, placeholder=G.Container.name)
