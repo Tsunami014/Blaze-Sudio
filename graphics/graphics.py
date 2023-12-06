@@ -7,18 +7,18 @@ from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumIn
 from graphics.GUI.textboxify.borders import LIGHT
 
 class GScrollable(Scrollable):
-    def __init__(self, WIN, pos, goalrect, sizeOfScreen):
+    def __init__(self, WIN, pos, goalrect, sizeOfScreen, outline, bar):
         self.WIN = WIN
         self.pos = pos
         self.goalrect = goalrect
         self.events = []
         s = pygame.Surface(sizeOfScreen)
-        self.G = Graphic(s, False)
+        self.G = Graphic(win=s, TB=False)
         def func(event, *args, aborted=True, **kwargs):
             if event == GO.ETICK: return True
             return aborted
         self.GR = self.G.Graphic(func, generator=True, update=False, events=self.getevents, mousepos=self.getmouse)()
-        super().__init__(self.G.WIN, pos, goalrect, (0, sizeOfScreen[1]-goalrect[1]))
+        super().__init__(self.G.WIN, pos, goalrect, (0, sizeOfScreen[1]-goalrect[1]), outline, bar)
     
     def getevents(self): return self.events
     def getmouse(self):
@@ -156,7 +156,19 @@ class Element:
         return self.uid == other
 
 class Graphic:
-    def __init__(self, win=None, TB=True):
+    def __init__(self, bgcol=GO.CWHITE, TB=True, win=None):
+        """The class for making really cool graphic screens :)
+
+        Parameters
+        ----------
+        bgcol : tuple[int, int, int]
+            The colour of the button. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
+        TB : bool, optional
+            Whether or not you want the little terminal bar at the bottom, by default True
+        win : pygame.Surface, optional
+            IF YOU DO NOT SPECIFY: inits pygame, makes a window, does everything
+            IF YOU SPECIFY A SURFACE: will NOT init pygame and instead of printing to the screen it prints to the surface
+        """
         if win == None:
             self.WIN = pygame.display.set_mode()
             pygame.display.toggle_fullscreen()
@@ -172,6 +184,7 @@ class Graphic:
                 active = -1
             self.TB = FakeTB()
             self.size = self.WIN.get_size()
+        self.bgcol = bgcol
         self.clock = pygame.time.Clock()
         self.statics = []
         self.buttons = []
@@ -259,7 +272,7 @@ class Graphic:
                     self.rel = False
                     s = self.render(func)
                     prevs = [self.statics.copy(), self.buttons.copy()]
-                self.WIN.fill((255, 255, 255))
+                self.WIN.fill(self.bgcol)
                 self.WIN.blit(s, (0, 0))
                 self.touchingbtns = []
                 for btn in self.buttons:
@@ -595,7 +608,7 @@ class Graphic:
         self.uids.append(sw)
         return len(self.uids) - 1
     
-    def add_Scrollable(self, position, size, sos):
+    def add_Scrollable(self, position, size, sos, outline=10, bar=True):
         """Adds a Scrollable window to the Graphic screen!
         This is like another really tiny Graphic screen inside the big one, but the tiny one you can scroll!
 
@@ -607,6 +620,11 @@ class Graphic:
             The size of the scrollable box
         sos : tuple[int, int]
             The size of the screen (How big the created tiny Graphic screen will be)
+        outline : int, optional
+            The thickness of the outline, 0 to turn it off, by default 10
+        bar : bool, optional
+            Whether or not to have a little red scrollbar in the side, by default True
+            The thickness of the scrollbar is the outline, so if it's 0 then this won't be there at all
 
         Returns
         -------
@@ -614,7 +632,7 @@ class Graphic:
             (the UID of the element, The Graphic class created which is put onto the main one)
         """
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, size), size, position)
-        s = GScrollable(self.WIN, pos, size, sos)
+        s = GScrollable(self.WIN, pos, size, sos, outline, bar)
         self.scrollsables.append(s)
         self.uids.append(s)
         return (len(self.uids) - 1, s.G)
