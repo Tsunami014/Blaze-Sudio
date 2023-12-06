@@ -29,14 +29,23 @@ client.once(Events.ClientReady, (readyClient) => {
                 console.log(`Previous message: ${previousMessage.content}`);
                 process.exit(); // Exit the process after sending the message
               })
-              .catch(error => console.error(`Error fetching messages: ${error}`));
+              .catch(error => {
+                console.error(`Error fetching messages: ${error}`)
+                process.exit(); // Exit the process after sending the message
+              });
+              process.exit(); // Exit the process after sending the message
 
           })
           .catch(error => {
             console.error(`Error sending message: ${error}`);
+            process.exit(); // Exit the process after sending the message
           });
       })
-      .catch(error => console.error(`Error fetching messages: ${error}`));
+      .catch(error => {
+        console.error(`Error fetching messages: ${error}`)
+        process.exit(); // Exit the process after sending the message
+      });
+      process.exit(); // Exit the process after sending the message
   }
 });
 
