@@ -21,7 +21,7 @@ client.once(Events.ClientReady, (readyClient) => {
         console.log(`Previous message: ${previousMessage.content}`);
         // Send a new message in the same channel
         const newMessageContent = previousMessage.content;
-        channel.send(initialMessageContent)
+        channel.send(newMessageContent)
           .then(() => {
             process.exit(); // Exit the process after sending the message
           })
