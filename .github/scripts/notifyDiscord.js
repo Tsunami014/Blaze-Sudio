@@ -1,12 +1,19 @@
-const { Client } = require('discord.js');
+// Require the necessary discord.js classes
+const { Client, Events, GatewayIntentBits } = require('discord.js');
 
-const client = new Client();
+const { token } = process.env.DISCORD_TOKEN;
 
-client.once('ready', () => {
-  console.log('Ready!');
+// Create a new client instance
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+// When the client is ready, run this code (only once).
+// The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
+// It makes some properties non-nullable.
+client.once(Events.ClientReady, readyClient => {
+	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
-client.on('messageCreate', (message) => {
+/*client.on('messageCreate', (message) => {
   const commitAuthor = process.env.GITHUB_ACTOR;
 
   if (message.content.includes(`${commitAuthor} is working`)) {
@@ -19,6 +26,6 @@ client.on('messageCreate', (message) => {
       message.reply(`hard.\n${newPerson} is working`);
     }
   }
-});
+});*/
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(token);
