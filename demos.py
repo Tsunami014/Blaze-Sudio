@@ -43,6 +43,12 @@ def GraphicsDemo():
                 G.add_switch(GO.PRTOP, 40),
                 G.add_switch(GO.PRTOP)
             ]
+            G.Container.scrollable, S = G.add_Scrollable(GO.PLTOP, (250, 200), (250, 350))
+            S.add_button('Scroll me!', GO.CBLUE, GO.PCTOP)
+            S.add_button('Hello!', GO.CYELLOW, GO.PCTOP)
+            S.add_button('Bye!', GO.CGREEN, GO.PCTOP)
+            S.add_button('Hello again!', GO.CRED, GO.PCTOP)
+            G.Container.otherswitch = S.add_switch(GO.PCTOP)
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
@@ -93,7 +99,8 @@ def GraphicsDemo():
                 'Text in textbox': G.uids[G.Container.inp].get(),
                 'Num in num textbox': G.uids[G.Container.numinp].get(),
                 'Big switch state': G.uids[G.Container.switches[0]].get(),
-                'Small switch state': G.uids[G.Container.switches[1]].get()
+                'Small switch state': G.uids[G.Container.switches[1]].get(),
+                'Switch in scrollable area state': G.uids[G.Container.scrollable].G.uids[G.Container.otherswitch].get()
                 } # Whatever you return here will be returned by the function
     
     print(test('Right click! ' + t))
@@ -385,6 +392,23 @@ def almostallgraphicsDemo():
             print("You canceled the MessageBox instance.")
             run = False
 
+def scrollableDemo():
+    import pygame
+    from graphics.GUI import Scrollable
+    pygame.init()
+    w = pygame.display.set_mode()
+    from tkinter.filedialog import askopenfilename
+    S = Scrollable(pygame.image.load(askopenfilename(defaultextension='.png', filetypes=[('.png', '.png'), ('.jpg', '.jpg')])), (0, 0), (100, 100))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                quit()
+            elif event.type == pygame.MOUSEWHEEL:
+                S.update(event)
+        w.fill((0, 0, 0))
+        S(w)
+        pygame.display.update()
+
 
 if __name__ == '__main__':
     root = Tk.Tk()
@@ -395,6 +419,7 @@ if __name__ == '__main__':
     Tk.Button(root, text='Node Parser Demo',        command=lambda: cmd(node_parserDemo)        ).pack()
     Tk.Button(root, text='Loading Demo',            command=lambda: cmd(LoadingDemo)            ).pack()
     Tk.Button(root, text='Graphics Demo',           command=lambda: cmd(GraphicsDemo)           ).pack()
+    Tk.Button(root, text='Scrollable Demo',         command=lambda: cmd(scrollableDemo)         ).pack()
     Tk.Button(root, text='Other Graphics Demo',     command=lambda: cmd(almostallgraphicsDemo)  ).pack()
     Tk.Button(root, text='Generate World Demo',     command=lambda: cmd(worldsDemo)             ).pack()
     Tk.Button(root, text='Generate Terrain Demo',   command=lambda: cmd(terrainGenDemo)         ).pack()

@@ -17,17 +17,3 @@ class Scrollable:
         s = pygame.Surface(self.goalrect)
         s.blit(self.sur, (0, self.scroll))
         WIN.blit(s, self.pos)
-
-if __name__ == '__main__':
-    pygame.init()
-    w = pygame.display.set_mode()
-    from tkinter.filedialog import askopenfilename
-    S = Scrollable(pygame.image.load(askopenfilename(defaultextension='.png', filetypes=[('.png', '.png'), ('.jpg', '.jpg')])), (0, 0), (100, 100))
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit()
-            S.update(event)
-        w.fill((0, 0, 0))
-        S(w)
-        pygame.display.update()
