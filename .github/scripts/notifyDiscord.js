@@ -14,6 +14,7 @@ client.once(Events.ClientReady, (readyClient) => {
   const channel = readyClient.channels.cache.get('1181875066280091688'); // Replace with your channel ID
 
   if (channel) {
+    console.log(`We gots a channel :)`);
     channel.messages.fetch({ limit: 1 })
       .then(messages => {
         previousMessage = messages.last(); // Get the second-to-last message
@@ -33,7 +34,6 @@ client.once(Events.ClientReady, (readyClient) => {
         console.error(`Error fetching messages: ${error}`)
         process.exit(); // Exit the process after sending the message
       });
-      process.exit(); // Exit the process after sending the message
   }
 });
 
