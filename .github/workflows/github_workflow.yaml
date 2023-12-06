@@ -2,8 +2,8 @@ name: Discord Notification
 
 on:
   push:
-    branches:
-      - main  # Change this to your default branch
+    branches-ignore:
+      - '*'
 
 jobs:
   notify-discord:
