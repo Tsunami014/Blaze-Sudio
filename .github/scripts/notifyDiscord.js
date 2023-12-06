@@ -23,12 +23,17 @@ client.once(Events.ClientReady, (readyClient) => {
 
   if (channel) {
     console.log(`We gots a channel :)`);
-    channel.messages.fetch({ limit: 1 })
+    channel.messages.fetch({ limit: 10 })
       .then(messages => {
-        previousMessage = messages.last(); // Get the second-to-last message
-        console.log(`Previous message: ${previousMessage.content}`);
+        var msg = '';
+        messages.forEach(message => {
+          if (message.content.includes('@') && msg == '') {
+            msg = message.content;
+          }
+        })
+        console.log(`Previous message: ${msg}`);
         // Send a new message in the same channel
-        const oldMsg = previousMessage.content;
+        const oldMsg = msg;
         const githubActor = process.env.GITHUB_ACTOR;
         console.log(`GitHub actor: ${githubActor}`);
         const newMsg = processMessage(oldMsg, githubActor)
@@ -48,20 +53,5 @@ client.once(Events.ClientReady, (readyClient) => {
       });
   }
 });
-
-/*client.on('messageCreate', (message) => {
-  const commitAuthor = process.env.GITHUB_ACTOR;
-
-  if (message.content.includes(`${commitAuthor} is working`)) {
-    if (message.author.username === commitAuthor) {
-      // If the message contains the commit author and it's the same person, reply with 'really'
-      message.reply('really');
-    } else {
-      // If the message contains the commit author but it's a different person, reply with 'hard.\n{0} is working'
-      const newPerson = message.author.username;
-      message.reply(`hard.\n${newPerson} is working`);
-    }
-  }
-});*/
 
 client.login(token);
