@@ -158,7 +158,19 @@ class Element:
         return self.uid == other
 
 class Graphic:
-    def __init__(self, win=None, TB=True):
+    def __init__(self, bgcol=GO.CWHITE, TB=True, win=None):
+        """The class for making really cool graphic screens :)
+
+        Parameters
+        ----------
+        bgcol : tuple[int, int, int]
+            The colour of the button. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
+        TB : bool, optional
+            Whether or not you want the little terminal bar at the bottom, by default True
+        win : pygame.Surface, optional
+            IF YOU DO NOT SPECIFY: inits pygame, makes a window, does everything
+            IF YOU SPECIFY A SURFACE: will NOT init pygame and instead of printing to the screen it prints to the surface
+        """
         if win == None:
             self.WIN = pygame.display.set_mode()
             pygame.display.toggle_fullscreen()
@@ -174,6 +186,7 @@ class Graphic:
                 active = -1
             self.TB = FakeTB()
             self.size = self.WIN.get_size()
+        self.bgcol = bgcol
         self.clock = pygame.time.Clock()
         self.statics = []
         self.buttons = []
@@ -241,7 +254,7 @@ class Graphic:
                     self.rel = False
                     s = self.render(func)
                     prevs = [self.statics.copy(), self.buttons.copy()]
-                self.WIN.fill((255, 255, 255))
+                self.WIN.fill(self.bgcol)
                 self.WIN.blit(s, (0, 0))
                 self.touchingbtns = []
                 for btn in self.buttons:
