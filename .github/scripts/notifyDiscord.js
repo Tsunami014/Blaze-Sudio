@@ -29,6 +29,7 @@ client.once(Events.ClientReady, async (readyClient) => {
 
       // Iterate through the fetched messages
       for (const [, message] of messages) {
+        console.log(message.content)
         if (message.content.includes('@')) {
           // Check if the message contains an '@' mention
           const githubActor = process.env.GITHUB_ACTOR;
