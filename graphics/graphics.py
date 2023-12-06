@@ -628,6 +628,7 @@ class Graphic:
         self.rel = True
     
     def Clear(self):
+        GO.PIDX = 0
         self.statics = []
         self.buttons = []
         self.input_boxes = []
@@ -655,8 +656,8 @@ if __name__ == '__main__':
         if event == GO.EFIRST: # First, before anything else happens in the function
             G.Container.txt = txt
         if event == GO.ELOADUI: # Load the graphics
-            CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1], 0) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
-            LBOT = GO.PNEW([0, -1], GO.PSTACKS[GO.PLBOTTOM][1], 1)
+            CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1]) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
+            LBOT = GO.PNEW([0, -1], GO.PSTACKS[GO.PLBOTTOM][1])
             G.Clear()
             G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
             G.add_text(':) ', GO.CBLACK, GO.PRBOTTOM, GO.FTITLE)
@@ -681,7 +682,9 @@ if __name__ == '__main__':
                 G.add_switch(GO.PRTOP, 40),
                 G.add_switch(GO.PRTOP)
             ]
-            G.Container.scrollable, S = G.add_Scrollable(GO.PLTOP, (250, 200), (250, 350))
+            TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
+            G.Container.scrollable, S = G.add_Scrollable(TOPLEFT, (250, 200), (250, 350))
+            S.add_empty_space(GO.PCTOP, 10, 20)
             S.add_button('Scroll me!', GO.CBLUE, GO.PCTOP)
             S.add_button('Hello!', GO.CYELLOW, GO.PCTOP)
             S.add_button('Bye!', GO.CGREEN, GO.PCTOP)
