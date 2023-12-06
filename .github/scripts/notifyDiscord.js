@@ -27,6 +27,7 @@ client.once(Events.ClientReady, (readyClient) => {
       .then(messages => {
         var msg = '';
         messages.forEach(message => {
+          console.log(message);
           if (message.content.contains('@') && msg == '') {
             msg = message.content;
           }
