@@ -20,6 +20,16 @@ client.once(Events.ClientReady, (readyClient) => {
         console.log(`Previous message: ${previousMessage.content}`);
       })
       .catch(error => console.error(`Error fetching messages: ${error}`));
+    // Send a new message in the same channel
+    const newMessageContent = 'Hello, this is a new message!';
+    channel.send(newMessageContent);
+    console.log(`Sent message: ${newMessageContent}`)
+    channel.messages.fetch({ limit: 1 })
+      .then(messages => {
+        previousMessage = messages.last(); // Get the second-to-last message
+        console.log(`Previous message: ${previousMessage.content}`);
+      })
+      .catch(error => console.error(`Error fetching messages: ${error}`));
   }
 });
 
