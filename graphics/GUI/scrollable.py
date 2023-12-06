@@ -22,6 +22,8 @@ class Scrollable:
         if self.outline[0] != 0: pygame.draw.rect(WIN, self.outline[1], pygame.Rect(*self.pos, *self.goalrect), self.outline[0], 3)
         if self.bar:
             try:
-                p = (self.pos[0]+self.goalrect[0]-self.outline[0]/2, self.pos[1]+((-self.scroll) / self.bounds[1])*(self.goalrect[1]-40)+20)
-                pygame.draw.line(WIN, (200, 50, 50), (p[0], p[1]-20), (p[0], p[1]+20), self.outline[0])
+                try: w = self.outline[0]/2
+                except ZeroDivisionError: w = 0
+                p = (self.pos[0]+self.goalrect[0]-w, self.pos[1]+((-self.scroll) / self.bounds[1])*(self.goalrect[1]-40)+20)
+                pygame.draw.line(WIN, (200, 50, 50), (p[0], p[1]-20), (p[0], p[1]+20), 10)
             except: pass

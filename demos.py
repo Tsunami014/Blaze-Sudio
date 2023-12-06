@@ -401,7 +401,7 @@ def scrollableDemo():
     w = pygame.display.set_mode()
     from tkinter.filedialog import askopenfilename
     im = pygame.image.load(askopenfilename(defaultextension='.png', filetypes=[('.png', '.png'), ('.jpg', '.jpg')]))
-    S = Scrollable(im, (20, 20), (500, 500),  (0, im.get_height()-500))
+    S = Scrollable(im, (20, 20), (500, 500), (0, im.get_height()-500))
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

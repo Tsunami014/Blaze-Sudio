@@ -624,7 +624,7 @@ class Graphic:
             The thickness of the outline, 0 to turn it off, by default 10
         bar : bool, optional
             Whether or not to have a little red scrollbar in the side, by default True
-            The thickness of the scrollbar is the outline, so if it's 0 then this won't be there at all
+            The thickness of the scrollbar is constant (10)
 
         Returns
         -------
