@@ -10,24 +10,31 @@ let previousMessage = null;
 
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-  
+
   const channel = readyClient.channels.cache.get('1181875066280091688'); // Replace with your channel ID
-  
+
   if (channel) {
     channel.messages.fetch({ limit: 1 })
       .then(messages => {
         previousMessage = messages.last(); // Get the second-to-last message
         console.log(`Previous message: ${previousMessage.content}`);
-      })
-      .catch(error => console.error(`Error fetching messages: ${error}`));
-    // Send a new message in the same channel
-    const newMessageContent = 'Hello, this is a new message!';
-    channel.send(newMessageContent);
-    console.log(`Sent message: ${newMessageContent}`)
-    channel.messages.fetch({ limit: 1 })
-      .then(messages => {
-        previousMessage = messages.last(); // Get the second-to-last message
-        console.log(`Previous message: ${previousMessage.content}`);
+        // Send a new message in the same channel
+        const newMessageContent = 'Hello, this is a new message!';
+        channel.send(initialMessageContent)
+          .then(() => {
+            console.log('Initial message sent successfully. Exiting the bot process.');
+            channel.messages.fetch({ limit: 1 })
+              .then(messages => {
+                previousMessage = messages.last(); // Get the second-to-last message
+                console.log(`Previous message: ${previousMessage.content}`);
+                process.exit(); // Exit the process after sending the message
+              })
+              .catch(error => console.error(`Error fetching messages: ${error}`));
+
+          })
+          .catch(error => {
+            console.error(`Error sending message: ${error}`);
+          });
       })
       .catch(error => console.error(`Error fetching messages: ${error}`));
   }
