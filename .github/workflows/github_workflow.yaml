@@ -2,8 +2,8 @@ name: Discord Notification
 
 on:
   push:
-    branches-ignore:
-      - '*'
+    branches:
+     - '**'
 
 jobs:
   notify-discord:
