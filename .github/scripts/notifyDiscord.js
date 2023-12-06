@@ -19,22 +19,10 @@ client.once(Events.ClientReady, (readyClient) => {
         previousMessage = messages.last(); // Get the second-to-last message
         console.log(`Previous message: ${previousMessage.content}`);
         // Send a new message in the same channel
-        const newMessageContent = 'Hello, this is a new message!';
+        const newMessageContent = previousMessage.content;
         channel.send(initialMessageContent)
           .then(() => {
-            console.log('Initial message sent successfully. Exiting the bot process.');
-            channel.messages.fetch({ limit: 1 })
-              .then(messages => {
-                previousMessage = messages.last(); // Get the second-to-last message
-                console.log(`Previous message: ${previousMessage.content}`);
-                process.exit(); // Exit the process after sending the message
-              })
-              .catch(error => {
-                console.error(`Error fetching messages: ${error}`)
-                process.exit(); // Exit the process after sending the message
-              });
-              process.exit(); // Exit the process after sending the message
-
+            process.exit(); // Exit the process after sending the message
           })
           .catch(error => {
             console.error(`Error sending message: ${error}`);
