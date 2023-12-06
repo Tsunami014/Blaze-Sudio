@@ -50,10 +50,19 @@ PSTACKS = {
 PIDX = 0 # DO NOT USE UNLESS YOU REALLY KNOW WHAT YOU'RE DOING
 
 def PNEW(stack, func, idx=None): # To create new layouts
+    global PIDX
     if idx == None:
         idx = PIDX
         PIDX += 1
     PSTACKS[idx+10] = (stack, func)
+    return idx+10
+
+def PSTATIC(x, y, idx=None): # To put an element at a specific x and y location
+    global PIDX
+    if idx == None:
+        idx = PIDX
+        PIDX += 1
+    PSTACKS[idx+10] = ([0, 0], lambda _, __: (x, y))
     return idx+10
 
 # Events
