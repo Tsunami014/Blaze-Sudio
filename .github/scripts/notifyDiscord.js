@@ -14,7 +14,7 @@ client.once(Events.ClientReady, (readyClient) => {
   const channel = readyClient.channels.cache.get('1181875066280091688'); // Replace with your channel ID
   
   if (channel) {
-    channel.messages.fetch({ limit: 1 })
+    channel.messages.fetch({ limit: 2 })
       .then(messages => {
         previousMessage = messages.last(); // Get the second-to-last message
         console.log(`Previous message: ${previousMessage.content}`);
