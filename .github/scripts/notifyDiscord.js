@@ -29,12 +29,12 @@ client.once(Events.ClientReady, async (readyClient) => {
 
       // Iterate through the fetched messages
       for (const [, message] of messages) {
-        console.log(message.content)
         if (message.content.includes('@')) {
           // Check if the message contains an '@' mention
           const githubActor = process.env.GITHUB_ACTOR;
           console.log(`GitHub actor: ${githubActor}`);
           const newMsg = processMessage(message.content, githubActor);
+          console.log(`Message: ${newMsg}`);
           channel.send(newMsg)
             .then(() => {
               console.log(`Sent message: ${newMsg}`);
@@ -44,7 +44,6 @@ client.once(Events.ClientReady, async (readyClient) => {
               console.error(`Error sending message: ${error}`);
               process.exit(); // Exit the process after sending the message
             });
-          break; // Exit the loop once a message with an '@' mention is found
         }
       }
 
