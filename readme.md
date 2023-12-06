@@ -36,6 +36,18 @@ pip install -r requirements.txt
 
 Please join our [Discord server](https://discord.gg/9zrGKtF6Cs) for any information, queries, bugs, conversations, etc. that you may have!
 
+## Ideas
+The purpose of this bit here is ideas so that later when I am wondering what features to put in I can attempt making these and see what *isn't* there to put in
+ - Super Mario Galaxy 3
+ - LOZ Tears of the Kingdom 2
+ - Dragon animation studio
+ - Newest Super Mario bros ~~WII~~
+ - Bluey AI
+ - Hey Grapefruit desktop
+ - Wings of fire Jade Mountain adventures
+
+Please ignore the fact these sound like rip-offs or that it's copying. I don't care. This is meant to be a fun project. These'll all be fan-made. I'm not planning to become rich off of those games. 
+
 ## Next versions coming soon:
  - v2.0.0 - 💥`Flare Sudio` - Is able to make a simple simple simple game, no real functionality yet but just the basics
  - v3.0.0 - 🌋`Fire Sudio` - cos by then it'll be on fire 😁 - all functionality complete!
