@@ -318,7 +318,10 @@ class Graphic:
                             for i in self.touchingbtns:
                                 r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
                                 if r != None:
-                                    return r
+                                    self.run = False
+                                    yield [r]
+                    elif event.type == pygame.MOUSEWHEEL and not self.pause:
+                        for i in self.scrollsables: i.update(event)
                     if not self.pause and not blocked: func(GO.EEVENT, event)
                 for i in self.scrollsables:
                     r = i(evs)

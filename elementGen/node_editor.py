@@ -163,7 +163,7 @@ NodeEditor(G)
     
     def parse(i, l, lf, rd):
         if not l and isinstance(G.Container.selecting, tuple) and i.isntsimilar(G.Container.selecting[0]):
-            G.Container.highlighting = None
+            if not G.Container.DONTDOIT: G.Container.highlighting = None
             if i.rect.collidepoint(pygame.mouse.get_pos()):
                 d = False
                 for j in range(len(G.Container.connections)):
@@ -188,7 +188,7 @@ NodeEditor(G)
                 rd.append((i.rect.topleft[0]+5, i.rect.topleft[1]+7))
                 if lf:
                     G.Container.selecting = (i, (i.rect.center[0]+5, i.rect.center[1]+7))
-                    G.Container.highlighting = None
+                    if not G.Container.DONTDOIT: G.Container.highlighting = None
         return rd
     
     @G.Graphic
@@ -201,6 +201,7 @@ NodeEditor(G)
             ]
             G.Container.selecting = None
             G.Container.highlighting = None
+            G.Container.DONTDOIT = False
             if path.endswith('.elm'):
                 path = path[:-4]
             if not os.path.exists('data/elements/'+path+'.elm'):
@@ -257,6 +258,10 @@ NodeEditor(G)
             rf, r = next(G.Container.md[1])
             # Same with r
             
+            w, h = G.size[0] / 8 * 3, G.size[1] / 8 * 3
+            rec = pygame.Rect(8, G.size[1]-h-8, w, h)
+            G.Container.DONTDOIT = rec.collidepoint(*pygame.mouse.get_pos())
+            
             rd = []
             #conned = False
             cirs = []
@@ -302,7 +307,7 @@ NodeEditor(G)
                 if G.Container.highlighting == node:
                     pygame.draw.rect(G.WIN, GO.CACTIVE, pygame.Rect(p[0]-15, p[1]-15, mx2+40, max(i, i2)+40), width=10, border_radius=8)
                 if G.Container.selecting == None and lf and r.collidepoint(pygame.mouse.get_pos()):
-                    G.Container.highlighting = None
+                    if not G.Container.DONTDOIT:  G.Container.highlighting = None
                     G.Container.selecting = [G.Container.nodes.index((p, node)), (pygame.mouse.get_pos()[0]-p[0], pygame.mouse.get_pos()[1]-p[1]), pygame.mouse.get_pos(), node]
                 G.WIN.blit(sur2, (p[0]+5, p[1]+5))
             for i in rd:
@@ -335,15 +340,22 @@ NodeEditor(G)
             
             if G.Container.highlighting != None:
                 w, h = G.size[0] / 8 * 3, G.size[1] / 8 * 3
-                pygame.draw.rect(G.WIN, GO.CNEW('light grey'), pygame.Rect(8, G.size[1]-h-8, w, h), border_radius=8)
+                pygame.draw.rect(G.WIN, GO.CNEW('light grey'), rec, border_radius=8)
                 node = G.Container.highlighting
                 txt = GO.FFONT.render(str(node), 2, GO.CBLACK)
                 G.WIN.blit(txt, ((w - txt.get_width())/2+8, G.size[1]-h+10))
-            
+                if G.scrollsables == []:
+                    pos = GO.PSTATIC(12, G.size[1]-h+10+txt.get_height()+2)
+                    size = 60 # TODO: CHANGE
+                    size = max(size, h-(txt.get_height()+30)+1)
+                    _, scr = G.add_Scrollable(pos, (w-8, h-(txt.get_height()+30)), (w-8, size), 2, True)
+                    scr.bgcol = GO.CNEW('light grey')
+            elif G.scrollsables != []:
+                G.Reload()
             return True
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.MOUSEBUTTONDOWN:
-                G.Container.highlighting = None
+                if not G.Container.DONTDOIT: G.Container.highlighting = None
             
             if element.type == pygame.KEYDOWN:
                 if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
