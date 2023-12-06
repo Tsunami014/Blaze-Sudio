@@ -6,17 +6,21 @@ const { token } = process.env.DISCORD_TOKEN;
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// When the client is ready, run this code (only once).
-// The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
-// It makes some properties non-nullable.
-client.once(Events.ClientReady, async readyClient => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-    const channel = readyClient.channels.cache.get('1181875066280091688'); // Replace with your channel ID
-    if (channel) {
-        const messages = await channel.messages.fetch({ limit: 1 });
+let previousMessage = null;
+
+client.once(Events.ClientReady, (readyClient) => {
+  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+  
+  const channel = readyClient.channels.cache.get('1181875066280091688'); // Replace with your channel ID
+  
+  if (channel) {
+    channel.messages.fetch({ limit: 1 })
+      .then(messages => {
         previousMessage = messages.last(); // Get the second-to-last message
-    }
-    console.log(`Previous message: ${previousMessage}`)
+        console.log(`Previous message: ${previousMessage.content}`);
+      })
+      .catch(error => console.error(`Error fetching messages: ${error}`));
+  }
 });
 
 /*client.on('messageCreate', (message) => {
