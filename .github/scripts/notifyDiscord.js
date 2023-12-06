@@ -1,63 +1,56 @@
 // Require the necessary discord.js classes
-const { Client, Intents, Events } = require('discord.js');
+const { Client, Events, GatewayIntentBits } = require('discord.js');
 
 const { token } = process.env.DISCORD_TOKEN;
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent] });
 
 function processMessage(message, user) {
-  if (message.mentions.users.has(user.id)) {
+  if (message.includes(`@${user}`)) {
       return 'very';
   } else {
-      return `hard.\n@${user.tag} is working`;
+      return `hard.\n@${user} is working`;
   }
 }
 
-client.once(Events.Ready, async () => {
-  console.log(`Ready! Logged in as ${client.user.tag}`);
+let previousMessage = null;
 
-  const channel = client.channels.cache.get('1181875066280091688'); // Replace with your channel ID
+client.once(Events.ClientReady, (readyClient) => {
+  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+
+  const channel = readyClient.channels.cache.get('1181875066280091688'); // Replace with your channel ID
 
   if (channel) {
-    console.log(`We got a channel :)`);
-
-    try {
-      const messages = await channel.messages.fetch({ limit: 10 }); // Fetch up to 10 previous messages
-
-      // Iterate through the fetched messages
-      messages.forEach(message => {
-        if (message.mentions.users.size > 0) {
-          // Check if the message contains any user mentions
-          const githubActor = process.env.GITHUB_ACTOR;
-          console.log(`GitHub actor: ${githubActor}`);
-          // Find the first mentioned user whose username matches the github actor
-          const mentionedUser = message.mentions.users.find(user => user.username === githubActor);
-          if (mentionedUser) {
-            // If a matching user is found, process the message
-            const newMsg = processMessage(message, mentionedUser);
-            console.log(`Message: ${newMsg}`);
-            channel.send(newMsg)
-              .then(() => {
-                console.log(`Sent message: ${newMsg}`);
-                process.exit(); // Exit the process after sending the message
-              })
-              .catch(error => {
-                console.error(`Error sending message: ${error}`);
-                process.exit(); // Exit the process after sending the message
-              });
+    console.log(`We gots a channel :)`);
+    channel.messages.fetch({ limit: 10 })
+      .then(messages => {
+        var msg = '';
+        messages.forEach(message => {
+          if (message.content.contains('@') && msg == '') {
+            msg = message.content;
           }
-        }
+        })
+        console.log(`Previous message: ${msg}`);
+        // Send a new message in the same channel
+        const oldMsg = msg;
+        const githubActor = process.env.GITHUB_ACTOR;
+        console.log(`GitHub actor: ${githubActor}`);
+        const newMsg = processMessage(oldMsg, githubActor)
+        channel.send(newMsg)
+          .then(() => {
+            console.log(`Sent message: ${newMsg}`)
+            process.exit(); // Exit the process after sending the message
+          })
+          .catch(error => {
+            console.error(`Error sending message: ${error}`);
+            process.exit(); // Exit the process after sending the message
+          });
+      })
+      .catch(error => {
+        console.error(`Error fetching messages: ${error}`)
+        process.exit(); // Exit the process after sending the message
       });
-
-      // If no message with a user mention is found
-      console.log('No message with a user mention found.');
-      process.exit(); // Exit the process
-
-    } catch (error) {
-      console.error(`Error fetching messages: ${error}`);
-      process.exit(); // Exit the process after sending the message
-    }
   }
 });
 
