@@ -1,0 +1,28 @@
+name: Discord Notification
+
+on:
+  push:
+    branches-ignore:
+      - '*'
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '21'
+
+    - name: Install dependencies
+      run: npm install discord.js
+
+    - name: Notify Discord
+      run: |
+        node .github/scripts/notifyDiscord.js
+      env:
+        DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
