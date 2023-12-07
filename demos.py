@@ -1,5 +1,3 @@
-import tkinter as Tk # Because everyone has tkinter
-
 def GraphicsDemo():
     import pygame
     import graphics.graphics_options as GO
@@ -412,34 +410,89 @@ def scrollableDemo():
         S(w)
         pygame.display.update()
 
-
 if __name__ == '__main__':
+    import tkinter as Tk # Because everyone has tkinter
+    from tkinter.scrolledtext import ScrolledText
     root = Tk.Tk()
     def cmd(cmdd):
         root.destroy()
+        print('loading...')
         cmdd()
-    Tk.Label (root, text='Node stuff:'                                                          ).pack()
-    Tk.Button(root, text='Node Editor Demo',        command=lambda: cmd(node_editorDemo)        ).pack()
-    Tk.Button(root, text='Node Parser Demo',        command=lambda: cmd(node_parserDemo)        ).pack()
-    Tk.Label (root, text='Graphics stuff:'                                                      ).pack()
-    Tk.Button(root, text='Graphics Demo',           command=lambda: cmd(GraphicsDemo)           ).pack()
-    Tk.Button(root, text='Loading Demo',            command=lambda: cmd(LoadingDemo)            ).pack()
-    Tk.Button(root, text='Switch Demo',             command=lambda: cmd(switchDemo)             ).pack()
-    Tk.Button(root, text='Input Box Demo',          command=lambda: cmd(inputBoxDemo)           ).pack()
-    Tk.Button(root, text='Scrollable Demo',         command=lambda: cmd(scrollableDemo)         ).pack()
-    Tk.Button(root, text='Other Graphics Demo',     command=lambda: cmd(almostallgraphicsDemo)  ).pack()
-    Tk.Label (root, text='Generation stuff:'                                                    ).pack()
-    Tk.Button(root, text='Generate World Demo',     command=lambda: cmd(worldsDemo)             ).pack()
-    Tk.Button(root, text='Generate Terrain Demo',   command=lambda: cmd(terrainGenDemo)         ).pack()
-    Tk.Label (root, text='AI stuff:'                                                            ).pack()
-    Tk.Button(root, text='TinyLLM Demo',            command=lambda: cmd(tinyLLMDemo)            ).pack()
-    Tk.Button(root, text='Test LLM Demo',           command=lambda: cmd(testLLMDemo)            ).pack()
-    Tk.Button(root, text='Rate AIs Demo',           command=lambda: cmd(rateAIsDemo)            ).pack()
-    Tk.Label (root, text='Other stuff:'                                                         ).pack()
-    Tk.Button(root, text='API Keys Demo',           command=lambda: cmd(api_keysDemo)           ).pack()
-    Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(conversation_parserDemo)).pack()
+    def rcmd(cmdd):
+        root.protocol("WM_DELETE_WINDOW", load)
+        for widget in root.winfo_children():
+            widget.destroy()
+        E = ScrolledText(root,  
+                         wrap = Tk.WORD,  
+                         width = 40,  
+                         height = 10,
+                         state=Tk.DISABLED)
+        E.pack(fill=Tk.BOTH, side=Tk.LEFT, expand=True)
+        def npr(*txts, sep='  '):
+            E.config(state=Tk.NORMAL)
+            E.insert(Tk.END,sep.join([str(i) for i in txts])+'\n')
+            E.config(state=Tk.DISABLED)
+            root.update()
+        def ninp(prompt=''):
+            class blank: pass
+            b = blank()
+            b.done = False
+            def run():
+                v = E2.get()
+                for widget in root.winfo_children():
+                    if widget != E and not E in widget.winfo_children(): widget.destroy()
+                b.done = True
+                b.res = v
+            Tk.Label(root, text=prompt).pack()
+            E2 = Tk.Entry(root)
+            E2.pack()
+            E2.bind("<Return>", lambda *args: run())
+            Tk.Button(root, command=lambda *args: run(), text='GO!').pack()
+            root.update()
+            while b.done == False: root.update()
+            return b.res
+        oprint = print
+        globals()['print'] = npr
+        oinput = input
+        globals()['input'] = ninp
+        oprint('Loading please wait...')
+        print('Loading please wait...')
+        root.update()
+        try:
+            cmdd()
+        except Exception as e:
+            print('AN EXCEPTION HAS OCURRED:', type(e), e, sep='\n')
+        globals()['print'] = oprint
+        globals()['input'] = oinput
+        
+    def load():
+        for widget in root.winfo_children():
+            widget.destroy()
+        Tk.Button(root, text='EXIT', command=root.destroy).pack()
+        
+        Tk.Label (root, text='Node stuff:').pack()
+        Tk.Button(root, text='Node Editor Demo',        command=lambda: cmd(node_editorDemo)                    ).pack()
+        Tk.Button(root, text='Node Parser Demo',        command=lambda: rcmd(node_parserDemo), relief=Tk.RIDGE  ).pack()
+        Tk.Label (root, text='Graphics stuff:').pack()
+        Tk.Button(root, text='Graphics Demo',           command=lambda: cmd(GraphicsDemo)                       ).pack()
+        Tk.Button(root, text='Loading Demo',            command=lambda: cmd(LoadingDemo)                        ).pack()
+        Tk.Button(root, text='Switch Demo',             command=lambda: cmd(switchDemo)                         ).pack()
+        Tk.Button(root, text='Input Box Demo',          command=lambda: cmd(inputBoxDemo)                       ).pack()
+        Tk.Button(root, text='Scrollable Demo',         command=lambda: cmd(scrollableDemo)                     ).pack()
+        Tk.Button(root, text='Other Graphics Demo',     command=lambda: cmd(almostallgraphicsDemo)              ).pack()
+        Tk.Label (root, text='Generation stuff:').pack()
+        Tk.Button(root, text='Generate World Demo',     command=lambda: rcmd(worldsDemo), relief=Tk.RIDGE       ).pack()
+        Tk.Button(root, text='Generate Terrain Demo',   command=lambda: rcmd(terrainGenDemo), relief=Tk.RIDGE   ).pack()
+        Tk.Label (root, text='AI stuff:').pack()
+        Tk.Button(root, text='TinyLLM Demo',            command=lambda: rcmd(tinyLLMDemo), relief=Tk.RIDGE      ).pack()
+        Tk.Button(root, text='Test LLM Demo',           command=lambda: rcmd(testLLMDemo), relief=Tk.RIDGE      ).pack()
+        Tk.Button(root, text='Rate AIs Demo',           command=lambda: rcmd(rateAIsDemo), relief=Tk.RIDGE      ).pack()
+        Tk.Label (root, text='Other stuff:').pack()
+        Tk.Button(root, text='API Keys Demo',           command=lambda: cmd(api_keysDemo),                      ).pack()
+        Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(conversation_parserDemo), relief=Tk.SUNKEN ).pack()
+        root.protocol("WM_DELETE_WINDOW", root.destroy)
+    load()
     def btt():
         root.attributes('-topmost', True)
-        root.attributes('-topmost', False)
     root.after(1, btt)
     root.mainloop()
