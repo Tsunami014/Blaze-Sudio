@@ -17,6 +17,12 @@ def GraphicsDemo():
         if event == GO.ELOADUI: # Load the graphics
             CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1]) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
             LBOT = GO.PNEW([0, -1], GO.PSTACKS[GO.PLBOTTOM][1])
+            try:
+                prevs = [G.uids[i].get() for i in (G.Container.switches+[G.Container.numinp,G.Container.inp])]
+                prevTG = [G.uids[G.Container.scrollable].G.uids[G.Container.otherswitch].get(), G.uids[G.Container.scrollable].scroll]
+            except:
+                prevs = [False, False, 0, '']
+                prevTG = [False, 0]
             G.Clear()
             G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
             G.add_text(':) ', GO.CBLACK, GO.PRBOTTOM, GO.FTITLE)
@@ -34,21 +40,25 @@ def GraphicsDemo():
             G.add_text('Are you ', GO.CBLACK, CTOP)
             G.add_text('happy? ', GO.CGREEN, CTOP)
             G.add_text('Or sad?', GO.CRED, CTOP)
-            G.Container.inp = G.add_input(GO.PCCENTER, GO.FFONT, maximum=16)
+            G.Container.inp = G.add_input(GO.PCCENTER, GO.FFONT, maximum=16, start=prevs[3])
             G.add_empty_space(GO.PCCENTER, 0, 50)
-            G.Container.numinp = G.add_num_input(GO.PCCENTER, GO.FFONT, 4, bounds=(-255, 255))
+            G.Container.numinp = G.add_num_input(GO.PCCENTER, GO.FFONT, 4, start=prevs[2], bounds=(-255, 255))
             G.Container.switches = [
-                G.add_switch(GO.PRTOP, 40),
-                G.add_switch(GO.PRTOP)
+                G.add_switch(GO.PRTOP, 40, prevs[0]),
+                G.add_switch(GO.PRTOP, default=prevs[1])
             ]
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
             G.Container.scrollable, S = G.add_Scrollable(TOPLEFT, (250, 200), (250, 350))
+            G.uids[G.Container.scrollable].scroll = prevTG[1]
             S.add_empty_space(GO.PCTOP, 10, 20)
             S.add_button('Scroll me!', GO.CBLUE, GO.PCTOP)
             S.add_button('Hello!', GO.CYELLOW, GO.PCTOP)
             S.add_button('Bye!', GO.CGREEN, GO.PCTOP)
-            S.add_button('Hello again!', GO.CRED, GO.PCTOP)
-            G.Container.otherswitch = S.add_switch(GO.PCTOP)
+            def pressed(elm):
+                G.Container.txt = 'You pressed the button in the Scrollable :)'
+                G.Reload()
+            S.add_button('Press me!', GO.CRED, GO.PCTOP, callback=pressed)
+            G.Container.otherswitch = S.add_switch(GO.PCTOP, default=prevTG[0])
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             return True # Return whether or not the loop should continue.
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
@@ -65,7 +75,7 @@ def GraphicsDemo():
                 elif element == G.Container.exitbtn:
                     G.Abort()
                 elif element == 1:
-                    bot = GO.PNEW([0, 0], GO.PSTACKS[GO.PCBOTTOM][1])
+                    bot = GO.PNEW([0, 0], GO.PSTACKS[GO.PCBOTTOM][1], 1)
                     G.add_TextBox('HALLOOOO! :)', bot)
                     G.Container.idx = 0
                 else:

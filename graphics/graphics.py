@@ -198,6 +198,7 @@ class Graphic:
         self.nextuid = 0
         self.uids = []
         self.scrollsables = []
+        self.callbacks = {}
         # This next bit is so users can store their own data and not have it interfere with anything
         class Container: pass
         self.Container = Container()
@@ -257,6 +258,8 @@ class Graphic:
     def Graphic(self, funcy, slf=None, generator=False, update=True, events=pygame.event.get, mousepos=pygame.mouse.get_pos): # Function decorator, not to be called unless you know what you're doing
         def func2(*args, **kwargs):
             def func(event, element=None, aborted=False):
+                if event == GO.EELEMENTCLICK and element.uid in self.callbacks:
+                    self.callbacks[element.uid](element)
                 if slf == None:
                     return funcy(event, *args, element=element, aborted=aborted, **kwargs)
                 else:
@@ -445,7 +448,7 @@ class Graphic:
         """
         self.pos_store(GO.PSTACKS[position][1](self.size, (wid, hei)), (wid, hei), position)
     
-    def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, on_hover_enlarge=True):
+    def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, on_hover_enlarge=True, callback=None):
         """Adds a button to the GUI!
 
         Parameters
@@ -462,6 +465,9 @@ class Graphic:
             The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
         on_hover_enlarge : bool/int, optional
             Whether to enlarge the button on hover. If this is an int it will be used as the size increase of said button. By default True
+        callback : function(Element), optional
+            The function to call when this element is pressed, by default None
+            Please note that the main function will ALSO be called when this is pressed
 
         Returns
         -------
@@ -473,9 +479,10 @@ class Graphic:
         sze = self.pos_store(GO.PSTACKS[position][1](self.size, r.size), r.size, position)
         self.buttons.append((btnconstruct, sze))
         self.uids.append((btnconstruct, sze))
+        if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
     
-    def add_TextBox(self, txt, position, border=LIGHT, indicator=None, portrait=None):
+    def add_TextBox(self, txt, position, border=LIGHT, indicator=None, portrait=None, callback=None):
         """Makes a new TextBox in the GUI!
 
         Parameters
@@ -490,6 +497,9 @@ class Graphic:
             The path to the indicator file that will be used, by default None
         portrait : str, optional
             the path to the portrait file that will be used, by default None
+        callback : function(Element), optional
+            The function to call when this textbox is dismissed, by default None
+            Please note that the main function will ALSO be called when this is dismissed
 
         Returns
         -------
@@ -515,9 +525,10 @@ class Graphic:
         self.sprites.add(dialog_box)
         self.pause = True
         self.uids.append(dialog_box)
+        if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
     
-    def add_input(self, position, font=GO.FSMALL, width=None, resize=GO.RHEIGHT, placeholder='Type Here', maximum=100):
+    def add_input(self, position, font=GO.FSMALL, width=None, resize=GO.RHEIGHT, placeholder='Type Here', maximum=100, start='', callback=None):
         """Adds an input box :)
 
         Parameters
@@ -537,6 +548,11 @@ class Graphic:
         maximum : int, optional
             The maximum NUMBER OF CHARACTERS you can input, by default 100
             Make this None to have no limit
+        start : str, optional
+            The text that STARTS in the textbox, by default "" (the only way to see the placeholder text is with the text in the box as "")
+        callback : function(Element), optional
+            The function to call when you press enter while inputting into this element, by default None
+            Please note that the main function will ALSO be called when you press enter while inputting into this element
 
         Returns
         -------
@@ -547,12 +563,13 @@ class Graphic:
         sze[1] += 10
         if width != None: sze[0] = width
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
-        ibox = InputBox(*pos, *sze, resize, placeholder, font, maximum) # TODO: Positioning and custom width & height & resize
+        ibox = InputBox(*pos, *sze, resize, placeholder, font, maximum, start) # TODO: Positioning and custom width & height & resize
         self.input_boxes.append(ibox)
         self.uids.append(ibox)
+        if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
     
-    def add_num_input(self, position, font=GO.FSMALL, width=None, resize=GO.RHEIGHT, start=0, bounds=(float('-inf'), float('inf'))):
+    def add_num_input(self, position, font=GO.FSMALL, width=None, resize=GO.RHEIGHT, start=0, bounds=(float('-inf'), float('inf')), callback=None):
         """Adds an input box for numbers :)
 
         Parameters
@@ -571,6 +588,9 @@ class Graphic:
             The starting number, by default 0
         bounds : tuple[int, int], optional
             The maximum and minimum number you can input, by default (-inf, inf)
+        callback : function(Element), optional
+            The function to call when you press enter while inputting into this element, by default None
+            Please note that the main function will ALSO be called when you press enter while inputting into this element
 
         Returns
         -------
@@ -583,9 +603,10 @@ class Graphic:
         ibox = NumInputBox(*pos, *sze, resize, start, *bounds, font) # TODO: Positioning and custom width & height & resize
         self.input_boxes.append(ibox)
         self.uids.append(ibox)
+        if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
     
-    def add_switch(self, position, size=20, default=False):
+    def add_switch(self, position, size=20, default=False, callback=None):
         """Adds a switch to the GUI! :)
 
         Parameters
@@ -596,6 +617,9 @@ class Graphic:
             The size of the switch, by default 20
         default : bool, optional
             Whether the switch starts as on or off, by default False
+        callback : function(Element), optional
+            The function to call when this element is pressed, by default None
+            Please note that the main function will ALSO be called when this is pressed
 
         Returns
         -------
@@ -607,6 +631,7 @@ class Graphic:
         sw = Switch(self.WIN, pos[0]+size/4, pos[1]+size/4, size, 2, default)
         self.sprites.add(sw)
         self.uids.append(sw)
+        if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
     
     def add_Scrollable(self, position, size, sos, outline=10, bar=True):
@@ -665,6 +690,7 @@ class Graphic:
         self.nextuid = 0
         self.uids = []
         self.scrollsables = []
+        self.callbacks = {}
     
     def Abort(self):
         self.ab = True
