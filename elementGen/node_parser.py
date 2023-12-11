@@ -21,7 +21,7 @@ class FakeDict(dict):
         self.clear()
 
 class Connector:
-    def __init__(self, parent, isinp, name, typ):
+    def __init__(self, parent, isinp, name, typ='any'):
         self.num = random()
         self.parent = parent
         self.isinp = isinp
@@ -63,11 +63,11 @@ class Names:
             if i == '|':
                 input = False
                 continue
-            s = i.split('@')
             if input:
+                s = i.split('@')
                 self.inputs.append(Connector(self, True, s[1], s[0]))
             else:
-                self.outputs.append(Connector(self, False, s[1], s[0]))
+                self.outputs.append(Connector(self, False, i))
     def setter(self, key, value):
         for i in range(len(self.inputs)):
             if self.inputs[i] == key:

@@ -373,6 +373,8 @@ NodeEditor(G)
                             scr.add_num_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=10, start=i[4])
                         elif i[3] == 'str':
                             scr.add_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=GO.FFONT.size('c'*10)[0], start=i[4])
+                        elif i[3] == 'any':
+                            scr.add_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=GO.FFONT.size('c'*10)[0], start=str(i[4]))
                 else:
                     inps = G.scrollsables[0].G.input_boxes
                     for i in range(len(node.inputs)):
