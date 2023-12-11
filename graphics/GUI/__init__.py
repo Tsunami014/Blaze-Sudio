@@ -6,6 +6,7 @@ try:
     from graphics.GUI.switch import *
     from graphics.GUI.dropdown import *
     from graphics.GUI.scrollable import *
+    from graphics.GUI.colourpick import *
 except ImportError:
     try:
         from GUI.inputbox import *
@@ -15,6 +16,7 @@ except ImportError:
         from GUI.switch import *
         from GUI.dropdown import *
         from GUI.scrollable import *
+        from GUI.colourpick import *
     except ImportError:
         from inputbox import *
         from pyguix import *
@@ -23,3 +25,4 @@ except ImportError:
         from switch import *
         from dropdown import *
         from scrollable import *
+        from colourpick import *
