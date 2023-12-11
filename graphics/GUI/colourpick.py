@@ -3,41 +3,42 @@ import pygame
 # Thanks to https://stackoverflow.com/questions/73517832/how-to-make-an-color-picker-in-pygame :)
 
 class ColourPicker:
-    def __init__(self, x, y, w, h):
-        self.rect = pygame.Rect(x, y, w, h)
-        self.image = pygame.Surface((w, h))
+    def __init__(self, x, y):
+        self.pwidth = 360
+        self.pheight = 100
+        self.rect = pygame.Rect(x, y, self.pwidth, self.pheight)
+        self.image = pygame.Surface((self.pwidth, self.pheight))
         self.image.fill((255, 255, 255))
-        self.rad = h//2
-        self.pwidth = w-self.rad*2
         for i in range(self.pwidth):
-            color = pygame.Color(0)
-            color.hsla = (int(360*i/self.pwidth), 100, 50, 100)
-            pygame.draw.rect(self.image, color, (i+self.rad, h//3, 1, h-2*h//3))
-        self.p = 0
+            for j in range(self.pheight):
+                colour = pygame.Color(0)
+                colour.hsla = (int(360*i/self.pwidth), 100, 100-j, 100)
+                pygame.draw.rect(self.image, colour, (i, j, 1, 1))
+        self.p = (0, 0)
 
-    def get_color(self):
-        color = pygame.Color(0)
-        color.hsla = (int(self.p * self.pwidth), 100, 50, 100)
-        return color
+    def get_colour(self):
+        colour = pygame.Color(0)
+        colour.hsla = (int(self.p[0] * self.pwidth), 100, 100-int(self.p[1] * self.pheight), 100)
+        return colour
 
     def update(self):
-        moude_buttons = pygame.mouse.get_pressed()
+        mouse_buttons = pygame.mouse.get_pressed()
         mouse_pos = pygame.mouse.get_pos()
-        if moude_buttons[0] and self.rect.collidepoint(mouse_pos):
-            self.p = (mouse_pos[0] - self.rect.left - self.rad) / self.pwidth
-            self.p = (max(0, min(self.p, 1)))
+        if mouse_buttons[0] and self.rect.collidepoint(mouse_pos):
+            self.p = ((mouse_pos[0] - self.rect.left) / self.pwidth, (mouse_pos[1] - self.rect.top) / self.pheight)
+            self.p = ((max(0, min(self.p[0], 1))), (max(0, min(self.p[1], 1))))
 
     def draw(self, surf):
         surf.blit(self.image, self.rect)
-        center = self.rect.left + self.rad + self.p * self.pwidth, self.rect.centery
-        pygame.draw.circle(surf, self.get_color(), center, self.rect.height // 2)
+        center = self.rect.left + self.p[0] * self.pwidth, self.rect.top + self.p[1] * self.pheight
+        pygame.draw.circle(surf, self.get_colour(), center, 25)
 
 if __name__ == '__main__':
     pygame.init()
-    window = pygame.display.set_mode((500, 200))
+    window = pygame.display.set_mode((500, 500))
     clock = pygame.time.Clock()
 
-    cp = ColourPicker(50, 50, 400, 60)
+    cp = ColourPicker(50, 50)
 
     run = True
     while run:
