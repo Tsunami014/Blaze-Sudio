@@ -1,6 +1,7 @@
 import os
 from random import random
 from copy import deepcopy
+import elementGen.types as Ts
 
 def allCategories():
     return [i.name for i in os.scandir('data/nodes') if i.is_file()]
@@ -25,8 +26,9 @@ class Connector:
         self.parent = parent
         self.isinp = isinp
         self.name = name
-        self.type = typ
+        self.type = Ts.types[typ]
         self.rect = None
+        self.value = Ts.defaults[typ]
         self.connectedto = None # Relying on externs to generate
     def isntsimilar(self, other):
         try:
@@ -97,7 +99,7 @@ class Names:
             try:
                 ins.append(i.connectedto.parent.get()[i.connectedto.name])
             except:
-                pass
+                ins.append(i.value)
         try:
             return self(*ins)
         except:

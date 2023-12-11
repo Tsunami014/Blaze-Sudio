@@ -1,6 +1,7 @@
 import pygame, os, pickle
 import graphics.graphics_options as GO
 import elementGen.node_parser as np
+import elementGen.types as Ts
 
 categories = [i.name for i in os.scandir('data/elements') if i.is_dir()]
 
@@ -290,7 +291,7 @@ NodeEditor(G)
                 mx2 = 0
                 for n in node.outputs:
                     name = n.name
-                    if n.name in g: name = str(g[n.name])
+                    if n.name in g: name += ':'+str(g[n.name])
                     s, c = CAT(name, front=False, bgcol=col)
                     c.move_ip(mx+p[0], i2+p[1])
                     node.cirs[n] = c
@@ -337,10 +338,36 @@ NodeEditor(G)
                 G.WIN.blit(txt, ((w - txt.get_width())/2+8, G.size[1]-h+10))
                 if G.scrollsables == []:
                     pos = GO.PSTATIC(12, G.size[1]-h+10+txt.get_height()+2)
-                    size = 60 # TODO: CHANGE
+                    adds = [[], []]
+                    boxes = []
+                    getsize = lambda: sum([max(adds[0][i][2].get_height(),boxes[i][2][1])+10 for i in range(len(adds[0]))])
+                    for i in node.inputs:
+                        r = GO.FFONT.render(i.name+':', 2, GO.CBLACK)
+                        s = getsize()
+                        adds[0].append((5, s, r))
+                        boxes.append((r.get_width()+7, s, Ts.sizing[Ts.strtypes[i.type]](i.value, GO.FFONT), Ts.strtypes[i.type], i.value))
+                    g = node.get()
+                    for i in node.outputs:
+                        name = i.name
+                        if n.name in g: name += ':'+str(g[n.name])
+                        r = GO.FFONT.render(name, 2, GO.CBLACK)
+                        adds[1].append((w-r.get_width()-10, sum([i[2].get_height()+10 for i in adds[1]]), r))
+                    size = max(getsize(), sum([i[2].get_height()+10 for i in adds[1]]))
                     size = max(size, h-(txt.get_height()+30)+1)
                     _, scr = G.add_Scrollable(pos, (w-8, h-(txt.get_height()+30)), (w-8, size), 2, True)
                     scr.bgcol = GO.CNEW('light grey')
+                    for i in adds[0]+adds[1]:
+                        scr.add_surface(i[2], GO.PSTATIC(i[0], i[1]))
+                        scr.add_surface(i[2], GO.PSTATIC(i[0], i[1]))
+                    for i in boxes:
+                        if i[3] == 'int':
+                            scr.add_num_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=10, start=i[4])
+                        elif i[3] == 'str':
+                            scr.add_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=GO.FFONT.size('c'*10)[0], start=i[4])
+                else:
+                    inps = G.scrollsables[0].G.input_boxes
+                    for i in range(len(node.inputs)):
+                        node.inputs[i].value = inps[i].get()
             elif G.scrollsables != []:
                 G.Reload()
             return True
