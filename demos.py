@@ -52,7 +52,7 @@ def GraphicsDemo():
             G.uids[G.Container.scrollable].scroll = prevTG[1]
             S.add_empty_space(GO.PCTOP, 10, 20)
             S.add_button('Scroll me!', GO.CBLUE, GO.PCTOP)
-            S.add_button('Hello!', GO.CYELLOW, GO.PCTOP)
+            G.Container.otherinp = S.add_input(GO.PCTOP, placeholder='I reset!!')
             S.add_button('Bye!', GO.CGREEN, GO.PCTOP)
             def pressed(elm):
                 G.Container.txt = 'You pressed the button in the Scrollable :)'
@@ -110,7 +110,8 @@ def GraphicsDemo():
                 'Num in num textbox': G.uids[G.Container.numinp].get(),
                 'Big switch state': G.uids[G.Container.switches[0]].get(),
                 'Small switch state': G.uids[G.Container.switches[1]].get(),
-                'Switch in scrollable area state': G.uids[G.Container.scrollable].G.uids[G.Container.otherswitch].get()
+                'Switch in scrollable area state': G.uids[G.Container.scrollable].G.uids[G.Container.otherswitch].get(),
+                'Text in textbox in scrollable area': G.uids[G.Container.scrollable].G.uids[G.Container.otherinp].get()
                 } # Whatever you return here will be returned by the function
     
     print(test('Right click! ' + t))

@@ -20,7 +20,12 @@ class GScrollable(Scrollable):
         self.GR = self.G.Graphic(func, generator=True, update=False, events=self.getevents, mousepos=self.getmouse)()
         super().__init__(self.G.WIN, pos, goalrect, (0, sizeOfScreen[1]-goalrect[1]), outline, bar)
     
-    def getevents(self): return self.events
+    def getevents(self):
+        for i in self.events:
+            try:
+                i.pos = self.getmouse()
+            except: pass
+        return self.events
     def getmouse(self):
         p = pygame.mouse.get_pos()
         np = (p[0]-self.pos[0], p[1]-self.pos[1]-self.scroll)
@@ -560,8 +565,10 @@ class Graphic:
             the UID of this element
         """
         sze = list(font.size(placeholder))
+        if maximum == None: maximum = sze+5
+        if width != None: sze[0] = width+5
+        else: sze[0] += 5
         sze[1] += 10
-        if width != None: sze[0] = width
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         ibox = InputBox(*pos, *sze, resize, placeholder, font, maximum, start) # TODO: Positioning and custom width & height & resize
         self.input_boxes.append(ibox)
@@ -598,7 +605,9 @@ class Graphic:
             the UID of this element
         """
         sze = list(font.size(str(start)))
-        if width != None: sze[0] = font.size('9'*width)[0]
+        if width != None: sze[0] = font.size('9'*width)[0]+5
+        sze[0] += 5
+        sze[1] += 10
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         ibox = NumInputBox(*pos, *sze, resize, start, *bounds, font) # TODO: Positioning and custom width & height & resize
         self.input_boxes.append(ibox)
