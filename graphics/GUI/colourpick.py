@@ -19,7 +19,23 @@ class ValuePicker:
             pygame.draw.rect(self.image, colour, (i+self.rad, h//3, 1, h-2*h//3))
         try: self.p = (1/self.bounds)*default
         except: self.p = 0
+        self.twod = pygame.Surface((self.pwidth, self.pwidth))
+        self.twod.fill((255, 255, 255))
+        for i in range(self.pwidth):
+            for j in range(self.pwidth):
+                try:
+                    colour = pygame.Color(0)
+                    hsla = [360, 100, 100-int((100/self.pwidth)*j*2*(100/self.pwidth)), 100]
+                    hsla[self.type] = 0
+                    colour.hsla = tuple(hsla)
+                    pygame.draw.rect(self.twod, colour, (i, j, 1, 1))
+                except: pass
         self.p = (max(0, min(self.p, 1)))
+    
+    def get_twod(self, w, h):
+        s = self.twod.copy()
+        s.set_alpha(300-300*self.p)
+        return pygame.transform.scale(s, (w, h))
 
     def get_colour(self):
         colour = pygame.Color(0)
@@ -63,7 +79,10 @@ class ColourPicker:
 
     def get_colour(self):
         colour = pygame.Color(0)
-        colour.hsla = (int((360/self.pwidth)*self.pwidth*self.p[0]), 100, 100-int(100*self.p[1]), 100)
+        hsla = [int((360/self.pwidth)*self.pwidth*self.p[0]), 100, 100-int(100*self.p[1]), 100]
+        for i in self.values:
+            hsla[i.type] = int(i.bounds * i.p)
+        colour.hsla = tuple(hsla)
         return colour
 
     def update(self):
@@ -78,6 +97,8 @@ class ColourPicker:
     def draw(self, surf):
         surf.fill((255, 255, 255), self.rect)
         surf.blit(self.image, self.imrect)
+        for i in self.values:
+            surf.blit(i.get_twod(self.pwidth, self.pheight), self.imrect)
         center = self.imrect.left + self.p[0] * self.pwidth, self.imrect.top + self.p[1] * self.pheight
         for i in self.values: i.draw(surf)
         pygame.draw.circle(surf, self.get_colour(), center, 25)
