@@ -4,12 +4,13 @@ import pygame
 
 class ValuePicker:
     def __init__(self, x, y, w, h, default=0, type=0, border=False):
+        self.size = (w, h)
         self.type = type
         self.border = border
         self.bounds = 360 if type == 0 else 100
-        self.rect = pygame.Rect(x, y, w, h)
         self.rad = h//2
         self.pwidth = w-self.rad*2
+        self.rect = pygame.Rect(x, y, w, h)
         self.imrect = pygame.Rect(x+h//2, y+h//3, self.pwidth, h-2*h//3)
         self.image = pygame.Surface((self.pwidth, h-2*h//3))
         self.image.fill((255, 255, 255))
@@ -33,6 +34,11 @@ class ValuePicker:
                     pygame.draw.rect(self.twod, colour, (i, j, 1, 1))
                 except: pass
         self.p = (max(0, min(self.p, 1)))
+    
+    def set_position(self, x, y):
+        h = self.size[1]
+        self.rect = pygame.Rect(x, y, *self.size)
+        self.imrect = pygame.Rect(x+h//2, y+h//3, self.pwidth, h-2*h//3)
     
     def get_twod(self, w, h):
         s = self.twod.copy()
@@ -67,7 +73,7 @@ class ColourPicker:
     def __init__(self, x, y, border=5, values=[1], w=100, h=None):
         self.pwidth = w
         self.pheight = h or w
-        self.values = [ValuePicker(x-border, self.pheight+45+border+i*50, w+border*2, 50, [0, 100, 50, 100][values[i]], values[i], i==len(values)-1) for i in range(len(values))]
+        self.values = [ValuePicker(x-border, y+self.pheight+border+i*50, w+border*2, 50, [0, 100, 50, 100][values[i]], values[i], i==len(values)-1) for i in range(len(values))]
         self.rect = pygame.Rect(x-border, y-border, self.pwidth+border*2, self.pheight+border*2)
         self.imrect = pygame.Rect(x, y, self.pwidth, self.pheight)
         self.border = border
@@ -81,6 +87,18 @@ class ColourPicker:
                     pygame.draw.rect(self.image, colour, (i, j, 1, 1))
                 except: pass
         self.p = (0, 0)
+    
+    def set_position(self, x, y):
+        
+        for i in range(len(self.values)):
+            self.values[i].set_position(x-self.border, y+self.pheight+self.border+i*50)
+        
+        self.rect = pygame.Rect(x-self.border, y-self.border, self.pwidth+self.border*2, self.pheight+self.border*2)
+        self.imrect = pygame.Rect(x, y, self.pwidth, self.pheight)
+    
+    def get_size(self):
+        sizes = [self.rect.size[1]] + [i.rect.size[1] for i in self.values]
+        return self.rect.size[0], sum(sizes)
 
     def get_colour(self):
         colour = pygame.Color(0)
@@ -110,24 +128,63 @@ class ColourPicker:
         for i in self.values: i.draw(surf)
         pygame.draw.circle(surf, self.get_colour(), center, 25)
 
+class ColourPickerBTN:
+    def __init__(self, win, x, y, size=20, sizeofpicker=200):
+        self.win = win
+        self.sop = sizeofpicker
+        self.size = size
+        self.pos = (x, y)
+        self.colour = None
+        self.picker = None
+    
+    def get_colour(self):
+        if self.picker != None:
+            self.colour = self.picker.get_colour()
+        return self.colour
+    
+    def update(self):
+        mouse_buttons = pygame.mouse.get_pressed()
+        mouse_pos = pygame.mouse.get_pos()
+        rect = pygame.Rect(*self.pos, self.size, self.size)
+        if mouse_buttons[0] and rect.collidepoint(mouse_pos) and self.picker == None:
+            self.picker = ColourPicker(0, 0, border=self.sop//10, w=self.sop)
+            s = self.picker.get_size()
+            if self.pos[0] - s[0] < 0 and self.pos[1] - s[1] < 0:
+                self.picker.set_position(self.pos[0]+self.size*2, self.pos[1]+self.size*2)
+            elif self.pos[0] - s[0] < 0:
+                self.picker.set_position(self.pos[0]+self.size*2, self.pos[1]-s[1]+20)
+            elif self.pos[1] - s[1] < 0:
+                self.picker.set_position(self.pos[0]-s[0]+20, self.pos[1]+self.size*2)
+            else:
+                self.picker.set_position(self.pos[0]-s[0]+20, self.pos[1]-s[1]+20)
+        elif mouse_buttons[0] and not rect.collidepoint(mouse_pos) and not (self.picker != None and pygame.Rect(self.picker.rect.x, self.picker.rect.y, *self.picker.get_size()).collidepoint(mouse_pos)):
+            self.get_colour()
+            self.picker = None
+        try:
+            self.picker.update()
+            self.picker.draw(self.win)
+        except: pass
+        pygame.draw.rect(self.win, (255, 0, 0), rect)
+
 if __name__ == '__main__':
     pygame.init()
     window = pygame.display.set_mode((500, 500))
     clock = pygame.time.Clock()
 
-    cp = ColourPicker(50, 50, 20, w=200)
+    cp = ColourPickerBTN(window, 50, 50)
 
     run = True
     while run:
         clock.tick(100)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False 
-
-        cp.update()
+                run = False
+        mouse_buttons = pygame.mouse.get_pressed()
+        if mouse_buttons[2]:
+            cp.pos = pygame.mouse.get_pos()
 
         window.fill(0)
-        cp.draw(window)
+        cp.update()
         pygame.display.flip()
         
     pygame.quit()
