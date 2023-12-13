@@ -134,20 +134,18 @@ class ColourPickerBTN:
         self.sop = sizeofpicker
         self.size = size
         self.pos = (x, y)
-        self.colour = None
-        self.picker = None
+        self.picker = ColourPicker(0, 0, border=self.sop//10, w=self.sop)
+        self.picker.p = (0, 0.5)
+        self.active = False
     
     def get_colour(self):
-        if self.picker != None:
-            self.colour = self.picker.get_colour()
-        return self.colour
+        return self.picker.get_colour()
     
     def update(self):
         mouse_buttons = pygame.mouse.get_pressed()
         mouse_pos = pygame.mouse.get_pos()
         rect = pygame.Rect(*self.pos, self.size, self.size)
-        if mouse_buttons[0] and rect.collidepoint(mouse_pos) and self.picker == None:
-            self.picker = ColourPicker(0, 0, border=self.sop//10, w=self.sop)
+        if mouse_buttons[0] and rect.collidepoint(mouse_pos):
             s = self.picker.get_size()
             if self.pos[0] - s[0] < 0 and self.pos[1] - s[1] < 0:
                 self.picker.set_position(self.pos[0]+self.size*2, self.pos[1]+self.size*2)
@@ -157,14 +155,15 @@ class ColourPickerBTN:
                 self.picker.set_position(self.pos[0]-s[0]+20, self.pos[1]+self.size*2)
             else:
                 self.picker.set_position(self.pos[0]-s[0]+20, self.pos[1]-s[1]+20)
-        elif mouse_buttons[0] and not rect.collidepoint(mouse_pos) and not (self.picker != None and pygame.Rect(self.picker.rect.x, self.picker.rect.y, *self.picker.get_size()).collidepoint(mouse_pos)):
-            self.get_colour()
-            self.picker = None
-        try:
+            self.active = True
+        elif mouse_buttons[0] and not rect.collidepoint(mouse_pos) and not pygame.Rect(self.picker.rect.x, self.picker.rect.y, *self.picker.get_size()).collidepoint(mouse_pos):
+            self.active = False
+        if self.active:
             self.picker.update()
             self.picker.draw(self.win)
-        except: pass
-        pygame.draw.rect(self.win, (255, 0, 0), rect)
+        pygame.draw.rect(self.win, (0, 0, 0), (self.pos[0]-2, self.pos[1]-2, self.size+4, self.size+4), border_radius=8)
+        pygame.draw.rect(self.win, (255, 255, 255), rect, border_radius=8)
+        pygame.draw.rect(self.win, self.get_colour(), (self.pos[0]+self.size//4, self.pos[1]+self.size//4, self.size-self.size//2, self.size-self.size//2), border_radius=8)
 
 if __name__ == '__main__':
     pygame.init()
@@ -181,7 +180,8 @@ if __name__ == '__main__':
                 run = False
         mouse_buttons = pygame.mouse.get_pressed()
         if mouse_buttons[2]:
-            cp.pos = pygame.mouse.get_pos()
+            mp = pygame.mouse.get_pos()
+            cp.pos = (mp[0]-cp.size//2, mp[1]-cp.size//2)
 
         window.fill(0)
         cp.update()
