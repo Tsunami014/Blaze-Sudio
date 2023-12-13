@@ -3,20 +3,22 @@ import pygame
 # Thanks to https://stackoverflow.com/questions/73517832/how-to-make-an-color-picker-in-pygame :)
 
 class ValuePicker:
-    def __init__(self, x, y, w, h, default=0, type=0):
+    def __init__(self, x, y, w, h, default=0, type=0, border=False):
         self.type = type
+        self.border = border
         self.bounds = 360 if type == 0 else 100
         self.rect = pygame.Rect(x, y, w, h)
-        self.image = pygame.Surface((w, h))
-        self.image.fill((255, 255, 255))
         self.rad = h//2
         self.pwidth = w-self.rad*2
+        self.imrect = pygame.Rect(x+h//2, y+h//3, self.pwidth, h-2*h//3)
+        self.image = pygame.Surface((self.pwidth, h-2*h//3))
+        self.image.fill((255, 255, 255))
         for i in range(self.pwidth):
             colour = pygame.Color(0)
             hsla = [360, 100, 50, 100]
             hsla[self.type] = int(self.bounds*i/self.pwidth)
             colour.hsla = tuple(hsla)
-            pygame.draw.rect(self.image, colour, (i+self.rad, h//3, 1, h-2*h//3))
+            pygame.draw.rect(self.image, colour, (i, 0, 1, h-2*h//3))
         try: self.p = (1/self.bounds)*default
         except: self.p = 0
         self.twod = pygame.Surface((self.pwidth, self.pwidth))
@@ -54,7 +56,10 @@ class ValuePicker:
         return False
 
     def draw(self, surf):
-        surf.blit(self.image, self.rect)
+        if not self.border:
+            pygame.draw.rect(surf, (255, 255, 255), self.rect)
+        else: pygame.draw.rect(surf, (255, 255, 255), self.rect, border_radius=8, border_top_left_radius=0, border_top_right_radius=0)
+        surf.blit(self.image, self.imrect)
         center = self.rect.left + self.rad + self.p * self.pwidth, self.rect.centery
         pygame.draw.circle(surf, self.get_colour(), center, self.rect.height // 2)
 
@@ -62,7 +67,7 @@ class ColourPicker:
     def __init__(self, x, y, border=5, values=[1], w=100, h=None):
         self.pwidth = w
         self.pheight = h or w
-        self.values = [False if values[i]==None else ValuePicker(x-border, self.pheight+45+border+i*50, w+border*2, 50, [0, 100, 50, 100][values[i]], values[i]) for i in range(len(values))]
+        self.values = [ValuePicker(x-border, self.pheight+45+border+i*50, w+border*2, 50, [0, 100, 50, 100][values[i]], values[i], i==len(values)-1) for i in range(len(values))]
         self.rect = pygame.Rect(x-border, y-border, self.pwidth+border*2, self.pheight+border*2)
         self.imrect = pygame.Rect(x, y, self.pwidth, self.pheight)
         self.border = border
@@ -95,7 +100,9 @@ class ColourPicker:
             self.p = ((max(0, min(self.p[0], 1))), (max(0, min(self.p[1], 1))))
 
     def draw(self, surf):
-        surf.fill((255, 255, 255), self.rect)
+        if self.values != []:
+            pygame.draw.rect(surf, (255, 255, 255), self.rect, border_radius=8, border_bottom_left_radius=0, border_bottom_right_radius=0)
+        else: pygame.draw.rect(surf, (255, 255, 255), self.rect, border_radius=8)
         surf.blit(self.image, self.imrect)
         for i in self.values:
             surf.blit(i.get_twod(self.pwidth, self.pheight), self.imrect)
