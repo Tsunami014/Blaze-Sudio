@@ -1,14 +1,13 @@
 # Use a pipeline as a high-level helper
-print('(1/3) Importing... (1/3)')
+print('(1/3) Importing... May take a while...') # Takes a long time
 from transformers import pipeline, AutoTokenizer
-print('\033[A(1/3) Importing... (2/3)')
+print('\033[A(1/3) Importing others...                 ')
 from transformers.generation.streamers import BaseStreamer
-print('\033[A(1/3) Importing... (3/3)')
 from re import findall
 
-print('\033[A(2/3) Loading model & tokenizer... (1/2)')
+print('\033[A(2/3) Loading model... May take a while...') # Takes a long time
 pipe = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v0.4")
-print('\033[A(2/3) Loading model & tokenizer... (2/2)')
+print('\033[A(2/3) Loading tokenizer...                            ')
 tokenizer = AutoTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v0.4")
 
 print('\033[A(3/3) Loading other things and finishing up...              ')
@@ -18,8 +17,8 @@ class Streamer(BaseStreamer):
         for i in findall('[ \t]+?\n[ \t]+?', self.default):
             self.default = self.default.replace(i, '\n')
         self.whole = ''
-    def put(self, value):
-        val = tokenizer.batch_decode(value)[0].replace('<|im_start|>', '').replace('<|im_end|>', '')
+    def put(self, v):
+        val = tokenizer.batch_decode(v, skip_special_tokens=True)[0]
         value = val.strip(' ')
         for i in findall('[ \t]+?\n[ \t]+?', value):
             value = self.default.replace(i, '\n')
@@ -30,7 +29,7 @@ class Streamer(BaseStreamer):
             self.whole += val
             self.output(val, self.whole)
     def start(self):
-        pass
+        print('Thinking...')
     def output(self, val, whole):
         if whole == val: # It has nothing else in it but the value, so it just started generating
             print('Generating...')
@@ -42,13 +41,17 @@ class Streamer(BaseStreamer):
 CHAT_EOS_TOKEN_ID = 32002
 system_prompt = "Grapefruit is a happy, kind and helpful human assistant who rarely speaks more than a word."
 name = "Grapefruit"
+history = []
 
 print('\033[ADone! Start chatting now:                                 ')
 while True:
     inp = input('> ')
-    print('Thinking...')
+    history.append(f'<|im_start|>user\n{inp}<|im_end|>')
+    history = history[-4:]
+    hist = '\n'.join(history)
+    if hist != '': hist += '\n'
     prompt = (
-        f"<|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n{inp}<|im_end|>\n<|im_start|>{name}\n"
+        f"<|im_start|>system\n{system_prompt}<|im_end|>\n{hist}<|im_start|>{name}\n"
     )
     res = pipe(prompt, streamer=Streamer(prompt),
         top_k=50,
@@ -59,6 +62,8 @@ while True:
         pad_token_id=CHAT_EOS_TOKEN_ID,
         eos_token_id=CHAT_EOS_TOKEN_ID
     )
+    print(res[0]['generated_text'][len(prompt):])
+    history.append(f'<|im_start|>{name}\n{res[0]["generated_text"][len(prompt):]}<|im_end|>')
 
 """
 # Use a pipeline as a high-level helper
