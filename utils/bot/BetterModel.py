@@ -41,7 +41,7 @@ class Streamer(BaseStreamer):
         print('\nFinished!')
 
 CHAT_EOS_TOKEN_ID = 32002
-system_prompt = "Grapefruit is a happy, kind and helpful human assistant who ALWAYS GIVES 2-WORD ANSWERS TO QUESTIONS."
+system_prompt = "Grapefruit is happy, kind and helpful friend. GRAPEFRUIT ALWAYS ANSWERS WITH JUST ONE WORD."
 name = "Grapefruit"
 history = []
 
@@ -71,63 +71,3 @@ while True:
         print(res[0]['generated_text'][len(prompt):])
         history.append(f'<|im_start|>{name}\n{res[0]["generated_text"][len(prompt):]}<|im_end|>')
     except: print('\nCancelled!')
-
-"""
-# Use a pipeline as a high-level helper
-print('importing...')
-from transformers import pipeline
-
-print('Loading model...')
-pipe = pipeline("text-generation", model="TinyLlama/TinyLlama-1.1B-Chat-v0.4")
-
-res = pipe('How are you?\n')
-
-quit()
-
-# Load model directly
-from transformers import AutoTokenizer, AutoModelForCausalLM, TextStreamer
-
-tokenizer = AutoTokenizer.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v0.4")
-model = AutoModelForCausalLM.from_pretrained("TinyLlama/TinyLlama-1.1B-Chat-v0.4")
-
-model_inputs = tokenizer(["A list of colors: red, blue"], return_tensors="pt")
-streamer = TextStreamer(tokenizer)
-quit()
-
-from transformers import AutoTokenizer
-import transformers
-import torch
-# pip install torch transformers>=4.31 accelerate
-model = "TinyLlama/TinyLlama-1.1B-Chat-v0.4"
-tokenizer = AutoTokenizer.from_pretrained(model)
-pipeline = transformers.pipeline(
-    "text-generation",
-    model=model,
-    torch_dtype=torch.float32,
-    device_map="auto",
-)
-
-CHAT_EOS_TOKEN_ID = 32002
-
-while True:
-    prompt = input('> ')
-    formatted_prompt = (
-        f"<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant\n"
-    )
-
-
-    sequences = pipeline(
-        formatted_prompt,
-        do_sample=True,
-        top_k=50,
-        top_p = 0.9,
-        num_return_sequences=1,
-        repetition_penalty=1.1,
-        max_new_tokens=1024,
-        eos_token_id=CHAT_EOS_TOKEN_ID,
-        stream=True
-    )
-
-    for seq in sequences:
-        print(f"Result: {seq['generated_text'][len(formatted_prompt):]}")
-"""
