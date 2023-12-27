@@ -1,6 +1,10 @@
 # Welcome to 🔶 Ember Sudios!
 (Thanks to the one and only Riley Dowsenator (@Imzafish) for the name!)
 
+AIed icon:
+
+![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/FOX1.jpg)
+
 Also known as:
  - The putgamecreatorsoutofbusinessanator (Thanks to @Faunder.real for that one)
  - One piece of code to rule them all!
