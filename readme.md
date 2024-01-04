@@ -1,7 +1,7 @@
-# Welcome to 🔶 Ember Sudios!
-(Thanks to the one and only Riley Dowsenator (@Imzafish) for the name!)
+# Welcome to Baze Sudios (TODO: Insert icon here)
+(Thanks to the one and only (@Imzafish) for the name!)
 
-AIed icon:
+AIed logo:
 
 ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/FOX1.jpg)
 
@@ -9,7 +9,9 @@ Also known as:
  - The putgamecreatorsoutofbusinessanator (Thanks to @Faunder.real for that one)
  - One piece of code to rule them all!
 
-# CURRENT VERSION: v1.1.0-alpha 🔶
+# CURRENT VERSION: v1.1.0-alpha (🔶 Ember)
+
+(And for all those who love catchphrases: `Oh, I want to make a game the easy way! How?` `I'll Blaze it!` (like "I'll chatGPT it" but cooler 😎))
 
 ## CURRENT THINGS THAT WORK THAT YOU CAN TEST:
  - world.py
@@ -66,7 +68,9 @@ Or actually go through a movie or something again with a more immersive experien
 ## ALSO for my own personal reminder: These games should all have endings. I started making this on the hope that it can make me stuck in a game forever and never end. As I'm coming through with this's development, I now realise that all good things must come to an end. It'll just be SO SAD oh my GOSH but I want my users to feel happy; They got to play the game of their dreams, and it would've ended happily, but still ended. There's no going back. It's all known territory. So the only thing left to do is to move on and embrace the change. (I want all the games to have a bittersweet ending)
 
 # Next versions coming soon:
- - v2.0.0 - 💥`Flare Sudio` - got a world and storyline and actually is playable!!!!
- - v3.0.0 - 🌋`Fire Sudio` - cos by then it'll be on fire :grin: - all functionality complete!
- - v4.0.0 - 🔥`Blaze Sudio` - AI generate you the game! (And for all those who love catchphrases: `Oh, I want to make a game the easy way! How?` `I'll Blaze it!` (like "I'll chatGPT it" but cooler 😎))
- - v5.0.0 - ?`?? Sudio` - Unity :D (You can suggest me any name/emoji on Discord)
+ - v2.0.0 - 💥`Flare` - got a world and storyline and actually is playable!!!!
+ - v3.0.0 - 🌋`Fire` - cos by then it'll be on fire :grin: - all functionality complete!
+ - v4.0.0 - 🔥`Blaze` - AI generate you the game! (And help you create the game by generating bits of it)
+ - v5.0.0 - ?`Bonfire` - Unity :D
+ - v6.0.0 - ?`Inferno` - ???
+(You can suggest me any name/emoji on Discord for anything)
