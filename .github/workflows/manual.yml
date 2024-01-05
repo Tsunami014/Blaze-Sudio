@@ -37,5 +37,8 @@ jobs:
         echo "Up a dir:"
         cd ..
         ls -la
+        echo "In the Blaze sudios dir:"
+        cd Blaze-Sudio
+        ls -la
         echo "done!"
 
