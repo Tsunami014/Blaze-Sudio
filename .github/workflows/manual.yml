@@ -32,6 +32,10 @@ jobs:
       run: echo "Hello ${{ inputs.name }}"
     - name: Debug Working Directory
       run: |
+        echo "Current dir:"
         ls -la
-        cat README.md
+        echo "Up a dir:"
+        cd ..
+        ls -la
+        echo "done!"
 
