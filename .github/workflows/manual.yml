@@ -32,9 +32,10 @@ jobs:
       run: echo "Hello ${{ inputs.name }}"
     - name: Debug Working Directory
       run: |
-        echo "Contents of the GitHub Actions workspace:"
-        ls -la $GITHUB_WORKSPACE
-        echo "Contents of the Blaze-Sudio directory:"
-        ls -la $GITHUB_WORKSPACE/Blaze-Sudio
+        echo "Current dir:"
+        ls -la
+        echo "All files in the Blaze-Sudio directory:"
+        ls -la Blaze-Sudio
         echo "done!"
+
 
