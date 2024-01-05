@@ -34,11 +34,6 @@ jobs:
       run: |
         echo "Current dir:"
         ls -la
-        echo "Up a dir:"
-        cd ..
-        ls -la
-        echo "In the Blaze sudios dir:"
-        cd Blaze-Sudio
-        ls -la
-        echo "done!"
+        echo "README:"
+        cat readme.md
 
