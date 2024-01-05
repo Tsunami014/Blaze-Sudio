@@ -1,9 +1,13 @@
 from setuptools import setup, find_packages
 
+with open('README.md', 'r', encoding='utf-8') as file:
+    long_description = file.read()
+
 setup(
     name='Blaze-Sudio',
     packages=find_packages(),
-    #data_files=[('', ['*'])],
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     version='1.2.0',
     license='Apache',
     description='This is the really cool studio to create games!',
