@@ -34,6 +34,7 @@ jobs:
       run: |
         echo "Current dir:"
         ls -la
-        echo "README:"
-        cat readme.md
+        echo "All files in the current directory:"
+        ls -la *
+        echo "done!"
 
