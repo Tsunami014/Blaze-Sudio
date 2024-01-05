@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='Blaze-Sudio',
     packages=find_packages(),
-    data_files=[('', ['*'])],
+    #data_files=[('', ['*'])],
     version='1.2.0',
     license='Apache',
     description='This is the really cool studio to create games!',
