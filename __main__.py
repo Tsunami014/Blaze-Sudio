@@ -68,8 +68,9 @@ class Game:
             G.add_text(G.Container.txt, GO.CBLUE, GO.PCTOP)
             G.add_button('Back', GO.CGREY, GO.PLTOP)
             G.add_button('New World', GO.CGREEN, GO.PLTOP)
+            cols = GO.CRAINBOW()
             for i in G.Container.res['worldinfo']:
-                G.add_button(i['name'], GO.CBLUE, GO.PLCENTER)
+                G.add_button(i['name'], next(cols), GO.PLCENTER)
         elif event == GO.ETICK:
             if G.touchingbtns != G.Container.prevpresses:
                 G.Container.prevpresses = G.touchingbtns.copy()
@@ -79,14 +80,14 @@ class Game:
             return True
         elif event == GO.EELEMENTCLICK: # Passed 'element'
             if element == 0: # back
-                return None
+                return False
             elif element == 1: # make new world
                 @G.Loading
                 def NW(self): # TODO: make a GUI screen to ask fr title and description
                     self.world = World('newworld', 'New World', 'a new world', 25, quality=500)
                 cont, res = NW()
                 if cont:
-                    self.world(res['world'], True)
+                    return self.world(res['world'], True)
             else:
                 return self.world(World(G.Container.res['worlds'][element.uid-2].name))
         elif event == GO.ELAST:

@@ -2,7 +2,6 @@ from utils import Character
 from utils.bot import TinyLLM, UserBot
 from graphics.GUI import InputBox, RESIZE_H, TextBoxFrame
 from graphics.GUI.textboxify.borders import LIGHT
-from graphics import Progressbar
 import pygame, asyncio, random
 
 pygame.init()

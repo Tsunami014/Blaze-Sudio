@@ -4,3 +4,5 @@ keys/apiKeys.key
 *.db
 *.ldtk
 *.json
+*.elm
+data/worlds/*/*

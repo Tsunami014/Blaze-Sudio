@@ -28,6 +28,7 @@ Things to note:
     3. I can modify it myself
     4. You guys don't have to install another package
     5. It won't ever change (unless I change it myself)
+6. `git merge [branch2]` will not delete the second branch. DO NOT USE `git rebase [branch2]` AS A REPLACEMENT
 
 TODO: get link to Pyldtk
 
@@ -70,6 +71,6 @@ Or actually go through a movie or something again with a more immersive experien
  - v2.0.0 - 💥`Flare` - got a world and storyline and actually is playable!!!!
  - v3.0.0 - 🌋`Fire` - cos by then it'll be on fire :grin: - all functionality complete!
  - v4.0.0 - 🔥`Blaze` - AI generate you the game! (And help you create the game by generating bits of it)
- - v5.0.0 - ?`Bonfire` - Unity :D
+ - v5.0.0 - ?`Bonfire` - Unity integration!
  - v6.0.0 - ?`Inferno` - ???
 (You can suggest me any name/emoji on Discord for anything)

@@ -9,3 +9,4 @@ matplotlib
 g4f
 bs4
 googlesearch-python
+html2text

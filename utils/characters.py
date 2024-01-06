@@ -1,10 +1,6 @@
 import os
-try:
-    from utils.discussions import *
-    from utils.conversation_parse import PARSE2
-except ImportError:
-    from discussions import *
-    from conversation_parse import PARSE2
+from utils.discussions import *
+from utils.conversation_parse import PARSE2
 
 class Character:
     def __init__(self, AI, name, personality):

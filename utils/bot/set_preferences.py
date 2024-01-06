@@ -1,16 +1,5 @@
-import json, os
-try:
-    from utils.bot.AIs import AI
-except ImportError:
-    try:
-        from bot.AIs import AI
-    except ImportError:
-        from AIs import AI
-
-import os, re
-bef = re.findall(r'((utils\/?)?(bot)?\n)', os.getcwd().replace('\\','/')+'\n')[0][0][:-1] # inp ends in newline
-bef = '/'.join([i for i in ['utils', 'bot'] if i not in bef.split('/')])
-if bef != '': bef += '/'
+import json
+from utils.bot.AIs import AI
 
 def get_all_ais():
     return AI().AIs
@@ -21,7 +10,7 @@ def get_all_ai_names():
 def set_preferences(prefs):
     eprefs = get_preferences()
     eprefs.update(prefs)
-    with open(f'{bef}preferences.json', 'w') as f:
+    with open(f'/utils/bot/preferences.json', 'w') as f:
         d = json.load(f)
         d['models'].update(eprefs)
         json.dump(d, f, indent=4)
@@ -55,7 +44,3 @@ async def rate_all(resps=None):
         else: out[name] = int(rating)
         i += 1
     set_preferences(out)
-
-if __name__ == '__main__':
-    import asyncio
-    asyncio.run(rate_all())

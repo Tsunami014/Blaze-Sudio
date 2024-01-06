@@ -1,21 +1,10 @@
-import os, sys, time
+import os, time
 import g4f
 
 import asyncio, aiohttp
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 import nest_asyncio
 nest_asyncio.apply()
-
-if os.getcwd().endswith('bot'): # set path 2 folders above
-    newpath = os.path.abspath(os.path.join(os.getcwd(), '../../'))
-    os.chdir(newpath)
-elif os.getcwd().endswith('utils'): # set folder to one above
-    newpath = os.path.abspath(os.path.join(os.getcwd(), '../'))
-    os.chdir(newpath)
-
-# now current folder should be '\AIHub' and not '\AIHub\utils' or '\AIHub\utils\bot' anymore!
-
-sys.path.append(os.getcwd())
 
 from utils.conversation_parse import PARSE
 from utils.characters import *

@@ -76,16 +76,3 @@ def Loading(func):
         t.raise_exception()
         return (not end), {i:getattr(m,i) for i in dir(m) if i not in dir(main)}
     return func2
-
-if __name__ == '__main__':
-    @Loading
-    def f(self):
-        for self.i in range(10):
-            sleep(1)
-    pygame.init()
-    WIN = pygame.display.set_mode()
-    font = pygame.font.Font(None, 64)
-    succeeded, ret = f(WIN, font)
-    pygame.quit()
-    print('Ran for %i seconds%s' % (ret['i'], (' Successfully! :)' if succeeded else ' And failed :(')))
-    print('end')

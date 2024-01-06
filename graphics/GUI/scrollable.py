@@ -27,19 +27,3 @@ class Scrollable:
                 p = (self.pos[0]+self.goalrect[0]-w, self.pos[1]+((-self.scroll) / self.bounds[1])*(self.goalrect[1]-40)+20)
                 pygame.draw.line(WIN, (200, 50, 50), (p[0], p[1]-20), (p[0], p[1]+20), 10)
             except: pass
-
-if __name__ == '__main__':
-    pygame.init()
-    w = pygame.display.set_mode()
-    from tkinter.filedialog import askopenfilename
-    im = pygame.image.load(askopenfilename(defaultextension='.png', filetypes=[('.png', '.png'), ('.jpg', '.jpg')]))
-    S = Scrollable(im, (20, 20), (500, 500), (0, im.get_height()-500))
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                quit()
-            elif event.type == pygame.MOUSEWHEEL:
-                S.update(event)
-        w.fill((0, 0, 0))
-        S(w)
-        pygame.display.update()

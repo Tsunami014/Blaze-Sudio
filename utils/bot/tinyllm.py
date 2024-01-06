@@ -1,12 +1,6 @@
 import languagemodels as lm
 import re
-try:
-    from utils.bot.install_tinyllm import installed
-except:
-    try:
-        from bot.install_tinyllm import installed
-    except:
-        from install_tinyllm import installed
+from utils.bot.install_tinyllm import installed
 
 from googlesearch import search # pip install beautifulsoup4 google
 import bs4, requests
@@ -67,18 +61,3 @@ class TinyLLM:
         lm.set_max_ram(ram)
         if lm.classify(txt,"simple reply","complex reply") == 'complex reply': return 'l'
         return 's'
-
-if __name__ == '__main__':
-    import asyncio
-    tllm = TinyLLM()
-    prompt = f"System: Reply as a helpful assistant. Currently {lm.get_date()}."
-    while True:
-        inp = input('> ')
-        if inp == '': break
-        prompt += f"\n\nUser: {inp}"
-        i = asyncio.run(tllm.interrupt(inp))
-        prompt += "\n\nAssistant:"
-        end = asyncio.run(tllm(prompt))
-        print(i)
-        print(end)
-        prompt += f" {end}"

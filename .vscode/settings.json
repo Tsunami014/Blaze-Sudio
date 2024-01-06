@@ -20,7 +20,8 @@
         "STT",
         "characters",
         "sound gen",
-        "other"
+        "other",
+        "nodes"
     ],
     "wolf.disableHotModeWarning": true
 }

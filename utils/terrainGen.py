@@ -1,8 +1,5 @@
 # https://github.com/BilHim/minecraft-world-generation/blob/main/src/Minecraft%20Terrain%20Generation%20in%20Python%20-%20By%20Bilal%20Himite.ipynb
-
 # Imports and parameters
-# print('Importing...')
-
 from random import randint
 import numpy as np
 from matplotlib import pyplot as plt
@@ -17,10 +14,7 @@ from scipy.interpolate import interp1d
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.morphology import binary_dilation
 
-try:
-    from utils.conversation_parse import parseKWs
-except:
-    from conversation_parse import parseKWs
+from utils.conversation_parse import parseKWs
 
 class Map:
     def __init__(self, *args, **kwargs):
@@ -844,17 +838,3 @@ class MapGen:
         height_map = norm_map * scaling_factor  # Convert to heights
         out = [[round(j) for j in i] for i in height_map]
         self.outs = ([out, colour_map, rivers_biome_colour_map, adjusted_height_river_map, river_land_mask, biome_masks], trees)
-
-if __name__ == '__main__':
-    size = 1500
-    n = 256
-    inp = input('Input nothing to use random seed, input "." to use a preset good seed, or input your own INTEGER seed > ')
-    if inp == '':
-        map_seed = randint(0, 999999)
-    elif inp == '.':
-        map_seed = 762345
-    else:
-        map_seed = int(inp)
-    useall = input('Type anything here to show all steps in terrain generation, or leave this blank and press enter to just show the finished product. > ') != ''
-    outs, trees = MapGen(size, map_seed, n, useall=useall, showAtEnd=True).outs
-    print(outs[0])

@@ -3,9 +3,10 @@ import pygame
 # Colours
 CTRANSPARENT = (255, 255, 255, 1)
 CWHITE = (255, 255, 255)
-CGREEN = (10, 255, 50)
-CRED = (255, 10, 50)
-CBLUE = (10, 50, 255)
+CAWHITE = (200, 200, 200)
+CGREEN = (60, 200, 100)
+CRED = (255, 60, 100)
+CBLUE = (60, 100, 255)
 CBLACK = (0, 0, 0)
 CYELLOW = (255, 200, 50)
 CGREY = (125, 125, 125)
@@ -14,6 +15,18 @@ def CNEW(name):
     return (c.r, c.g, c.b)
 CINACTIVE = CNEW('lightskyblue3')
 CACTIVE = CNEW('dodgerblue2')
+
+def CRAINBOW():
+    l = [
+        CRED,
+        CYELLOW,
+        CGREEN,
+        CBLUE,
+        CBLACK,
+        CGREY
+    ]
+    while True:
+        for i in l: yield i
 
 # Fonts
 FTITLE = pygame.font.SysFont('Comic Sans MS', 64, True)

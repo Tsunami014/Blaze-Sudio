@@ -1,14 +1,8 @@
 import languagemodels as lm
 import re
 from difflib import get_close_matches as GCM
-try:
-    from utils.bot.tinyllm import *
-except:
-    try:
-        from bot.tinyllm import *
-    except:
-        from tinyllm import *
-# This will only work with GPT4all.
+from utils.bot.tinyllm import *
+# This will only work with GPT4All.
 
 class Copilot:
     def __init__(self, name):

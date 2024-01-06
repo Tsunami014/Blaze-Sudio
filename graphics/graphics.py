@@ -1,15 +1,10 @@
-import pygame
+import pygame, asyncio
 pygame.init()
-try:
-    import graphics.graphics_options as GO
-    from graphics.loading import Loading
-    from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox, Scrollable, ColourPickerBTN
-    from graphics.GUI.textboxify.borders import LIGHT
-except:
-    import graphics_options as GO
-    from loading import Loading
-    from GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox, Scrollable, ColourPickerBTN
-    from GUI.textboxify.borders import LIGHT
+import graphics.graphics_options as GO
+from graphics.loading import Loading
+from graphics.async_handling import Progressbar
+from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox, Scrollable, ColourPickerBTN
+from graphics.GUI.textboxify.borders import LIGHT
 
 class GScrollable(Scrollable):
     def __init__(self, WIN, pos, goalrect, sizeOfScreen, outline, bar):
@@ -146,6 +141,7 @@ class Element:
         
         Only works on:
          - GO.TSWITCH
+         - GO.TINPUTBOX
         
         Returns
         -------
@@ -154,6 +150,8 @@ class Element:
         """
         if self.type == GO.TSWITCH:
             return self.sprite.get()
+        elif self.type == GO.TINPUTBOX:
+            return self.sprite.text
         else:
             raise NotImplementedError(
                 f'Set text has not been implemented for this element with type {self.name}!'
@@ -238,6 +236,26 @@ class Graphic:
             return Loading(func)(self.WIN, GO.FTITLE)
         return func2
     
+    def PBLoading(self, tasks): # TODO: allow aborting
+        """Have a loading screen! Like G.Loading, but with a progressbar!
+
+        Parameters
+        ----------
+        tasks : list[async functions]
+            The list of async functions to run.
+
+        Returns
+        -------
+        list
+            The output list of all the return values of each of the functions inputted
+        """
+        self.WIN.fill(GO.CWHITE)
+        pygame.display.update()
+        pbar = Progressbar(600, 50)
+        res = pbar(self.WIN, (self.size[0] - 600) // 2, (self.size[1] - 50) // 2, 5, tasks)
+        asyncio.get_event_loop().stop()
+        return res
+    
     def CGraphic(self, funcy): # Function decorator, not to be called
         def func2(slf, *args, **kwargs):
             self.Graphic(funcy, slf)(*args, **kwargs) # Yes I know I'm calling it here. Deal with it.
@@ -299,10 +317,13 @@ class Graphic:
                     blocked = False
                     if event.type == pygame.QUIT:
                         self.run = False
-                    for ibox in self.input_boxes:
-                        if ibox.handle_event(event, pygame.K_RETURN) == False:
-                            func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=str(ibox.get())))
-                            blocked = True
+                    if not self.pause:
+                        for ibox in self.input_boxes:
+                            if ibox.handle_event(event, pygame.K_RETURN) == False:
+                                func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=str(ibox.get())))
+                                blocked = True
+                    else:
+                        for ibox in self.input_boxes: ibox.active = False
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.run = False
@@ -329,7 +350,10 @@ class Graphic:
                                 except: pass
                             self.TB.toggleactive(not self.TB.collides(*mousepos()))
                             for i in self.touchingbtns:
-                                func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
+                                r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
+                                if r != None:
+                                    self.run = False
+                                    yield [r]
                     elif event.type == pygame.MOUSEWHEEL and not self.pause:
                         for i in self.scrollsables: i.update(event)
                     if not self.pause and not blocked: func(GO.EEVENT, event)
@@ -344,6 +368,7 @@ class Graphic:
                     self.clock.tick(60)
             ret = func(GO.ELAST, aborted=self.ab)
             self.ab = False
+            self.run = True
             yield [ret]
         def func3(*args, **kwargs):
             f = func2(*args, **kwargs)
@@ -354,7 +379,7 @@ class Graphic:
         if generator: return func2
         else: return func3
 
-    def Dropdown(self, elements, spacing=5, font=GO.FFONT, activecol=GO.CACTIVE, bgcol=GO.CBLACK, txtcol=GO.CWHITE):
+    def Dropdown(self, elements, spacing=5, font=GO.FFONT, activecol=GO.CACTIVE, bgcol=GO.CBLACK, txtcol=GO.CWHITE, pos=None):
         """Spawns a dropdown!
         This will pause everything else! You will need to click out of the dropdown to exit it.
 
@@ -372,6 +397,8 @@ class Graphic:
             The colour of the background of the dropdown, by default GO.CBLACK
         txtcol : tuple[int, int, int], optional
             The colour of the text of the dropdown, by default GO.CWHITE
+        pos : tuple[int, int], optional
+            The position of the dropdown, by default the mouse location
         For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
 
         Returns
@@ -380,7 +407,7 @@ class Graphic:
             The index of the input elements list that was selected, else None if nothing selected
             False if you exited from the menu using escape or closing the window. This will also exit the GUI.
         """
-        d = dropdown(self.WIN, elements, spacing, font, bgcol, txtcol, activecol)
+        d = dropdown(self.WIN, elements, spacing, font, bgcol, txtcol, activecol, pos)
         if d is False: self.run = False
         return d
     
@@ -708,122 +735,7 @@ class Graphic:
         self.ab = True
 
 if __name__ == '__main__':
-    from time import sleep
-    t = input('Please input the starting text for the middle: ')
     G = Graphic()
-    @G.Loading
-    def test_loading(self):
-        for self.i in range(10):
-            sleep(1)
-    
-    @G.Graphic
-    def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
-        if event == GO.EFIRST: # First, before anything else happens in the function
-            G.Container.txt = txt
-        if event == GO.ELOADUI: # Load the graphics
-            CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1]) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
-            LBOT = GO.PNEW([0, -1], GO.PSTACKS[GO.PLBOTTOM][1])
-            try:
-                prevs = [G.uids[i].get() for i in (G.Container.switches+[G.Container.numinp,G.Container.inp])] + [G.uids[G.Container.colour].picker.p]
-                prevTG = [G.uids[G.Container.scrollable].G.uids[G.Container.otherswitch].get(), G.uids[G.Container.scrollable].scroll]
-            except:
-                prevs = [False, False, 0, '', (0, 0.5)]
-                prevTG = [False, 0]
-            G.Clear()
-            G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
-            G.add_text(':) ', GO.CBLACK, GO.PRBOTTOM, GO.FTITLE)
-            G.add_empty_space(GO.PCCENTER, 0, -150) # Yes, you can have negative space. This makes the next things shifted the other direction.
-            G.add_text('This is a cool thing', GO.CBLUE, GO.PCCENTER)
-            G.add_text('Sorry, I meant a cool TEST', GO.CRED, GO.PCCENTER)
-            G.add_text(G.Container.txt, GO.CGREEN, GO.PCCENTER)
-            G.add_empty_space(LBOT, 0, 20)
-            G.add_button('Button 1 :D', GO.CYELLOW, LBOT)
-            G.add_text('Buttons above [^] and below [v]', GO.CBLUE, LBOT)
-            G.add_button('Textbox test', GO.CBLUE, LBOT)
-            G.add_button('Loading test', GO.CGREEN, LBOT)
-            G.Container.exitbtn = G.add_button('EXIT', GO.CRED, GO.PLCENTER)
-            G.add_empty_space(CTOP, -150, 0) # Center it a little more
-            G.add_text('Are you ', GO.CBLACK, CTOP)
-            G.add_text('happy? ', GO.CGREEN, CTOP)
-            G.add_text('Or sad?', GO.CRED, CTOP)
-            G.Container.inp = G.add_input(GO.PCCENTER, GO.FFONT, maximum=16, start=prevs[3])
-            G.add_empty_space(GO.PCCENTER, 0, 50)
-            G.Container.numinp = G.add_num_input(GO.PCCENTER, GO.FFONT, 4, start=prevs[2], bounds=(-255, 255))
-            G.Container.switches = [
-                G.add_switch(GO.PRTOP, 40, prevs[0]),
-                G.add_switch(GO.PRTOP, default=prevs[1])
-            ]
-            G.Container.colour = G.add_colour_pick(GO.PRTOP)
-            G.uids[G.Container.colour].picker.p = prevs[4]
-            TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
-            G.Container.scrollable, S = G.add_Scrollable(TOPLEFT, (250, 200), (250, 350))
-            G.uids[G.Container.scrollable].scroll = prevTG[1]
-            S.add_empty_space(GO.PCTOP, 10, 20)
-            S.add_button('Scroll me!', GO.CBLUE, GO.PCTOP)
-            G.Container.otherinp = S.add_input(GO.PCTOP, placeholder='I reset!!')
-            S.add_button('Bye!', GO.CGREEN, GO.PCTOP)
-            def pressed(elm):
-                G.Container.txt = 'You pressed the button in the Scrollable :)'
-                G.Reload()
-            S.add_button('Press me!', GO.CRED, GO.PCTOP, callback=pressed)
-            G.Container.otherswitch = S.add_switch(GO.PCTOP, default=prevTG[0])
-        elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
-            return True # Return whether or not the loop should continue.
-        elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
-            if element.type == GO.TBUTTON:
-                # This gets passed 'element': the element that got clicked. TODO: make an Element class
-                # The == means element's uid == __
-                # UID gets generated based off order: so UID of 2 means second thing created that makes a UID.
-                # When you create a thing that makes a UID it returns it. e.g. button1 = G.add_button(etc.)
-                # So in that example button1 is the UID. Maybe try saving it to the container tho! Example shown by the exit button.
-                if element == 2:
-                    succeeded, ret = test_loading()
-                    G.Container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
-                    G.Reload()
-                elif element == G.Container.exitbtn:
-                    G.Abort()
-                elif element == 1:
-                    bot = GO.PNEW([0, 0], GO.PSTACKS[GO.PCBOTTOM][1], 1)
-                    G.add_TextBox('HALLOOOO! :)', bot)
-                    G.Container.idx = 0
-                else:
-                    G.Container.txt = element.txt # put name of button in middle
-                    G.Reload()
-            elif element.type == GO.TTEXTBOX:
-                if G.Container.idx == 0:
-                    element.set_text("Happy coding!")
-                    G.Container.idx = 1
-                else:
-                    element.remove()
-            elif element.type == GO.TINPUTBOX:
-                G.Container.txt = element.txt
-                element.remove()
-                G.Reload()
-        elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
-            if element.type == pygame.KEYDOWN:
-                if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
-                    G.Container.txt = 'Saved! (Don\'t worry - this does nothing)'
-                    G.Reload()
-            elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
-                opts = ['HI', 'BYE', 'HI AGAIN']
-                resp = G.Dropdown(opts)
-                if isinstance(resp, int):
-                    G.Container.txt = opts[resp]
-                    G.Reload()
-        elif event == GO.ELAST:
-            # This also gets passed 'aborted': Whether you aborted or exited the screen
-            return {
-                'Aborted?': aborted, 
-                'Text in textbox': G.uids[G.Container.inp].get(),
-                'Num in num textbox': G.uids[G.Container.numinp].get(),
-                'Big switch state': G.uids[G.Container.switches[0]].get(),
-                'Small switch state': G.uids[G.Container.switches[1]].get(),
-                'Switch in scrollable area state': G.uids[G.Container.scrollable].G.uids[G.Container.otherswitch].get(),
-                'Text in textbox in scrollable area': G.uids[G.Container.scrollable].G.uids[G.Container.otherinp].get()
-                } # Whatever you return here will be returned by the function
-    
-    print(test('Right click! ' + t))
-    
     # Copy this scaffold for your own code :)
     # Args and kwargs are passed through from the initial call of the func
     @G.Graphic # If you use classes, make this CGraphics and add a `self` argument to the function
@@ -840,4 +752,3 @@ if __name__ == '__main__':
             pass
         elif event == GO.ELAST: # Passed 'aborted'
             pass # Whatever you return here will be returned by the function
-    pygame.quit() # this here for very fast quitting
