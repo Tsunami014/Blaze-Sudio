@@ -1,6 +1,9 @@
 
 # Welcome to Baze Sudios!
 
+![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio)
+(but really, if you look in the commits it's just me)
+
 (Thanks to the one and only `@Imzafish` for the name!)
 
 ![Fox logo](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/FOX1.jpg) 
