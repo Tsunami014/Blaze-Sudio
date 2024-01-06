@@ -1,21 +1,24 @@
 from setuptools import setup, find_packages
+import codecs
+import os
 
-with open('readme.md', 'r', encoding='utf-8') as file:
-    long_description = file.read()
+here = os.path.abspath(os.path.dirname(__file__))
+
+with codecs.open(os.path.join(here, "readme.md"), encoding="utf-8") as fh:
+    long_description = "\\n" + fh.read()
 
 setup(
     name='Blaze-Sudio',
-    packages=find_packages(),
-    long_description=long_description,
-    long_description_content_type='text/markdown',
     version='1.2.0',
     license='Apache',
     description='This is the really cool studio to create games!',
-    author='Max Worrall',
-    author_email='max.worrall@education.nsw.gov.au',
     url='https://github.com/Tsunami014/Blaze-Sudio',
     download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v1.1.0-alpha.tar.gz',
-    keywords=['AI', 'Python', 'games'],
+    long_description_content_type="text/markdown",
+    long_description=long_description,
+    packages=find_packages(),
+    author='Max Worrall',
+    author_email='max.worrall@education.nsw.gov.au',
     install_requires=[
         'requests',
         'connect-markdown-renderer',
@@ -26,11 +29,14 @@ setup(
         'scikit-image',
         'pyLdtk',
     ],
+    keywords=['AI', 'Python', 'games'],
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "Programming Language :: Python :: 3",
         # 'Topic :: Software Development :: Build Tools',
-        # 'License :: OSI Approved :: MIT License',
-        # 'Programming Language :: Python :: 3.10',
-    ],
+        #"Operating System :: Unix",
+        #"Operating System :: MacOS :: MacOS X",
+        "Operating System :: Microsoft :: Windows"
+    ]
 )
