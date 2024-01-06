@@ -9,7 +9,7 @@ with codecs.open(os.path.join(here, "readme.md"), encoding="utf-8") as fh:
 
 setup(
     name='Blaze-Sudio',
-    version='1.2.0',
+    version='1.3.0',
     license='Apache',
     description='This is the really cool studio to create games!',
     url='https://github.com/Tsunami014/Blaze-Sudio',
@@ -47,5 +47,5 @@ setup(
 # 3 - Alpha
 # 4 - Beta
 # 5 - Production/Stable
-# 6- Mature
+# 6 - Mature
 # 7 - Inactive
