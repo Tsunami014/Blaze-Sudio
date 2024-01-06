@@ -1,4 +1,3 @@
-
 # Welcome to Baze Sudios!
 
 ![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio)
