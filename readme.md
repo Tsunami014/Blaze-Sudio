@@ -1,15 +1,16 @@
-# Welcome to Baze Sudios (TODO: Insert icon here)
-(Thanks to the one and only (@Imzafish) for the name!)
 
-AIed logo:
+# Welcome to Baze Sudios!
 
-![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/FOX1.jpg)
+(Thanks to the one and only `@Imzafish` for the name!)
+
+![Fox logo](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/FOX1.jpg) 
 
 Also known as:
- - The putgamecreatorsoutofbusinessanator (Thanks to @Faunder.real for that one)
+ - The putgamecreatorsoutofbusinessanator (Thanks to `@Faunder.real` for that one)
  - One piece of code to rule them all!
 
-# CURRENT VERSION: v1.1.0-alpha (🔶 Ember)
+# CURRENT VERSION: v1.2.0-alpha (🔶 Ember)
+![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/FoxIcon.png)
 
 (And for all those who love catchphrases: `Oh, I want to make a game the easy way! How?` `I'll Blaze it!` (like "I'll chatGPT it" but cooler 😎))
 
