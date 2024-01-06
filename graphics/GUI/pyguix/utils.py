@@ -22,13 +22,18 @@ import dataclasses as dc
 import enum
 import json as js
 try:
-    import pyguix.ui.themes as th
-    import pyguix.ui.context as cx
-    import pyguix.ui.settings as st
-except ImportError:
     import graphics.GUI.pyguix.ui.themes as th
     import graphics.GUI.pyguix.ui.context as cx
     import graphics.GUI.pyguix.ui.settings as st 
+except ImportError:
+    try:
+        import GUI.pyguix.ui.themes as th
+        import GUI.pyguix.ui.context as cx
+        import GUI.pyguix.ui.settings as st
+    except ImportError:
+        import pyguix.ui.themes as th
+        import pyguix.ui.context as cx
+        import pyguix.ui.settings as st
 
 # Constants:
 DEFAULT_THEME='default.json'
