@@ -3,12 +3,12 @@ pygame.init()
 try:
     import graphics.graphics_options as GO
     from graphics.loading import Loading
-    from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox, Scrollable
+    from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox, Scrollable, ColourPickerBTN
     from graphics.GUI.textboxify.borders import LIGHT
 except:
     import graphics_options as GO
     from loading import Loading
-    from GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox, Scrollable
+    from GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox, Scrollable, ColourPickerBTN
     from GUI.textboxify.borders import LIGHT
 
 class GScrollable(Scrollable):
@@ -196,6 +196,7 @@ class Graphic:
         self.statics = []
         self.buttons = []
         self.input_boxes = []
+        self.cps = []
         self.store = {}
         self.rel = False
         self.ab = False
@@ -284,6 +285,10 @@ class Graphic:
                 self.TB.update()
                 for ibox in self.input_boxes:
                     ibox.draw(self.WIN)
+                for i in self.cps:
+                    if not self.pause:
+                        i.update(mousepos)
+                    i.draw()
                 self.sprites.update()
                 rects = self.sprites.draw(self.WIN)
                 pygame.display.update(rects)
@@ -615,6 +620,30 @@ class Graphic:
         self.uids.append(sw)
         if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
+
+    def add_colour_pick(self, position, size=20, sow=200):
+        """Adds a colour picker button to the GUI!
+        This is like a button with a colour on it that when you press it you can change the colour
+
+        Parameters
+        ----------
+        position : GO.P___ (e.g. GO.PRBOTTOM)
+            The position on the screen this element will be placed
+        size : int, optional
+            The size of the colour picker button, by default 20
+        sow : int, optional
+            The size of the colour picker window, by default 200
+
+        Returns
+        -------
+        int
+            the UID of this element
+        """
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, (size, size)), (size, size), position)
+        btn = ColourPickerBTN(self.WIN, *pos, size, sow)
+        self.cps.append(btn)
+        self.uids.append(btn)
+        return len(self.uids) - 1
     
     def add_Scrollable(self, position, size, sos, outline=10, bar=True):
         """Adds a Scrollable window to the Graphic screen!
@@ -672,6 +701,7 @@ class Graphic:
         self.nextuid = 0
         self.uids = []
         self.scrollsables = []
+        self.cps = []
         self.callbacks = {}
     
     def Abort(self):
@@ -694,10 +724,10 @@ if __name__ == '__main__':
             CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1]) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
             LBOT = GO.PNEW([0, -1], GO.PSTACKS[GO.PLBOTTOM][1])
             try:
-                prevs = [G.uids[i].get() for i in (G.Container.switches+[G.Container.numinp,G.Container.inp])]
+                prevs = [G.uids[i].get() for i in (G.Container.switches+[G.Container.numinp,G.Container.inp])] + [G.uids[G.Container.colour].picker.p]
                 prevTG = [G.uids[G.Container.scrollable].G.uids[G.Container.otherswitch].get(), G.uids[G.Container.scrollable].scroll]
             except:
-                prevs = [False, False, 0, '']
+                prevs = [False, False, 0, '', (0, 0.5)]
                 prevTG = [False, 0]
             G.Clear()
             G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
@@ -723,6 +753,8 @@ if __name__ == '__main__':
                 G.add_switch(GO.PRTOP, 40, prevs[0]),
                 G.add_switch(GO.PRTOP, default=prevs[1])
             ]
+            G.Container.colour = G.add_colour_pick(GO.PRTOP)
+            G.uids[G.Container.colour].picker.p = prevs[4]
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
             G.Container.scrollable, S = G.add_Scrollable(TOPLEFT, (250, 200), (250, 350))
             G.uids[G.Container.scrollable].scroll = prevTG[1]
