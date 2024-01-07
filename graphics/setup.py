@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='graphics',
-    version='graphics',
+    version='1.3.0',
     license='Apache',
     description='This is the graphics portion of https://github.com/Tsunami014/Blaze-Sudio',
     url='https://github.com/Tsunami014/Blaze-Sudio',
