@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='Blaze-Sudio-Graphics',
-    version='1.3.0',
+    name='graphics',
+    version='graphics',
     license='Apache',
     description='This is the graphics portion of https://github.com/Tsunami014/Blaze-Sudio',
     url='https://github.com/Tsunami014/Blaze-Sudio',
@@ -15,7 +15,7 @@ setup(
         'requests',
         'pygame',
     ],
-    keywords=['Graphics', 'Python'],
+    keywords=['graphics', 'Python'],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
