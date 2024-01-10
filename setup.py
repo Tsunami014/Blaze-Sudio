@@ -13,7 +13,7 @@ setup(
     license='Apache',
     description='This is the really cool studio to create games!',
     url='https://github.com/Tsunami014/Blaze-Sudio',
-    download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v1.2.0-alpha.tar.gz',
+    download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v1.3.0-alpha.tar.gz',
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),
