@@ -1,7 +1,7 @@
 # Welcome to Baze Sudios!
 
 ![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio)
-(but really, if you look in the commits it's just me)
+(but really, if you look in the commits it's just me) (At the MOMENT, I'm hoping I can get others to help too if they want!)
 
 (Thanks to the one and only `@Imzafish` for the name!)
 
