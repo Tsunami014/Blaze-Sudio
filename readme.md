@@ -1,5 +1,7 @@
 # Welcome to Baze Sudios!
 
+(Please scroll down for useful information)
+
 ![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio)
 (but really, if you look in the commits it's just me) (At the MOMENT, I'm hoping I can get others to help too if they want!)
 
@@ -16,9 +18,28 @@ Also known as:
 
 (And for all those who love catchphrases: `Oh, I want to make a game the easy way! How?` `I'll Blaze it!` (like "I'll chatGPT it" but cooler 😎))
 
-# THIS REPO IS VERY WEIRD AT THE MOMENT, CHECK BACK LATER
+# What I'm working on:
 
-## Come back later for what you can test and what you cannot
+Stages of production (SOP):
+ 1. just an idea at the moment
+ 2. early stages
+ 3. in progress, you can test it out
+ 4. finished, but more features/stuff coming soon
+ 5. finished, probably only going to get an update once every blue moon
+
+| What is it | Stage of production (SOP) | Testable? | My rating on how well I did at it /5 |
+|:----------:|:-------------------------:|:---------:|:---------:|:--------------:|
+| Node stuff | [In Progress](https://badgen.net/badge/Production/3?color=yellow) | [demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 | 
+| Graphics | [Finished, more features soon](https://badgen.net/badge/Production/4?color=green) | [demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
+| World/terrain generation | [Finished, more features soon](https://badgen.net/badge/Production/4?color=green) | [demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
+| AIs | [In Progress](https://badgen.net/badge/Production/3?color=yellow) | [demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
+| Conversation Parse | [In Progress](https://badgen.net/badge/Production/3?color=yellow) | [demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
+| Main code | [In Progress](https://badgen.net/badge/Production/3?color=yellow) | [__main\_\_.py:Testable!](https://badgen.net/badge/__main__.py/Testable!?color=green) | 🌟🌟🌟⭐ |
+| Speech-To-Text | [In Progress](https://badgen.net/badge/Production/3?color=yellow) | [Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| Image generator | [Early Stages](https://badgen.net/badge/Production/2?color=orange) | [Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| Music generator | [Idea](https://badgen.net/badge/Production/1?color=pink) | [Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| GUI | [Early Stages](https://badgen.net/badge/Production/2?color=orange) | [Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| LDtk integration | [Idea](https://badgen.net/badge/Production/1?color=pink) | [Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
 
 Also please note that this is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! I would love to have some help with this project!
 
@@ -35,7 +56,7 @@ Things to note:
 TODO: get link to Pyldtk
 
 # How to install
-TODO: show how to install with git
+TODO: show how to install with git and pip
 Please note: requirements file may be wrong. Please contact me if they are.
 ```bash
 pip install -r requirements.txt
