@@ -8,7 +8,7 @@ setup(
     url='https://github.com/Tsunami014/Blaze-Sudio',
     long_description_content_type="text/markdown",
     long_description="For more details see https://github.com/Tsunami014/Blaze-Sudio",
-    packages=find_packages(),
+    packages=['graphics'],
     author='Max Worrall',
     author_email='max.worrall@education.nsw.gov.au',
     install_requires=[
