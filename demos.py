@@ -198,7 +198,7 @@ def rateAIsDemo():
     asyncio.run(rate_all())
 
 def api_keysDemo():
-    from api_keys import SaveAPIKeysDialog
+    from keys.api_keys import SaveAPIKeysDialog
     SaveAPIKeysDialog()
 
 def node_editorDemo():
