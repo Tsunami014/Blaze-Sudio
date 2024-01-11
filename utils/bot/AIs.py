@@ -8,7 +8,7 @@ nest_asyncio.apply()
 
 from utils.conversation_parse import PARSE
 from utils.characters import *
-from api_keys import loadAPIkeys
+from keys.api_keys import loadAPIkeys
 from utils.bot.gpt4real import G4A
 from utils.bot.basebots import *
 

@@ -7,14 +7,14 @@
 
 (Thanks to the one and only `@Imzafish` for the name!)
 
-![Fox logo](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/FOX1.jpg) 
+![Fox logo](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FOX1.jpg) 
 
 Also known as:
  - The putgamecreatorsoutofbusinessanator (Thanks to `@Faunder.real` for that one)
  - One piece of code to rule them all!
 
 # CURRENT VERSION: v1.3.0-alpha (🔶 Ember)
-![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/FoxIcon.png)
+![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIcon.png)
 
 (And for all those who love catchphrases: `Oh, I want to make a game the easy way! How?` `I'll Blaze it!` (like "I'll chatGPT it" but cooler 😎))
 
@@ -29,17 +29,25 @@ Stages of production (SOP):
 
 | What is it | Stage of production (SOP) | Testable? | My rating on how well I did at it /5 |
 |:----------:|:-------------------------:|:---------:|:---------:|:--------------:|
-| Node stuff | [In Progress](https://badgen.net/badge/Production/3?color=yellow) | [demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 | 
-| Graphics | [Finished, more features soon](https://badgen.net/badge/Production/4?color=green) | [demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
-| World/terrain generation | [Finished, more features soon](https://badgen.net/badge/Production/4?color=green) | [demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
-| AIs | [In Progress](https://badgen.net/badge/Production/3?color=yellow) | [demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
-| Conversation Parse | [In Progress](https://badgen.net/badge/Production/3?color=yellow) | [demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
-| Main code | [In Progress](https://badgen.net/badge/Production/3?color=yellow) | [__main\_\_.py:Testable!](https://badgen.net/badge/__main__.py/Testable!?color=green) | 🌟🌟🌟⭐ |
-| Speech-To-Text | [In Progress](https://badgen.net/badge/Production/3?color=yellow) | [Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
-| Image generator | [Early Stages](https://badgen.net/badge/Production/2?color=orange) | [Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
-| Music generator | [Idea](https://badgen.net/badge/Production/1?color=pink) | [Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
-| GUI | [Early Stages](https://badgen.net/badge/Production/2?color=orange) | [Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
-| LDtk integration | [Idea](https://badgen.net/badge/Production/1?color=pink) | [Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| Node stuff | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 | 
+| Graphics | ![Finished, more features soon](https://badgen.net/badge/Production/4?color=green) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
+| World/terrain generation | ![Finished, more features soon](https://badgen.net/badge/Production/4?color=green) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
+| AIs | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
+| Conversation Parse | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
+| Main code | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![__main\_\_.py:Testable!](https://badgen.net/badge/__main__.py/Testable!?color=green) | 🌟🌟🌟⭐ |
+| API Keys interface (I don't think I need it, so I'll probably delete it at some point) | ![Finished](https://badgen.net/badge/Production/5?color=blue) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) (files are in `keys`` directory, I moved it in there so it doesn't work yet) | ⭐ |
+| Speech-To-Text | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| Image generator | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| Music generator | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| GUI | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| LDtk integration | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| A nice clean Github repo | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | N/A | 🌟🌟🌟⭐ |
+| Hyperanalysis Drive (also known as Qibli Simulator) | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+
+TODO: move TP_map.png & credits.md into some subfolder
+TODO: remove todo.md
+TODO: move more things into utils folder
+TODO: make subfolders inside utils folder and put things in it
 
 Also please note that this is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! I would love to have some help with this project!
 

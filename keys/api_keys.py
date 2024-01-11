@@ -3,7 +3,6 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
 import os
-from connect.utils.terminal.markdown import render
 
 def loadAPIkeys():
     """
@@ -24,8 +23,9 @@ def loadAPIkeys():
 
 class SaveAPIKeysDialog:
     def how_to_get_keys():
-        with open('keys/how_to_get_keys.md') as f:
-            print(render(f.read()))
+        pass
+        #with open('keys/how_to_get_keys.md') as f:
+        #    print(render(f.read()))
 
     # Function to save API keys to a file
     def save_api_keys(self):
