@@ -28,14 +28,14 @@ Stages of production (SOP):
  5. finished, probably only going to get an update once every blue moon
 
 | What is it | Stage of production (SOP) | Testable? | My rating on how well I did at it /5 |
-|:----------:|:-------------------------:|:---------:|:---------:|:--------------:|
-| Node stuff | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 | 
+|:----------:|:-------------------------:|:---------:|:---------:|
+| Node stuff | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
 | Graphics | ![Finished, more features soon](https://badgen.net/badge/Production/4?color=green) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
 | World/terrain generation | ![Finished, more features soon](https://badgen.net/badge/Production/4?color=green) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
 | AIs | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
 | Conversation Parse | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
 | Main code | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![__main\_\_.py:Testable!](https://badgen.net/badge/__main__.py/Testable!?color=green) | 🌟🌟🌟⭐ |
-| API Keys interface (I don't think I need it, so I'll probably delete it at some point) | ![Finished](https://badgen.net/badge/Production/5?color=blue) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) (files are in `keys`` directory, I moved it in there so it doesn't work yet) | ⭐ |
+| API Keys interface (I don't think I need it, so I'll probably delete it at some point) | ![Finished](https://badgen.net/badge/Production/5?color=blue) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) (files are in `keys` directory, I moved it in there so it doesn't work yet) | ⭐ |
 | Speech-To-Text | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
 | Image generator | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
 | Music generator | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
