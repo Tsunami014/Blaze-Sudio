@@ -21,7 +21,8 @@
         "characters",
         "sound gen",
         "other",
-        "nodes"
+        "nodes",
+        "LDtk"
     ],
     "wolf.disableHotModeWarning": true
 }
