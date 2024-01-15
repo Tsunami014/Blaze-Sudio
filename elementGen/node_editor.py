@@ -278,7 +278,15 @@ NodeEditor(G)
                 i = start
                 mx = txt.get_width()
                 for n in node.inputs:
-                    s, c = CAT(n.name, bgcol=col)
+                    name = n.name
+                    if n.connectedto is not None:
+                        gotten = n.connectedto.parent.get()
+                    if n.connectedto is not None and \
+                        n.connectedto.name in gotten and \
+                            gotten[n.connectedto.name] != Ts.defaults[Ts.strtypes[n.connectedto.type]]:
+                                name += '='+str(gotten[n.connectedto.name])
+                    elif n.value != Ts.defaults[Ts.strtypes[n.type]]: name += ':'+str(n.value)
+                    s, c = CAT(name, bgcol=col)
                     c.move_ip(0+p[0], i+p[1])
                     node.cirs[n] = c
                     sur.blit(s, (0, i))

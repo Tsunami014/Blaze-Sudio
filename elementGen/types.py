@@ -15,7 +15,7 @@ strtypes = {
 defaults = {
     'int': 0,
     'str': '',
-    'any': None
+    'any': ''
 }
 
 sizing = {
