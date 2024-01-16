@@ -233,7 +233,7 @@ def node_parserDemo():
     from elementGen import allCategories, allNodes, Parse
     alls = allCategories()
     print('All categories and nodes:', {i: allNodes(i) for i in alls})
-    tests = Parse('test')
+    tests = Parse('math')
     print('Test results of function Add with inputs 3 & 4:', tests('Add', 3, 4))
 
 def switchDemo():
@@ -474,7 +474,7 @@ if __name__ == '__main__':
         try:
             cmdd()
         except Exception as e:
-            print('AN EXCEPTION HAS OCURRED:', type(e), e, sep='\n')
+            print('AN EXCEPTION HAS OCURRED:', type(e), e, sep='\n') # Breakpoint here and in console use `e.with_traceback()`
         globals()['print'] = oprint
         globals()['input'] = oinput
         
