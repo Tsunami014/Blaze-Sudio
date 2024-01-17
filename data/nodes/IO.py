@@ -1,6 +1,7 @@
 from linting import *
 #======#
 
+@RMInp(['Val'])
 def Value(Val): # If you don't provide type annotation it will be considered 'any'
     '''Returns any value you want, useful for testing and stuff'''
     return {'Out': Val}
