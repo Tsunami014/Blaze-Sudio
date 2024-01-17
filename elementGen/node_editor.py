@@ -101,14 +101,17 @@ NodeSelector(G)
 # Make delete category/node file
 # As well as a NodeEditor screen have a NodeRenderer screen, which is also used in NodeEditor
 
-def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled=False): # Circle And Text
+def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled=False, docircle=True): # Circle And Text
     t = GO.FFONT.render(txt, 2, GO.CBLACK)
     sze = GO.FFONT.size('a')[1]
     poschange = t.get_height() - sze
     sur = pygame.Surface((t.get_width() + sze + 5, t.get_height()+poschange))
     sur.fill(bgcol)
     cir = None
-    if front:
+    if not docircle:
+        sur.blit(t, (0, poschange))
+        cir = pygame.Rect(0, 0, 0, 0)
+    elif front:
         cir = pygame.Rect(0, 0, sze, sze)
         pygame.draw.circle(sur, GO.CAWHITE, (sze//2, t.get_height()//2), sze//2-2)
         pygame.draw.circle(sur, colour, (sze//2, t.get_height()//2), sze//2-2, 5)
@@ -286,7 +289,10 @@ NodeEditor(G)
                             gotten[n.connectedto.name] != Ts.defaults[Ts.strtypes[n.connectedto.type]]:
                                 name += '='+str(gotten[n.connectedto.name])
                     elif n.value != Ts.defaults[Ts.strtypes[n.type]]: name += ':'+str(n.value)
-                    s, c = CAT(name, bgcol=col)
+                    dc = False
+                    try: dc = n.name not in node.data['RMInp']
+                    except: pass
+                    s, c = CAT(name, bgcol=col, docircle=dc)
                     c.move_ip(0+p[0], i+p[1])
                     node.cirs[n] = c
                     sur.blit(s, (0, i))

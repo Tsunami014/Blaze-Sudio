@@ -4,13 +4,14 @@ from copy import deepcopy
 import elementGen.types as Ts
 import re, inspect
 from typing import Any
+import ast
 
 def allCategories():
     return [i.name for i in os.scandir('data/nodes') if i.is_file()]
 
 def parse_func(funcstr):
     return dict(zip(re.findall(r'(?<=\@).+?(?=\()', funcstr), \
-                    re.findall(r"@.+?\('(.+?)'\)\n", funcstr))), \
+                    [ast.literal_eval(i) for i in re.findall(r"@.+?\((.+?)\)\n", funcstr)])), \
            re.findall(r'(@.+\n)*(((.+)\n?)+)', funcstr)[0][1]
 
 class FakeDict(dict):
@@ -58,7 +59,8 @@ class Connector:
 class Names:
     def __init__(self, func, data):
         self.num = random()
-        self.rdata = func.strip(' \n')
+        self.rfunc = func.strip(' \n')
+        self.data = data
         self.name = data['Name']
         self.inputs = []
         self.outputs = []
@@ -145,9 +147,9 @@ class Parse:
     def __init__(self, category):
         if not category.endswith('.py'): category += '.py'
         self.category = category
-        self.rdata = open('data/nodes/'+category).read()
+        self.rfunc = open('data/nodes/'+category).read()
         self.data = {}
-        spl = self.rdata.split('\n#======#\n')[1:]
+        spl = self.rfunc.split('\n#======#\n')[1:]
         self.names = {}
         for i in spl:
             i = i.strip(' \n')

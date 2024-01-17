@@ -1,8 +1,8 @@
 # Funcs:
 
-#def Name(name: str): # We don't need this anymore
-#    '''Give this function a name'''
-#    pass
+def RMInp(paramname: list):
+    '''Removes the ability to connect a node to the input for the parameters in the list "paramname"'''
+    pass
 
 # INFO:
 
