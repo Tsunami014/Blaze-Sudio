@@ -2,9 +2,16 @@ import os
 from random import random
 from copy import deepcopy
 import elementGen.types as Ts
+import re, inspect
+from typing import Any
 
 def allCategories():
     return [i.name for i in os.scandir('data/nodes') if i.is_file()]
+
+def parse_func(funcstr):
+    return dict(zip(re.findall(r'(?<=\@).+?(?=\()', funcstr), \
+                    re.findall(r"@.+?\('(.+?)'\)\n", funcstr))), \
+           re.findall(r'(@.+\n)+(((.+)\n?)+)', funcstr)[0][1]
 
 class FakeDict(dict):
     def __init__(self, func=lambda: None, clearfunc=lambda: None):
@@ -49,16 +56,21 @@ class Connector:
     def __hash__(self): return hash(self.parent) + hash(self.num)
 
 class Names:
-    def __init__(self, data):
+    def __init__(self, func, data):
         self.num = random()
-        self.rdata = data.strip(' \n')
-        spl = self.rdata.split(' ')
-        self.name = spl[0]
+        self.rdata = func.strip(' \n')
+        self.name = data['Name']
         self.inputs = []
         self.outputs = []
         self.cirs = FakeDict(self.setter, self.setter) # Relying on externals to generate
-        self.func = None # Also relying on externals to generate, tho this time the 'externals' is the Parse class
-        input = True
+        self.func = func
+        exec(self.func)
+        self.node = eval('node')
+        for i in inspect.signature(self.node).parameters.items():
+            self.inputs.append(Connector(self, True, i[1].name, Ts.strtypes[i[1].annotation]))
+            if i[1].default != inspect._empty:
+                self.inputs[-1].value = i[1].default
+        """input = True
         for i in spl[1:]:
             if i == '|':
                 input = False
@@ -67,7 +79,7 @@ class Names:
                 s = i.split('@')
                 self.inputs.append(Connector(self, True, s[1], s[0]))
             else:
-                self.outputs.append(Connector(self, False, i))
+                self.outputs.append(Connector(self, False, i))"""
     def setter(self, key, value):
         for i in range(len(self.inputs)):
             if self.inputs[i] == key:
@@ -101,12 +113,22 @@ class Names:
             except:
                 ins.append(i.value)
         try:
-            return self(*ins)
+            outs = self(*ins)
+            outnames = [i.name for i in self.outputs]
+            inouts = [i for i in outs.keys() if i in outnames]
+            notinouts = [i for i in outs.keys() if i not in outnames]
+            dels = []
+            for i in self.outputs:
+                if i.name not in inouts: dels.append(i)
+            for i in dels: self.outputs.remove(i)
+            for i in notinouts:
+                self.outputs.append(Connector(self, False, i))
+                self.outputs[-1].value = outs[i]
+            return outs
         except:
             return {}
     def __call__(self, *args):
-        exec(self.func)
-        return eval('node(*args)')
+        return self.node(*args)
     
     def __str__(self):
         try:
@@ -124,19 +146,18 @@ class Parse:
         self.category = category
         self.rdata = open('data/nodes/'+category).read()
         self.data = {}
-        pattern = 0
-        spl = self.rdata.split('#')[1:]
+        spl = self.rdata.split('\n#======#\n')[1:]
+        untitleds = 0
         self.names = {}
         for i in spl:
             i = i.strip(' \n')
-            if pattern == 0:
-                i = Names(i)
-                pattern = i
-                self.names[str(i)] = i
-            else:
-                self.data[pattern] = i
-                pattern.func = i
-                pattern = 0
+            vals, func = parse_func(i)
+            if 'Name' not in vals:
+                untitleds += 1
+                vals['Name'] = f'Untitled{untitleds}'
+            i = Names(func, vals)
+            self.names[vals['Name']] = i
+            self.data[i] = func
     def __call__(self, funcname, *args):
         exec(self.data[self.names[funcname]])
         return eval('node(*args)')

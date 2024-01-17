@@ -1,19 +1,24 @@
-# Value any@Value | Out #
+from linting import *
+#======#
 
-def node(Value):
+@Name('Value')
+def node(Value: Any):
     return {'Out': Value}
 
-# NumInp str@Name int@Default | Out #
+#======#
 
-def node(Name, Default):
+@Name('NumInp')
+def node(Name: str, Default: int):
     return {'Out': Default}
 
-# TextInp str@Name str@Default | Out #
+#======#
 
-def node(Name, Default):
+@Name('TextInp')
+def node(Name: str, Default: str):
     return {'Out': Default}
 
-# AnyInp str@Name any@Default | Out #
+#======#
 
-def node(Name, Default):
+@Name('AnyInp')
+def node(Name: str, Default: Any):
     return {'Out': Default}
