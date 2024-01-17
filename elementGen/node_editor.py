@@ -408,6 +408,12 @@ NodeEditor(G)
                     G.Container.contents['connections'] = G.Container.connections
                     pickle.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+')) # Save
                     G.Container.saved = True
+                elif element.key == pygame.K_DELETE or element.key == pygame.K_BACKSPACE:
+                    if G.Container.highlighting != None:
+                        del G.Container.nodes[
+                            [i[1] for i in G.Container.nodes].index(G.Container.highlighting)
+                        ]
+                        G.Container.highlighting = None
             elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
                 dropdown()
         elif event == GO.ELAST:
