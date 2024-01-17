@@ -1,4 +1,5 @@
 from typing import Any
+from inspect import _empty
 
 types = {
     'int': int,
@@ -9,7 +10,8 @@ types = {
 strtypes = {
     int: 'int',
     str: 'str',
-    Any: 'any'
+    Any: 'any',
+    _empty: 'any'
 }
 
 defaults = {

@@ -474,7 +474,8 @@ if __name__ == '__main__':
         try:
             cmdd()
         except Exception as e:
-            print('AN EXCEPTION HAS OCURRED:', type(e), e, sep='\n') # Breakpoint here and in console use `e.with_traceback()`
+            print('AN EXCEPTION HAS OCURRED:', type(e), e, sep='\n') # Breakpoint here and in console use
+            # `e.with_traceback()`
         globals()['print'] = oprint
         globals()['input'] = oinput
         
