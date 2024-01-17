@@ -122,7 +122,7 @@ class Names:
                 if i.name not in inouts: dels.append(i)
             for i in dels: self.outputs.remove(i)
             for i in notinouts:
-                self.outputs.append(Connector(self, False, i))
+                self.outputs.append(Connector(self, False, i, Ts.getType(outs[i])))
                 self.outputs[-1].value = outs[i]
             return outs
         except:
