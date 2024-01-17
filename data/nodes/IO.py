@@ -1,24 +1,21 @@
 from linting import *
 #======#
 
-@Name('Value')
-def node(Value: Any):
-    return {'Out': Value}
+def Value(Val): # If you don't provide type annotation it will be considered 'any'
+    '''Returns any value you want, useful for testing and stuff'''
+    return {'Out': Val}
 
 #======#
 
-@Name('NumInp')
-def node(Name: str, Default: int):
+def NumInp(Name: str, Default: int):
     return {'Out': Default}
 
 #======#
 
-@Name('TextInp')
-def node(Name: str, Default: str):
+def TextInp(Name: str, Default: str):
     return {'Out': Default}
 
 #======#
 
-@Name('AnyInp')
-def node(Name: str, Default: Any):
+def AnyInp(Name: str, Default: Any):
     return {'Out': Default}

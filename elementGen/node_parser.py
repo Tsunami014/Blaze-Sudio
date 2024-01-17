@@ -11,7 +11,7 @@ def allCategories():
 def parse_func(funcstr):
     return dict(zip(re.findall(r'(?<=\@).+?(?=\()', funcstr), \
                     re.findall(r"@.+?\('(.+?)'\)\n", funcstr))), \
-           re.findall(r'(@.+\n)+(((.+)\n?)+)', funcstr)[0][1]
+           re.findall(r'(@.+\n)*(((.+)\n?)+)', funcstr)[0][1]
 
 class FakeDict(dict):
     def __init__(self, func=lambda: None, clearfunc=lambda: None):
@@ -66,6 +66,7 @@ class Names:
         self.func = func
         exec(self.func)
         self.node = eval('node')
+        self.doc = self.node.__doc__
         for i in inspect.signature(self.node).parameters.items():
             self.inputs.append(Connector(self, True, i[1].name, Ts.strtypes[i[1].annotation]))
             if i[1].default != inspect._empty:
@@ -147,14 +148,13 @@ class Parse:
         self.rdata = open('data/nodes/'+category).read()
         self.data = {}
         spl = self.rdata.split('\n#======#\n')[1:]
-        untitleds = 0
         self.names = {}
         for i in spl:
             i = i.strip(' \n')
+            name = re.findall('(?<=def ).+?(?=\\()', i)[0]
+            i = i.replace(name, 'node', 1)
             vals, func = parse_func(i)
-            if 'Name' not in vals:
-                untitleds += 1
-                vals['Name'] = f'Untitled{untitleds}'
+            vals['Name'] = name
             i = Names(func, vals)
             self.names[vals['Name']] = i
             self.data[i] = func

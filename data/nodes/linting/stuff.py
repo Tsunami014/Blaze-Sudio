@@ -1,12 +1,8 @@
 # Funcs:
 
-def Name(name: str):
-    '''Give this function a name'''
-    pass
-def Docs(doc: str):
-    '''Give this function some documentation'''
-    pass
-
+#def Name(name: str): # We don't need this anymore
+#    '''Give this function a name'''
+#    pass
 
 # INFO:
 
