@@ -387,10 +387,12 @@ NodeEditor(G)
                             scr.add_num_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=10, start=i[4])
                         elif i[3] == 'str':
                             scr.add_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=GO.FFONT.size('c'*10)[0], start=i[4])
+                        elif i[3] == 'bool':
+                            scr.add_switch(GO.PSTATIC(i[0], i[1]), default=i[4])
                         elif i[3] == 'any':
                             scr.add_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=GO.FFONT.size('c'*10)[0], start=str(i[4]))
                 else:
-                    inps = G.scrollsables[0].G.input_boxes
+                    inps = G.scrollsables[0].G.uids
                     for i in range(len(node.inputs)):
                         node.inputs[i].value = inps[i].get()
             elif G.scrollsables != []:
@@ -408,7 +410,7 @@ NodeEditor(G)
                     G.Container.contents['connections'] = G.Container.connections
                     pickle.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+')) # Save
                     G.Container.saved = True
-                elif element.key == pygame.K_DELETE or element.key == pygame.K_BACKSPACE:
+                elif element.key == pygame.K_DELETE:
                     if G.Container.highlighting != None:
                         del G.Container.nodes[
                             [i[1] for i in G.Container.nodes].index(G.Container.highlighting)
