@@ -8,6 +8,10 @@ def KeepName(paramnames: list):
     '''Makes it still show the text even when the params in "paramnames" already have a value in it'''
     pass
 
+def Remove(paramnames: list):
+    '''Removes the params from the list "paramnames" from being shown on the node'''
+    pass
+
 # INFO:
 
 '''
