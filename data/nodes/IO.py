@@ -18,5 +18,10 @@ def TextInp(Name: str, Default: str):
 
 #======#
 
+def BoolInp(Name: str, Default: bool):
+    return {'Out': Default}
+
+#======#
+
 def AnyInp(Name: str, Default: Any):
     return {'Out': Default}
