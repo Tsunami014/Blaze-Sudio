@@ -288,7 +288,7 @@ NodeEditor(G)
                         n.connectedto.name in gotten and \
                             gotten[n.connectedto.name] != Ts.defaults[Ts.strtypes[n.connectedto.type]]:
                                 name += '='+str(gotten[n.connectedto.name])
-                    elif n.value != Ts.defaults[Ts.strtypes[n.type]]: name += ':'+str(n.value)
+                    elif n.value != Ts.defaults[Ts.strtypes[n.type]] or n.type == bool: name += ':'+str(n.value)
                     dc = False
                     try: dc = n.name not in node.data['RMInp']
                     except: pass
@@ -370,9 +370,13 @@ NodeEditor(G)
                     size = max(size, h-(txt.get_height()+30)+1)
                     _, scr = G.add_Scrollable(pos, (w-8, h-(txt.get_height()+30)), (w-8, size), 2, True)
                     scr.bgcol = GO.CNEW('light grey')
-                    for i in adds[0]+adds[1]:
+                    scr.Container.outs = []
+                    scr.Container.adds = [adds[0], []]
+                    for i in adds[0]:
                         scr.add_surface(i[2], GO.PSTATIC(i[0], i[1]))
+                    for i in adds[1]:
                         scr.add_surface(i[2], GO.PSTATIC(i[0], i[1]))
+                        scr.Container.outs.append(scr.statics[-1])
                     for i in boxes:
                         if i[3] == 'int':
                             scr.add_num_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=10, start=i[4])
@@ -383,9 +387,22 @@ NodeEditor(G)
                         elif i[3] == 'any':
                             scr.add_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=GO.FFONT.size('c'*10)[0], start=str(i[4]))
                 else:
-                    inps = G.scrollsables[0].G.uids
+                    scr = G.scrollsables[0].G
+                    adds = scr.Container.adds
+                    getsize = lambda: sum([max(adds[0][i][2].get_height(),boxes[i][2][1])+10 for i in range(len(adds[0]))])
+                    inps = scr.uids
                     for i in range(len(node.inputs)):
                         node.inputs[i].value = inps[i].get()
+                    for i in scr.Container.outs: scr.statics.remove(i)
+                    scr.Container.outs = []
+                    g = node.get()
+                    for i in node.outputs:
+                        name = i.name
+                        if n.name in g: name += ':'+str(g[n.name])
+                        r = GO.FFONT.render(name, 2, GO.CBLACK)
+                        scr.add_surface(r, GO.PSTATIC(w-r.get_width()-10, sum([i[2].get_height()+10 for i in adds[1]])))
+                        scr.Container.outs.append(scr.statics[-1])
+                    outs = G.scrollsables[0].G.statics
             elif G.scrollsables != []:
                 G.Reload()
             return True
