@@ -289,7 +289,11 @@ NodeEditor(G)
                             gotten[n.connectedto.name] != Ts.defaults[Ts.strtypes[n.connectedto.type]]:
                                 name += '='+str(gotten[n.connectedto.name])
                     elif n.value != Ts.defaults[Ts.strtypes[n.type]] or n.type == bool: name += ':'+str(n.value)
-                    dc = False
+                    rmn = True
+                    try: rmn = n.name not in node.data['KeepName']
+                    except: pass
+                    if rmn and name != n.name: name = name[len(n.name)+1:]
+                    dc = True
                     try: dc = n.name not in node.data['RMInp']
                     except: pass
                     s, c = CAT(name, bgcol=col, docircle=dc)
@@ -305,8 +309,16 @@ NodeEditor(G)
                 mx2 = 0
                 for n in node.outputs:
                     name = n.name
-                    if n.name in g: name += ':'+str(g[n.name])
-                    s, c = CAT(name, front=False, bgcol=col)
+                    rmn = True
+                    try: rmn = n.name not in node.data['KeepName']
+                    except: pass
+                    if n.name in g:
+                        if rmn: name = str(g[n.name])
+                        else: name += ':'+str(g[n.name])
+                    dc = True
+                    try: dc = n.name not in node.data['RMInp']
+                    except: pass
+                    s, c = CAT(name, front=False, bgcol=col, docircle=dc)
                     c.move_ip(mx+p[0], i2+p[1])
                     node.cirs[n] = c
                     sur.blit(s, (mx, i2))

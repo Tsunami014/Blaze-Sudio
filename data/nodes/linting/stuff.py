@@ -1,7 +1,11 @@
 # Funcs:
 
-def RMInp(paramname: list):
-    '''Removes the ability to connect a node to the input for the parameters in the list "paramname"'''
+def RMInp(paramnames: list):
+    '''Removes the ability to connect a node to the input for the parameters in the list "paramnames"'''
+    pass
+
+def KeepName(paramnames: list):
+    '''Makes it still show the text even when the params in "paramnames" already have a value in it'''
     pass
 
 # INFO:
