@@ -282,6 +282,7 @@ NodeEditor(G)
                 mx = txt.get_width()
                 for n in node.inputs:
                     name = n.name
+                    if 'Remove' in node.data and n.name in node.data['Remove']: continue
                     if n.connectedto is not None:
                         gotten = n.connectedto.parent.get()
                     if n.connectedto is not None and \
@@ -308,6 +309,7 @@ NodeEditor(G)
                 i2 = start
                 mx2 = 0
                 for n in node.outputs:
+                    if 'Remove' in node.data and n.name in node.data['Remove']: continue
                     name = n.name
                     rmn = True
                     try: rmn = n.name not in node.data['KeepName']
