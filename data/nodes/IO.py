@@ -8,6 +8,13 @@ def Value(Val): # If you don't provide type annotation it will be considered 'an
 
 #======#
 
+@Remove(['out'])
+def Output(Out):
+    '''The output for this node'''
+    return {'out': Out}
+
+#======#
+
 @RMInp(['Name'])
 def NumInp(Name: str, Default: int):
     return {'Out': Default}
