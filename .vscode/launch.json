@@ -5,7 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Run Main",
+            "type": "python",
+            "request": "launch",
+            "program": "__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Run Demos",
+            "type": "python",
+            "request": "launch",
+            "program": "demos.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Current File",
             "type": "python",
             "request": "launch",
             "program": "${file}",
