@@ -1,11 +1,15 @@
-import pygame, os, pickle
+import pygame, os, dill
 import graphics.graphics_options as GO
 import elementGen.node_parser as np
 import elementGen.types as Ts
 
 categories = [i.name for i in os.scandir('data/elements') if i.is_dir()]
 
-nodes = [np.Parse(i) for i in np.allCategories()]
+alls = []
+nodes = []
+for i in np.allCategories():
+    j = np.Parse(i, alls)
+    nodes.append(j)
 
 def mouseDown(button=1):
     i = False
@@ -37,7 +41,7 @@ NodeSelector(G)
             @G.Loading
             def load(self):
                 self.items = [i for i in os.scandir('data/elements/'+category) if i.is_file()]
-                self.iteminfo = [pickle.load(open('data/elements/%s/%s'%(category, i.name), 'rb')) for i in self.items]
+                self.iteminfo = [dill.load(open('data/elements/%s/%s'%(category, i.name), 'rb')) for i in self.items]
                 self.subs = ['Go back to the previous page', 'Make a new item from scratch'] + [i['idea'] for i in self.iteminfo]
             cont, res = load()
             G.Container.res = res
@@ -178,14 +182,14 @@ NodeEditor(G)
                         G.Container.connections[j][0].connectedto = None
                         G.Container.connections[j][1].connectedto = None
                         G.Container.connections[j] = [G.Container.selecting[0], i]
-                        G.Container.selecting[0].connectedto = i
-                        i.connectedto = G.Container.selecting[0]
+                        G.Container.selecting[0].connectedto = i.gen_CT(G.Container.nodes)
+                        i.connectedto = G.Container.selecting[0].gen_CT(G.Container.nodes)
                         d = True
                         break
                 if not d:
                     G.Container.connections.append([G.Container.selecting[0], i])
-                    G.Container.selecting[0].connectedto = i
-                    i.connectedto = G.Container.selecting[0]
+                    G.Container.selecting[0].connectedto = i.gen_CT(G.Container.nodes)
+                    i.connectedto = G.Container.selecting[0].gen_CT(G.Container.nodes)
         elif not l and isinstance(G.Container.selecting, list) and G.Container.selecting[2] == pygame.mouse.get_pos():
             # did not move, so select
             G.Container.highlighting = G.Container.selecting[3]
@@ -212,9 +216,9 @@ NodeEditor(G)
                 path = path[:-4]
             if not os.path.exists('data/elements/'+path+'.elm'):
                 # Version: major.minor
-                pickle.dump({"idea": "BLANK", "name": "New File", "version": "0.4"}, open('data/elements/'+path+'.elm', 'wb+'))
+                dill.dump({"idea": "BLANK", "name": "New File", "version": "0.4"}, open('data/elements/'+path+'.elm', 'wb+'))
             # TODO: version checking and updating (not for versions less than 1.0 which is the liftoff version)
-            G.Container.contents = pickle.load(open('data/elements/'+path+'.elm', 'rb'))
+            G.Container.contents = dill.load(open('data/elements/'+path+'.elm', 'rb'))
             if 'nodes' in G.Container.contents:
                 G.Container.nodes = G.Container.contents['nodes']
             else:
@@ -270,7 +274,7 @@ NodeEditor(G)
             
             rd = []
             for p, node in G.Container.nodes:
-                g = node.get()
+                g = node.get(G.Container.nodes)
                 node.cirs.reset()
                 col = GO.CBLUE
                 txt = GO.FFONT.render(str(node), 2, GO.CBLACK)
@@ -284,11 +288,11 @@ NodeEditor(G)
                     name = n.name
                     if 'Remove' in node.data and n.name in node.data['Remove']: continue
                     if n.connectedto is not None:
-                        gotten = n.connectedto.parent.get()
+                        gotten = n.get_CT(G.Container.nodes).get_P(G.Container.nodes).get(G.Container.nodes)
                     if n.connectedto is not None and \
-                        n.connectedto.name in gotten and \
-                            gotten[n.connectedto.name] != Ts.defaults[Ts.strtypes[n.connectedto.type]]:
-                                name += '='+str(gotten[n.connectedto.name])
+                        n.get_CT(G.Container.nodes).name in gotten and \
+                            gotten[n.get_CT(G.Container.nodes).name] != Ts.defaults[Ts.strtypes[n.get_CT(G.Container.nodes).type]]:
+                                name += '='+str(gotten[n.get_CT(G.Container.nodes).name])
                     elif n.value != Ts.defaults[Ts.strtypes[n.type]] or n.type == bool: name += ':'+str(n.value)
                     rmn = True
                     try: rmn = n.name not in node.data['KeepName']
@@ -374,7 +378,7 @@ NodeEditor(G)
                         s = getsize()
                         adds[0].append((5, s, r))
                         boxes.append((r.get_width()+7, s, Ts.sizing[Ts.strtypes[i.type]](i.value, GO.FFONT), Ts.strtypes[i.type], i.value))
-                    g = node.get()
+                    g = node.get(G.Container.nodes)
                     for i in node.outputs:
                         name = i.name
                         if n.name in g: name += ':'+str(g[n.name])
@@ -409,7 +413,7 @@ NodeEditor(G)
                         node.inputs[i].value = inps[i].get()
                     for i in scr.Container.outs: scr.statics.remove(i)
                     scr.Container.outs = []
-                    g = node.get()
+                    g = node.get(G.Container.nodes)
                     for i in node.outputs:
                         name = i.name
                         if n.name in g: name += ':'+str(g[n.name])
@@ -430,7 +434,7 @@ NodeEditor(G)
                         path = path[:-4]
                     G.Container.contents['nodes'] = G.Container.nodes
                     G.Container.contents['connections'] = G.Container.connections
-                    pickle.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+')) # Save
+                    dill.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+')) # Save
                     G.Container.saved = True
                 elif element.key == pygame.K_DELETE:
                     if G.Container.highlighting != None:
@@ -448,5 +452,5 @@ NodeEditor(G)
                     os.remove('data/elements/'+path+'.elm')
                     path = path.split('/')[0] + '/' + G.Container.name
                     open('data/elements/'+path+'.elm', 'wb+')
-                    pickle.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+'))
+                    dill.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+'))
     return editor(path)
