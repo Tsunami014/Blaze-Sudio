@@ -165,7 +165,32 @@ def LoadingDemo():
     pygame.quit()
     print('Ran for %i seconds%s' % (ret['i'], (' Successfully! :)' if succeeded else ' And failed :(')))
 
-def inputBoxDemo(): # TODO: make part of Graphic class
+def ToastDemo():
+    import pygame
+    from graphics import Graphic
+    from graphics import graphics_options as GO
+    G = Graphic()
+    @G.Graphic
+    def func(event, *args, element=None, **kwargs):
+        if event == GO.ELOADUI:
+            G.Clear()
+            G.add_text('Press the arrow keys!', GO.CBLACK, GO.PCCENTER)
+        elif event == GO.ETICK:
+            return True # Return whether or not the loop should continue.
+        elif event == GO.EEVENT: # Passed 'element' (but is event)
+            if element.type == pygame.KEYDOWN:
+                if element.key == pygame.K_LEFT:
+                    G.Toast('LEFT!', pos=GO.PLCENTER, col=GO.CBLUE)
+                elif element.key == pygame.K_RIGHT:
+                    G.Toast('RIGHT!', pos=GO.PRCENTER, col=GO.CYELLOW)
+                elif element.key == pygame.K_UP:
+                    G.Toast('UP!', pos=GO.PCTOP, col=GO.CGREEN)
+                elif element.key == pygame.K_DOWN:
+                    G.Toast('DOWN!', col=GO.CRED)
+    func()
+    pygame.quit()
+
+def inputBoxDemo(): # TODO: update this
     import pygame as pg
     from graphics.GUI import InputBox
     screen = pg.display.set_mode((640, 480))
@@ -490,6 +515,7 @@ if __name__ == '__main__':
         Tk.Label (root, text='Graphics stuff:').pack()
         Tk.Button(root, text='Graphics Demo',           command=lambda: cmd(GraphicsDemo)                       ).pack()
         Tk.Button(root, text='Loading Demo',            command=lambda: cmd(LoadingDemo)                        ).pack()
+        Tk.Button(root, text='Toast Demo',              command=lambda: cmd(ToastDemo)                          ).pack()
         Tk.Button(root, text='Switch Demo',             command=lambda: cmd(switchDemo)                         ).pack()
         Tk.Button(root, text='Input Box Demo',          command=lambda: cmd(inputBoxDemo)                       ).pack()
         Tk.Button(root, text='Scrollable Demo',         command=lambda: cmd(scrollableDemo)                     ).pack()

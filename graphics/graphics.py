@@ -3,7 +3,17 @@ pygame.init()
 import graphics.graphics_options as GO
 from graphics.loading import Loading
 from graphics.async_handling import Progressbar
-from graphics.GUI import TextBoxFrame, InputBox, Button, Switch, dropdown, NumInputBox, Scrollable, ColourPickerBTN
+from graphics.GUI import (
+    TextBoxFrame, 
+    InputBox, 
+    Button, 
+    Switch, 
+    dropdown, 
+    NumInputBox, 
+    Scrollable, 
+    ColourPickerBTN, 
+    Toast,
+)
 from graphics.GUI.textboxify.borders import LIGHT
 
 class GScrollable(Scrollable):
@@ -195,6 +205,7 @@ class Graphic:
         self.buttons = []
         self.input_boxes = []
         self.cps = []
+        self.toasts = []
         self.store = {}
         self.rel = False
         self.ab = False
@@ -311,6 +322,11 @@ class Graphic:
                 rects = self.sprites.draw(self.WIN)
                 pygame.display.update(rects)
                 self.run = func(GO.ETICK)
+                dels = []
+                for i in self.toasts:
+                    if i.update(self.WIN) == False:
+                        dels.append(i)
+                for i in dels: self.toasts.remove(i)
                 evs = []
                 for event in events():
                     evs.append(event)
@@ -378,6 +394,43 @@ class Graphic:
                     return y[0]
         if generator: return func2
         else: return func3
+
+    def Toast(self, text, timeout=120, pos=GO.PCBOTTOM, dist=20, spacing=5, font=GO.FFONT, col=GO.CACTIVE, txtcol=GO.CWHITE):
+        """
+        Makes a toast!
+
+        Parameters
+        ----------
+        text : str
+            The text that is in the toast
+        timeout : int, optional
+            The time (in frames, 60 FPS) that the toast should remain on the screen for
+        pos : GO.P___ (e.g. GO.PRBOTTOM), optional
+            The position of the toast, by default GO.PCBOTTOM
+        dist : int, optional
+            The distance from `position` to the toast, by default 20
+            For GO.PCCENTER this should be 0
+            This means that you can have the toast 20 pixels off the bottom of the screen if you 
+            have pos=GO.PCBOTTOM and dist=20
+        spacing : int, optional
+            The spacing from the edge of the bubble the toast is in to the text, by default 5
+        font : pygame.Font, optional
+            The font of the text, by default GO.FFONT (other fonts provided as GO.F___)
+        col : tuple[int, int, int], optional
+            The colour of the toast, by default GO.CACTIVE (other colours provided as GO.C_____)
+        txtcol : tuple[int, int, int], optional
+            The colour of the text, by default GO.CWHITE
+        """
+        
+        txt = font.render(text, 2, txtcol)
+        sur = pygame.Surface((txt.get_size()[0]+spacing*2, txt.get_size()[1]+spacing*2))
+        sur.fill([255, 255, 255, 0])
+        pygame.draw.rect(sur, col, sur.get_rect(), border_radius=spacing)
+        sur.blit(txt, (spacing, spacing))
+
+        pos = GO.PNEW(*GO.PSTACKS[pos])
+        npos = self.pos_store(GO.PSTACKS[pos][1](self.size, sur.get_size()), sur.get_size(), pos)
+        self.toasts.append(Toast(sur, (npos[0]+GO.PSTACKS[pos][0][0]*dist, npos[1]+GO.PSTACKS[pos][0][1]*dist), npos, timeout))
 
     def Dropdown(self, elements, spacing=5, font=GO.FFONT, activecol=GO.CACTIVE, bgcol=GO.CBLACK, txtcol=GO.CWHITE, pos=None):
         """Spawns a dropdown!

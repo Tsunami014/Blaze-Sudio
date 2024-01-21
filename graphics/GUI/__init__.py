@@ -6,3 +6,4 @@ from graphics.GUI.switch import *
 from graphics.GUI.dropdown import *
 from graphics.GUI.scrollable import *
 from graphics.GUI.colourpick import *
+from graphics.GUI.toast import *
