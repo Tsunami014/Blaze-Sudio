@@ -430,6 +430,20 @@ def almostallgraphicsDemo():
             print("You canceled the MessageBox instance.")
             run = False
 
+def overlaysDemo():
+    from overlay import Overlay, tk
+    from time import sleep
+    o = Overlay((200, 200), (10, 10))
+
+    def hideAndSeek():
+        o.hide()
+        sleep(1)
+        o.show()
+
+    tk.Button(o(), text='destroy!', command=o.destroy).pack()
+    tk.Button(o(), text='Hide for 1 second!!', command=hideAndSeek).pack()
+    while o.running(): pass
+
 def scrollableDemo():
     import pygame
     from graphics.GUI import Scrollable
@@ -529,6 +543,7 @@ if __name__ == '__main__':
         Tk.Button(root, text='Rate AIs Demo',           command=lambda: rcmd(rateAIsDemo), relief=Tk.RIDGE      ).pack()
         Tk.Label (root, text='Other stuff:').pack()
         Tk.Button(root, text='API Keys Demo',           command=lambda: cmd(api_keysDemo),                      ).pack()
+        Tk.Button(root, text='Overlays Demo',           command=lambda: cmd(overlaysDemo),                      ).pack()
         Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(conversation_parserDemo), relief=Tk.SUNKEN ).pack()
         root.protocol("WM_DELETE_WINDOW", root.destroy)
     load()
