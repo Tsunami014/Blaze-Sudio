@@ -450,6 +450,17 @@ NodeEditor(G)
                     G.Toast('Saved!')
                 elif element.key == pygame.K_DELETE:
                     if G.Container.highlighting != None:
+                        n = G.Container.nodes[
+                                [i[1] for i in G.Container.nodes].index(G.Container.highlighting)
+                            ][1]
+                        cs = n.inputs + n.outputs
+                        for i in cs:
+                            ct = i.get_CT(G.Container.nodes)
+                            if ct != None: ct.connectedto = None
+                        delL = []
+                        for i in G.Container.connections:
+                            if i[0] in cs or i[1] in cs: delL.append(i)
+                        for i in delL: G.Container.connections.remove(i)
                         del G.Container.nodes[
                             [i[1] for i in G.Container.nodes].index(G.Container.highlighting)
                         ]
