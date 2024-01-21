@@ -7,7 +7,9 @@ from typing import Any
 import ast
 
 def allCategories():
-    return [i.name for i in os.scandir('data/nodes') if i.is_file()]
+    l = [i.name for i in os.scandir('data/nodes') if i.is_file()]
+    l.sort()
+    return l
 
 def parse_func(funcstr):
     return dict(zip(re.findall(r'(?<=\@).+?(?=\()', funcstr), \
@@ -169,7 +171,7 @@ class Parse:
         exec(self.data[self.names[funcname]])
         return eval('node(*args)')
     
-    def __str__(self): return self.category[:-3]
+    def __str__(self): return self.category[:-3].strip('0123456789')
     def __repr__(self): return str(self)
     
     def getall(self):
