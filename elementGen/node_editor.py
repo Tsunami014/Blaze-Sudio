@@ -430,12 +430,15 @@ NodeEditor(G)
             
             if element.type == pygame.KEYDOWN:
                 if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
+                    G.Toast('Saving...')
                     if path.endswith('.elm'):
                         path = path[:-4]
                     G.Container.contents['nodes'] = G.Container.nodes
                     G.Container.contents['connections'] = G.Container.connections
                     dill.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+')) # Save
                     G.Container.saved = True
+                    G.toasts = []
+                    G.Toast('Saved!')
                 elif element.key == pygame.K_DELETE:
                     if G.Container.highlighting != None:
                         del G.Container.nodes[
