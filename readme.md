@@ -41,7 +41,7 @@ Stages of production (SOP):
 | Music generator | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
 | GUI | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
 | Overlay windows | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
-| LDtk integration | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
+| LDtk integration | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
 | A nice clean Github repo | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | N/A | 🌟🌟🌟⭐ |
 | Hyperanalysis Drive (also known as Qibli Simulator) | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
 

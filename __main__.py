@@ -1,4 +1,3 @@
-# TODO: make each file not need to be dependant on python files from above folders
 import pygame, os, json
 from graphics import Graphic
 from graphics import graphics_options as GO
