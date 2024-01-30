@@ -1,1 +1,2 @@
-from ldtk.ldtk import *
+from ldtk.application import *
+from ldtk.Pyldtk import *

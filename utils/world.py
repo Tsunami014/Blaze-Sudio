@@ -1,22 +1,18 @@
 import json, re
-from os.path import exists
+from os.path import exists, join
 from random import choice
 from math import floor, sqrt
 from copy import deepcopy
+from shutil import copytree
 
 from utils.characters import *
 from utils.storyline import *
 from utils.terrainGen import *
-import utils.Pyldtk as ldtk
+import ldtk.Pyldtk as ldtk
 
 folder = 'data/worlds/'
 
-# because sometimes this needs to be separate from the try and except above
-try:
-    empty = json.load(open('utils/blank.ldtk'))
-except:
-    empty = json.load(open('empty.ldtk'))
-    folder = '../' + folder
+empty = json.load(open('data/defaultWorld/world.ldtk'))
 
 def create_iid():
     # 8d9217c0-3b70-11ee-849e-1d317aac187d
@@ -134,15 +130,17 @@ class World:
             #    txt = txt.replace(i[0], '\n						'+i[0])
             #txt = txt.replace('"~', '[').replace('~"', ']')
             txt = txt.replace('                            ]', ']').replace('                    ]', ']')
-            print('Saving to file...')
+            print('Copying tree...')
+            copytree('data/defaultWorld', join(os.getcwd(), path))
+            print('Saving to files...')
             json.dump({
-                'version': 1.0, # Change every time the version OF THE JSON/LDTK FILES UPDATES;
+                'version': "1.0", # Change every time the version OF THE JSON/LDTK FILES UPDATES;
                 # MINOR version update = anything to do with world loading changes
                 # MAJOR version update = something updates and is so bad it breaks any feature
                 'name': name,
                 'idea': idea
-                }, os.getcwd()+'\\'+path+'dat.json')
-            open(os.getcwd()+'\\'+path+'world.ldtk', 'w+').write(txt)
+                }, join(os.getcwd(), path, 'dat.json'))
+            open(join(os.getcwd(), path, 'world.ldtk'), 'w+').write(txt)
     def get_pygame(self, lvl=0):
         if self.data != {}: return ldtk.LdtkJSON(self.data, folder).levels[lvl].layers[1].getImg()
     # TODO: have a number in the intgrid specifically for oceans, and get that from the terrain gen
