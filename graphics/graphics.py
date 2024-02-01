@@ -26,6 +26,7 @@ class GScrollable(Scrollable):
         self.G = Graphic(win=s, TB=False)
         def func(event, *args, aborted=True, **kwargs):
             if event == GO.ETICK: return True
+            elif event == GO.EELEMENTCLICK: return
             return aborted
         self.GR = self.G.Graphic(func, generator=True, update=False, events=self.getevents, mousepos=self.getmouse)()
         super().__init__(self.G.WIN, pos, goalrect, (0, sizeOfScreen[1]-goalrect[1]), outline, bar)
