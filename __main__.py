@@ -1,7 +1,9 @@
+print('Loading modules... (may take a while)')
 import pygame, os, json
 from graphics import Graphic
 from graphics import graphics_options as GO
 from utils import World
+from ldtk import LDtkAPP
 G = Graphic()
 
 class Game:
@@ -20,13 +22,13 @@ class Game:
         """
         def load():
             @G.Loading
-            def l(self):
+            def load(self):
                 self.ret = False
                 self.ret = world.get_pygame(G.Container.lvl)
-            out = l()
+            out = load()
             if not out[0]: G.Abort()
             G.Container.pg = out[1]['ret']
-            if G.Container.pg == False: G.Abort()
+            if not G.Container.pg: G.Abort()
         if event == GO.EFIRST:
             G.Container.lvl = 0
             load()
@@ -49,6 +51,28 @@ class Game:
         elif event == GO.ELAST:
             pass
     @G.CGraphic
+    def world_edit(self, event, worldname, element=None, aborted=False):
+        if event == GO.EFIRST:
+            @G.Loading
+            def load(self):
+                self.win = LDtkAPP()
+                self.win.open('data/worlds/%s/world.ldtk'%worldname)
+                self.win.wait_for_win()
+            cont, res = load()
+            if not cont: G.Abort()
+            G.Container.win = res['win']
+        elif event == GO.EELEMENTCLICK:
+            G.Container.win.kill()
+            G.Abort()
+        elif event == GO.ELOADUI:
+            G.Clear()
+            G.add_button('Exit', GO.CGREY, GO.PCCENTER)
+        elif event == GO.ETICK:
+            if not G.Container.win.is_win_open(): G.Abort()
+            return True
+        elif event == GO.ELAST:
+            pass # TODO: stop the thread from running to close the program
+    @G.CGraphic
     def world_select(self, event, element=None, aborted=False):
         if event == GO.EFIRST:
             @G.Loading
@@ -59,6 +83,7 @@ class Game:
             cont, res = load()
             G.Container.res = res
             G.Container.txt = ''
+            G.Container.Selection = None
             G.Container.prevpresses = []
             if not cont: G.Abort()
         elif event == GO.ELOADUI:
@@ -70,6 +95,25 @@ class Game:
             cols = GO.CRAINBOW()
             for i in G.Container.res['worldinfo']:
                 G.add_button(i['name'], next(cols), GO.PLCENTER)
+            if G.Container.Selection is not None:
+                uid, ng = G.add_Scrollable(GO.PCCENTER, (500, 700), (500, 700), bar=False)
+                def close(_):
+                    G.Container.Selection = None
+                    G.Clear()
+                    G.Reload()
+                def play(_):
+                    bef = G.Container.Selection
+                    close(None)
+                    self.world(World(bef))
+                def edit(_):
+                    bef = G.Container.Selection
+                    close(None)
+                    self.world_edit(bef)
+                ng.add_button('Close', GO.CBLUE, GO.PLTOP, callback=close)
+                ng.add_button('Play', GO.CGREEN, GO.PLCENTER, callback=play)
+                ng.add_button('Edit', GO.CNEW('orange'), GO.PCCENTER, callback=edit)
+                ng.add_button('Delete', GO.CRED, GO.PRCENTER, callback=lambda _: print('STILL IN PROGRESS!'))
+                ng.add_button('Options', GO.CGREY, GO.PRBOTTOM, callback=lambda _: print('STILL IN PROGRESS!'))
         elif event == GO.ETICK:
             if G.touchingbtns != G.Container.prevpresses:
                 G.Container.prevpresses = G.touchingbtns.copy()
@@ -88,7 +132,8 @@ class Game:
                 if cont:
                     return self.world(res['world'], True)
             else:
-                return self.world(World(G.Container.res['worlds'][element.uid-2].name))
+                G.Container.Selection = G.Container.res['worlds'][element.uid-2].name
+                G.Reload()
         elif event == GO.ELAST:
             pass
     @G.CGraphic
@@ -112,6 +157,7 @@ class Game:
         elif event == GO.ELAST:
             pass
 
+print('Finished loading modules! Launching app...')
 if __name__ == '__main__':
     g = Game()
     g.welcome()
