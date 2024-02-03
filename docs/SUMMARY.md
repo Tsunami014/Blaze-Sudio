@@ -1,3 +1,6 @@
 # Table of contents
 
-* [Blaze Sudios!](README.md)
+* [Home!](README.md)
+* [Character start param](character_start.md)
+* [GRAPHICS!!!](graphics.md)
+* [summary syntax](summary_syntax.md)
