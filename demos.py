@@ -462,6 +462,15 @@ def scrollableDemo():
         S(w)
         pygame.display.update()
 
+def LDtkAPPDemo():
+    from ldtk import LDtkAPP
+    app = LDtkAPP()
+    app.launch()
+    app.wait_for_win()
+    winopen = True
+    while winopen:
+        winopen = app.is_win_open()
+
 if __name__ == '__main__':
     import tkinter as Tk # Because everyone has tkinter
     from tkinter.scrolledtext import ScrolledText
@@ -526,6 +535,7 @@ if __name__ == '__main__':
         Tk.Label (root, text='Node stuff:').pack()
         Tk.Button(root, text='Node Editor Demo',        command=lambda: cmd(node_editorDemo)                    ).pack()
         Tk.Button(root, text='Node Parser Demo',        command=lambda: rcmd(node_parserDemo), relief=Tk.RIDGE  ).pack()
+
         Tk.Label (root, text='Graphics stuff:').pack()
         Tk.Button(root, text='Graphics Demo',           command=lambda: cmd(GraphicsDemo)                       ).pack()
         Tk.Button(root, text='Loading Demo',            command=lambda: cmd(LoadingDemo)                        ).pack()
@@ -534,16 +544,20 @@ if __name__ == '__main__':
         Tk.Button(root, text='Input Box Demo',          command=lambda: cmd(inputBoxDemo)                       ).pack()
         Tk.Button(root, text='Scrollable Demo',         command=lambda: cmd(scrollableDemo)                     ).pack()
         Tk.Button(root, text='Other Graphics Demo',     command=lambda: cmd(almostallgraphicsDemo)              ).pack()
+
         Tk.Label (root, text='Generation stuff:').pack()
         Tk.Button(root, text='Generate World Demo',     command=lambda: rcmd(worldsDemo), relief=Tk.RIDGE       ).pack()
         Tk.Button(root, text='Generate Terrain Demo',   command=lambda: rcmd(terrainGenDemo), relief=Tk.RIDGE   ).pack()
+
         Tk.Label (root, text='AI stuff:').pack()
         Tk.Button(root, text='TinyLLM Demo',            command=lambda: rcmd(tinyLLMDemo), relief=Tk.RIDGE      ).pack()
         Tk.Button(root, text='Test LLM Demo',           command=lambda: rcmd(testLLMDemo), relief=Tk.RIDGE      ).pack()
         Tk.Button(root, text='Rate AIs Demo',           command=lambda: rcmd(rateAIsDemo), relief=Tk.RIDGE      ).pack()
+        
         Tk.Label (root, text='Other stuff:').pack()
         Tk.Button(root, text='API Keys Demo',           command=lambda: cmd(api_keysDemo),                      ).pack()
         Tk.Button(root, text='Overlays Demo',           command=lambda: cmd(overlaysDemo),                      ).pack()
+        Tk.Button(root, text='LDtk app Demo',           command=lambda: cmd(LDtkAPPDemo),                       ).pack()
         Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(conversation_parserDemo), relief=Tk.SUNKEN ).pack()
         root.protocol("WM_DELETE_WINDOW", root.destroy)
     load()
