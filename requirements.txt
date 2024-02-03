@@ -11,3 +11,4 @@ bs4
 googlesearch-python
 html2text
 dill
+pywin32
