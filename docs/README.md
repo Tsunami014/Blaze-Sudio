@@ -1,6 +1,6 @@
 ---
-description: Will add more stuff in the future
+description: Will add more stuff here in the future
 ---
 
-# Blaze Sudios!
+# Home!
 
