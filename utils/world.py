@@ -142,5 +142,5 @@ class World:
                 }, open(join(os.getcwd(), path, 'dat.json'), 'w+'))
             open(join(os.getcwd(), path, 'world.ldtk'), 'w+').write(txt)
     def get_pygame(self, lvl=0):
-        if self.data != {}: return ldtk.LdtkJSON(self.data, folder).levels[lvl].layers[1].getImg()
+        if self.data != {}: return ldtk.LdtkJSON(self.data, self.path).levels[lvl].layers[0].getImg()
     # TODO: have a number in the intgrid specifically for oceans, and get that from the terrain gen

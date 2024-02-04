@@ -22,14 +22,14 @@ class Ldtk:
         self.levels = []
 
         for l in self.ldtkData['levels']:
-            self.levels.append(Ldtklevel(l, ldtkfile))
+            self.levels.append(Ldtklevel(l, ldtkfile, self.defs))
 
 class LdtkJSON:
     def __init__(self, jsoninf, fileloc=''): ## It takes in JSON
         self.ldtkData = jsoninf
         self.header = self.ldtkData['__header__'] ## Sets the header info to something more convenient
 
-        for k, v in self.ldtkData.items(): ## Here what it does is load all the floating information into the object as attributes  
+        for k, v in self.ldtkData.items(): ## Here what it does is load all the floating information into the object as attributes
             if not isinstance(v, dict) or not isinstance(v, list): ## but it ignores all the lists and dictionary to handle them seperately
                 self.__dict__[k] = v
             else:
@@ -43,7 +43,7 @@ class LdtkJSON:
         self.levels = []
 
         for l in self.ldtkData['levels']:
-            self.levels.append(Ldtklevel(l, self.tilesets))
+            self.levels.append(Ldtklevel(l, self.tilesets, self.defs))
 
 class Tileset:
     def __init__(self, fileloc, data):
@@ -56,20 +56,25 @@ class Tileset:
             self.tilesetPath = self.relPath
             if self.tilesetPath.startswith('..'):
                 self.tilesetPath = os.path.abspath(os.path.join(os.getcwd(), fileloc, self.tilesetPath))
-            self.tileSet = pygame.image.load(self.tilesetPath).convert_alpha()
+            self.tileSet = pygame.image.load(os.path.join(fileloc,self.tilesetPath)).convert_alpha()
     
     def getTile(self, tile, gridsize):
         end = self.tileSet.subsurface(pygame.Rect(tile.src.x, tile.src.y, self.tileGridSize, self.tileGridSize))
         return pygame.transform.scale(end, (gridsize, gridsize))
 
 class Ldtklevel:
-    def __init__(self, data, tilesets):
+    def __init__(self, data, tilesets, defs):
+        self.defs = defs
         self.data = data
         self.tilesets = tilesets
         for k, v in self.data.items():
+            if k.startswith('__'): 
+                k = k[1:]
             self.__dict__[k] = v
         
-        self.layers = [layer(l, self) for l in self.layerInstances]
+        ids = [i['identifier'] for i in defs['layers']]
+        
+        self.layers = [layer(l, self, defs['layers'][ids.index(l['__identifier'])]) for l in self.layerInstances]
         self.layers.reverse() 
 
         self.width, self.height = self.pxWid, self.pxHei   
@@ -78,8 +83,13 @@ class Ldtklevel:
         return list(l for l in self.layers if l._type == "Tiles")
 
 class layer:
-    def __init__(self, data, level):
+    def __init__(self, data, level, moreData):
         self.data = data
+        md = moreData.copy()
+        md.pop('__type') # These are already in self.data, so we don't need the extra keys 
+        md.pop('type')
+        md.pop('identifier')
+        self.data.update(md)
         self.level = level
         self.tilesets = level.tilesets
         self.tiles = None
@@ -99,9 +109,22 @@ class layer:
             self.tiles = [tile(t, self) for t in self.gridTiles]
     
     def getImg(self):
+        end = pygame.Surface((self._cWid * self._gridSize, self._cHei * self._gridSize))
+        if self._tilesetDefUid == None:
+            # TODO: add support for non-tileset things for not just intgrid (i.e. is just colour, non-rendered)
+            if self._type == 'IntGrid':
+                vals = [i['value'] for i in self.intGridValues]
+                for i in range(len(self.intGridCsv)):
+                    col = pygame.Surface((self.gridSize, self.gridSize))
+                    if self.intGridCsv[i] == 0 or self.intGridCsv[i] not in vals:
+                        h = self.level._bgColor.lstrip('#')
+                    else:
+                        h = self.intGridValues[vals.index(self.intGridCsv[i])]['color'].lstrip('#')
+                    col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
+                    end.blit(col, ((i%self._cWid)*self.gridSize, floor(i/self._cWid)*self.gridSize))
+            return end
         tset = self.tilesets[self._tilesetDefUid]
         if self.tiles == None: self.loadTileSheet()
-        end = pygame.Surface((self._cWid * self._gridSize, self._cHei * self._gridSize))
         for j in range(len(self.tiles)):
             i = self.tiles[j]
             end.blit(tset.getTile(i, self._gridSize), i.pos)
