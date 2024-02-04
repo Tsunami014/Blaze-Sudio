@@ -2,14 +2,19 @@
 
 * [Home!](README.md)
 
-## Installing
+## Important stuff
 
-* [Info](Installing/README.md)
-    * [Installing the app](Installing/app.md)
-    * [For devs](Installing/devs.md)
+* [Stuff for devs](devs.md)
+* [Installing the app](Installing/README.md)
 
-## Utils
+## Important utils
+
+* [Graphics](utils/graphics/README.md)
+    * [All functions](utils/graphics/funcs.md)
+    * [Graphics Options (GO)](utils/graphics/GO.md)
+    * [Examples](utils/graphics/examples.md)
+
+## Other utils
 
 * [Character start param](utils/character_start.md)
-* [GRAPHICS!!!](utils/graphics.md)
 * [summary syntax](utils/summary_syntax.md)
