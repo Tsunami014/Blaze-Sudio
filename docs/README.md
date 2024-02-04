@@ -2,7 +2,7 @@
 description: A really cool application for making games/other apps with :)
 ---
 
-# Blaze Sudios!
+# Home!
 
 Welcome to the Blaze Sudios documentation!
 
