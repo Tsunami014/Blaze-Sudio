@@ -122,6 +122,8 @@ class layer:
                         h = self.intGridValues[vals.index(self.intGridCsv[i])]['color'].lstrip('#')
                     col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
                     end.blit(col, ((i%self._cWid)*self.gridSize, floor(i/self._cWid)*self.gridSize))
+            else:
+                end.fill((255, 255, 255, 1))
             return end
         tset = self.tilesets[self._tilesetDefUid]
         if self.tiles == None: self.loadTileSheet()
