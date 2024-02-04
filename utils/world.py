@@ -139,7 +139,7 @@ class World:
                 # MAJOR version update = something updates and is so bad it breaks any feature
                 'name': name,
                 'idea': idea
-                }, join(os.getcwd(), path, 'dat.json'))
+                }, open(join(os.getcwd(), path, 'dat.json'), 'w+'))
             open(join(os.getcwd(), path, 'world.ldtk'), 'w+').write(txt)
     def get_pygame(self, lvl=0):
         if self.data != {}: return ldtk.LdtkJSON(self.data, folder).levels[lvl].layers[1].getImg()
