@@ -1,6 +1,7 @@
 # Welcome to Baze Sudios!
 
-(Please scroll down for useful information and **how to install**)
+## DOCS ARE [HERE!](https://tsunami014.gitbook.io/blaze-sudios/)
+In the docs you can find anything you need, including how to install. If you are working offline, you can look [here](docs/SUMMARY.md) for all the pages in the docs to look at them (because all the docs are on this repo)
 
 ![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio)
 (but really, if you look in the commits it's just me) (At the MOMENT, I'm hoping I can get others to help too if they want!)
@@ -63,16 +64,6 @@ Things to note:
 6. `git merge [branch2]` will not delete the second branch. DO NOT USE `git rebase [branch2]` AS A REPLACEMENT
 
 TODO: get link to Pyldtk
-
-# How to install
-TODO: show how to install with git and pip
-Please note: requirements file may be wrong. Please contact me if they are.
-```bash
-pip install -r requirements.txt
-```
-
-## About the noise package
-If you get an issue installing the noise package, go to [here](https://www.lfd.uci.edu/~gohlke/pythonlibs/#noise) and find your version of python and windows type and run `pip install c:\path\to\downloaded\wheel.whl` to install it then it should be installed, run the install requirements.txt one more time to finish off everything 
 
 Please join our [Discord server](https://discord.gg/9zrGKtF6Cs) for any information, queries, bugs, conversations, etc. that you may have!
 

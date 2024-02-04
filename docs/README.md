@@ -1,8 +1,8 @@
 ---
-description: A really cool application for making games/other apps with :)
+description: Blaze Sudios is a really cool application for making games/other apps with :)
 ---
 
-# Home!
+# HI!
 
 Welcome to the Blaze Sudios documentation!
 
