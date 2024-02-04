@@ -447,6 +447,7 @@ def LDtkAPPDemo():
     winopen = True
     while winopen:
         winopen = app.is_win_open()
+        app.make_full()
 
 if __name__ == '__main__':
     import tkinter as Tk # Because everyone has tkinter
