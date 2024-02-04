@@ -68,7 +68,10 @@ class Game:
             G.Clear()
             G.add_button('Exit', GO.CGREY, GO.PCCENTER)
         elif event == GO.ETICK:
-            if not G.Container.win.is_win_open(): G.Abort()
+            if not G.Container.win.is_win_open():
+                G.Abort()
+                return
+            G.Container.win.make_full()
             return True
         elif event == GO.ELAST:
             pass # TODO: stop the thread from running to close the program

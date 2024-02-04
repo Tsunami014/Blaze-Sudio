@@ -1,4 +1,4 @@
-import os, subprocess, win32gui, win32com.client, pythoncom
+import os, subprocess, win32gui, win32com.client, pythoncom, win32con
 from threading import Thread
 
 class LDtkAPP:
@@ -20,7 +20,16 @@ class LDtkAPP:
             win32gui.EnumWindows(winEnumHandler, None)
         if self.win is not None:
             self.focusWIN()
-            win32gui.MoveWindow(self.win, -1, -1, 99999999, 99999999, True)
+            self.make_full()
+    
+    def not_max(self):
+        tup = win32gui.GetWindowPlacement(self.win)
+        return tup[1] == win32con.SW_SHOWNORMAL
+    
+    def make_full(self):
+        if self.not_max():
+            #win32gui.MoveWindow(self.win, 0, 0, 99999999, 99999999, True)
+            win32gui.ShowWindow(self.win, win32con.SW_MAXIMIZE)
     
     def focusWIN(self):
         if self.win is None:
