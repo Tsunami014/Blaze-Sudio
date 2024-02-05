@@ -9,6 +9,7 @@ from utils.characters import *
 from utils.storyline import *
 from utils.terrainGen import *
 import ldtk.Pyldtk as ldtk
+from pygame import Surface
 
 folder = 'data/worlds/'
 
@@ -142,5 +143,12 @@ class World:
                 }, open(join(os.getcwd(), path, 'dat.json'), 'w+'))
             open(join(os.getcwd(), path, 'world.ldtk'), 'w+').write(txt)
     def get_pygame(self, lvl=0):
-        if self.data != {}: return ldtk.LdtkJSON(self.data, self.path).levels[lvl].layers[0].getImg()
+        if self.data != {}:
+            level = ldtk.LdtkJSON(self.data, self.path).levels[lvl]
+            end = Surface((level.width, level.height))
+            end.fill(tuple(int(level._bgColor.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)))
+            end = end.convert_alpha()
+            for i in level.layers:
+                end.blit(i.getImg(), (0, 0))
+            return end
     # TODO: have a number in the intgrid specifically for oceans, and get that from the terrain gen
