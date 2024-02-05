@@ -109,7 +109,8 @@ class layer:
             self.tiles = [tile(t, self) for t in self.gridTiles]
     
     def getImg(self):
-        end = pygame.Surface((self._cWid * self._gridSize, self._cHei * self._gridSize))
+        end = pygame.Surface((self._cWid * self._gridSize, self._cHei * self._gridSize)).convert_alpha()
+        end.fill((255, 255, 255, 1))
         if self._tilesetDefUid == None:
             # TODO: add support for non-tileset things for not just intgrid (i.e. is just colour, non-rendered)
             if self._type == 'IntGrid':
@@ -117,10 +118,10 @@ class layer:
                 for i in range(len(self.intGridCsv)):
                     col = pygame.Surface((self.gridSize, self.gridSize))
                     if self.intGridCsv[i] == 0 or self.intGridCsv[i] not in vals:
-                        h = self.level._bgColor.lstrip('#')
+                        col.fill((255, 255, 255, 1))
                     else:
                         h = self.intGridValues[vals.index(self.intGridCsv[i])]['color'].lstrip('#')
-                    col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
+                        col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
                     end.blit(col, ((i%self._cWid)*self.gridSize, floor(i/self._cWid)*self.gridSize))
             else:
                 end.fill((255, 255, 255, 1))
