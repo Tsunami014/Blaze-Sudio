@@ -130,10 +130,10 @@ class Game:
             elif element == 1: # make new world
                 @G.Loading
                 def NW(self): # TODO: make a GUI screen to ask fr title and description
-                    self.world = World('newworld', 'New World', 'a new world', 25, quality=500)
+                    self.world = World('newworld', 'New World', 'a new world', 10, 100)
                 cont, res = NW()
                 if cont:
-                    return self.world(res['world'], True)
+                    return self.world(res['world'], newworld=True)
             else:
                 G.Container.Selection = G.Container.res['worlds'][element.uid-2].name
                 G.Reload()

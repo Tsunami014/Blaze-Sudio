@@ -14,46 +14,6 @@ from scipy.interpolate import interp1d
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.morphology import binary_dilation
 
-from utils.conversation_parse import parseKWs
-
-class Map:
-    def __init__(self, *args, **kwargs):
-        self.size = args[0] or kwargs.get('size')
-        self.g = MapGen(*args, **kwargs)
-        self.conf = self.g.outs
-        self.map = self.conf[0][0]
-        self.trees = self.tolist(self.conf[1])
-        self.structures = []
-        # self.generate_structures()
-    def __call__(self, w, h, x=0, y=0):
-        return [i[x:x+w] for i in self.map[y:y+h]]
-    def get_structs(self, w, h, x=0, y=0):
-        #return [i[x:x+w] for i in self.trees[y:y+h]]
-        return [i[x:x+w] for i in self.structures[y:y+h]]
-
-    def tolist(self, nl, do_tolist=True):
-        if do_tolist: nl = [[(int(j[0]), int(j[1])) for j in i] for i in nl]
-        out = np.zeros((self.size, self.size))
-        for j in nl:
-            for i in j:
-                out[i[0]][i[1]] = 1
-        return [[int(j) for j in i] for i in out]
-
-    def generate_structures(self):
-        print('Generating structures... (0/%i)' % (round(len(self.map))/10))
-        outs = []
-        done = []
-        for x in range(len(self.map)):
-            for y in range(len(self.map[x])):
-                if (x, y) not in done:
-                    l = floodfill(self.map, x, y)
-                    outs.append(l)
-                    done.extend(l)
-            if x % 10 == 0: print('Generating structures... (%i/%i)' % (round(x / 10), round(len(self.map)/10)))
-        print('Generating structures: sorting and choosing...')
-        outs.sort(key=lambda x: len(x), reverse=True)
-        self.structures = self.tolist([outs[0]])
-
 def floodfill(matrix, x, y):
     tofill = [(x, y)]
     filled = []
@@ -352,16 +312,85 @@ class MapGen:
             return output_trees
         return [np.array(place_trees(densities[i], biome_masks[i]))
                 for i in range(len(biome_names))]
+
+    def __call__(self, w, h, x=0, y=0):
+        return [i[x:x+w] for i in self.map[y:y+h]]
     
-    def one(self):
+    def get_structs(self, w, h, x=0, y=0):
+        #return [i[x:x+w] for i in self.trees[y:y+h]]
+        return [i[x:x+w] for i in self.structures[y:y+h]]
+
+    def tolist(self, nl, do_tolist=True):
+        if do_tolist: nl = [[(int(j[0]), int(j[1])) for j in i] for i in nl]
+        out = np.zeros((self.size, self.size))
+        for j in nl:
+            for i in j:
+                out[i[0]][i[1]] = 1
+        return [[int(j) for j in i] for i in out]
+
+    def generate_structures(self):
+        print('Generating structures... (0/%i)' % (round(len(self.map))/10))
+        outs = []
+        done = []
+        for x in range(len(self.map)):
+            for y in range(len(self.map[x])):
+                if (x, y) not in done:
+                    l = floodfill(self.map, x, y)
+                    outs.append(l)
+                    done.extend(l)
+            if x % 10 == 0: print('Generating structures... (%i/%i)' % (round(x / 10), round(len(self.map)/10)))
+        print('Generating structures: sorting and choosing...')
+        outs.sort(key=lambda x: len(x), reverse=True)
+        self.structures = self.tolist([outs[0]])
+    
+    def __init__(self, size, map_seed=None, n=256, useall=False, showAtEnd=False, generateTrees=True):
+        """
+        Generates a map! :)
+
+        Parameters
+        ----------
+        size : int
+            The size of the map to generate!
+            PLEASE NOTE: I am not fully sure what this specifically does. From testing I have found
+            out a possibility that it is just the resolution of the map and not actually zoomed in.
+        map_seed : int, optional
+            The seed of the map, by default None (will make a random seed)
+            A good seed is '762345'
+        n : int, optional
+            I don't know what this is, may/may not be linked to the size above, by default 256
+        
+        useall : bool, optional
+            Whether or not to use matplotlib to save all steps of the process or just the finished result, by default False (just show finished result)
+        showAtEnd : bool, optional
+            Whether or not to show using matplotlib the finished result (and possibly the rest of the steps, see `useall`), by default False
+        generateTrees : bool, optional
+            Whether or not to generate trees. If no then will output blanks where the trees output should be below, defaults to True
+
+        Returns
+        -------
+        tuple(list[numpy arrays/lists], numpy array)
+            [
+                out (rounded and scaled from 1-10, list), 
+                colour_map (numpy array, out before rounding and scaling, also contains colours), 
+                rivers_biome_colour_map, (numpy array, ???),
+                adjusted_height_river_map, (numpy array, ???),
+                river_land_mask (numpy array, ???),
+                biome_masks (numpy array, ???)
+            ], trees (list[numpy array (for each biome name)], this has all the biomes and the trees positions in them.)
+        """
+        # setting params
+        if map_seed == None: self.map_seed = randint(0, 999999)
+        else: self.map_seed = map_seed
+        np.random.seed(self.map_seed)
+        self.size = size
         # Voronoi diagram
         print('Creating Voronoi diagram...')
 
-        points = np.random.randint(0, self.size, (514, 2))
+        points = np.random.randint(0, size, (514, 2))
         vor = self.voronoi(points)
         vor_map = self.voronoi_map(vor)
 
-        if self.useall:
+        if useall:
             fig = plt.figure(dpi=150, figsize=(4, 4))
             plt.scatter(*points.T, s=1)
 
@@ -371,7 +400,7 @@ class MapGen:
         vor = self.voronoi(points)
         vor_map = self.voronoi_map(vor)
 
-        if self.useall:
+        if useall:
             fig = plt.figure(dpi=150, figsize=(4, 4))
             plt.scatter(*points.T, s=1)
 
@@ -382,17 +411,17 @@ class MapGen:
         print('Bluring the boundaries (with noise)...')
         boundary_displacement = 8
         boundary_noise = np.dstack([self.noise_map(32, 200, octaves=8), self.noise_map(32, 250, octaves=8)])
-        boundary_noise = np.indices((self.size, self.size)).T + boundary_displacement*boundary_noise
-        boundary_noise = boundary_noise.clip(0, self.size-1).astype(np.uint32)
+        boundary_noise = np.indices((size, size)).T + boundary_displacement*boundary_noise
+        boundary_noise = boundary_noise.clip(0, size-1).astype(np.uint32)
 
         blurred_vor_map = np.zeros_like(vor_map)
 
-        for x in range(self.size):
-            for y in range(self.size):
+        for x in range(size):
+            for y in range(size):
                 j, i = boundary_noise[x, y]
                 blurred_vor_map[x, y] = vor_map[i, j]
 
-        if self.useall:
+        if useall:
             fig, axes = plt.subplots(1, 2)
             fig.set_dpi(150)
             fig.set_size_inches(8, 4)
@@ -408,7 +437,7 @@ class MapGen:
         temperature_map = self.noise_map(2, 10)
         precipitation_map = self.noise_map(2, 20)
 
-        if self.useall:
+        if useall:
             fig, axes = plt.subplots(1, 2)
             fig.set_dpi(150)
             fig.set_size_inches(8, 4)
@@ -423,7 +452,7 @@ class MapGen:
         # Histogram Equalization
         print('Histogram equalization...')
 
-        if self.useall:
+        if useall:
             fig, axes = plt.subplots(1, 2)
             fig.set_dpi(150)
             fig.set_size_inches(8, 4)
@@ -441,7 +470,7 @@ class MapGen:
         hist2d = np.interp(hist2d, (hist2d.min(), hist2d.max()), (0, 1))
         hist2d = expit(hist2d/0.1)
 
-        if self.useall:
+        if useall:
             axes[1].imshow(hist2d, cmap="plasma")
 
             axes[1].set_xticks([0, 128, 256, 385, 511])
@@ -452,7 +481,7 @@ class MapGen:
         uniform_temperature_map = self.histeq(temperature_map, alpha=0.33)
         uniform_precipitation_map = self.histeq(precipitation_map, alpha=0.33)
 
-        if self.useall:
+        if useall:
             fig, axes = plt.subplots(1, 2)
             fig.set_dpi(150)
             fig.set_size_inches(8, 4)
@@ -470,7 +499,7 @@ class MapGen:
         hist2d = np.interp(hist2d, (hist2d.min(), hist2d.max()), (0, 1))
         hist2d = expit(hist2d/0.1)
 
-        if self.useall:
+        if useall:
             axes[1].imshow(hist2d, cmap="plasma")
 
             axes[1].set_xticks([0, 128, 256, 385, 511])
@@ -490,7 +519,7 @@ class MapGen:
         temperature_map = self.fill_cells(vor_map, temperature_cells)
         precipitation_map = self.fill_cells(vor_map, precipitation_cells)
 
-        if self.useall:
+        if useall:
             fig, ax = plt.subplots(1 ,2)
             fig.set_dpi(150)
             fig.set_size_inches(8, 4)
@@ -531,13 +560,11 @@ class MapGen:
             
         biomes = np.flip(biomes, axis=0).T
 
-        if self.useall:
+        if useall:
             fig = plt.figure(dpi=150, figsize=(4, 4))
             plt.imshow(biomes)
             plt.title("Temperature–Precipitation graph")
-        return temperature_cells, precipitation_cells, biomes, vor_map
-    
-    def two(self, temperature_cells, precipitation_cells, biomes, vor_map):
+
         # Biome map
         print('Making biome map...')
 
@@ -551,7 +578,7 @@ class MapGen:
         biome_map = self.fill_cells(vor_map, biome_cells).astype(np.uint32)
         biome_colour_map = self.colour_cells(biome_map, biome_colours)
 
-        if self.useall:
+        if useall:
             fig = plt.figure(figsize=(5, 5), dpi=150)
             plt.imshow(biome_colour_map)
 
@@ -561,22 +588,21 @@ class MapGen:
         height_map = self.noise_map(4, 0, octaves=6, persistence=0.5, lacunarity=2)
         land_mask = height_map > 0
 
-        if self.useall:
+        if useall:
             fig = plt.figure(dpi=150, figsize=(5, 5))
             plt.imshow(land_mask, cmap='gray')
 
+        sea_colour = np.array([12, 14, 255])
         land_mask_colour = np.repeat(land_mask[:, :, np.newaxis], 3, axis=-1)
         masked_biome_colour_map = land_mask_colour*biome_colour_map + (1-land_mask_colour)*sea_colour
 
-        if self.useall:
+        if useall:
             fig = plt.figure(dpi=150, figsize=(5, 5))
             plt.imshow(masked_biome_colour_map)
-        return masked_biome_colour_map, biome_map, land_mask, biome_colour_map, height_map
-    
-    def three(self, masked_biome_colour_map, biome_map, land_mask, height_map):
+
         biome_height_map, normal_map = self.apply_height_map(masked_biome_colour_map, height_map, height_map, land_mask)
 
-        if self.useall:
+        if useall:
             fig, ax = plt.subplots(1 ,2)
             fig.set_dpi(150)
             fig.set_size_inches(10, 5)
@@ -593,7 +619,7 @@ class MapGen:
         height_map = self.noise_map(4, 0, octaves=6, persistence=0.5, lacunarity=2)
         smooth_height_map = self.noise_map(4, 0, octaves=1, persistence=0.5, lacunarity=2)
 
-        if self.useall:
+        if useall:
             fig, ax = plt.subplots(1 ,2)
             fig.set_dpi(150)
             fig.set_size_inches(10, 5)
@@ -659,7 +685,7 @@ class MapGen:
         print('Generating Height Map Filters: Biome masks...')
 
         biome_count = len(biome_names)
-        biome_masks = np.zeros((biome_count, self.size, self.size))
+        biome_masks = np.zeros((biome_count, size, size))
 
         for i in range(biome_count):
             biome_masks[i, biome_map==i] = 1
@@ -672,7 +698,7 @@ class MapGen:
 
         biome_masks = biome_masks*blurred_land_mask
 
-        if self.useall:
+        if useall:
             plt.figure(dpi=150, figsize=(5, 5))
             plt.imshow(biome_masks[6], cmap="gray")
 
@@ -687,7 +713,7 @@ class MapGen:
         biome_height_map = self.apply_height_map(masked_biome_colour_map, height_map, height_map, land_mask)
         new_biome_height_map = self.apply_height_map(masked_biome_colour_map, adjusted_height_map, adjusted_height_map, land_mask)
 
-        if self.useall:
+        if useall:
             fig, ax = plt.subplots(1 ,2)
             fig.set_dpi(150)
             fig.set_size_inches(10, 5)
@@ -697,9 +723,7 @@ class MapGen:
 
             ax[1].imshow(new_biome_height_map[0])
             ax[1].set_title("After")
-        return adjusted_height_map, biome_masks
-    
-    def four(self, biome_map, vor_map, adjusted_height_map, land_mask, biome_colour_map):
+
         ## Rivers
         ## Boundaries
         print('Generating Height Map Filters: Rivers... (may take a while...)')
@@ -723,102 +747,9 @@ class MapGen:
         land_mask_colour = np.repeat(river_land_mask[:, :, np.newaxis], 3, axis=-1)
         rivers_biome_colour_map = land_mask_colour*biome_colour_map + (1-land_mask_colour)*sea_colour
 
-        if self.useall:
+        if useall:
             plt.figure(dpi=150, figsize=(5, 5))
             plt.imshow(rivers_biome_colour_map)
-        
-        # TODO: make the rivers separate from the oceans, after this glue them together
-        return rivers_biome_colour_map, river_land_mask, adjusted_height_river_map
-    
-    def five(self, river_land_mask, adjusted_height_river_map, biome_masks):
-        ## Trees and Vegetation
-        trees = self.create_trees(river_land_mask, adjusted_height_river_map, biome_masks, tree_densities)
-        # Example
-        if self.useall:
-            low_density_trees = self.generate_trees(1000, self.size)
-            medium_density_trees = self.generate_trees(5000, self.size)
-            high_density_trees = self.generate_trees(25000, self.size)
-
-            plt.figure(dpi=150, figsize=(10, 3))
-            plt.subplot(131)
-            plt.scatter(*low_density_trees.T, s=1)
-            plt.title("Low Density Trees")
-            plt.xlim(0, 256)
-            plt.ylim(0, 256)
-
-            plt.subplot(132)
-            plt.scatter(*medium_density_trees.T, s=1)
-            plt.title("Medium Density Trees")
-            plt.xlim(0, 256)
-            plt.ylim(0, 256)
-
-            plt.subplot(133)
-            plt.scatter(*high_density_trees.T, s=1)
-            plt.title("High Density Trees")
-            plt.xlim(0, 256)
-            plt.ylim(0, 256)
-            plt.figure(dpi=150, figsize=(5, 5))
-
-            for k in range(len(biome_names)):
-                plt.scatter(*trees[k].T, s=0.15, c="red")
-        return trees
-
-    def __init__(self, size, map_seed=762345, n=256, **kwargs):
-        """
-        Generates a map! :)
-
-        Parameters
-        ----------
-        size : int
-            The size of the map to generate!
-            PLEASE NOTE: I am not fully sure what this specifically does. From testing I have found
-            out a possibility that it is just the resolution of the map and not actually zoomed in.
-        map_seed : int, optional
-            The seed of the map, by default 762345
-        n : int, optional
-            I don't know what this is, may/may not be linked to the size above, by default 256
-        
-        Kwargs
-        ------
-        useall : bool, optional
-            Whether or not to use matplotlib to save all steps of the process or just the finished result, by default False (just show finished result)
-        showAtEnd : bool, optional
-            Whether or not to show using matplotlib the finished result (and possibly the rest of the steps, see `useall`), by default False
-        generateTrees : bool, optional
-            Whether or not to generate trees. If no then will output blanks where the trees output should be below, defaults to True
-
-        Returns
-        -------
-        tuple(list[numpy arrays/lists], numpy array)
-            [
-                out (rounded and scaled from 1-10, list), 
-                colour_map (numpy array, out before rounding and scaling, also contains colours), 
-                rivers_biome_colour_map, (numpy array, ???),
-                adjusted_height_river_map, (numpy array, ???),
-                river_land_mask (numpy array, ???),
-                biome_masks (numpy array, ???)
-            ], trees (list[numpy array (for each biome name)], this has all the biomes and the trees positions in them.)
-        """
-        # setting params
-        if map_seed == None: self.map_seed = randint(0, 999999)
-        else: self.map_seed = map_seed
-        np.random.seed(self.map_seed)
-        parseKWs(kwargs, ['useall', 'showAtEnd', 'generateTrees'])
-        self.useall = kwargs.get('useall', False)
-        self.size = size
-        
-        temperature_cells, precipitation_cells, biomes, vor_map, = self.one()
-
-        masked_biome_colour_map, biome_map, land_mask, biome_colour_map, height_map = self.two(temperature_cells, precipitation_cells, biomes, vor_map)
-
-        adjusted_height_map, biome_masks = self.three(masked_biome_colour_map, biome_map, land_mask, height_map)
-
-        rivers_biome_colour_map, river_land_mask, adjusted_height_river_map = self.four(biome_map, vor_map, adjusted_height_map, land_mask, biome_colour_map)
-
-        if kwargs.get('generateTrees', True):
-            trees = self.five(river_land_mask, adjusted_height_river_map, biome_masks)
-        else:
-            trees = []
 
         # colour_map = apply_height_map(rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask)
         # plt.imshow(colour_map[0])
@@ -826,9 +757,45 @@ class MapGen:
         # im = Image.fromarray(colour_map[0].clip(0, 255).astype(np.uint8))
         # im.save("figures/10.png")
 
+        ## Trees and Vegetation
+        if generateTrees:
+            trees = self.create_trees(river_land_mask, adjusted_height_river_map, biome_masks, tree_densities)
+            # Example
+            if useall:
+                low_density_trees = self.generate_trees(1000, size)
+                medium_density_trees = self.generate_trees(5000, size)
+                high_density_trees = self.generate_trees(25000, size)
+
+                plt.figure(dpi=150, figsize=(10, 3))
+                plt.subplot(131)
+                plt.scatter(*low_density_trees.T, s=1)
+                plt.title("Low Density Trees")
+                plt.xlim(0, 256)
+                plt.ylim(0, 256)
+
+                plt.subplot(132)
+                plt.scatter(*medium_density_trees.T, s=1)
+                plt.title("Medium Density Trees")
+                plt.xlim(0, 256)
+                plt.ylim(0, 256)
+
+                plt.subplot(133)
+                plt.scatter(*high_density_trees.T, s=1)
+                plt.title("High Density Trees")
+                plt.xlim(0, 256)
+                plt.ylim(0, 256)
+                plt.figure(dpi=150, figsize=(5, 5))
+
+                for k in range(len(biome_names)):
+                    plt.scatter(*trees[k].T, s=0.15, c="red")
+        else:
+            trees = []
+
         colour_map = self.apply_height_map(rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask)
 
-        if kwargs.pop('showAtEnd', False):
+        print('Finishing up generation...')
+
+        if showAtEnd:
             plt.imshow(colour_map[0])
 
             plt.show()
@@ -838,3 +805,7 @@ class MapGen:
         height_map = norm_map * scaling_factor  # Convert to heights
         out = [[round(j) for j in i] for i in height_map]
         self.outs = ([out, colour_map, rivers_biome_colour_map, adjusted_height_river_map, river_land_mask, biome_masks], trees)
+        self.map = self.outs[0][0]
+        self.trees = self.tolist(self.outs[1])
+        self.structures = []
+        # self.generate_structures()

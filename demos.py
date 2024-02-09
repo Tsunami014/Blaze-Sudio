@@ -99,7 +99,7 @@ def GraphicsDemo():
 
 def worldsDemo():
     from utils import World
-    World('test', 'Test World', 'A world for testing random stuff', 25, quality=500, override=True)
+    World('test', 'Test World', 'A world for testing random stuff', 25, override=True)
 
 def terrainGenDemo():
     from random import randint
