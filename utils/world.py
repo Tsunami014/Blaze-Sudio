@@ -1,7 +1,7 @@
 import json, re
 from os.path import exists, join
 from random import choice
-from math import floor, sqrt
+from math import floor, sqrt, ceil
 from copy import deepcopy
 from shutil import copytree
 
@@ -21,7 +21,7 @@ def create_iid():
     return f'{"".join([r() for _ in range(8)])}-{"".join([r() for _ in range(4)])}-11ee-{"".join([r() for _ in range(4)])}-{"".join([r() for _ in range(12)])}'
 
 class World:
-    def __init__(self, filename, name='', idea='', size=None, size2=50, quality=500, override=False, make_new=True):
+    def __init__(self, filename, name='', idea='', size=None, size2=50, quality=None, override=False, make_new=True):
         """
         A World!
 
@@ -34,12 +34,13 @@ class World:
         idea : str
             the idea of the world.
         size : int
-            The amount of layers to create.
+            The amount of levels to create (in a square).
         size2 : int, optional
             The size of the world "chunks", by default 50 (ldtk blocks)
         quality : int, optional
-            The quality of the terrain generation. Also puts a limit on how much output it has. Defaults to 500
+            The quality of the terrain generation. Also puts a limit on how much output it has.
             Think of this as the amount of pixels the output generates, and the size is the size of the chunks.
+            If you leave this, it will make this number `size * size2` which is what you want 100% of the time.
         override : bool, optional
             Whether or not to override the currently saved level with the same name (if there is one), by default False
         make_new : bool, optional
@@ -48,11 +49,6 @@ class World:
         path = (folder+filename).replace('/', '\\')
         if not path.endswith('\\'): path += '\\'
         self.path = path
-        if (not exists(path) or override) and not make_new:
-            if name == '' or idea == '' or size == None:
-                raise KeyError('You MUST have name, idea and size args OR turn make_new on OR turn override off because the file does not exist or overrride is on!')
-            self.name = name
-            self.idea = idea
         self.data = {}
         if exists(path) and not override:
             self.data = json.load(open(path+'world.ldtk', 'r'))
@@ -60,8 +56,13 @@ class World:
             self.name = dat['name']
             self.idea = dat['idea']
         elif make_new:
-            m = Map(quality, None)
-            print('Generating file...')
+            if name == '' or idea == '' or size == None:
+                raise KeyError('You MUST have name, idea and size args OR turn make_new on OR turn override off because the file does not exist or overrride is on!')
+            self.name = name
+            self.idea = idea
+            if quality == None: quality = int((ceil(sqrt(size)) * size2)*2) # TODO: Make this more efficient by generating a rectangle, not just a square
+            m = MapGen(quality)
+            print('Generating map...')
             self.data = empty.copy()
             self.data['tutorialDesc'] = 'ERROR!!' # So that if you look at the file and this hasn't finished it's setup then... Oh no! MAYBE TODO: error codes (300 error)
             self.data['worldLayout'] = choice(['Gridvania', 'Free'])
@@ -76,10 +77,15 @@ class World:
                 level['uid'] = j
                 level['worldX'] = (j%size3) * size2 * 16
                 level['worldY'] = floor(j/size3) * size2 * 16
+                level["pxWid"] = 16 * size2
+                level["pxHei"] = 16 * size2
                 layer = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('World')]
                 l = m(size2, size2, (j%size3)*size2, floor(j/size3)*size2)
                 layer['intGridCsv'] = []
                 for i in l: layer['intGridCsv'].extend(i)
+                for i in level['layerInstances']:
+                    i["__cWid"] = size2
+                    i["__cHei"] = size2
                 level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('World')] = layer
                 
                 """entities = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Entities')]
@@ -111,7 +117,7 @@ class World:
                 layer2 = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Structures')]
                 layer2['intGridCsv'] = []
                 #l2 = find_plateaus(l)
-                l2 = m.get_structs(size2, size2, (j%size3)*size2, floor(j/size3)*size2)
+                l2 = [i[size2:size2+(j%size3)*size2] for i in m.trees[size2:size2+floor(j/size3)*size2]]
                 for i in l2: layer2['intGridCsv'].extend(i)
                 level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Structures')] = layer2
 

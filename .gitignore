@@ -5,3 +5,5 @@ keys/apiKeys.key
 *.json
 *.elm
 data/worlds/*/*
+data/worlds/*/world/backups/*
+data/defaultWorld/world/backups/*
