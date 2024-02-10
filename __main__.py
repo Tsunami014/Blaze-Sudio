@@ -4,6 +4,7 @@ from graphics import Graphic
 from graphics import graphics_options as GO
 from utils import World
 from ldtk import LDtkAPP
+from threading import Thread
 G = Graphic()
 
 class Game:
@@ -128,12 +129,25 @@ class Game:
             if element == 0: # back
                 return False
             elif element == 1: # make new world
-                @G.Loading
-                def NW(self): # TODO: make a GUI screen to ask fr title and description
-                    self.world = World('newworld', 'New World', 'a new world', 10, 100)
-                cont, res = NW()
-                if cont:
-                    return self.world(res['world'], newworld=True)
+                NumOTasks = 21 + 5 # 21 from terrainGen.py, 5 from world.py
+                dones = [False for _ in range(NumOTasks)]
+                done = [False]
+                async def wait(i):
+                    while True:
+                        if dones[i]: return True
+                def NW(dones, done): # TODO: make a GUI screen to ask for title and description
+                    def CB(txt):
+                        print(txt) # TODO: Make it show the text while it's loading (e.g. Loading oceans...)
+                        for i in range(len(dones)):
+                            if dones[i] == False:
+                                dones[i] = True
+                                return
+                    done[0] = World('newworld', 'New World', 'a new world', 10, 100, callback=CB)
+                t = Thread(target=NW, daemon=True, args=(dones, done))
+                t.start()
+                tasks = [wait(i) for i in range(NumOTasks)]
+                G.PBLoading(tasks)
+                return self.world(done[0], newworld=True)
             else:
                 G.Container.Selection = G.Container.res['worlds'][element.uid-2].name
                 G.Reload()

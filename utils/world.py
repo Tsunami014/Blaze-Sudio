@@ -21,7 +21,7 @@ def create_iid():
     return f'{"".join([r() for _ in range(8)])}-{"".join([r() for _ in range(4)])}-11ee-{"".join([r() for _ in range(4)])}-{"".join([r() for _ in range(12)])}'
 
 class World:
-    def __init__(self, filename, name='', idea='', size=None, size2=50, quality=None, override=False, make_new=True):
+    def __init__(self, filename, name='', idea='', size=None, size2=50, quality=None, override=False, make_new=True, callback=lambda *args: None):
         """
         A World!
 
@@ -45,6 +45,8 @@ class World:
             Whether or not to override the currently saved level with the same name (if there is one), by default False
         make_new : bool, optional
             Whether or not to make a new world if the name specified does not exist. Defaults to True
+        callback : function, optional
+            When the progress on the generation gets further, cal this function with the info on it. Can put `print` here if you want to print out the progress.
         """
         path = (folder+filename).replace('/', '\\')
         if not path.endswith('\\'): path += '\\'
@@ -61,8 +63,10 @@ class World:
             self.name = name
             self.idea = idea
             if quality == None: quality = int((ceil(sqrt(size)) * size2)*2) # TODO: Make this more efficient by generating a rectangle, not just a square
-            m = MapGen(quality)
-            print('Generating map...')
+            m = MapGen()
+            for i in m.generate(quality):
+                callback(i)
+            callback('Generating map...')
             self.data = empty.copy()
             self.data['tutorialDesc'] = 'ERROR!!' # So that if you look at the file and this hasn't finished it's setup then... Oh no! MAYBE TODO: error codes (300 error)
             self.data['worldLayout'] = choice(['Gridvania', 'Free'])
@@ -128,18 +132,18 @@ class World:
                 j += 1
             self.data['tutorialDesc'] = 'This is your generated world! Feel free to edit anything!'
             # save to file
-            print('Stringing file into JSON...')
+            callback('Stringing file into JSON...')
             txt = json.dumps(self.data, indent=4)
-            print('Formatting data... (may take a while)...')
+            callback('Formatting data... (may take a while)...')
             for i in re.findall(r'(\n *?\d+?(,|\n))', txt):
                 txt = txt.replace(i[0], re.findall(r'\d+,?', i[0])[0])
             #for i in re.findall(r'((\d,){70})', txt):
             #    txt = txt.replace(i[0], '\n						'+i[0])
             #txt = txt.replace('"~', '[').replace('~"', ']')
             txt = txt.replace('                            ]', ']').replace('                    ]', ']')
-            print('Copying tree...')
+            callback('Copying tree...')
             copytree('data/defaultWorld', join(os.getcwd(), path))
-            print('Saving to files...')
+            callback('Saving to files...')
             json.dump({
                 'version': "1.0", # Change every time the version OF THE JSON/LDTK FILES UPDATES;
                 # MINOR version update = anything to do with world loading changes
