@@ -129,7 +129,7 @@ class Game:
             if element == 0: # back
                 return False
             elif element == 1: # make new world
-                NumOTasks = 21 + 5 # 21 from terrainGen.py, 5 from world.py
+                NumOTasks = 21 + 5 + 1 # 21 from terrainGen.py, 5 from world.py
                 dones = [False for _ in range(NumOTasks)]
                 done = [False]
                 async def wait(i):
@@ -137,16 +137,19 @@ class Game:
                         if dones[i]: return True
                 def NW(dones, done): # TODO: make a GUI screen to ask for title and description
                     def CB(txt):
-                        print(txt) # TODO: Make it show the text while it's loading (e.g. Loading oceans...)
+                        G.Container.pbar.set_txt('{2}% ({0} / {1}): ' + txt)
                         for i in range(len(dones)):
                             if dones[i] == False:
                                 dones[i] = True
                                 return
+                    while G.Container.pbar == None:
+                        pass
                     done[0] = World('newworld', 'New World', 'a new world', 10, 100, callback=CB)
                 t = Thread(target=NW, daemon=True, args=(dones, done))
-                t.start()
                 tasks = [wait(i) for i in range(NumOTasks)]
-                G.PBLoading(tasks)
+                G.Container.pbar = None
+                t.start()
+                G.PBLoading(tasks, 'Loading...')
                 return self.world(done[0], newworld=True)
             else:
                 G.Container.Selection = G.Container.res['worlds'][element.uid-2].name
