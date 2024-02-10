@@ -248,13 +248,16 @@ class Graphic:
             return Loading(func)(self.WIN, GO.FTITLE)
         return func2
     
-    def PBLoading(self, tasks): # TODO: allow aborting
+    def PBLoading(self, tasks, loadingtxt='Loading... {2}% ({0} / {1})'): # TODO: allow aborting
         """Have a loading screen! Like G.Loading, but with a progressbar!
 
         Parameters
         ----------
         tasks : list[async functions]
             The list of async functions to run.
+        loadingtxt : str, optional
+            The text to display on the loading screen, by default 'Loading... {2}% ({0} / {1})'
+            {2} is the percentage, {0} is the amount of tasks completed, {1} is the amount of tasks
 
         Returns
         -------
@@ -263,8 +266,8 @@ class Graphic:
         """
         self.WIN.fill(GO.CWHITE)
         pygame.display.update()
-        pbar = Progressbar(600, 50)
-        res = pbar(self.WIN, (self.size[0] - 600) // 2, (self.size[1] - 50) // 2, 5, tasks)
+        self.Container.pbar = Progressbar(600, 50)
+        res = self.Container.pbar(self.WIN, (self.size[0] - 600) // 2, (self.size[1] - 50) // 2, 5, tasks, loadingtxt)
         asyncio.get_event_loop().stop()
         return res
     
