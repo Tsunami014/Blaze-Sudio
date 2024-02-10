@@ -26,7 +26,7 @@ class Progressbar:
             # Handle the events
             for event in pygame.event.get():
                 # If the user clicks the close button, exit the loop
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     running = False
                     break
             
@@ -71,5 +71,5 @@ class Progressbar:
             loop.run_until_complete(task)
         loop.run_in_executor(None, run)
         self.whileloading(x, y, self.bar.get_width(), self.bar.get_height(), border_width, window, update_func, loadingtxtColour)
-        #loop.stop()
+        loop.stop()
         return self.results
