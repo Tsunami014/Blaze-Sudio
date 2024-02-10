@@ -298,7 +298,6 @@ class MapGen:
         return trees
     
     def create_trees(self, river_land_mask, adjusted_height_river_map, biome_masks, densities):
-        print('Generating Height Map Filters: Trees and Vegetation... (may take a while...)')
 
         def place_trees(n, mask, a=0.5):
             trees= self.generate_trees(n)
@@ -329,7 +328,7 @@ class MapGen:
         return [[int(j) for j in i] for i in out]
 
     def generate_structures(self):
-        print('Generating structures... (0/%i)' % (round(len(self.map))/10))
+        yield 'Generating structures... (0/%i)' % (round(len(self.map))/10)
         outs = []
         done = []
         for x in range(len(self.map)):
@@ -338,12 +337,16 @@ class MapGen:
                     l = floodfill(self.map, x, y)
                     outs.append(l)
                     done.extend(l)
-            if x % 10 == 0: print('Generating structures... (%i/%i)' % (round(x / 10), round(len(self.map)/10)))
-        print('Generating structures: sorting and choosing...')
+            if x % 10 == 0: yield 'Generating structures... (%i/%i)' % (round(x / 10), round(len(self.map)/10))
+        yield 'Generating structures: sorting and choosing...'
         outs.sort(key=lambda x: len(x), reverse=True)
         self.structures = self.tolist([outs[0]])
     
-    def __init__(self, size, map_seed=None, n=256, useall=False, showAtEnd=False, generateTrees=True):
+    def __init__(self):
+        '''# REMEMBER TO CALL `.generate()` ON THIS OR IT WILL BE USELESS'''
+        pass
+    
+    def generate(self, size, map_seed=None, n=256, useall=False, showAtEnd=False, generateTrees=True):
         """
         Generates a map! :)
 
@@ -368,6 +371,13 @@ class MapGen:
 
         Returns
         -------
+        A generator object
+
+        This yields every step of the process, so you can print out the response, etc.
+
+
+        Random info:
+        ------------
         tuple(list[numpy arrays/lists], numpy array)
             [
                 out (rounded and scaled from 1-10, list), 
@@ -384,7 +394,7 @@ class MapGen:
         np.random.seed(self.map_seed)
         self.size = size
         # Voronoi diagram
-        print('Creating Voronoi diagram...')
+        yield 'Creating Voronoi diagram...'
 
         points = np.random.randint(0, size, (514, 2))
         vor = self.voronoi(points)
@@ -395,7 +405,7 @@ class MapGen:
             plt.scatter(*points.T, s=1)
 
         # Lloyd's relaxation
-        print('Relaxing...')
+        yield 'Relaxing...'
         points = self.relax(points, k=100)
         vor = self.voronoi(points)
         vor_map = self.voronoi_map(vor)
@@ -408,7 +418,7 @@ class MapGen:
         # Perlin noise / Simplex noise
 
         # Bluring the boundaries
-        print('Bluring the boundaries (with noise)...')
+        yield 'Bluring the boundaries (with noise)...'
         boundary_displacement = 8
         boundary_noise = np.dstack([self.noise_map(32, 200, octaves=8), self.noise_map(32, 250, octaves=8)])
         boundary_noise = np.indices((size, size)).T + boundary_displacement*boundary_noise
@@ -432,7 +442,7 @@ class MapGen:
 
         # Choosing Biomes
         ## Temperature–Precipitation maps
-        print('Choosing biomes: Temperature–Precipitation maps...')
+        yield 'Choosing biomes: Temperature–Precipitation maps...'
 
         temperature_map = self.noise_map(2, 10)
         precipitation_map = self.noise_map(2, 20)
@@ -450,7 +460,7 @@ class MapGen:
 
 
         # Histogram Equalization
-        print('Histogram equalization...')
+        yield 'Histogram equalization...'
 
         if useall:
             fig, axes = plt.subplots(1, 2)
@@ -511,7 +521,7 @@ class MapGen:
         precipitation_map = uniform_precipitation_map
 
         # Averaging Cells
-        print('Averaging cells...')
+        yield 'Averaging cells...'
 
         temperature_cells = self.average_cells(vor_map, temperature_map)
         precipitation_cells = self.average_cells(vor_map, precipitation_map)
@@ -532,7 +542,7 @@ class MapGen:
 
 
         # Quantization
-        print('Quantizing...')
+        yield 'Quantizing...'
 
         n = 256
 
@@ -549,7 +559,7 @@ class MapGen:
         precipitation_map = quantize_precipitation_map
 
         # Temperature–Precipitation graph
-        print('Applying Temperature–Precipitation graph...')
+        yield 'Applying Temperature–Precipitation graph...'
 
         im = np.array(Image.open("TP_map.png"))[:, :, :3]
         biomes = np.zeros((256, 256))
@@ -566,7 +576,7 @@ class MapGen:
             plt.title("Temperature–Precipitation graph")
 
         # Biome map
-        print('Making biome map...')
+        yield 'Making biome map...'
 
         n = len(temperature_cells)
         biome_cells = np.zeros(n, dtype=np.uint32)
@@ -583,7 +593,7 @@ class MapGen:
             plt.imshow(biome_colour_map)
 
         #Height Map
-        print('Generating height...')
+        yield 'Generating height...'
 
         height_map = self.noise_map(4, 0, octaves=6, persistence=0.5, lacunarity=2)
         land_mask = height_map > 0
@@ -614,7 +624,7 @@ class MapGen:
             ax[1].set_title("Biomes with normal")
 
         # Height Map Detail
-        print('Generating height map detail...')
+        yield 'Generating height map detail...'
 
         height_map = self.noise_map(4, 0, octaves=6, persistence=0.5, lacunarity=2)
         smooth_height_map = self.noise_map(4, 0, octaves=1, persistence=0.5, lacunarity=2)
@@ -632,7 +642,7 @@ class MapGen:
 
         # Height Map Filters
         ## Bézier Curves
-        print('Generating Height Map Filters: Bézier Curves...')
+        yield 'Generating Height Map Filters: Bézier Curves...'
 
         # f = bezier_lut(0.8, 0.1, 0.9, 0.05, 0.05)
         # t = np.linspace(0, 1, 1000)
@@ -658,7 +668,7 @@ class MapGen:
         # plt.savefig("figures/figure_13/9.jpg")
 
         ## Filters
-        print('Generating Height Map Filters: Filters...')
+        yield 'Generating Height Map Filters: Filters...'
 
         biome_height_maps = [
             # Desert
@@ -682,7 +692,7 @@ class MapGen:
         ]
 
         ## Biome masks
-        print('Generating Height Map Filters: Biome masks...')
+        yield 'Generating Height Map Filters: Biome masks...'
 
         biome_count = len(biome_names)
         biome_masks = np.zeros((biome_count, size, size))
@@ -703,7 +713,7 @@ class MapGen:
             plt.imshow(biome_masks[6], cmap="gray")
 
         ## Applying Filters
-        print('Generating Height Map Filters: Applying filters...')
+        yield 'Generating Height Map Filters: Applying filters...'
 
         adjusted_height_map = height_map.copy()
 
@@ -726,7 +736,7 @@ class MapGen:
 
         ## Rivers
         ## Boundaries
-        print('Generating Height Map Filters: Rivers... (may take a while...)')
+        yield 'Generating Height Map Filters: Rivers... (may take a while...)'
 
         biome_bound = self.get_boundary(biome_map, kernel=5)
         cell_bound = self.get_boundary(vor_map, kernel=2)
@@ -759,6 +769,7 @@ class MapGen:
 
         ## Trees and Vegetation
         if generateTrees:
+            yield 'Generating Height Map Filters: Trees and Vegetation... (may take a while...)'
             trees = self.create_trees(river_land_mask, adjusted_height_river_map, biome_masks, tree_densities)
             # Example
             if useall:
@@ -793,7 +804,7 @@ class MapGen:
 
         colour_map = self.apply_height_map(rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask)
 
-        print('Finishing up generation...')
+        yield 'Finishing up generation...'
 
         if showAtEnd:
             plt.imshow(colour_map[0])
@@ -808,4 +819,4 @@ class MapGen:
         self.map = self.outs[0][0]
         self.trees = self.tolist(self.outs[1])
         self.structures = []
-        # self.generate_structures()
+        # for i in self.generate_structures(): yield i
