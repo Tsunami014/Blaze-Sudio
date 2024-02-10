@@ -144,14 +144,15 @@ class Game:
                                 return
                     while G.Container.pbar == None:
                         pass
-                    done[0] = World('newworld', 'New World', 'a new world', 10, 100, callback=CB)
+                    done[0] = World('newworld', 'New World', 'a new world', 10, 100, override=True, callback=CB)
                     for i in range(len(dones)): dones[i] = True
                 t = Thread(target=NW, daemon=True, args=(dones, done))
                 tasks = [wait(i) for i in range(NumOTasks)]
                 G.Container.pbar = None
                 t.start()
                 G.PBLoading(tasks, 'Loading...')
-                return self.world(done[0], newworld=True)
+                if done[0] is not False:
+                    return self.world(done[0], newworld=True)
             else:
                 G.Container.Selection = G.Container.res['worlds'][element.uid-2].name
                 G.Reload()

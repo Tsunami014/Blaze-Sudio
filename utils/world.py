@@ -4,6 +4,7 @@ from random import choice
 from math import floor, sqrt, ceil
 from copy import deepcopy
 from shutil import copytree
+import shutil
 
 from utils.characters import *
 from utils.storyline import *
@@ -58,6 +59,8 @@ class World:
             self.name = dat['name']
             self.idea = dat['idea']
         elif make_new:
+            if os.path.exists('data/worlds/'+filename):
+                shutil.rmtree('data/worlds/'+filename)
             if name == '' or idea == '' or size == None:
                 raise KeyError('You MUST have name, idea and size args OR turn make_new on OR turn override off because the file does not exist or overrride is on!')
             self.name = name
