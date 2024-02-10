@@ -773,9 +773,9 @@ class MapGen:
             trees = self.create_trees(river_land_mask, adjusted_height_river_map, biome_masks, tree_densities)
             # Example
             if useall:
-                low_density_trees = self.generate_trees(1000, size)
-                medium_density_trees = self.generate_trees(5000, size)
-                high_density_trees = self.generate_trees(25000, size)
+                low_density_trees = self.generate_trees(1000)
+                medium_density_trees = self.generate_trees(5000)
+                high_density_trees = self.generate_trees(25000)
 
                 plt.figure(dpi=150, figsize=(10, 3))
                 plt.subplot(131)
