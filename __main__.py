@@ -129,7 +129,7 @@ class Game:
             if element == 0: # back
                 return False
             elif element == 1: # make new world
-                NumOTasks = 21 + 5 + 1 # 21 from terrainGen.py, 5 from world.py
+                NumOTasks = 21 + 5 # 21 from terrainGen.py, 5 from world.py
                 dones = [False for _ in range(NumOTasks)]
                 done = [False]
                 async def wait(i):
@@ -145,6 +145,7 @@ class Game:
                     while G.Container.pbar == None:
                         pass
                     done[0] = World('newworld', 'New World', 'a new world', 10, 100, callback=CB)
+                    for i in range(len(dones)): dones[i] = True
                 t = Thread(target=NW, daemon=True, args=(dones, done))
                 tasks = [wait(i) for i in range(NumOTasks)]
                 G.Container.pbar = None
