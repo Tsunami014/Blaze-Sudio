@@ -114,7 +114,9 @@ def terrainGenDemo():
     else:
         map_seed = int(inp)
     useall = input('Type anything here to show all steps in terrain generation, or leave this blank and press enter to just show the finished product. > ') != ''
-    outs, trees = MapGen(size, map_seed, n, useall=useall, showAtEnd=True).outs
+    m = MapGen()
+    for txt in m.generate(size, map_seed, n, useall=useall, showAtEnd=True): print(txt)
+    outs, trees = m.outs
     print(outs[0])
     pass
 
