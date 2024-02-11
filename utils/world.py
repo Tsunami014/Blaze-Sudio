@@ -22,7 +22,7 @@ def create_iid():
     return f'{"".join([r() for _ in range(8)])}-{"".join([r() for _ in range(4)])}-11ee-{"".join([r() for _ in range(4)])}-{"".join([r() for _ in range(12)])}'
 
 class World:
-    def __init__(self, filename, name='', idea='', size=None, size2=50, quality=None, override=False, make_new=True, callback=lambda *args: None):
+    def __init__(self, filename, name='', idea='', size=None, size2=50, quality=None, seed=None, override=False, make_new=True, callback=lambda *args: None):
         """
         A World!
 
@@ -42,6 +42,8 @@ class World:
             The quality of the terrain generation. Also puts a limit on how much output it has.
             Think of this as the amount of pixels the output generates, and the size is the size of the chunks.
             If you leave this, it will make this number `size * size2` which is what you want 100% of the time.
+        seed : int, optional
+            The seed of the generation, if None will be random
         override : bool, optional
             Whether or not to override the currently saved level with the same name (if there is one), by default False
         make_new : bool, optional
@@ -65,9 +67,9 @@ class World:
                 raise KeyError('You MUST have name, idea and size args OR turn make_new on OR turn override off because the file does not exist or overrride is on!')
             self.name = name
             self.idea = idea
-            if quality == None: quality = int((ceil(sqrt(size)) * size2)*2) # TODO: Make this more efficient by generating a rectangle, not just a square
+            if quality == None: quality = int((ceil(sqrt(size)) * size2)) # TODO: Make this more efficient by generating a rectangle, not just a square
             m = MapGen()
-            for i in m.generate(quality):
+            for i in m.generate(quality, seed):
                 callback(i)
             callback('Generating map...')
             self.data = empty.copy()
@@ -86,14 +88,17 @@ class World:
                 level['worldY'] = floor(j/size3) * size2 * 16
                 level["pxWid"] = 16 * size2
                 level["pxHei"] = 16 * size2
-                layer = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('World')]
-                l = m(size2, size2, (j%size3)*size2, floor(j/size3)*size2)
-                layer['intGridCsv'] = []
-                for i in l: layer['intGridCsv'].extend(i)
                 for i in level['layerInstances']:
                     i["__cWid"] = size2
                     i["__cHei"] = size2
-                level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('World')] = layer
+                Wlayer = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('World')]
+                l = m(size2, size2, (j%size3)*size2, floor(j/size3)*size2)
+                Wlayer['intGridCsv'] = []
+                for i in l: Wlayer['intGridCsv'].extend(i)
+                level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('World')] = Wlayer
+                Olayer = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Water')]
+                Olayer['intGridCsv'] = []
+                for i in m.outs[0][4][floor(j/size3)*size2:(1+floor(j/size3))*size2]: Olayer['intGridCsv'].extend([(0 if k else 1) for k in i[(j%size3)*size2:(1+(j%size3))*size2]])
                 
                 """entities = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Entities')]
                 entities['entityInstances'] = []
@@ -121,12 +126,12 @@ class World:
 						})
                 level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Entities')] = entities"""
 
-                layer2 = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Structures')]
+                layer2 = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Trees')]
                 layer2['intGridCsv'] = []
                 #l2 = find_plateaus(l)
-                l2 = [i[size2:size2+(j%size3)*size2] for i in m.trees[size2:size2+floor(j/size3)*size2]]
+                l2 = [i[(j%size3)*size2:(1+(j%size3))*size2] for i in m.trees[floor(j/size3)*size2:(1+floor(j/size3))*size2]]
                 for i in l2: layer2['intGridCsv'].extend(i)
-                level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Structures')] = layer2
+                level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Trees')] = layer2
 
                 for i in level['layerInstances']:
                     i['iid'] = create_iid()
@@ -136,16 +141,16 @@ class World:
             self.data['tutorialDesc'] = 'This is your generated world! Feel free to edit anything!'
             # save to file
             callback('Stringing file into JSON...')
-            txt = json.dumps(self.data, indent=4)
+            txt = json.dumps(self.data)#, indent=4)
             callback('Formatting data... (may take a while)...')
-            for i in re.findall(r'(\n *?\d+?(,|\n))', txt):
-                txt = txt.replace(i[0], re.findall(r'\d+,?', i[0])[0])
+            #for i in re.findall(r'(\n *?\d+?(,|\n))', txt):
+            #    txt = txt.replace(i[0], re.findall(r'\d+,?', i[0])[0])
             #for i in re.findall(r'((\d,){70})', txt):
             #    txt = txt.replace(i[0], '\n						'+i[0])
             #txt = txt.replace('"~', '[').replace('~"', ']')
-            txt = txt.replace('                            ]', ']').replace('                    ]', ']')
+            #txt = txt.replace('                            ]', ']').replace('                    ]', ']')
             callback('Copying tree...')
-            copytree('data/defaultWorld', join(os.getcwd(), path))
+            copytree(join(os.getcwd(),'data/defaultWorld'), join(os.getcwd(), path))
             callback('Saving to files...')
             json.dump({
                 'version': "1.0", # Change every time the version OF THE JSON/LDTK FILES UPDATES;
