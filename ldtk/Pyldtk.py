@@ -116,7 +116,7 @@ class layer:
             if self._type == 'IntGrid':
                 vals = [i['value'] for i in self.intGridValues]
                 for i in range(len(self.intGridCsv)):
-                    col = pygame.Surface((self.gridSize, self.gridSize))
+                    col = pygame.Surface((self.gridSize, self.gridSize)).convert_alpha()
                     if self.intGridCsv[i] == 0 or self.intGridCsv[i] not in vals:
                         col.fill((255, 255, 255, 1))
                     else:
