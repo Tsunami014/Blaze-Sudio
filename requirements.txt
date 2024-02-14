@@ -3,7 +3,7 @@ connect-markdown-renderer
 pygame
 gpt4all
 languagemodels
-noise
+perlin-noise
 scikit-image
 matplotlib
 g4f
@@ -12,3 +12,4 @@ googlesearch-python
 html2text
 dill
 pywin32
+nest_asyncio
