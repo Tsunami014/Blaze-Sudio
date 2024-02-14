@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from skimage.draw import polygon
 from PIL import Image
-from noise import snoise3
+from perlin_noise import PerlinNoise
 from skimage import exposure
 from scipy import ndimage
 from scipy.spatial import Voronoi
@@ -103,17 +103,14 @@ class MapGen:
             new_points = np.array(new_points).clip(0, self.size)
         return new_points
     
-    def noise_map(self, res, seed, octaves=1, persistence=0.5, lacunarity=2.0):
+    def noise_map(self, res, seed, octaves=1):
         scale = self.size/res
-        return np.array([[
-            snoise3(
-                (x+0.1)/scale,
-                y/scale,
-                seed+self.map_seed,
+        noise = PerlinNoise(
+                seed=seed+self.map_seed,
                 octaves=octaves,
-                persistence=persistence,
-                lacunarity=lacunarity
             )
+        return np.array([[
+            noise([(x+0.1)/scale, y/scale])
             for x in range(self.size)]
             for y in range(self.size)
         ])
@@ -595,7 +592,7 @@ class MapGen:
         #Height Map
         yield 'Generating height...'
 
-        height_map = self.noise_map(4, 0, octaves=6, persistence=0.5, lacunarity=2)
+        height_map = self.noise_map(4, 0, octaves=6)
         land_mask = height_map > 0
 
         if useall:
@@ -626,8 +623,8 @@ class MapGen:
         # Height Map Detail
         yield 'Generating height map detail...'
 
-        height_map = self.noise_map(4, 0, octaves=6, persistence=0.5, lacunarity=2)
-        smooth_height_map = self.noise_map(4, 0, octaves=1, persistence=0.5, lacunarity=2)
+        height_map = self.noise_map(4, 0, octaves=6)
+        smooth_height_map = self.noise_map(4, 0, octaves=1)
 
         if useall:
             fig, ax = plt.subplots(1 ,2)
@@ -741,7 +738,7 @@ class MapGen:
         biome_bound = self.get_boundary(biome_map, kernel=5)
         cell_bound = self.get_boundary(vor_map, kernel=2)
 
-        river_mask = self.noise_map(4, 4353, octaves=6, persistence=0.5, lacunarity=2) > 0
+        river_mask = self.noise_map(4, 4353, octaves=6) > 0
 
         new_biome_bound = biome_bound*(adjusted_height_map<0.5)*land_mask
         new_cell_bound = cell_bound*(adjusted_height_map<0.05)*land_mask
