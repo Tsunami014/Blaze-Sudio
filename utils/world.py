@@ -129,7 +129,7 @@ class World:
                 layer2 = level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Trees')]
                 layer2['intGridCsv'] = []
                 #l2 = find_plateaus(l)
-                l2 = [i[(j%size3)*size2:(1+(j%size3))*size2] for i in m.trees[floor(j/size3)*size2:(1+floor(j/size3))*size2]]
+                l2 = [i[size2:(j%size3)*size2] for i in m.trees[size2:floor(j/size3)*size2]]
                 for i in l2: layer2['intGridCsv'].extend(i)
                 level['layerInstances'][[i['__identifier'] for i in level['layerInstances']].index('Trees')] = layer2
 

@@ -23,10 +23,10 @@ class Game:
         """
         def load():
             @G.Loading
-            def load(self):
+            def lo(self):
                 self.ret = False
                 self.ret = world.get_pygame(G.Container.lvl)
-            out = load()
+            out = lo()
             if not out[0]: G.Abort()
             G.Container.pg = out[1]['ret']
             if not G.Container.pg: G.Abort()
@@ -129,7 +129,7 @@ class Game:
             if element == 0: # back
                 return False
             elif element == 1: # make new world
-                NumOTasks = 23
+                NumOTasks = 23 + 9 # 9 biome names
                 dones = [False for _ in range(NumOTasks)]
                 done = [False]
                 async def wait(i):
@@ -144,7 +144,7 @@ class Game:
                                 return
                     while G.Container.pbar == None:
                         pass
-                    done[0] = World('newworld', 'New World', 'a new world', 1, 200, override=True, callback=CB)
+                    done[0] = World('newworld', 'New World', 'a new world', 1, 100, override=True, callback=CB)
                     for i in range(len(dones)): dones[i] = True
                 t = Thread(target=NW, daemon=True, args=(dones, done))
                 tasks = [wait(i) for i in range(NumOTasks)]

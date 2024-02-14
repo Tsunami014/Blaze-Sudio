@@ -297,7 +297,7 @@ class MapGen:
     def create_trees(self, river_land_mask, adjusted_height_river_map, biome_masks, densities):
 
         def place_trees(n, mask, a=0.5):
-            trees= self.generate_trees(n)
+            trees = self.generate_trees(n)
             rr, cc = trees.T
 
             output_trees = np.zeros((self.size, self.size), dtype=bool)
@@ -306,8 +306,11 @@ class MapGen:
 
             output_trees = np.array(np.where(output_trees == 1))[::-1].T    
             return output_trees
-        return [np.array(place_trees(densities[i], biome_masks[i]))
-                for i in range(len(biome_names))]
+        l = []
+        for i in range(len(biome_names)):
+            yield 'Planting trees... (%i/%i)' % (i, len(biome_names))
+            l.append(np.array(place_trees(densities[i], biome_masks[i])))
+        yield l
 
     def __call__(self, w, h, x=0, y=0):
         return [i[x:x+w] for i in self.map[y:y+h]]
@@ -415,7 +418,7 @@ class MapGen:
         # Perlin noise / Simplex noise
 
         # Bluring the boundaries
-        yield 'Bluring the boundaries (with noise)...'
+        yield 'Bluring the boundaries...'
         boundary_displacement = 8
         boundary_noise = np.dstack([self.noise_map(32, 200, octaves=8), self.noise_map(32, 250, octaves=8)])
         boundary_noise = np.indices((size, size)).T + boundary_displacement*boundary_noise
@@ -733,7 +736,7 @@ class MapGen:
 
         ## Rivers
         ## Boundaries
-        yield 'Generating Height Map Filters: Rivers... (may take a while...)'
+        yield 'Generating Height Map Filters: Rivers: Getting the boundaries...'
 
         biome_bound = self.get_boundary(biome_map, kernel=5)
         cell_bound = self.get_boundary(vor_map, kernel=2)
@@ -743,6 +746,7 @@ class MapGen:
         new_biome_bound = biome_bound*(adjusted_height_map<0.5)*land_mask
         new_cell_bound = cell_bound*(adjusted_height_map<0.05)*land_mask
 
+        yield 'Generating Height Map Filters: Making rivers...'
         rivers = np.logical_or(new_biome_bound, new_cell_bound)*river_mask
 
         loose_river_mask = binary_dilation(rivers, iterations=8)
@@ -766,8 +770,10 @@ class MapGen:
 
         ## Trees and Vegetation
         if generateTrees:
-            yield 'Generating Height Map Filters: Trees and Vegetation... (may take a while...)'
-            trees = self.create_trees(river_land_mask, adjusted_height_river_map, biome_masks, tree_densities)
+            for i in self.create_trees(river_land_mask, adjusted_height_river_map, biome_masks, tree_densities):
+                if isinstance(i, str): yield(i)
+                else: 
+                    trees = i
             # Example
             if useall:
                 low_density_trees = self.generate_trees(1000)
@@ -799,9 +805,8 @@ class MapGen:
         else:
             trees = []
 
-        colour_map = self.apply_height_map(rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask)
-
         yield 'Finishing up generation...'
+        colour_map = self.apply_height_map(rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask)
 
         if showAtEnd:
             plt.imshow(colour_map[0])
