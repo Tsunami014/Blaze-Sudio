@@ -248,7 +248,7 @@ class Graphic:
             return Loading(func)(self.WIN, GO.FTITLE)
         return func2
     
-    def PBLoading(self, tasks, loadingtxt='Loading... {2}% ({0} / {1})'): # TODO: allow aborting
+    def PBLoading(self, tasks, loadingtxt='Loading{3} {2}% ({0} / {1})'): # TODO: allow aborting
         """Have a loading screen! Like G.Loading, but with a progressbar!
 
         Parameters
@@ -256,8 +256,11 @@ class Graphic:
         tasks : list[async functions]
             The list of async functions to run.
         loadingtxt : str, optional
-            The text to display on the loading screen, by default 'Loading... {2}% ({0} / {1})'
-            {2} is the percentage, {0} is the amount of tasks completed, {1} is the amount of tasks
+            The text to display on the loading screen, by default 'Loading{3} {2}% ({0} / {1})'
+            {0}: Amount of tasks completed
+            {1}: Amount of tasks
+            {2}: % complete
+            {3}: ... (i.e. the dots change every 3rd of a second from . to .. to ... and back)
 
         Returns
         -------

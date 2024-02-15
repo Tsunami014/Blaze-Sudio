@@ -22,6 +22,8 @@ class Progressbar:
         prev_screen = window.copy()
         running = True
         clock = pygame.time.Clock()
+        dots = '.'
+        dotcounter = 0
         while running:
             # Handle the events
             for event in pygame.event.get():
@@ -29,6 +31,13 @@ class Progressbar:
                 if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     running = False
                     break
+            
+            dotcounter += 1
+            if dotcounter > 60 / 3:
+                if dots == '.': dots = '..'
+                elif dots == '..': dots = '...'
+                elif dots == '...': dots = '.'
+                dotcounter = 0
             
             # Clear the window
             window.fill(WHITE)
@@ -42,7 +51,7 @@ class Progressbar:
             except ZeroDivisionError: perc = 0
             perc = (perc * 100) // 100
             pygame.draw.rect(self.bar, GREEN, (border, border, (w - 2 * border) / 100 * perc, h - 2 * border))
-            window.blit(self.font.render(self.txt.format(str(completed), str(len(self.tasks)), str(perc)), True, loadingtxtColour), (0, 0))
+            window.blit(self.font.render(self.txt.format(str(completed), str(len(self.tasks)), str(perc), dots), True, loadingtxtColour), (0, 0))
             # Blit the loading bar surface onto the window
             window.blit(self.bar, (x, y))
             update_func()
@@ -60,7 +69,7 @@ class Progressbar:
         self.tasks = [asyncio.create_task(_) for _ in tasks]
         self.results = await asyncio.gather(*self.tasks, return_exceptions=True)
     
-    def __call__(self, window, x, y, border_width, tasks, loadingtxt='Loading... {2}% ({0} / {1})', loadingtxtColour=BLACK, update_func=lambda: None):
+    def __call__(self, window, x, y, border_width, tasks, loadingtxt='Loading{3} {2}% ({0} / {1})', loadingtxtColour=BLACK, update_func=lambda: None):
         if self.txt == '': # If something changed the text before it got time to initialise
             self.txt = loadingtxt
         # Create an asyncio event loop

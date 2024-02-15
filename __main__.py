@@ -137,7 +137,7 @@ class Game:
                         if dones[i]: return True
                 def NW(dones, done): # TODO: make a GUI screen to ask for title and description
                     def CB(txt):
-                        G.Container.pbar.set_txt('{2}% ({0} / {1}): ' + txt)
+                        G.Container.pbar.set_txt('{2}% ({0} / {1}): ' + txt.replace('...', '{3}'))
                         for i in range(len(dones)):
                             if dones[i] == False:
                                 dones[i] = True
