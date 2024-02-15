@@ -166,7 +166,7 @@ class Game:
             G.Clear()
             CBOT = GO.PNEW([1, 0], GO.PSTACKS[GO.PCBOTTOM][1])
             G.add_empty_space(CBOT, -50, 0)
-            G.add_text('Welcome to AIHub! :)', GO.CBLUE, GO.PCCENTER, GO.FTITLE)
+            G.add_text('Welcome to Blaze Sudios! :)', GO.CBLUE, GO.PCCENTER, GO.FTITLE)
             G.add_button('Start', GO.CGREEN, CBOT)
             G.add_empty_space(CBOT, 20, 0)
             G.add_button('Tutorial', GO.CRED, CBOT)
