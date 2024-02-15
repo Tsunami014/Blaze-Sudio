@@ -407,6 +407,9 @@ class MapGen:
         # Lloyd's relaxation
         yield 'Relaxing...'
         points = self.relax(points, k=100)
+
+        # Voronoi diagram
+        yield 'Creating Voronoi diagram... (again)'
         vor = self.voronoi(points)
         vor_map = self.voronoi_map(vor)
 

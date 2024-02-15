@@ -129,7 +129,7 @@ class Game:
             if element == 0: # back
                 return False
             elif element == 1: # make new world
-                NumOTasks = 23 + 9 # 9 biome names
+                NumOTasks = 24 + 9 # 9 biome names
                 dones = [False for _ in range(NumOTasks)]
                 done = [False]
                 async def wait(i):
