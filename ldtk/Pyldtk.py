@@ -56,7 +56,7 @@ class Tileset:
             self.tilesetPath = self.relPath
             if self.tilesetPath.startswith('..'):
                 self.tilesetPath = os.path.abspath(os.path.join(os.getcwd(), fileloc, self.tilesetPath))
-            self.tileSet = pygame.image.load(os.path.join(fileloc,self.tilesetPath)).convert_alpha()
+            self.tileSet = pygame.image.load(os.path.join(os.getcwd(),fileloc,self.tilesetPath)).convert_alpha()
     
     def getTile(self, tile, gridsize):
         end = self.tileSet.subsurface(pygame.Rect(tile.src.x, tile.src.y, self.tileGridSize, self.tileGridSize))
