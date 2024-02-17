@@ -1,3 +1,5 @@
+from threading import Thread
+
 def GraphicsDemo():
     import pygame
     import graphics.graphics_options as GO
@@ -522,13 +524,16 @@ if __name__ == '__main__':
         oprint('Loading please wait...')
         print('Loading please wait...')
         root.update()
-        try:
-            cmdd()
-        except Exception as e:
-            print('AN EXCEPTION HAS OCURRED:', type(e), e, sep='\n') # Breakpoint here and in console use
-            # `e.with_traceback()`
-        globals()['print'] = oprint
-        globals()['input'] = oinput
+        def go():
+            try:
+                cmdd()
+            except Exception as e:
+                print('AN EXCEPTION HAS OCURRED:', type(e), e, sep='\n') # Breakpoint here and in console use
+                # `e.with_traceback()`
+            globals()['print'] = oprint
+            globals()['input'] = oinput
+        t = Thread(target=go, daemon=False)
+        t.start()
         
     def load():
         for widget in root.winfo_children():
