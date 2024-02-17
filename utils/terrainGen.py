@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from skimage.draw import polygon
 from PIL import Image
-from perlin_noise import PerlinNoise
+from NPerlinNoise import Noise
 from skimage import exposure
 from scipy import ndimage
 from scipy.spatial import Voronoi
@@ -104,16 +104,11 @@ class MapGen:
         return new_points
     
     def noise_map(self, res, seed, octaves=1):
-        scale = self.size/res
-        noise = PerlinNoise(
+        noise = Noise(
                 seed=seed+self.map_seed,
                 octaves=octaves,
             )
-        return np.array([[
-            noise([(x+0.1)/scale, y/scale])
-            for x in range(self.size)]
-            for y in range(self.size)
-        ])
+        return noise(range(self.size), range(self.size), gridMode=True)
     
     def histeq(self, img,  alpha=1):
         img_cdf, bin_centers = exposure.cumulative_distribution(img)

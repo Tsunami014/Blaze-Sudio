@@ -3,7 +3,7 @@ connect-markdown-renderer
 pygame
 gpt4all
 languagemodels
-perlin-noise
+nPerlinNoise
 scikit-image
 matplotlib
 g4f
