@@ -74,5 +74,5 @@ def Loading(func):
             ls.update()
         end = t.is_alive()
         t.raise_exception()
-        return (not end), {i:getattr(m,i) for i in dir(m) if i not in dir(main)}
+        return (not end), m
     return func2

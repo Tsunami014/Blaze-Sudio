@@ -21,19 +21,17 @@ class Game:
         KWargs:
             newworld (bool, optional): Whether this is a new world or not. Defaults to False.
         """
-        def load():
-            @G.Loading
-            def lo(self):
-                self.ret = world.get_pygame(G.Container.lvl)
-                self.player = Player(self.ret)
-            out = lo()
-            if not out[0]: G.Abort()
-            G.Container.pg = out[1]['ret']
-            G.Container.Player = out[1]['player']
-            G.add_custom(out[1]['player'], True)
+        @G.Loading
+        def load(self):
+            self.ret = world.get_pygame(G.Container.lvl)
+            self.player = Player(self.ret)
         if event == GO.EFIRST:
             G.Container.lvl = 0
-            load()
+            success, cls = load()
+            if not success: G.Abort()
+            G.Container.pg = cls.ret
+            G.Container.Player = cls.player
+            G.add_custom(cls.player, True)
     @G.CGraphic
     def world_edit(self, event, worldname, element=None, aborted=False):
         if event == GO.EFIRST:
@@ -44,7 +42,7 @@ class Game:
                 self.win.wait_for_win()
             cont, res = load()
             if not cont: G.Abort()
-            G.Container.win = res['win']
+            G.Container.win = res.win
         elif event == GO.EELEMENTCLICK:
             G.Container.win.kill()
             G.Abort()
@@ -79,7 +77,7 @@ class Game:
             G.add_button('Back', GO.CGREY, GO.PLTOP)
             G.add_button('New World', GO.CGREEN, GO.PLTOP)
             cols = GO.CRAINBOW()
-            for i in G.Container.res['worldinfo']:
+            for i in G.Container.res.worldinfo:
                 G.add_button(i['name'], next(cols), GO.PLCENTER)
             if G.Container.Selection is not None:
                 uid, ng = G.add_Scrollable(GO.PCCENTER, (500, 700), (500, 700), bar=False)
@@ -103,7 +101,7 @@ class Game:
         elif event == GO.ETICK:
             if G.touchingbtns != G.Container.prevpresses:
                 G.Container.prevpresses = G.touchingbtns.copy()
-                try: G.Container.txt = G.Container.res['subs'][G.get_idx(G.touchingbtns[0])]
+                try: G.Container.txt = G.Container.res.subs[G.get_idx(G.touchingbtns[0])]
                 except: G.Container.txt = ''
                 G.Reload()
         elif event == GO.EELEMENTCLICK: # Passed 'element'
@@ -135,7 +133,7 @@ class Game:
                 if done[0] is not False:
                     return self.world(done[0], newworld=True)
             else:
-                G.Container.Selection = G.Container.res['worlds'][element.uid-2].name
+                G.Container.Selection = G.Container.res.worlds[element.uid-2].name
                 G.Reload()
         elif event == GO.ELAST:
             pass

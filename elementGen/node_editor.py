@@ -55,12 +55,12 @@ NodeSelector(G)
             G.add_button('Back', GO.CGREY, GO.PLTOP)
             G.add_button('New Item', GO.CGREEN, GO.PLTOP)
             cols = GO.CRAINBOW()
-            for i in G.Container.res['iteminfo']:
+            for i in G.Container.res.iteminfo:
                 G.add_button(i['name'], next(cols), GO.PLCENTER)
         elif event == GO.ETICK:
             if G.touchingbtns != G.Container.prevpresses:
                 G.Container.prevpresses = G.touchingbtns.copy()
-                try: G.Container.txt = G.Container.res['subs'][G.get_idx(G.touchingbtns[0])]
+                try: G.Container.txt = G.Container.res.subs[G.get_idx(G.touchingbtns[0])]
                 except: G.Container.txt = ''
                 G.Reload()
             return True
@@ -70,7 +70,7 @@ NodeSelector(G)
             elif element == 1: # make new world
                 return 'NEW'
             else:
-                return G.Container.res['items'][element.uid-2].name
+                return G.Container.res.items[element.uid-2].name
     @G.Graphic
     def category_select(event, element=None, aborted=False):
         if event == GO.ELOADUI:
