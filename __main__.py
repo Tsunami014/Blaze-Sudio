@@ -32,7 +32,7 @@ class Game:
             if not success: G.Abort()
             G.Container.pg = cls.ret
             G.Container.Player = cls.player
-            G.add_custom(cls.player, True)
+            G.add_custom(cls.player)
     @G.CGraphic
     def world_edit(self, event, worldname, element=None, aborted=False):
         if event == GO.EFIRST:
