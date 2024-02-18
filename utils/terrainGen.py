@@ -1,5 +1,6 @@
 # https://github.com/BilHim/minecraft-world-generation/blob/main/src/Minecraft%20Terrain%20Generation%20in%20Python%20-%20By%20Bilal%20Himite.ipynb
 # Imports and parameters
+import os
 from random import randint
 import numpy as np
 from matplotlib import pyplot as plt
@@ -55,7 +56,7 @@ biome_colours = [
     [34, 61, 53],
     [35, 114, 94]
     ]
-tree_densities = [4000, 1500, 8000, 1000, 10000, 25000, 10000, 20000, 5000]
+tree_densities = [5000, 2000, 5000, 1000, 6000, 9000, 7000, 10000, 8000]
 housing_densities = [1, 1, 8000, 1000, 10000, 2500, 1000, 2000, 50000]
 
 sea_colour = np.array([12, 14, 255])
@@ -108,7 +109,10 @@ class MapGen:
                 seed=seed+self.map_seed,
                 octaves=octaves,
             )
-        return noise(range(self.size), range(self.size), gridMode=True)
+        return noise( # range(self.size), range(self.size), gridMode=True)
+            np.array(range(self.size))/res,
+            np.array(range(self.size))/res,
+            gridMode=True) * 2 - 1
     
     def histeq(self, img,  alpha=1):
         img_cdf, bin_centers = exposure.cumulative_distribution(img)
@@ -299,11 +303,11 @@ class MapGen:
             output_trees[rr, cc] = True
             output_trees = output_trees*(mask>a)*river_land_mask*(adjusted_height_river_map<0.5)
 
-            output_trees = np.array(np.where(output_trees == 1))[::-1].T    
+            output_trees = np.array(np.where(output_trees == 1))[::-1].T
             return output_trees
         l = []
         for i in range(len(biome_names)):
-            yield 'Planting trees... (%i/%i)' % (i, len(biome_names))
+            yield 'Planting trees... (%i/%i)' % (i+1, len(biome_names))
             l.append(np.array(place_trees(densities[i], biome_masks[i])))
         yield l
 
@@ -383,28 +387,20 @@ class MapGen:
                 biome_masks (numpy array, ???)
             ], trees (list[numpy array (for each biome name)], this has all the biomes and the trees positions in them.)
         """
+        yield 'Setting params and pointing...'
         # setting params
         if map_seed == None: self.map_seed = randint(0, 999999)
         else: self.map_seed = map_seed
         np.random.seed(self.map_seed)
         self.size = size
-        # Voronoi diagram
-        yield 'Creating Voronoi diagram...'
-
         points = np.random.randint(0, size, (514, 2))
-        vor = self.voronoi(points)
-        vor_map = self.voronoi_map(vor)
-
-        if useall:
-            fig = plt.figure(dpi=150, figsize=(4, 4))
-            plt.scatter(*points.T, s=1)
-
+        
         # Lloyd's relaxation
         yield 'Relaxing...'
         points = self.relax(points, k=100)
 
         # Voronoi diagram
-        yield 'Creating Voronoi diagram... (again)'
+        yield 'Creating Voronoi diagram...'
         vor = self.voronoi(points)
         vor_map = self.voronoi_map(vor)
 
@@ -559,7 +555,7 @@ class MapGen:
         # Temperature–Precipitation graph
         yield 'Applying Temperature–Precipitation graph...'
 
-        im = np.array(Image.open("TP_map.png"))[:, :, :3]
+        im = np.array(Image.open(os.path.join(os.getcwd(),"TP_map.png")))[:, :, :3]
         biomes = np.zeros((256, 256))
 
         for i, colour in enumerate(biome_colours):
@@ -734,9 +730,10 @@ class MapGen:
 
         ## Rivers
         ## Boundaries
-        yield 'Generating Height Map Filters: Rivers: Getting the boundaries...'
+        yield 'Generating Height Map Filters: Rivers: Getting the boundaries...' # TODO: split this up even more
 
-        biome_bound = self.get_boundary(biome_map, kernel=5)
+        # these two statements take longest
+        biome_bound = self.get_boundary(biome_map, kernel=5) 
         cell_bound = self.get_boundary(vor_map, kernel=2)
 
         river_mask = self.noise_map(4, 4353, octaves=6) > 0
@@ -775,8 +772,8 @@ class MapGen:
             # Example
             if useall:
                 low_density_trees = self.generate_trees(1000)
-                medium_density_trees = self.generate_trees(5000)
-                high_density_trees = self.generate_trees(25000)
+                medium_density_trees = self.generate_trees(2000)
+                high_density_trees = self.generate_trees(5000)
 
                 plt.figure(dpi=150, figsize=(10, 3))
                 plt.subplot(131)
@@ -797,9 +794,6 @@ class MapGen:
                 plt.xlim(0, 256)
                 plt.ylim(0, 256)
                 plt.figure(dpi=150, figsize=(5, 5))
-
-                for k in range(len(biome_names)):
-                    plt.scatter(*trees[k].T, s=0.15, c="red")
         else:
             trees = []
 
@@ -807,8 +801,11 @@ class MapGen:
         colour_map = self.apply_height_map(rivers_biome_colour_map, adjusted_height_river_map, adjusted_height_river_map, river_land_mask)
 
         if showAtEnd:
+            plt.figure(dpi=150, figsize=(5, 5))
             plt.imshow(colour_map[0])
 
+            for k in range(len(biome_names)):
+                    plt.scatter(*trees[k].T, s=0.15, c="red")
             plt.show()
         gray_map = np.dot(colour_map[0][...,:3], [0.2989, 0.5870, 0.1140])  # Convert to grayscale
         norm_map = gray_map / 255.0  # Normalize to [0, 1]
