@@ -2,7 +2,7 @@ print('Loading modules... (may take a while)')
 import pygame, os, json
 from graphics import Graphic
 from graphics import graphics_options as GO
-from utils import World
+from utils import World, Player
 from ldtk import LDtkAPP
 from threading import Thread
 G = Graphic()
@@ -24,33 +24,18 @@ class Game:
         def load():
             @G.Loading
             def lo(self):
-                self.ret = False
                 self.ret = world.get_pygame(G.Container.lvl)
+                self.player = Player(self.ret)
             out = lo()
             if not out[0]: G.Abort()
             G.Container.pg = out[1]['ret']
-            if not G.Container.pg: G.Abort()
+            G.Container.Player = out[1]['player']
+            G.add_custom(out[1]['player'], True)
         if event == GO.EFIRST:
             G.Container.lvl = 0
             load()
-        elif event == GO.ELOADUI:
-            G.Clear()
-            G.add_surface(G.Container.pg, GO.PFILL)
-            G.add_text('World '+world.name+' level:%i'%G.Container.lvl, GO.CBLACK, GO.PCTOP, GO.FTITLE)
         elif event == GO.ETICK:
             return True
-        elif event == GO.EEVENT: # Passed 'element' (but is event)
-            if element.type == pygame.KEYDOWN:
-                if element.key == pygame.K_LEFT:
-                    G.Container.lvl -= 1
-                    load()
-                    G.Reload()
-                elif element.key == pygame.K_RIGHT:
-                    G.Container.lvl += 1
-                    load()
-                    G.Reload()
-        elif event == GO.ELAST:
-            pass
     @G.CGraphic
     def world_edit(self, event, worldname, element=None, aborted=False):
         if event == GO.EFIRST:
