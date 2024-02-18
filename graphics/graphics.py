@@ -202,6 +202,7 @@ class Graphic:
             self.size = self.WIN.get_size()
         self.bgcol = bgcol
         self.clock = pygame.time.Clock()
+        self.customs = []
         self.statics = []
         self.buttons = []
         self.input_boxes = []
@@ -295,6 +296,7 @@ class Graphic:
             self.touchingbtns = []
             s = self.render(func)
             while self.run and not self.ab:
+                evnts = events()
                 if prevs != [self.statics, self.buttons] or self.rel:
                     self.rel = False
                     s = self.render(func)
@@ -328,14 +330,17 @@ class Graphic:
                 self.sprites.update()
                 rects = self.sprites.draw(self.WIN)
                 pygame.display.update(rects)
-                self.run = func(GO.ETICK)
+                for cls, pass_events in self.customs:
+                    if pass_events: cls.execute(self.WIN, evnts)
+                    else: cls.execute(self.WIN)
+                self.run = func(GO.ETICK) # TODO: Make it check if it returns False, not if it returns True
                 dels = []
                 for i in self.toasts:
                     if i.update(self.WIN) == False:
                         dels.append(i)
                 for i in dels: self.toasts.remove(i)
                 evs = []
-                for event in events():
+                for event in evnts:
                     evs.append(event)
                     blocked = False
                     if event.type == pygame.QUIT:
@@ -471,6 +476,24 @@ class Graphic:
         if d is False: self.run = False
         return d
     
+    def add_custom(self, sprite, pass_events=False):
+        """
+        Adds a custom sprite to the screen!
+
+        Parameters
+        ----------
+        sprite : Any
+            The sprite to add!
+        pass_events : bool
+            Whether or not to pass the list of pygame events that have occured that tick to the function
+        
+        The sprite MUST have the following attribute:
+        if pass_events == True:
+            `sprite.execute(pygame.Surface, list[pygame.event.Event])` which will be ran every tick, being passed the pygame window which can be blit'ed onto and all the pygame events that have happened that tick
+        else:
+            `sprite.execute(pygame.Surface)` which will be ran every tick, being passed the pygame window which can be blit'ed onto
+        """
+        self.customs.append((sprite, pass_events))
     
     def add_text(self, txt, colour, position, font=GO.FFONT):
         """Adds text to the GUI!
@@ -780,6 +803,7 @@ class Graphic:
     def Clear(self):
         GO.PIDX = 0
         self.statics = []
+        self.customs = []
         self.buttons = []
         self.input_boxes = []
         self.store = {}
