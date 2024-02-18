@@ -223,7 +223,7 @@ def conversation_parserDemo():
             break
 def tinyLLMDemo():
     import asyncio
-    from utils.bot import TinyLLM, lm
+    from bot import TinyLLM, lm
     tllm = TinyLLM()
     prompt = f"System: Reply as a helpful assistant. Currently {lm.get_date()}."
     while True:
@@ -238,12 +238,12 @@ def tinyLLMDemo():
         prompt += f" {end}"
 
 def testLLMDemo():
-    from utils.bot import test_tinyllm
+    from bot import test_tinyllm
     test_tinyllm()
 
 def rateAIsDemo():
     import asyncio
-    from utils.bot import rate_all
+    from bot import rate_all
     asyncio.run(rate_all())
 
 def api_keysDemo():

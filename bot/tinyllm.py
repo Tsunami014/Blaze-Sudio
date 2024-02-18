@@ -1,6 +1,6 @@
 import languagemodels as lm
 import re
-from utils.bot.install_tinyllm import installed
+from bot.install_tinyllm import installed
 
 from googlesearch import search # pip install beautifulsoup4 google
 import bs4, requests

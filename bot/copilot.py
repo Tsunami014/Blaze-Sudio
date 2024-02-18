@@ -1,7 +1,7 @@
 import languagemodels as lm
 import re
 from difflib import get_close_matches as GCM
-from utils.bot.tinyllm import *
+from bot.tinyllm import *
 # This will only work with GPT4All.
 
 class Copilot:

@@ -46,10 +46,8 @@ Stages of production (SOP):
 | A nice clean Github repo | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | N/A | 🌟🌟🌟⭐ |
 | Hyperanalysis Drive (also known as Qibli Simulator) | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
 
-TODO: move TP_map.png & credits.md into some subfolder
+TODO: move credits.md into some subfolder
 TODO: remove todo.md
-TODO: move more things into utils folder
-TODO: make subfolders inside utils folder and put things in it
 
 Also please note that this is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! I would love to have some help with this project!
 

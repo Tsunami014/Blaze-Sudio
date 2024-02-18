@@ -1,5 +1,5 @@
-import json
-from utils.bot.AIs import AI
+import json, os
+from bot.AIs import AI
 
 def get_all_ais():
     return AI().AIs
@@ -10,13 +10,19 @@ def get_all_ai_names():
 def set_preferences(prefs):
     eprefs = get_preferences()
     eprefs.update(prefs)
-    with open(f'/utils/bot/preferences.json', 'w') as f:
+    if not os.path.exists('bot/preferences.json'):
+        with open('bot/preferences.json', 'w+') as f:
+            f.write(open('bot/preferencesDefault.json', 'r').read())
+    with open('bot/preferences.json', 'w') as f:
         d = json.load(f)
         d['models'].update(eprefs)
         json.dump(d, f, indent=4)
 
 def get_preferences(specifics=None):
-    with open(f'{bef}preferences.json', 'r') as f:
+    if not os.path.exists('bot/preferences.json'):
+        with open('bot/preferences.json', 'w+') as f:
+            f.write(open('bot/preferencesDefault.json', 'r').read())
+    with open('preferences.json', 'r') as f:
         prefs = json.load(f)['models']
     if specifics:
         try: return prefs[specifics]

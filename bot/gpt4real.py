@@ -11,7 +11,7 @@ class G4A:
         Parameters
         ----------
         model : str
-            The name of the file to use for the model. This is the name of a file in utils/bot/model/ that contains the model.
+            The name of the file to use for the model. This is the name of a file in bot/model/ that contains the model.
         typ : str
             The type of model to use. Options are: gptj, llama, mpt
         loadmodel : bool
@@ -27,7 +27,7 @@ class G4A:
     
     def load_model(self):
         try:
-            self.gptj = GPT4All(self.model, 'utils/bot/model/', \
+            self.gptj = GPT4All(self.model, 'bot/model/', \
                 model_type=self.typ, allow_download=False) # we download them earlier, that's why we're here
         except Exception as e:
             input('ERROR SERRING UP. Try restarting this or cleaning up some disc space. If this error persists, report it or something. Press enter to quit.')
