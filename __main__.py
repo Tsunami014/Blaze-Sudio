@@ -2,7 +2,8 @@ print('Loading modules... (may take a while)')
 import pygame, os, json
 from graphics import Graphic
 from graphics import graphics_options as GO
-from utils import World, Player
+from utils import Player
+from worldGen import World
 from ldtk import LDtkAPP
 from threading import Thread
 G = Graphic()

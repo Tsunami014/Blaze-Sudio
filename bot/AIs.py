@@ -9,8 +9,8 @@ nest_asyncio.apply()
 from utils.conversation_parse import PARSE
 from utils.characters import *
 from keys.api_keys import loadAPIkeys
-from utils.bot.gpt4real import G4A
-from utils.bot.basebots import *
+from bot.gpt4real import G4A
+from bot.basebots import *
 
 class ChatGPTBot(NetBaseBot):
     speed = 1 # don't need the other as it is the same
@@ -120,7 +120,7 @@ class AI:
         ----------
         use_gpt4real : bool or list, optional
             Whether or not to use the GPT4Real AI, by default True
-            If given a list will use all the files in the `utils/bot/model` folder with the names in the list
+            If given a list will use all the files in the `bot/model` folder with the names in the list
         loadgpt4real : bool, optional
             Whether or not to load the GPT4Real AI, by default False
             If this is False, it will only load the model when it uses the model.
@@ -133,10 +133,10 @@ class AI:
         if use_gpt4real == True or isinstance(use_gpt4real, list):
             if isinstance(use_gpt4real, list):
                 for i in use_gpt4real:
-                    self.AIs.append(G4A(i, 'utils/bot/model/', loadgpt4real))
+                    self.AIs.append(G4A(i, 'bot/model/', loadgpt4real))
             else:
-                for i in os.listdir('utils/bot/model'):
-                    self.AIs.append(G4A(i, 'utils/bot/model/', loadgpt4real))
+                for i in os.listdir('bot/model'):
+                    self.AIs.append(G4A(i, 'bot/model/', loadgpt4real))
         
         provs = [i for i in dir(g4f.Provider) if not i.startswith('__') and i != 'annotations' and \
                  i.lower() != 'base_provider' and getattr(g4f.Provider,i).working and \
@@ -206,7 +206,7 @@ class AI:
 
     def __getattribute__(self, name): # so whenever anything wants to get self.AIs it responds with the sorted list
         if name == 'AIs':
-            from utils.bot.set_preferences import get_preferences # it is here to avoid circular imports
+            from bot.set_preferences import get_preferences # it is here to avoid circular imports
             object.__getattribute__(self, 'AIs').sort(key=lambda x: get_preferences([str(x)]))
             return object.__getattribute__(self, 'AIs')
         return object.__getattribute__(self, name)

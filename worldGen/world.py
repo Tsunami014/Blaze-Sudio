@@ -8,7 +8,7 @@ import shutil
 
 from utils.characters import *
 from utils.storyline import *
-from utils.terrainGen import *
+from worldGen.terrainGen import *
 import ldtk.Pyldtk as ldtk
 from pygame import Surface
 

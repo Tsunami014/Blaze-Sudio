@@ -555,7 +555,7 @@ class MapGen:
         # Temperature–Precipitation graph
         yield 'Applying Temperature–Precipitation graph...'
 
-        im = np.array(Image.open(os.path.join(os.getcwd(),"TP_map.png")))[:, :, :3]
+        im = np.array(Image.open(os.path.join(os.getcwd(),"worldGen/TP_map.png")))[:, :, :3]
         biomes = np.zeros((256, 256))
 
         for i, colour in enumerate(biome_colours):

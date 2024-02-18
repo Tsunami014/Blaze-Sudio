@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup#, find_packages
 import codecs
 import os
 
@@ -16,7 +16,7 @@ setup(
     download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v1.3.0-alpha.tar.gz',
     long_description_content_type="text/markdown",
     long_description=long_description,
-    packages=find_packages(),
+    packages=['utils','graphics','elementGen','overlay','ldtk','bot','worldGen'],#find_packages(),
     author='Max Worrall',
     author_email='max.worrall@education.nsw.gov.au',
     install_requires=[

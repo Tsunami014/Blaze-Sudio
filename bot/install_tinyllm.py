@@ -1,16 +1,15 @@
 import languagemodels as lm
-
-import os, re, json
-bef = re.findall(r'((utils\/?)?(bot)?\n)', os.getcwd().replace('\\','/')+'\n')[0][0][:-1] # inp ends in newline
-bef = '/'.join([i for i in ['utils', 'bot'] if i not in bef.split('/')])
-if bef != '': bef += '/'
+import json, os
 
 # NOTE: The chat models for anything lower than 4 GB SUCK LIKE HELL
 # I TRIED TO MAKE THEM WORK AND THEY WON'T
 # KEEP THE CHAT AT 4GB
 
 def installed(new=None): # if new == None, don't change anything
-    with open(f'{bef}preferences.json', 'r+') as f:
+    if not os.path.exists('bot/preferences.json'):
+        with open('bot/preferences.json', 'w+') as f:
+            f.write(open('bot/preferencesDefault.json', 'r').read())
+    with open(f'bot/preferences.json', 'r+') as f:
         d = json.load(f)
         if new != None:
             d['downloaded tinyllms'] = new
