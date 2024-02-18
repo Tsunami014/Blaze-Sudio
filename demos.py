@@ -74,7 +74,7 @@ def GraphicsDemo():
                 # So in that example button1 is the UID. Maybe try saving it to the container tho! Example shown by the exit button.
                 if element == 2:
                     succeeded, ret = test_loading()
-                    G.Container.txt = ('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+                    G.Container.txt = ('Ran for %i seconds%s' % (ret.i+1, (' Successfully! :)' if succeeded else ' And failed :(')))
                     G.Reload()
                 elif element == G.Container.exitbtn:
                     G.Abort()
@@ -167,7 +167,7 @@ def LoadingDemo():
     
     succeeded, ret = test_loading()
     pygame.quit()
-    print('Ran for %i seconds%s' % (ret['i'], (' Successfully! :)' if succeeded else ' And failed :(')))
+    print('Ran for %i seconds%s' % (ret.i, (' Successfully! :)' if succeeded else ' And failed :(')))
 
 def ToastDemo():
     import pygame
