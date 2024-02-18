@@ -34,8 +34,6 @@ class Game:
         if event == GO.EFIRST:
             G.Container.lvl = 0
             load()
-        elif event == GO.ETICK:
-            return True
     @G.CGraphic
     def world_edit(self, event, worldname, element=None, aborted=False):
         if event == GO.EFIRST:
@@ -56,9 +54,8 @@ class Game:
         elif event == GO.ETICK:
             if not G.Container.win.is_win_open():
                 G.Abort()
-                return
+                return False
             G.Container.win.make_full()
-            return True
         elif event == GO.ELAST:
             pass # TODO: stop the thread from running to close the program
     @G.CGraphic
@@ -109,7 +106,6 @@ class Game:
                 try: G.Container.txt = G.Container.res['subs'][G.get_idx(G.touchingbtns[0])]
                 except: G.Container.txt = ''
                 G.Reload()
-            return True
         elif event == GO.EELEMENTCLICK: # Passed 'element'
             if element == 0: # back
                 return False
@@ -155,8 +151,6 @@ class Game:
             G.add_button('Start', GO.CGREEN, CBOT)
             G.add_empty_space(CBOT, 20, 0)
             G.add_button('Tutorial', GO.CRED, CBOT)
-        elif event == GO.ETICK:
-            return True
         elif event == GO.EELEMENTCLICK:
             if element == 0:
                 self.world_select()
