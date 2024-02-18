@@ -49,7 +49,7 @@ def GraphicsDemo():
             S.add_button('Hello again!', GO.CRED, GO.PCTOP)
             G.Container.otherswitch = S.add_switch(GO.PCTOP)
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
-            return True # Return whether or not the loop should continue.
+            pass # Return False if you want to quit the screen. This is not needed if you never want to do this.
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
             if element.type == GO.TBUTTON:
                 # This gets passed 'element': the element that got clicked. TODO: make an Element class
@@ -157,8 +157,6 @@ def ToastDemo():
         if event == GO.ELOADUI:
             G.Clear()
             G.add_text('Press the arrow keys!', GO.CBLACK, GO.PCCENTER)
-        elif event == GO.ETICK:
-            return True # Return whether or not the loop should continue.
         elif event == GO.EEVENT: # Passed 'element' (but is event)
             if element.type == pygame.KEYDOWN:
                 if element.key == pygame.K_LEFT:

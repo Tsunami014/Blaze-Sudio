@@ -333,7 +333,8 @@ class Graphic:
                 for cls, pass_events in self.customs:
                     if pass_events: cls.execute(self.WIN, evnts)
                     else: cls.execute(self.WIN)
-                self.run = func(GO.ETICK) # TODO: Make it check if it returns False, not if it returns True
+                if func(GO.ETICK) == False:
+                    self.run = False
                 dels = []
                 for i in self.toasts:
                     if i.update(self.WIN) == False:
@@ -808,22 +809,3 @@ class Graphic:
     
     def Abort(self):
         self.ab = True
-
-if __name__ == '__main__':
-    G = Graphic()
-    # Copy this scaffold for your own code :)
-    # Args and kwargs are passed through from the initial call of the func
-    @G.Graphic # If you use classes, make this CGraphics and add a `self` argument to the function
-    def funcname(event, *args, element=None, aborted=False, **kwargs):
-        if event == GO.EFIRST:
-            pass
-        elif event == GO.ELOADUI:
-            G.Clear()
-        elif event == GO.ETICK:
-            return True # Return whether or not the loop should continue.
-        elif event == GO.EELEMENTCLICK: # Passed 'element'
-            pass
-        elif event == GO.EEVENT: # Passed 'element' (but is event)
-            pass
-        elif event == GO.ELAST: # Passed 'aborted'
-            pass # Whatever you return here will be returned by the function
