@@ -81,7 +81,7 @@ class Game:
         if event == GO.EFIRST:
             @G.Loading
             def load(self):
-                self.worlds = [i for i in os.scandir('data/worlds') if i.is_dir() and os.path.exists('data/worlds/%s/dat.json'%i.name) and os.path.exists('data/worlds/%s/world.ldtk'%i.name)]
+                self.worlds = [i for i in os.scandir(os.path.join(os.getcwd(),'data/worlds')) if i.is_dir() and os.path.exists(os.path.join(os.getcwd(),'data/worlds/%s/dat.json'%i.name)) and os.path.exists(os.path.join(os.getcwd(),'data/worlds/%s/world.ldtk'%i.name))]
                 self.worldinfo = [json.load(open('data/worlds/%s/dat.json'%i.name)) for i in self.worlds]
                 self.subs = ['Go back to the previous page', 'Make a new world from scratch'] + [i['idea'] for i in self.worldinfo]
             cont, res = load()
@@ -144,7 +144,7 @@ class Game:
                                 return
                     while G.Container.pbar == None:
                         pass
-                    done[0] = World('newworld', 'New World', 'a new world', 1, 100, override=True, callback=CB)
+                    done[0] = World('newworld', 'New World', 'a new world', 16, 100, override=True, callback=CB)
                     for i in range(len(dones)): dones[i] = True
                 t = Thread(target=NW, daemon=True, args=(dones, done))
                 tasks = [wait(i) for i in range(NumOTasks)]

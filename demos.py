@@ -106,7 +106,7 @@ def worldsDemo():
 def terrainGenDemo():
     from random import randint
     from utils import MapGen
-    size = 1500
+    size = 500 # 1500
     n = 256
     inp = input('Input nothing to use random seed, input "." to use a preset good seed, or input your own INTEGER seed > ')
     if inp == '':
