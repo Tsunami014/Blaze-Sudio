@@ -142,7 +142,7 @@ class World:
             # save to file
             callback('Stringing file into JSON...')
             txt = json.dumps(self.data)#, indent=4)
-            callback('Formatting data... (may take a while)...')
+            #callback('Formatting data... (may take a while)...')
             #for i in re.findall(r'(\n *?\d+?(,|\n))', txt):
             #    txt = txt.replace(i[0], re.findall(r'\d+,?', i[0])[0])
             #for i in re.findall(r'((\d,){70})', txt):

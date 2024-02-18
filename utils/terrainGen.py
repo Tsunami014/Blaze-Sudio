@@ -730,18 +730,17 @@ class MapGen:
 
         ## Rivers
         ## Boundaries
-        yield 'Generating Height Map Filters: Rivers: Getting the boundaries...' # TODO: split this up even more
-
-        # these two statements take longest
-        biome_bound = self.get_boundary(biome_map, kernel=5) 
+        yield 'Generating Height Map Filters: Rivers: Getting Biome Boundaries...'
+        biome_bound = self.get_boundary(biome_map, kernel=5)
+        yield 'Generating Height Map Filters: Rivers: Getting Cell Boundaries...'
         cell_bound = self.get_boundary(vor_map, kernel=2)
 
+        yield 'Generating Height Map Filters: Rivers: Masking and making rivers...'
         river_mask = self.noise_map(4, 4353, octaves=6) > 0
 
         new_biome_bound = biome_bound*(adjusted_height_map<0.5)*land_mask
         new_cell_bound = cell_bound*(adjusted_height_map<0.05)*land_mask
-
-        yield 'Generating Height Map Filters: Making rivers...'
+        
         rivers = np.logical_or(new_biome_bound, new_cell_bound)*river_mask
 
         loose_river_mask = binary_dilation(rivers, iterations=8)
