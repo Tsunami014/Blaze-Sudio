@@ -16,7 +16,7 @@ class Player:
         @self.Loading
         def LS(slf):
             self.sur = self.world.get_pygame(self.lvl)
-            self.minimap = self.world.load_minimap(highlights={self.lvl: (255, 50, 50)})
+            self.minimap = self.world.gen_minimap(highlights={self.lvl: (255, 50, 50)})
         fin, _ = LS()
         if not fin: self.quitfunc()
         return True

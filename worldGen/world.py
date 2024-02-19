@@ -162,7 +162,22 @@ class World:
             open(join(os.getcwd(), path, 'world.ldtk'), 'w+').write(txt)
         self.ldtk = ldtk.LdtkJSON(self.data, self.path)
     
-    def load_minimap(self, maxsize=(64, 64), highlights={}): # TODO: make almost identical function but make the size of the sur dependant on the contents, i.e. don't stretch to fit
+    def gen_minimap(self, maxsize=(64, 64), highlights={}):
+        """
+        Makes a minimap!
+
+        Parameters
+        ----------
+        maxsize : tuple[int], optional
+            The size of the minimap, stretch to fit, by default (64, 64)
+        highlights : dict{int: tuple[int,int,int]}, optional
+            A dictionary of level numbers and their colours shown on the minimap, by default {}
+
+        Returns
+        -------
+        pygame.Surface
+            The surface of the minimap
+        """
         sur = Surface((maxsize[0], maxsize[1])).convert_alpha()
         sur.fill((255, 255, 255, 1))
         w = 8-ceil(sqrt(len(self.ldtk.levels)))
