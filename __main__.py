@@ -24,13 +24,11 @@ class Game:
         """
         @G.Loading
         def load(self):
-            self.ret = world.get_pygame(G.Container.lvl)
-            self.player = Player(self.ret)
+            self.player = Player(world, G.Loading, G.Abort)
         if event == GO.EFIRST:
             G.Container.lvl = 0
             success, cls = load()
             if not success: G.Abort()
-            G.Container.pg = cls.ret
             G.Container.Player = cls.player
             G.add_custom(cls.player)
     @G.CGraphic
