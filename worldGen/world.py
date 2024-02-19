@@ -1,16 +1,16 @@
-import json, re
 from os.path import exists, join
 from random import choice
 from math import floor, sqrt, ceil
 from copy import deepcopy
 from shutil import copytree
-import shutil
+import shutil, json
 
 from utils.characters import *
 from utils.storyline import *
 from worldGen.terrainGen import *
 import ldtk.Pyldtk as ldtk
-from pygame import Surface
+from pygame import Surface, Rect
+import pygame.draw
 
 folder = 'data/worlds/'
 
@@ -161,6 +161,29 @@ class World:
                 }, open(join(os.getcwd(), path, 'dat.json'), 'w+'))
             open(join(os.getcwd(), path, 'world.ldtk'), 'w+').write(txt)
         self.ldtk = ldtk.LdtkJSON(self.data, self.path)
+    
+    def load_minimap(self, maxsize=(64, 64), highlights={}): # TODO: make almost identical function but make the size of the sur dependant on the contents, i.e. don't stretch to fit
+        sur = Surface((maxsize[0], maxsize[1])).convert_alpha()
+        sur.fill((255, 255, 255, 1))
+        w = 8-ceil(sqrt(len(self.ldtk.levels)))
+        if w < 2: w = 2
+
+        diff = (min([i.worldX for i in self.ldtk.levels]), 
+                min([i.worldY for i in self.ldtk.levels]))
+        maxs = (maxsize[0]/max([i.worldX+i.width for i in self.ldtk.levels]), 
+                maxsize[1]/max([i.worldY+i.height for i in self.ldtk.levels]))
+        for i in range(len(self.ldtk.levels)):
+            lvl = self.ldtk.levels[i]
+            pygame.draw.rect(sur,
+                       ((125, 125, 125) if i not in highlights else highlights[i]), 
+                       Rect((lvl.worldX-diff[0])*maxs[0], 
+                            (lvl.worldY-diff[1])*maxs[1], 
+                            lvl.width*maxs[0], 
+                            lvl.height*maxs[1]),
+                        border_radius=w)
+        pygame.draw.rect(sur, (0, 0, 0), sur.get_rect(), w, 4)
+        return sur
+
     def get_pygame(self, lvl=0):
         if self.data != {}:
             level = self.ldtk.levels[lvl]

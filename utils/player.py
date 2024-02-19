@@ -11,11 +11,12 @@ class Player:
         self.pos = [self.sur.get_width()/2, self.sur.get_height()/2]
     
     def load_sur(self):
-        if len(self.world.ldtk.levels) < self.lvl or self.lvl < 0:
+        if len(self.world.ldtk.levels) <= self.lvl or self.lvl < 0:
             return False
         @self.Loading
         def LS(slf):
             self.sur = self.world.get_pygame(self.lvl)
+            self.minimap = self.world.load_minimap(highlights={self.lvl: (255, 50, 50)})
         fin, _ = LS()
         if not fin: self.quitfunc()
         return True
@@ -72,5 +73,6 @@ class Player:
             -self.pos[0]+mw-diff[0],
             -self.pos[1]+mh-diff[1]
             ])
-        win.blit(pygame.font.SysFont('', 64).render(f'lvl: {self.lvl}', 1, (0, 0, 0)), (0, 0))
+        win.blit(self.minimap, (0, 0))
+        win.blit(pygame.font.SysFont('', 64).render(f'lvl: {self.lvl}', 1, (0, 0, 0)), (self.minimap.get_width()+20, 0))
         pygame.draw.rect(win, (0, 0, 0), (mw-20-diff[0], mh-20-diff[1], 40, 40), border_radius=2)
