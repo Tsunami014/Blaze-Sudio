@@ -29,7 +29,7 @@ class overlayWIN(tk.Tk):
         self._root().wm_attributes('-topmost', True)
 
 class Overlay:
-    def __init__(self, size, pos):
+    def __init__(self, size, pos, on_destroy=None):
         """
         Makes an overlay! Basically, a Tkinter window that sits on top of everything without a title bar!
 
@@ -39,6 +39,9 @@ class Overlay:
             The size of the bar, can be changed with `overlay.size = <tuple[int, int]>` (see below)
         pos : tuple[int, int]
             The position of the bar on the screen, can be changed with `overlay.pos = <tuple[int, int]>` (see below)
+        on_destroy : func, optional
+            The function to call if the window gets closed, defaults to nothing (close as regular)
+            YOU MUST BE CAREFUL WITH THIS as if you do not add in your function a window.destroy() function it WILL NEVER GET DESTROYED
         
         # HOW TO USE:
         It automatically runs in the background!
@@ -62,6 +65,8 @@ class Overlay:
                 self.win
                 inited = True
             except: pass
+        if on_destroy is not None:
+            self.win.protocol("WM_DELETE_WINDOW", on_destroy)
         self.update()
     
     def _runloop(threadself, self):
@@ -89,3 +94,36 @@ class Overlay:
         self.win.wm_attributes('-topmost', True)
     
     def __call__(self): return self.win
+
+class OverlayGroup:
+    def __init__(self, overlays=[]):
+        """
+        Handles a group of overlays!
+
+        The class functions here (except for self.runnings) affect EVERY overlay. If you want specific ones get it from the list below
+
+        Parameters
+        ----------
+        overlays : list, optional
+            The list of Overay objects. If you want to update this at any time it is stored in `OG.overs`
+        """
+        self.overs = overlays
+    
+    def runnings(self):
+        return [i.running() for i in self.overs]
+    
+    def update(self):
+        '''Updates the geometry of EVERY overlay'''
+        for i in self.overs: i.update()
+    
+    def destroy(self):
+        '''Destroy EVERY overlay'''
+        for i in self.overs: i.destroy()
+    
+    def hide(self):
+        '''Hide EVERY overlay.'''
+        for i in self.overs: i.hide()
+
+    def show(self):
+        '''Show EVERY overlay.'''
+        for i in self.overs: i.show()
