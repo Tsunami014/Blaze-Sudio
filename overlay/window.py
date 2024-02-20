@@ -15,8 +15,7 @@ class overlayWIN(tk.Tk):
     
     def destroy(self):
         '''Destroy this overlay'''
-        super().destroy()
-        del self
+        self.after(1, super().destroy)
     
     def hide(self):
         '''Hide this overlay.'''
@@ -118,7 +117,10 @@ class OverlayGroup:
     
     def destroy(self):
         '''Destroy EVERY overlay'''
-        for i in self.overs: i.destroy()
+        rs = self.runnings()
+        for i in range(len(self.overs)):
+            if rs[i]:
+                self.overs[i].destroy()
     
     def hide(self):
         '''Hide EVERY overlay.'''
