@@ -1,4 +1,4 @@
-# Welcome to Baze Sudios!
+# Welcome to Blaze Sudios!
 # CURRENT VERSION: v2.0.0-beta (💥 Flare)
 Actually playable! Run `__main__.py`!
 (After you install the dependancies, of course)
