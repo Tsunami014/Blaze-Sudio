@@ -1,20 +1,22 @@
 from threading import Thread, _active
-from time import sleep
 import ctypes, pygame
-from random import random
 
 class thread_with_exception(Thread):
-    def __init__(self, target, *args):
+    def __init__(self, target, *args, attempt=True):
         self.target = target
         self.args = args
         self.retargs = None
+        self.attempt = attempt
         Thread.__init__(self, daemon=True)
              
     def run(self):
-        try:
+        if not self.attempt:
             self.retargs = self.target(*self.args)
-        finally:
-            pass
+        else:
+            try:
+                self.retargs = self.target(*self.args)
+            finally:
+                pass
           
     def get_id(self):
         if hasattr(self, '_thread_id'):

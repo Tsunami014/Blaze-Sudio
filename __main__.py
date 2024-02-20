@@ -1,5 +1,6 @@
 print('Loading modules... (may take a while)')
 import pygame, os, json
+from overlay import Overlay, OverlayGroup, tk
 from graphics import Graphic
 from graphics import graphics_options as GO
 from utils import Player
@@ -39,9 +40,12 @@ class Game:
                 self.win = LDtkAPP()
                 self.win.open('data/worlds/%s/world.ldtk'%worldname)
                 self.win.wait_for_win()
+                self.overlay = Overlay((90, 25), (G.size[0]-20-90, 40), lambda: G.Abort()) # Covering nothing
+                tk.Button(self.overlay(), text='Run the game!').pack() # TODO: replace with play button
             cont, res = load()
             if not cont: G.Abort()
             G.Container.win = res.win
+            G.Container.over = res.overlay
         elif event == GO.EELEMENTCLICK:
             G.Container.win.kill()
             G.Abort()
@@ -54,7 +58,10 @@ class Game:
                 return False
             G.Container.win.make_full()
         elif event == GO.ELAST:
-            pass # TODO: stop the thread from running to close the program
+            G.Container.over.destroy()
+            try:
+                G.Container.win.kill()
+            except: pass
     @G.CGraphic
     def world_select(self, event, element=None, aborted=False):
         if event == GO.EFIRST:
