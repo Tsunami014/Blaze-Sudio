@@ -444,6 +444,8 @@ def overlaysDemo():
 
     tk.Button(o(), text='destroy!', command=o.destroy).pack()
     tk.Button(o(), text='Hide for 1 second!!', command=hideAndSeek).pack()
+    o2 = Overlay((200, 50), (200, 200), on_destroy=lambda: print('HA nice try but you ain\'t destroying THIS window'))
+    tk.Label(o2(), text='I WILL NEVER BE DESTROYED').pack()
     while o.running(): pass
 
 def scrollableDemo():
