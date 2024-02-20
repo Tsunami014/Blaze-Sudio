@@ -1,5 +1,7 @@
 # Welcome to Baze Sudios!
-
+# CURRENT VERSION: v2.0.0-beta (💥 Flare)
+Actually playable! Run `__main__.py`!
+(After you install the dependancies, of course)
 ## DOCS ARE [HERE!](https://tsunami014.gitbook.io/blaze-sudios/)
 In the docs you can find anything you need, including how to install. If you are working offline, you can look [here](docs/SUMMARY.md) for all the pages in the docs to look at them (because all the docs are on this repo)
 
@@ -8,14 +10,11 @@ In the docs you can find anything you need, including how to install. If you are
 
 (Thanks to the one and only `@Imzafish` for the name!)
 
-![Fox logo](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FOX1.jpg) 
-
 Also known as:
  - The putgamecreatorsoutofbusinessanator (Thanks to `@Faunder.real` for that one)
  - One piece of code to rule them all!
 
-# CURRENT VERSION: v1.3.0-alpha (🔶 Ember)
-![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIcon.png)
+![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/FoxIconSmall.png)
 
 (And for all those who love catchphrases: `Oh, I want to make a game the easy way! How?` `I'll Blaze it!` (like "I'll chatGPT it" but cooler 😎))
 
@@ -46,9 +45,6 @@ Stages of production (SOP):
 | A nice clean Github repo | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | N/A | 🌟🌟🌟⭐ |
 | Hyperanalysis Drive (also known as Qibli Simulator) | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
 
-TODO: move credits.md into some subfolder
-TODO: remove todo.md
-
 Also please note that this is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! I would love to have some help with this project!
 
 Things to note:
@@ -59,7 +55,6 @@ Things to note:
     3. I can modify it myself
     4. You guys don't have to install another package
     5. It won't ever change (unless I change it myself)
-6. `git merge [branch2]` will not delete the second branch. DO NOT USE `git rebase [branch2]` AS A REPLACEMENT
 
 TODO: get link to Pyldtk
 
@@ -74,6 +69,7 @@ The purpose of this bit here is ideas so that later when I am wondering what fea
  - Newest Super Mario bros ~~WII~~
  - Bluey AI
  - Hey Grapefruit desktop
+ - Something for vtubing
  - Wings of fire Jade Mountain adventures
  - A game where you go through all the games above and end really bittersweet (do NOT stuff up on the music for this one)
 
@@ -92,7 +88,6 @@ Or actually go through a movie or something again with a more immersive experien
 ## ALSO for my own personal reminder: These games should all have endings. I started making this on the hope that it can make me stuck in a game forever and never end. As I'm coming through with this's development, I now realise that all good things must come to an end. It'll just be SO SAD oh my GOSH but I want my users to feel happy; They got to play the game of their dreams, and it would've ended happily, but still ended. There's no going back. It's all known territory. So the only thing left to do is to move on and embrace the change. (I want all the games to have a bittersweet ending)
 
 # Next versions coming soon:
- - v2.0.0 - 💥`Flare` - got a world and storyline and actually is playable!!!!
  - v3.0.0 - 🌋`Fire` - cos by then it'll be on fire :grin: - all functionality complete!
  - v4.0.0 - 🔥`Blaze` - AI generate you the game! (And help you create the game by generating bits of it)
  - v5.0.0 - ?`Bonfire` - Unity integration!
