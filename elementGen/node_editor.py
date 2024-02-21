@@ -108,6 +108,8 @@ NodeSelector(G)
                         if continue_to_edit == 1 or continue_to_edit == 2:
                             NodeEditor(G, pth)
                             G.ab = False
+                            if continue_to_edit == 1:
+                                return pth
                         if continue_to_edit != 2:
                             return pth
                     if pth == None:
