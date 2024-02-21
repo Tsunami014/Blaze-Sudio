@@ -100,11 +100,21 @@ class Game:
                     bef = G.Container.Selection
                     close(None)
                     self.world_edit(bef)
-                ng.add_button('Close', GO.CBLUE, GO.PLTOP, callback=close)
+                
+                def still_in_progress(_):
+                    raise NotImplementedError('THIS IS STILL IN PROGRESS!')
+
+                LTOP = GO.PNEW([1, 1], GO.PSTACKS[GO.PLTOP][1])
+                RBOT = GO.PNEW([-1, -1], GO.PSTACKS[GO.PRBOTTOM][1])
+                ng.add_empty_space(LTOP, 20, 20)
+                ng.add_button('Close', GO.CBLUE, LTOP, callback=close)
+                ng.add_empty_space(GO.PLCENTER, 20, 0)
                 ng.add_button('Play', GO.CGREEN, GO.PLCENTER, callback=play)
                 ng.add_button('Edit', GO.CNEW('orange'), GO.PCCENTER, callback=edit)
-                ng.add_button('Delete', GO.CRED, GO.PRCENTER, callback=lambda _: print('STILL IN PROGRESS!'))
-                ng.add_button('Options', GO.CGREY, GO.PRBOTTOM, callback=lambda _: print('STILL IN PROGRESS!'))
+                ng.add_empty_space(GO.PRCENTER, 20, 0)
+                ng.add_button('Delete', GO.CRED, GO.PRCENTER, callback=still_in_progress)
+                ng.add_empty_space(RBOT, 20, 20)
+                ng.add_button('Options', GO.CGREY, RBOT, callback=still_in_progress)
         elif event == GO.ETICK:
             if G.touchingbtns != G.Container.prevpresses:
                 G.Container.prevpresses = G.touchingbtns.copy()
@@ -161,7 +171,8 @@ class Game:
             def start():
                 if element == 0:
                     self.world_select()
-                else: print('Tutorial coming soon :)')
+                else:
+                    raise NotImplementedError('THIS IS STILL IN PROGRESS!')
             start()
         elif event == GO.ELAST:
             pass
