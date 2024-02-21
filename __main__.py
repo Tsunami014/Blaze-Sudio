@@ -1,6 +1,8 @@
-print('Loading modules... (may take a while)')
+print('Loading modules...')
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" # Hide the annoying pygame thing
 import pygame, os, json
-from overlay import Overlay, OverlayGroup, tk
+from overlay import Overlay, tk
 from graphics import Graphic
 from graphics import graphics_options as GO
 from utils import Player
