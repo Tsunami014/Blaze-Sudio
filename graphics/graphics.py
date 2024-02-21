@@ -1,3 +1,4 @@
+from copy import copy
 import pygame, asyncio, win32con
 pygame.init()
 from win32gui import SetWindowPos
@@ -24,7 +25,7 @@ class GScrollable(Scrollable):
         self.goalrect = goalrect
         self.events = []
         s = pygame.Surface(sizeOfScreen)
-        self.G = Graphic(win=s, TB=False)
+        self.G = Graphic(win=s, TB=False, no_id=True)
         def func(event, *args, aborted=True, **kwargs):
             if event == GO.ETICK: return True
             elif event == GO.EELEMENTCLICK: return
@@ -172,8 +173,13 @@ class Element:
     def __eq__(self, other):
         return self.uid == other
 
+class GraphicInfo:
+    NUMGRAPHICSS = 0
+    GRAPHICSPROCESSES = {}
+    RUNNINGGRAPHIC = (None, None)
+
 class Graphic:
-    def __init__(self, bgcol=GO.CWHITE, TB=True, win=None):
+    def __init__(self, bgcol=GO.CWHITE, TB=True, win=None, no_id=False):
         """The class for making really cool graphic screens :)
 
         Parameters
@@ -185,6 +191,11 @@ class Graphic:
         win : pygame.Surface, optional
             IF YOU DO NOT SPECIFY: inits pygame, makes a window, does everything
             IF YOU SPECIFY A SURFACE: will NOT init pygame and instead of printing to the screen it prints to the surface
+        no_id : int, optional
+            DO NOT USE THIS UNLESS THIS GRAPHIC IS INSIDE ANOTHER GRAPHIC IN WHICH CASE DO USE THIS
+            If it is True then it may run multiple graphics windows at a time depending on your code
+            If it is False then only one graphic window can be open at a time
+            Defaults to False
         """
         if win == None:
             self.WIN = pygame.display.set_mode()
@@ -201,6 +212,12 @@ class Graphic:
                 active = -1
             self.TB = FakeTB()
             self.size = self.WIN.get_size()
+        if no_id:
+            self.id = None
+        else:
+            self.id = GraphicInfo.NUMGRAPHICSS
+            GraphicInfo.NUMGRAPHICSS += 1
+            GraphicInfo.GRAPHICSPROCESSES[self.id] = 0
         self.bgcol = bgcol
         self.clock = pygame.time.Clock()
         self.customs = []
@@ -305,13 +322,28 @@ class Graphic:
     
     def Graphic(self, funcy, slf=None, generator=False, update=True, events=pygame.event.get, mousepos=pygame.mouse.get_pos): # Function decorator, not to be called unless you know what you're doing
         def func2(*args, **kwargs):
+            prev = GraphicInfo.RUNNINGGRAPHIC
+            if self.id is None:
+                idx = None
+            else:
+                idx = GraphicInfo.GRAPHICSPROCESSES[self.id]
+                GraphicInfo.GRAPHICSPROCESSES[self.id] += 1
+                GraphicInfo.RUNNINGGRAPHIC = (self.id, idx)
             def func(event, element=None, aborted=False):
+                stacks = GO.PSTACKS.copy()
+                pidx = GO.PIDX
                 if event == GO.EELEMENTCLICK and element.uid in self.callbacks:
-                    self.callbacks[element.uid](element)
+                    ret = self.callbacks[element.uid](element)
                 if slf == None:
-                    return funcy(event, *args, element=element, aborted=aborted, **kwargs)
+                    ret = funcy(event, *args, element=element, aborted=aborted, **kwargs)
                 else:
-                    return funcy(slf, event, *args, element=element, aborted=aborted, **kwargs)
+                    ret = funcy(slf, event, *args, element=element, aborted=aborted, **kwargs)
+                if self.id is not None:
+                    GraphicInfo.RUNNINGGRAPHIC = (self.id, idx)
+                GO.PSTACKS = stacks
+                GO.PIDX = pidx
+                return ret
+            cont = copy(self.Container)
             func(GO.EFIRST)
             prevs = [self.statics.copy(), self.buttons.copy()]
             self.run = True
@@ -319,8 +351,8 @@ class Graphic:
             self.touchingbtns = []
             s = self.render(func)
             while self.run and not self.ab:
-                while IsLoading[0]:
-                    pass # DO NOT DO ANYTHING while loading
+                while IsLoading[0] or (self.id is not None and GraphicInfo.RUNNINGGRAPHIC != (self.id, idx)):
+                    pass # DO NOT DO ANYTHING while loading or having multiple graphic screens open at a time
                 evnts = events()
                 if prevs != [self.statics, self.buttons] or self.rel:
                     self.rel = False
@@ -421,6 +453,8 @@ class Graphic:
                     pygame.display.flip()
                     self.clock.tick(60)
             ret = func(GO.ELAST, aborted=self.ab)
+            self.Container = cont # Reset back to whatever it was before
+            GraphicInfo.RUNNINGGRAPHIC = prev # Give back the permission to go to the previous graphic screen
             self.ab = False
             self.run = True
             yield [ret]
