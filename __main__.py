@@ -40,8 +40,9 @@ class Game:
                 self.win = LDtkAPP()
                 self.win.open('data/worlds/%s/world.ldtk'%worldname)
                 self.win.wait_for_win()
-                self.overlay = Overlay((90, 25), (G.size[0]-20-90, 40), lambda: G.Abort()) # Covering nothing
-                tk.Button(self.overlay(), text='Run the game!').pack() # TODO: replace with play button
+                self.overlay = Overlay((100, 50), (G.size[0]-20-90, 40), lambda: G.Abort()) # Covering nothing
+                tk.Button(self.overlay(), text='Play!').pack() # TODO: replace with play button
+                tk.Button(self.overlay(), text='Add new element!').pack()
             cont, res = load()
             if not cont: G.Abort()
             G.Container.win = res.win
