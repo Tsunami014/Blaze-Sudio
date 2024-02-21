@@ -38,13 +38,21 @@ class Game:
     def world_edit(self, event, worldname, element=None, aborted=False):
         if event == GO.EFIRST:
             @G.Loading
-            def load(self):
-                self.win = LDtkAPP()
-                self.win.open('data/worlds/%s/world.ldtk'%worldname)
-                self.win.wait_for_win()
-                self.overlay = Overlay((100, 50), (G.size[0]-20-90, 40), lambda: G.Abort()) # Covering nothing
-                tk.Button(self.overlay(), text='Play!').pack() # TODO: replace with play button
-                tk.Button(self.overlay(), text='Add new element!').pack()
+            def load(slf):
+                slf.win = LDtkAPP()
+                slf.win.open('data/worlds/%s/world.ldtk'%worldname)
+                slf.win.wait_for_win()
+                slf.overlay = Overlay((100, 50), (G.size[0]-20-90, 40), lambda: G.Abort()) # Covering nothing
+                def play():
+                    G.BringToFront()
+                    G.Container.over.hide()
+                    self.world(World(worldname))
+                    G.Container.win.focusWIN()
+                    t = Thread(target=G.Container.over.show, daemon=True) # For some reason showing it in the main thread causes problems
+                    t.start()
+                    G.Reload()
+                tk.Button(slf.overlay(), text='Play!', command=play).pack() # TODO: replace with play button
+                tk.Button(slf.overlay(), text='Add new element!').pack()
             cont, res = load()
             if not cont: G.Abort()
             G.Container.win = res.win
