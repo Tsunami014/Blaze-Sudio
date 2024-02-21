@@ -70,7 +70,7 @@ NodeSelector(G)
             return True
         elif event == GO.EELEMENTCLICK: # Passed 'element'
             if element == 0: # back
-                return False
+                return None
             elif element == 1: # make new world
                 return category+'/NEW'
             else:
@@ -100,14 +100,18 @@ NodeSelector(G)
                     return 'NEW/NEW'
             else:
                 name = G.Container.cats[element.uid-2]
-                pth = item_select(name)
-                G.ab = False
-                if pth != False and pth != None:
-                    if continue_to_edit == 1 or continue_to_edit == 2:
-                        NodeEditor(G, pth)
-                        G.ab = False
-                    if continue_to_edit != 2:
-                        return pth
+                r = True
+                while r:
+                    pth = item_select(name)
+                    G.ab = False
+                    if pth != None:
+                        if continue_to_edit == 1 or continue_to_edit == 2:
+                            NodeEditor(G, pth)
+                            G.ab = False
+                        if continue_to_edit != 2:
+                            return pth
+                    if pth == None:
+                        r = False
     return category_select()
 
 # Make delete category/node file
