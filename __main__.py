@@ -32,8 +32,9 @@ class Game:
             G.Container.lvl = 0
             success, cls = load()
             if not success: G.Abort()
-            G.Container.Player = cls.player
-            G.add_custom(cls.player)
+            else:
+                G.Container.Player = cls.player
+                G.add_custom(cls.player)
     @G.CGraphic
     def world_edit(self, event, worldname, element=None, aborted=False):
         if event == GO.EFIRST:

@@ -2,7 +2,7 @@ import pygame, asyncio, win32con
 pygame.init()
 from win32gui import SetWindowPos
 import graphics.graphics_options as GO
-from graphics.loading import Loading
+from graphics.loading import Loading, IsLoading
 from graphics.async_handling import Progressbar
 from graphics.GUI import (
     TextBoxFrame, 
@@ -319,6 +319,8 @@ class Graphic:
             self.touchingbtns = []
             s = self.render(func)
             while self.run and not self.ab:
+                while IsLoading[0]:
+                    pass # DO NOT DO ANYTHING while loading
                 evnts = events()
                 if prevs != [self.statics, self.buttons] or self.rel:
                     self.rel = False

@@ -1,6 +1,8 @@
 from threading import Thread, _active
 import ctypes, pygame
 
+IsLoading = [False]
+
 class thread_with_exception(Thread):
     def __init__(self, target, *args, attempt=True):
         self.target = target
@@ -43,19 +45,18 @@ class LoadingScreen:
         #self.pic = pygame.transform.scale(self.pic, (256, 256))
         self.rot = 0
     def update(self):
-        try:
-            self.rot -= 6
-            p = pygame.transform.rotate(self.pic, self.rot)
-            self.WIN.fill((255, 255, 255))
-            t = self.font.render('Loading...', 2, (0, 0, 0))
-            self.WIN.blit(t, (self.WIN.get_width()//2-t.get_width()//2, 0))
-            self.WIN.blit(p, (self.WIN.get_width()//2-p.get_width()//2, self.WIN.get_height()//2-p.get_height()//2))
-            pygame.display.flip()
-            self.clock.tick(60)
-        except: pass
+        self.rot -= 6
+        p = pygame.transform.rotate(self.pic, self.rot)
+        self.WIN.fill((255, 255, 255))
+        t = self.font.render('Loading...', 2, (0, 0, 0))
+        self.WIN.blit(t, (self.WIN.get_width()//2-t.get_width()//2, 0))
+        self.WIN.blit(p, (self.WIN.get_width()//2-p.get_width()//2, self.WIN.get_height()//2-p.get_height()//2))
+        pygame.display.update()
+        self.clock.tick(60)
 
 def Loading(func):
     def func2(WIN, font): # TODO: get window and use own font. Font can be override.
+        IsLoading[0] = True
         class main:
             def __call__(self, *args):
                 func(self, *args)
@@ -76,5 +77,6 @@ def Loading(func):
             ls.update()
         end = t.is_alive()
         t.raise_exception()
+        IsLoading[0] = False
         return (not end), m
     return func2
