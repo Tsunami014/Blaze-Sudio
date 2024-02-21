@@ -284,6 +284,7 @@ class Graphic:
                 def errored(event, *args, element=None, aborted=False, **kwargs):
                     if event == GO.ELOADUI:
                         self.Clear()
+                        self.add_text('AN EXCEPTION OCCURED!', GO.CRED, GO.PCTOP, GO.FTITLE)
                         self.add_text(str(type(e)), GO.CRED, GO.PCTOP, GO.FTITLE)
                         self.add_text(str(e), GO.CGREY, GO.PCCENTER, GO.FCODEFONT)
                         def rse(_):
