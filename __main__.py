@@ -156,9 +156,12 @@ class Game:
             G.add_empty_space(CBOT, 20, 0)
             G.add_button('Tutorial', GO.CRED, CBOT)
         elif event == GO.EELEMENTCLICK:
-            if element == 0:
-                self.world_select()
-            else: print('Tutorial coming soon :)')
+            @G.Catch
+            def start():
+                if element == 0:
+                    self.world_select()
+                else: print('Tutorial coming soon :)')
+            start()
         elif event == GO.ELAST:
             pass
 

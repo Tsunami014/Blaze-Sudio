@@ -274,6 +274,27 @@ class Graphic:
         res = self.Container.pbar(self.WIN, (self.size[0] - 600) // 2, (self.size[1] - 50) // 2, 5, tasks, loadingtxt)
         asyncio.get_event_loop().stop()
         return res
+
+    def Catch(self, func): # Function decorator, not to be called
+        def func2(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                @self.Graphic
+                def errored(event, *args, element=None, aborted=False, **kwargs):
+                    if event == GO.ELOADUI:
+                        self.Clear()
+                        self.add_text(str(type(e)), GO.CRED, GO.PCTOP, GO.FTITLE)
+                        self.add_text(str(e), GO.CGREY, GO.PCCENTER, GO.FCODEFONT)
+                        def rse(_):
+                            self.run = False # Quit without aborting
+                        self.add_button('Back', GO.CGREEN, GO.PCBOTTOM, callback=rse)
+                        self.add_button('Raise exception', GO.CRED, GO.PRBOTTOM, callback=lambda _: self.Abort())
+                    elif event == GO.ELAST:
+                        return aborted
+                if errored():
+                    raise e
+        return func2
     
     def CGraphic(self, funcy): # Function decorator, not to be called
         def func2(slf, *args, **kwargs):
