@@ -153,7 +153,7 @@ class World:
             copytree(join(os.getcwd(),'data/defaultWorld'), join(os.getcwd(), path))
             callback('Saving to files...')
             json.dump({
-                'version': "1.0", # Change every time the version OF THE JSON/LDTK FILES UPDATES;
+                'version': "2.0", # Change every time something changes
                 # MINOR version update = anything to do with world loading changes
                 # MAJOR version update = something updates and is so bad it breaks any feature
                 'name': name,
