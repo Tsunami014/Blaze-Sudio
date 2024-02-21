@@ -138,9 +138,9 @@ class AI:
                 for i in os.listdir('bot/model'):
                     self.AIs.append(G4A(i, 'bot/model/', loadgpt4real))
         
-        provs = [i for i in dir(g4f.Provider) if not i.startswith('__') and i != 'annotations' and \
-                 i.lower() != 'base_provider' and getattr(g4f.Provider,i).working and \
-                 (not getattr(g4f.Provider,i).needs_auth)]
+        provs = [i for i in dir(g4f.Provider) if not i.startswith('__') and not i in dir(g4f.Provider.deprecated) and i != 'annotations' and \
+                 i.lower() != 'base_provider' and i != 'CreateImagesBing' and 'working' in dir(getattr(g4f.Provider,i)) and \
+                    getattr(g4f.Provider,i).working and (not getattr(g4f.Provider,i).needs_auth)]
 
         def get_models(name):
             l = []
@@ -161,7 +161,7 @@ class AI:
         self.allthings = []
         for i in provs: self.allthings.extend([(i, j) for j in prov_models[i]])
 
-        provs.remove('ChatBase') # IT SUCKS
+        if 'ChatBase' in provs: provs.remove('ChatBase') # IT SUCKS
         for i in provs: self.AIs.extend(get_models(i))
         for i in all_ais:
             self.AIs.append(i())
