@@ -525,6 +525,8 @@ if __name__ == '__main__':
         print('Loading please wait...')
         root.update()
         def go():
+            cmdd()
+            return
             try:
                 cmdd()
             except Exception as e:

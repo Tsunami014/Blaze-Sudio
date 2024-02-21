@@ -14,7 +14,7 @@ def set_preferences(prefs):
         with open('bot/preferences.json', 'w+') as f:
             f.write(open('bot/preferencesDefault.json', 'r').read())
     with open('bot/preferences.json', 'w') as f:
-        d = json.load(f)
+        d = json.load(open('bot/preferences.json', 'r'))
         d['models'].update(eprefs)
         json.dump(d, f, indent=4)
 
@@ -22,7 +22,7 @@ def get_preferences(specifics=None):
     if not os.path.exists('bot/preferences.json'):
         with open('bot/preferences.json', 'w+') as f:
             f.write(open('bot/preferencesDefault.json', 'r').read())
-    with open('preferences.json', 'r') as f:
+    with open('bot/preferences.json', 'r') as f:
         prefs = json.load(f)['models']
     if specifics:
         try: return prefs[specifics]
