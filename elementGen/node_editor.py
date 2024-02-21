@@ -3,7 +3,9 @@ import graphics.graphics_options as GO
 import elementGen.node_parser as np
 import elementGen.types as Ts
 
-categories = [i.name for i in os.scandir('data/elements') if i.is_dir()]
+categories = ['data/elements/'+i.name for i in os.scandir('data/elements') if i.is_dir()]
+oldcats = categories.copy()
+# You can modify categories to include other paths and reset it by going `categories = oldcats.copy()`
 
 alls = []
 nodes = []
@@ -40,8 +42,8 @@ NodeSelector(G)
         if event == GO.EFIRST:
             @G.Loading
             def load(self):
-                self.items = [i for i in os.scandir('data/elements/'+category) if i.is_file()]
-                self.iteminfo = [dill.load(open('data/elements/%s/%s'%(category, i.name), 'rb')) for i in self.items]
+                self.items = [i for i in os.scandir(category) if i.is_file()]
+                self.iteminfo = [dill.load(open(f'{category}/{i.name}', 'rb')) for i in self.items]
                 self.subs = ['Go back to the previous page', 'Make a new item from scratch'] + [i['idea'] for i in self.iteminfo]
             cont, res = load()
             G.Container.res = res
@@ -50,13 +52,15 @@ NodeSelector(G)
             if not cont: G.Abort()
         elif event == GO.ELOADUI:
             G.Clear()
-            G.add_text(category + ' item selection', GO.CBLACK, GO.PCTOP)
+            G.add_text(category[category.rfind('/')+1:] + ' item selection', GO.CBLACK, GO.PCTOP)
             G.add_text(G.Container.txt, GO.CBLUE, GO.PCTOP)
             G.add_button('Back', GO.CGREY, GO.PLTOP)
             G.add_button('New Item', GO.CGREEN, GO.PLTOP)
             cols = GO.CRAINBOW()
-            for i in G.Container.res.iteminfo:
-                G.add_button(i['name'], next(cols), GO.PLCENTER)
+            G.Container.items = []
+            for i in range(len(G.Container.res.iteminfo)):
+                G.Container.items.append(category+'/'+G.Container.res.items[i].name)
+                G.add_button(G.Container.res.iteminfo[i]['name'], next(cols), GO.PLCENTER)
         elif event == GO.ETICK:
             if G.touchingbtns != G.Container.prevpresses:
                 G.Container.prevpresses = G.touchingbtns.copy()
@@ -68,9 +72,9 @@ NodeSelector(G)
             if element == 0: # back
                 return False
             elif element == 1: # make new world
-                return 'NEW'
+                return category+'/NEW'
             else:
-                return G.Container.res.items[element.uid-2].name
+                return G.Container.items[element.uid-2]
     @G.Graphic
     def category_select(event, element=None, aborted=False):
         if event == GO.ELOADUI:
@@ -78,9 +82,11 @@ NodeSelector(G)
             G.add_text('Category selection', GO.CBLACK, GO.PCTOP)
             G.add_button('Back', GO.CGREY, GO.PLTOP)
             G.add_button('New Category', GO.CGREEN, GO.PLTOP)
+            G.Container.cats = []
             cols = GO.CRAINBOW()
             for i in categories:
-                G.add_button(i, next(cols), GO.PLCENTER)
+                G.Container.cats.append(i)
+                G.add_button(i[i.rfind('/')+1:], next(cols), GO.PLCENTER)
         elif event == GO.ETICK:
             return True
         elif event == GO.EELEMENTCLICK: # Passed 'element'
@@ -88,16 +94,18 @@ NodeSelector(G)
                 return None
             elif element == 1: # make new world
                 if continue_to_edit == 1 or continue_to_edit == 2:
-                    NodeEditor(G, 'NEW/NEW')
+                    NodeEditor(G, 'data/elements/NEW/NEW')
+                    G.ab = False
                 if continue_to_edit != 2:
                     return 'NEW/NEW'
             else:
-                name = element.txt
-                selection = item_select(name)
-                if selection != False and selection != None:
-                    pth = name + '/' + selection
+                name = G.Container.cats[element.uid-2]
+                pth = item_select(name)
+                G.ab = False
+                if pth != False and pth != None:
                     if continue_to_edit == 1 or continue_to_edit == 2:
                         NodeEditor(G, pth)
+                        G.ab = False
                     if continue_to_edit != 2:
                         return pth
     return category_select()
@@ -212,11 +220,11 @@ NodeEditor(G)
             G.Container.DONTDOIT = False
             if path.endswith('.elm'):
                 path = path[:-4]
-            if not os.path.exists('data/elements/'+path+'.elm'):
+            if not os.path.exists(path+'.elm'):
                 # Version: major.minor
-                dill.dump({"idea": "BLANK", "name": "New File", "version": "0.4"}, open('data/elements/'+path+'.elm', 'wb+'))
+                dill.dump({"idea": "BLANK", "name": "New File", "version": "0.4"}, open(path+'.elm', 'wb+'))
             # TODO: version checking and updating (not for versions less than 1.0 which is the liftoff version)
-            G.Container.contents = dill.load(open('data/elements/'+path+'.elm', 'rb'))
+            G.Container.contents = dill.load(open(path+'.elm', 'rb'))
             if 'nodes' in G.Container.contents:
                 G.Container.nodes = G.Container.contents['nodes']
             else:
@@ -444,7 +452,7 @@ NodeEditor(G)
                         path = path[:-4]
                     G.Container.contents['nodes'] = G.Container.nodes
                     G.Container.contents['connections'] = G.Container.connections
-                    dill.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+')) # Save
+                    dill.dump(G.Container.contents, open(path+'.elm', 'wb+')) # Save
                     G.Container.saved = True
                     G.toasts = []
                     G.Toast('Saved!')
@@ -472,8 +480,7 @@ NodeEditor(G)
                 if path.endswith('.elm'):
                     path = path[:-4]
                 if G.Container.name != path.split('/')[1]:
-                    os.remove('data/elements/'+path+'.elm')
-                    path = path.split('/')[0] + '/' + G.Container.name
-                    open('data/elements/'+path+'.elm', 'wb+')
-                    dill.dump(G.Container.contents, open('data/elements/'+path+'.elm', 'wb+'))
+                    os.remove(path+'.elm')
+                    path = '/'.join(path.split('/')[:-1]) + '/' + G.Container.name
+                    dill.dump(G.Container.contents, open(path+'.elm', 'wb+'))
     return editor(path)
