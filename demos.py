@@ -253,10 +253,8 @@ def api_keysDemo():
     SaveAPIKeysDialog()
 
 def node_editorDemo():
-    from graphics import Graphic
     from elementGen import NodeSelector
-    G = Graphic()
-    print(NodeSelector(G, 2))
+    print(NodeSelector(2))
 
 def node_parserDemo():
     from elementGen import allCategories, allNodes, Parse
