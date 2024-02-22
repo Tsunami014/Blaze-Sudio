@@ -77,12 +77,6 @@ And my ultimate goal:
 ## To make something where you input your idea and it generates you a game from the description
 ## OR, to input the name of a movie, TV show, existing game, etc. and it to make you a game based off of that
 
-So I can finally watch the rest of Game of Thrones without it being a piece of junk
-
-That was a joke I've never actually seen Game of Thrones before, just the review graphs on IMDB
-
-Or actually go through a movie or something again with a more immersive experience, but where you DON'T know the ending because YOU are the one who can make the whole storyline change
-
 # Quote me on these:
 ## Please ignore the fact these are rip-offs or that it's copying. I don't care. This is meant to be a fun project. These'll all be fan-made. I'm not planning to become rich off of those games. I made them for my own enjoyment and I'm showing them here so the world can enjoy it with me.
 ## ALSO for my own personal reminder: These games should all have endings. I started making this on the hope that it can make me stuck in a game forever and never end. As I'm coming through with this's development, I now realise that all good things must come to an end. It'll just be SO SAD oh my GOSH but I want my users to feel happy; They got to play the game of their dreams, and it would've ended happily, but still ended. There's no going back. It's all known territory. So the only thing left to do is to move on and embrace the change. (I want all the games to have a bittersweet ending)
