@@ -203,7 +203,7 @@ def inputBoxDemo(): # TODO: update this
     pg.quit()
 
 def conversation_parserDemo():
-    from utils.conversation_parse import Generator
+    from conversation_parse import Generator
     # If you run this file you can see these next statements at work
     # Each you can see is separated, by a like of ~~~~~~~~~~
     # You can see the different start params at work, with the same sample prompt

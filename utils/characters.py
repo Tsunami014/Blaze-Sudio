@@ -1,6 +1,6 @@
 import os
 from utils.discussions import *
-from utils.conversation_parse import PARSE2
+from conversation_parse import PARSE2
 
 class Character:
     def __init__(self, AI, name, personality):

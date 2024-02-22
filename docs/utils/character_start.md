@@ -134,4 +134,4 @@ Grapefruit:
 | Allows adding for a name for the user |The more messages, the more characters needed (10 for 'grapefruit' instead of 3 for 'you'), but I guess this isn't that bad, but I guess what's more bad is the large amount of description needed at the start, though maybe this can be avoided with a little prompt engineering.|
 |       | Doesn't say WHO to complete, just says to complete. |
 
-# See `/utils/conversation_parser.py` for examples
+# TODO: Show examples from `conversation_parse/conversation_parser.py`
