@@ -189,8 +189,8 @@ class Graphic:
         TB : bool, optional
             Whether or not you want the little terminal bar at the bottom, by default True
         win : pygame.Surface, optional
-            IF YOU DO NOT SPECIFY: inits pygame, makes a window, does everything
-            IF YOU SPECIFY A SURFACE: will NOT init pygame and instead of printing to the screen it prints to the surface
+            IF YOU DO NOT SPECIFY: If you have already made a pygame window it finds that and prints to that
+            IF YOU SPECIFY A SURFACE: Instead of printing to the screen it prints to the surface
         no_id : int, optional
             DO NOT USE THIS UNLESS THIS GRAPHIC IS INSIDE ANOTHER GRAPHIC IN WHICH CASE DO USE THIS
             If it is True then it may run multiple graphics windows at a time depending on your code
@@ -198,8 +198,11 @@ class Graphic:
             Defaults to False
         """
         if win == None:
-            self.WIN = pygame.display.set_mode()
-            pygame.display.toggle_fullscreen()
+            if pygame.display.get_active():
+                self.WIN = pygame.display.get_surface()
+            else:
+                self.WIN = pygame.display.set_mode()
+                pygame.display.toggle_fullscreen()
         else: self.WIN = win
         if TB:
             self.TB = TerminalBar(self.WIN)
@@ -390,7 +393,7 @@ class Graphic:
                 for cls, pass_events in self.customs:
                     if pass_events: cls.execute(self.WIN, evnts)
                     else: cls.execute(self.WIN)
-                if func(GO.ETICK) == False:
+                if func(GO.ETICK) is False:
                     self.run = False
                 dels = []
                 for i in self.toasts:

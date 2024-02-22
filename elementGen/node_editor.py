@@ -1,5 +1,6 @@
 import pygame, os, dill
 import graphics.graphics_options as GO
+from graphics import Graphic
 import elementGen.node_parser as np
 import elementGen.types as Ts
 
@@ -20,23 +21,18 @@ def mouseDown(button=1):
         yield ((i != r and r), r)
         i = r
 
-def NodeSelector(G, continue_to_edit=0):
+def NodeSelector(continue_to_edit=0, G=None):
     """Makes a Node Selector screen!
 
     Parameters
     ----------
-    G : graphics.Graphic
-        The Graphic screen
     continue_to_edit : int, optional
         Whether to, once selected, return (0 & default), run the editor and exit once the editor gets exited (1) OR go back into select dialog when exit (2)
-    
-    USE:
-```py
-from graphics import Graphic
-G = Graphic()
-NodeSelector(G)
-```
+    G : graphics.Graphic, optional
+        The graphic screen, if not provided will create one!
     """
+    if G == None:
+        G = Graphic()
     @G.Graphic
     def item_select(event, category, element=None, aborted=False):
         if event == GO.EFIRST:
@@ -94,7 +90,7 @@ NodeSelector(G)
                 return None
             elif element == 1: # make new world
                 if continue_to_edit == 1 or continue_to_edit == 2:
-                    NodeEditor(G, 'data/elements/NEW/NEW')
+                    NodeEditor('data/elements/NEW/NEW', G)
                     G.ab = False
                 if continue_to_edit != 2:
                     return 'NEW/NEW'
@@ -106,7 +102,7 @@ NodeSelector(G)
                     G.ab = False
                     if pth != None:
                         if continue_to_edit == 1 or continue_to_edit == 2:
-                            NodeEditor(G, pth)
+                            NodeEditor(pth, G)
                             G.ab = False
                             if continue_to_edit == 1:
                                 return pth
@@ -155,21 +151,18 @@ def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled
         sur.blit(t, (0, poschange))
     return sur, cir
 
-def NodeEditor(G, path):
+def NodeEditor(path, G=None):
     """Makes a Node Editor screen!
 
     Parameters
     ----------
-    G : graphics.Graphic
-        The Graphic screen
-    
-    USE:
-```py
-from graphics import Graphic
-G = Graphic()
-NodeEditor(G)
-```
+    path : str
+        The path to the currently editing Node. e.g. 'Other/niceness'
+    G : graphics.Graphic, optional
+        The Graphic screen, if not provided will make one
     """
+    if G == None:
+        G = Graphic()
     def dropdown():
         p = pygame.mouse.get_pos()
         while True:
