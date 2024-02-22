@@ -2,13 +2,15 @@ print('Loading modules...')
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" # Hide the annoying pygame thing
 import pygame, os, json
+from threading import Thread
+
 from overlay import Overlay, tk
 from graphics import Graphic
 from graphics import graphics_options as GO
 from utils import Player
 from worldGen import World
 from ldtk import LDtkAPP
-from threading import Thread
+from elementGen import NodeSelector, NodeEditor, modifyCats
 G = Graphic()
 
 class Game:
@@ -38,22 +40,18 @@ class Game:
     @G.CGraphic
     def world_edit(self, event, worldname, element=None, aborted=False):
         if event == GO.EFIRST:
+            G.Container.current = 0
             @G.Loading
             def load(slf):
                 slf.win = LDtkAPP()
                 slf.win.open('data/worlds/%s/world.ldtk'%worldname)
                 slf.win.wait_for_win()
-                slf.overlay = Overlay((100, 50), (G.size[0]-20-90, 40), lambda: G.Abort()) # Covering nothing
-                def play():
-                    G.BringToFront()
-                    G.Container.over.hide()
-                    self.world(World(worldname))
-                    G.Container.win.focusWIN()
-                    t = Thread(target=G.Container.over.show, daemon=True) # For some reason showing it in the main thread causes problems
-                    t.start()
-                    G.Reload()
+                slf.overlay = Overlay((120, 50), (G.size[0]-20-110, 40), lambda: G.Abort()) # Covering nothing
+                # We have to do it in the actual main thread
+                def play(): G.Container.current = 1
+                def addelm(): G.Container.current = 2
                 tk.Button(slf.overlay(), text='Play!', command=play).pack() # TODO: replace with play button
-                tk.Button(slf.overlay(), text='Add new element!').pack()
+                tk.Button(slf.overlay(), text='Add/edit elements!', command=addelm).pack()
             cont, res = load()
             if not cont: G.Abort()
             G.Container.win = res.win
@@ -65,6 +63,59 @@ class Game:
             G.Clear()
             G.add_button('Exit', GO.CGREY, GO.PCCENTER)
         elif event == GO.ETICK:
+            if G.Container.current != 0:
+                def useMain(func):
+                    def func2():
+                        G.Container.over.hide()
+                        G.BringToFront()
+                        func()
+                        t = Thread(target=G.Container.over.show, daemon=True) # For some reason showing it in the main thread causes problems
+                        t.start()
+                        G.Container.win.focusWIN()
+                        G.Reload()
+                    return func2
+                if G.Container.current == 1:
+                    @useMain
+                    def play():
+                        self.world(World(worldname))
+                    play()
+                elif G.Container.current == 2:
+                    @useMain
+                    @modifyCats
+                    def addelm(categories):
+                        r = True
+                        categories.append(f'data/worlds/{worldname}/src/nodes')
+                        while r:
+                            r = False
+                            ret = NodeSelector(G=G)
+                            if ret is not None:
+                                r = True
+                                @G.Graphic
+                                def options(event, element=None, aborted=False):
+                                    if event == GO.ELOADUI:
+                                        G.Clear()
+                                        G.add_text(ret, GO.CBLACK, GO.PCTOP, GO.FTITLE)
+                                        G.add_button('Back', GO.CGREY, GO.PCBOTTOM)
+                                        G.add_button('Back to editor', GO.CNEW('orange'), GO.PCBOTTOM)
+                                        G.add_button('Edit', GO.CGREEN, GO.PCCENTER)
+                                        G.add_button('Apply', GO.CYELLOW, GO.PCCENTER)
+                                    elif event == GO.EELEMENTCLICK:
+                                        if element == 0:
+                                            G.Abort()
+                                        elif element == 1:
+                                            return False
+                                        elif element == 2:
+                                            NodeEditor(ret, G)
+                                            G.ab = False
+                                        elif element == 3:
+                                            pass
+                                            # raise NotImplementedError('THIS IS STILL IN PROGRESS!')
+                                if options() == False:
+                                    r = False
+                    addelm()
+                G.Container.current = 0
+                G.run = True
+                G.ab = False
             if not G.Container.win.is_win_open():
                 G.Abort()
                 return False
@@ -191,6 +242,7 @@ class Game:
 print('Finished loading modules! Launching app...')
 if __name__ == '__main__':
     g = Game()
+    G.BringToFront()
     g.welcome()
 
 pygame.quit()

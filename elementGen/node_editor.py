@@ -5,8 +5,14 @@ import elementGen.node_parser as np
 import elementGen.types as Ts
 
 categories = ['data/elements/'+i.name for i in os.scandir('data/elements') if i.is_dir()]
-oldcats = categories.copy()
-# You can modify categories to include other paths and reset it by going `categories = oldcats.copy()`
+
+def modifyCats(func): # Function decorator
+    def func2():
+        global categories
+        oldcats = categories.copy()
+        func(categories)
+        categories = oldcats
+    return func2
 
 alls = []
 nodes = []
@@ -38,7 +44,7 @@ def NodeSelector(continue_to_edit=0, G=None):
         if event == GO.EFIRST:
             @G.Loading
             def load(self):
-                self.items = [i for i in os.scandir(category) if i.is_file()]
+                self.items = [i for i in os.scandir(category) if i.is_file() and i.name.endswith('.elm')]
                 self.iteminfo = [dill.load(open(f'{category}/{i.name}', 'rb')) for i in self.items]
                 self.subs = ['Go back to the previous page', 'Make a new item from scratch'] + [i['idea'] for i in self.iteminfo]
             cont, res = load()
