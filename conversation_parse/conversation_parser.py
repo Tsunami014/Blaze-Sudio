@@ -1,4 +1,4 @@
-from utils.conversation_parse.consts import *
+from conversation_parse.consts import *
 import re
 from math import inf
 

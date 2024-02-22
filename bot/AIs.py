@@ -6,7 +6,7 @@ asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 import nest_asyncio
 nest_asyncio.apply()
 
-from utils.conversation_parse import PARSE
+from conversation_parse import PARSE
 from utils.characters import *
 from keys.api_keys import loadAPIkeys
 from bot.gpt4real import G4A

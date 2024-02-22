@@ -1,7 +1,7 @@
 import time, asyncio, aiohttp
 import os
 
-from utils.conversation_parse import PARSE
+from conversation_parse import PARSE
 
 class BaseBot:
     shorten = True # Whether or not the length of the input affects the speed of response
