@@ -8,6 +8,10 @@ def KeepName(paramnames: list):
     '''Makes it still show the text even when the params in "paramnames" already have a value in it'''
     pass
 
+def ModifyNames(paramnames: dict):
+    '''Modify all the param names in the dict to something different, i.e. in the actual editor show a longer name because a long variable name is silly'''
+    pass
+
 def Remove(paramnames: list):
     '''Removes the params from the list "paramnames" from being shown on the node'''
     pass
