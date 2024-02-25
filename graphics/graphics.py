@@ -78,12 +78,12 @@ class TerminalBar:
         if self.active >= 0:
             self.active -= 1
             if self.active <= 0: self.active = 60
-        r = GO.FCODEFONT.render(t, 1, GO.CWHITE)
+        r = GO.FCODEFONT.render(t, GO.CWHITE)
         h = r.get_height()+self.spacing*2
         pygame.draw.rect(self.win, GO.CBLACK, pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h))
         self.win.blit(r, (self.spacing, self.win.get_height()-h+self.spacing))
     def collides(self, x, y):
-        r = GO.FCODEFONT.render('>/', 1, GO.CWHITE)
+        r = GO.FCODEFONT.render('>/', GO.CWHITE)
         h = r.get_height()+self.spacing*2
         return pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h).collidepoint(x, y)
 
@@ -495,7 +495,7 @@ class Graphic:
             have pos=GO.PCBOTTOM and dist=20
         spacing : int, optional
             The spacing from the edge of the bubble the toast is in to the text, by default 5
-        font : pygame.Font, optional
+        font : GO.FNEW, optional
             The font of the text, by default GO.FFONT (other fonts provided as GO.F___)
         col : tuple[int, int, int], optional
             The colour of the toast, by default GO.CACTIVE (other colours provided as GO.C_____)
@@ -503,7 +503,7 @@ class Graphic:
             The colour of the text, by default GO.CWHITE
         """
         
-        txt = font.render(text, 2, txtcol)
+        txt = font.render(text, txtcol)
         sur = pygame.Surface((txt.get_size()[0]+spacing*2, txt.get_size()[1]+spacing*2))
         sur.fill([255, 255, 255, 0])
         pygame.draw.rect(sur, col, sur.get_rect(), border_radius=spacing)
@@ -523,7 +523,7 @@ class Graphic:
             The choices that you can select
         spacing : int, optional
             The spacing between each element, by default 5
-        font : pygame.Font, optional
+        font : GO.FNEW, optional
             The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
         activecol : tuple[int, int, int], optional
             The colour when you hover your mouse over an option, by default GO.CACTIVE
@@ -575,10 +575,10 @@ class Graphic:
             The colour of the button. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
         position : GO.P___ (e.g. GO.PRBOTTOM)
             The position on the screen this element will be placed
-        font : pygame.Font, optional
+        font : GO.FNEW, optional
             The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
         """
-        obj = font.render(txt, 2, colour)
+        obj = font.render(txt, colour)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
         self.statics.append((obj, pos))
     
@@ -623,7 +623,7 @@ class Graphic:
             The position on the screen this element will be placed
         txtcol : tuple[int, int, int], optional
             The colour of the text. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN), by default GO.CBLACK
-        font : pygame.Font, optional
+        font : GO.FNEW, optional
             The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
         on_hover_enlarge : bool/int, optional
             Whether to enlarge the button on hover. If this is an int it will be used as the size increase of said button. By default True
@@ -697,7 +697,7 @@ class Graphic:
         ----------
         position : GO.P___ (e.g. GO.PRBOTTOM)
             The position on the screen this element will be placed
-        font : pygame.Font, optional
+        font : GO.FNEW, optional
             The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
         width : int, optional
             The width of the text box, by default the width of the placeholder text
@@ -738,7 +738,7 @@ class Graphic:
         ----------
         position : GO.P___ (e.g. GO.PRBOTTOM)
             The position on the screen this element will be placed
-        font : pygame.Font, optional
+        font : GO.FNEW, optional
             The font of the number. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
         width : int, optional but recommended
             The amount of numbers wide the input box is, by default as wide as the 'start' input number
