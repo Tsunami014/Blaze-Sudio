@@ -49,9 +49,11 @@ class Game:
                 slf.overlay = Overlay((120, 50), (G.size[0]-20-110, 40), lambda: G.Abort()) # Covering nothing
                 # We have to do it in the actual main thread
                 def play(): G.Container.current = 1
-                def addelm(): G.Container.current = 2
+                def qact(): G.Container.current = 2
+                def editgfs(): G.Container.current = 3
                 tk.Button(slf.overlay(), text='Play!', command=play).pack() # TODO: replace with play button
-                tk.Button(slf.overlay(), text='Add/edit elements!', command=addelm).pack()
+                tk.Button(slf.overlay(), text='Quick action!', command=qact).pack()
+                tk.Button(slf.overlay(), text='Edit game funcs!', command=editgfs).pack()
             cont, res = load()
             if not cont: G.Abort()
             G.Container.win = res.win
@@ -82,7 +84,7 @@ class Game:
                 elif G.Container.current == 2:
                     @useMain
                     @modifyCats
-                    def addelm(categories):
+                    def quickacts(categories):
                         r = True
                         categories.append(f'data/worlds/{worldname}/src/nodes')
                         while r:
@@ -97,6 +99,7 @@ class Game:
                                         G.add_text(ret, GO.CBLACK, GO.PCTOP, GO.FTITLE)
                                         G.add_button('Back', GO.CGREY, GO.PCBOTTOM)
                                         G.add_button('Back to editor', GO.CNEW('orange'), GO.PCBOTTOM)
+                                        # TODO: copy/move to/from world-specific nodes
                                         G.add_button('Edit', GO.CGREEN, GO.PCCENTER)
                                         G.add_button('Apply', GO.CYELLOW, GO.PCCENTER)
                                     elif event == GO.EELEMENTCLICK:
@@ -112,7 +115,12 @@ class Game:
                                             # raise NotImplementedError('THIS IS STILL IN PROGRESS!')
                                 if options() == False:
                                     r = False
-                    addelm()
+                    quickacts()
+                elif G.Container.current == 3:
+                    @useMain
+                    @G.Graphic
+                    def editgfs(event, element=None, aborted=False):
+                        pass
                 G.Container.current = 0
                 G.run = True
                 G.ab = False

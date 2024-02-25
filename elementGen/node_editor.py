@@ -1,4 +1,4 @@
-import pygame, os, dill
+import pygame, os, dill, json
 import graphics.graphics_options as GO
 from graphics import Graphic
 import elementGen.node_parser as np
@@ -14,11 +14,49 @@ def modifyCats(func): # Function decorator
         categories = oldcats
     return func2
 
-alls = []
-nodes = []
+class Nodes(list):
+    def __init__(self, l=[]):
+        '''A class for storing Nodes!'''
+        with open('data/nodes/types.json') as f:
+            self.json = json.load(f)
+        super().__init__(l)
+    def sorts(self, whitelisted=[], blacklisted=[]):
+        """
+        Replace this list with one that is sorted to some specifications!
+
+        When I reference 'categories', in `data/nodes/types.json` it specifies each node file in that same folder and \
+their 'categories'. You can use them in this function:
+        
+        kwargs
+        ------
+        whitelisted : list[str]
+            The ONLY categories that are allowed are those that are specified
+        blacklisted : list[str]
+            The categories listed are NOT allowed
+        """
+        keep = []
+        for i in self:
+            strp = i.strip('0123456789')
+            cats = self.json[strp]
+            if whitelisted != [] and not any([j in whitelisted for j in cats]):
+                continue
+            if any([j in blacklisted for j in cats]):
+                continue
+            keep.append(i)
+        self.clear()
+        self.extend(keep)
+
+nodes = Nodes()
 for i in np.allCategories():
-    j = np.Parse(i, alls)
+    j = np.Parse(i, [])
     nodes.append(j)
+
+def specificNodes(func): # Function decorator
+    def func2():
+        global nodes
+        ns = nodes.copy()
+        func(nodes)
+        nodes = ns
 
 def mouseDown(button=1):
     i = False
@@ -122,7 +160,7 @@ def NodeSelector(continue_to_edit=0, G=None):
 # As well as a NodeEditor screen have a NodeRenderer screen, which is also used in NodeEditor
 
 def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled=False, docircle=True): # Circle And Text
-    t = GO.FFONT.render(txt, 2, GO.CBLACK)
+    t = GO.FFONT.render(txt, GO.CBLACK)
     sze = GO.FFONT.size('a')[1]
     poschange = t.get_height() - sze
     sur = pygame.Surface((t.get_width() + sze + 5, t.get_height()+poschange))
@@ -290,7 +328,7 @@ def NodeEditor(path, G=None):
                 g = node.get(G.Container.nodes)
                 node.cirs.reset()
                 col = GO.CBLUE
-                txt = GO.FFONT.render(str(node), 2, GO.CBLACK)
+                txt = GO.FFONT.render(str(node), GO.CBLACK)
                 sur = pygame.Surface(G.size)
                 sur.fill(col)
                 sur.blit(txt, (0, 0))
@@ -388,7 +426,7 @@ def NodeEditor(path, G=None):
                 w, h = G.size[0] / 8 * 3, G.size[1] / 8 * 3
                 pygame.draw.rect(G.WIN, GO.CNEW('light grey'), rec, border_radius=8)
                 node = G.Container.highlighting
-                txt = GO.FFONT.render(str(node), 2, GO.CBLACK)
+                txt = GO.FFONT.render(str(node), GO.CBLACK)
                 G.WIN.blit(txt, ((w - txt.get_width())/2+8, G.size[1]-h+10))
                 if G.scrollsables == []:
                     pos = GO.PSTATIC(12, G.size[1]-h+10+txt.get_height()+2)
@@ -396,7 +434,7 @@ def NodeEditor(path, G=None):
                     boxes = []
                     getsize = lambda: sum([max(adds[0][i][2].get_height(),boxes[i][2][1])+10 for i in range(len(adds[0]))])
                     for i in node.inputs:
-                        r = GO.FFONT.render(i.name+':', 2, GO.CBLACK)
+                        r = GO.FFONT.render(i.name+':', GO.CBLACK)
                         s = getsize()
                         adds[0].append((5, s, r))
                         boxes.append((r.get_width()+7, s, Ts.sizing[Ts.strtypes[i.type]](i.value, GO.FFONT), Ts.strtypes[i.type], i.value))
@@ -404,7 +442,7 @@ def NodeEditor(path, G=None):
                     for i in node.outputs:
                         name = i.name
                         if n.name in g: name += ':'+str(g[n.name])
-                        r = GO.FFONT.render(name, 2, GO.CBLACK)
+                        r = GO.FFONT.render(name, GO.CBLACK)
                         adds[1].append((w-r.get_width()-10, sum([i[2].get_height()+10 for i in adds[1]]), r))
                     size = max(getsize(), sum([i[2].get_height()+10 for i in adds[1]]))
                     size = max(size, h-(txt.get_height()+30)+1)
@@ -439,7 +477,7 @@ def NodeEditor(path, G=None):
                     for i in node.outputs:
                         name = i.name
                         if n.name in g: name += ':'+str(g[n.name])
-                        r = GO.FFONT.render(name, 2, GO.CBLACK)
+                        r = GO.FFONT.render(name, GO.CBLACK)
                         scr.add_surface(r, GO.PSTATIC(w-r.get_width()-10, sum([i[2].get_height()+10 for i in adds[1]])))
                         scr.Container.outs.append(scr.statics[-1])
                     outs = G.scrollsables[0].G.statics

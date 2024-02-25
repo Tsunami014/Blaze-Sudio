@@ -7,6 +7,7 @@ bot/Unusedmodels/*
 *.json
 !bot/preferencesDefault.json
 !data/defaultWorld/src/nodes/dat.json
+!data/nodes/types.json
 *.elm
 data/worlds/*/*
 data/worlds/*/world/backups/*
