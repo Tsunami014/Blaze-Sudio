@@ -1,13 +1,12 @@
-import os
+import os, re, inspect, ast
+from typing import Any
 from random import random
 from copy import deepcopy
+
 import elementGen.types as Ts
-import re, inspect
-from typing import Any
-import ast
 
 def allCategories():
-    l = [i.name for i in os.scandir('data/nodes') if i.is_file()]
+    l = [i.name for i in os.scandir('data/nodes') if i.is_file() and i.name != 'types.json']
     l.sort()
     return l
 
@@ -80,7 +79,7 @@ class Connector:
     def __hash__(self): return hash(self.pHASH) + hash(self.num)
 
 class Names:
-    def __init__(self, func, data, nodeL):
+    def __init__(self, func, data):
         self.num = random()
         self.rfunc = func.strip(' \n')
         self.data = data
@@ -93,7 +92,10 @@ class Names:
         self.node = eval('node')
         self.doc = self.node.__doc__
         for i in inspect.signature(self.node).parameters.items():
-            self.inputs.append(Connector(self.num, str(self), True, i[1].name, Ts.strtypes[i[1].annotation]))
+            n = i[1].name
+            if 'ModifyNames' in data and n in data['ModifyNames']:
+                n = data['ModifyNames'][n]
+            self.inputs.append(Connector(self.num, str(self), True, n, Ts.strtypes[i[1].annotation]))
             if i[1].default != inspect._empty:
                 self.inputs[-1].value = i[1].default
     def setter(self, key, value):
@@ -163,7 +165,7 @@ class Parse:
             i = i.replace(name, 'node', 1)
             vals, func = parse_func(i)
             vals['Name'] = name
-            i = Names(func, vals, nodeL)
+            i = Names(func, vals)
             nodeL.append(i)
             self.names[vals['Name']] = i
             self.data[i] = func
