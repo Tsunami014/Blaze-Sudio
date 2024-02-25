@@ -1,4 +1,5 @@
 import asyncio, pygame
+import graphics.graphics_options as GO
 
 # Define the colors
 BLACK = (0, 0, 0)
@@ -12,7 +13,7 @@ class Progressbar:
         self.bar = pygame.Surface((width, height))
         self.bar.fill(BLACK)
         self.bar.set_colorkey(BLACK)
-        self.font = pygame.font.SysFont('Arial', 20)
+        self.font = GO.FNEW('Arial', 20)
         self.txt = ''
     
     def set_txt(self, txt):
@@ -51,7 +52,7 @@ class Progressbar:
             except ZeroDivisionError: perc = 0
             perc = (perc * 100) // 100
             pygame.draw.rect(self.bar, GREEN, (border, border, (w - 2 * border) / 100 * perc, h - 2 * border))
-            window.blit(self.font.render(self.txt.format(str(completed), str(len(self.tasks)), str(perc), dots), True, loadingtxtColour), (0, 0))
+            window.blit(self.font.render(self.txt.format(str(completed), str(len(self.tasks)), str(perc), dots), loadingtxtColour), (0, 0))
             # Blit the loading bar surface onto the window
             window.blit(self.bar, (x, y))
             update_func()

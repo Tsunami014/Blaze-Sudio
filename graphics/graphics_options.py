@@ -1,4 +1,6 @@
 import pygame
+import pygame.freetype
+from string import printable
 
 # Colours
 CTRANSPARENT = (255, 255, 255, 1)
@@ -29,10 +31,52 @@ def CRAINBOW():
         for i in l: yield i
 
 # Fonts
-FTITLE = pygame.font.SysFont('Comic Sans MS', 64, True)
-FCODEFONT = pygame.font.SysFont('Lucida Sans Typewriter', 16)
-FFONT = pygame.font.SysFont(None, 52)
-FSMALL = pygame.font.SysFont(None, 32)
+class FNEW:
+    def __init__(self, name, size, bold=False, italic=False):
+        self.font = pygame.font.SysFont(name, size, bold, italic)
+        self.emojifont = pygame.freetype.SysFont('segoeuisymbol', size, bold, italic)
+    def render(self, txt, col):
+        if txt == '':
+            return pygame.Surface((0, 0))
+        parts = []
+        part = ''
+        prtable = None
+        for i in list(txt)+[None]:
+            if i is not None:
+                isprt = (i in printable)
+            else:
+                isprt = not prtable # Assuming it has been set with something that is an actual character
+            if prtable is None:
+                prtable = isprt
+            if isprt != prtable and i != ' ':
+                if prtable:
+                    parts.append(self.font.render(part, 1, col))
+                else:
+                    parts.append(self.emojifont.render(part, col)[0])
+                part = ''
+                if i is not None:
+                    prtable = isprt
+            if i is not None:
+                part += i
+        sze = (sum([i.get_width() for i in parts]), max([i.get_height() for i in parts]))
+        sur = pygame.Surface(sze).convert_alpha()
+        sur.fill((255, 255, 255, 1))
+        curx = 0
+        for i in parts:
+            sur.blit(i, (curx, (sze[1]-i.get_height())*0.5))
+            curx += i.get_width()
+        return sur
+    
+    def size(self, txt):
+        return self.render(txt, (0, 0, 0)).get_size()
+    
+    def __getattr__(self, __name):
+        return getattr(self.font, __name)
+
+FTITLE = FNEW('Comic Sans MS', 64, True)
+FCODEFONT = FNEW('Lucida Sans Typewriter', 16)
+FFONT = FNEW(None, 52)
+FSMALL = FNEW(None, 32)
 
 # Positions
 PLTOP = 0

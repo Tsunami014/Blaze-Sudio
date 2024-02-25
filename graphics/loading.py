@@ -48,7 +48,7 @@ class LoadingScreen:
         self.rot -= 6
         p = pygame.transform.rotate(self.pic, self.rot)
         self.WIN.fill((255, 255, 255))
-        t = self.font.render('Loading...', 2, (0, 0, 0))
+        t = self.font.render('Loading...', (0, 0, 0))
         self.WIN.blit(t, (self.WIN.get_width()//2-t.get_width()//2, 0))
         self.WIN.blit(p, (self.WIN.get_width()//2-p.get_width()//2, self.WIN.get_height()//2-p.get_height()//2))
         pygame.display.update()

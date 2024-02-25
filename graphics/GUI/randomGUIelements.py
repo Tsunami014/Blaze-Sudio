@@ -1,6 +1,7 @@
 import pygame
 
 def renderTextCenteredAt(text, font, allowed_width): # modified from https://stackoverflow.com/questions/49432109/how-to-wrap-text-in-pygame-using-pygame-font-font 
+    # TODO: Bring into graphic_options.FNEW
     # first, split the text into words
     words = text.split()
 
@@ -33,7 +34,7 @@ def renderTextCenteredAt(text, font, allowed_width): # modified from https://sta
     return lines
 
 def Button(txt, colour, txtcolour=(255, 255, 255), max_width=100, font=pygame.font.Font(None, 24), onHoverEnlarge=-1):
-    lines = [font.render(line, True, txtcolour) for line in renderTextCenteredAt(txt, font, max_width)]
+    lines = [font.render(line, txtcolour) for line in renderTextCenteredAt(txt, font, max_width)]
 
     nsurface = pygame.Surface((max([i.get_width() for i in lines]), sum([i.get_height() for i in lines])+(len(lines)-1)*10))
     nsurface.fill(colour)

@@ -1,5 +1,6 @@
 from math import sqrt, ceil
 import pygame
+import graphics.graphics_options as GO
 
 class Player:
     def __init__(self, world, Loading, quitfunc):
@@ -74,5 +75,5 @@ class Player:
             -self.pos[1]+mh-diff[1]
             ])
         win.blit(self.minimap, (0, 0))
-        win.blit(pygame.font.SysFont('', 64).render(f'lvl: {self.lvl}', 1, (0, 0, 0)), (self.minimap.get_width()+20, 0))
+        win.blit(GO.FNEW(None, 64).render(f'lvl: {self.lvl}', (0, 0, 0)), (self.minimap.get_width()+20, 0))
         pygame.draw.rect(win, (0, 0, 0), (mw-20-diff[0], mh-20-diff[1], 40, 40), border_radius=2)

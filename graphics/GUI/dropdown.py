@@ -2,7 +2,7 @@ import pygame
 
 def dropdown(win, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 255, 255), selectedcol=(0, 0, 255), mpos=None):
     if font == None: font = pygame.font.SysFont(None, 30)
-    elements = [font.render(i, 2, txtcolour) for i in elms]
+    elements = [font.render(i, txtcolour) for i in elms]
     mx = max([i.get_width() + spacing*2 for i in elements])
     my = sum([i.get_height() + spacing*2 for i in elements])
     rects = []
