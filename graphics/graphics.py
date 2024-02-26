@@ -8,7 +8,6 @@ from graphics.async_handling import Progressbar
 from graphics.GUI import (
     TextBoxFrame, 
     InputBox, 
-    Button, 
     Switch, 
     dropdown, 
     NumInputBox, 
@@ -100,7 +99,7 @@ class Element:
         try:
             if self.type == GO.TBUTTON:
                 self.btn = kwargs['btn']
-                self.txt = self.btn[0][0][0]
+                self.txt = self.btn[-2]
             elif self.type == GO.TTEXTBOX:
                 self.sprite = kwargs['sprite']
             elif self.type == GO.TINPUTBOX:
@@ -365,20 +364,25 @@ class Graphic:
                 self.WIN.blit(s, (0, 0))
                 self.touchingbtns = []
                 for btn in self.buttons:
-                    r, sur = Button(*btn[0])
-                    sze = btn[1]
-                    r.move_ip(*sze)
+                    r = btn[1].copy()
+                    sur = btn[0]
+                    sze = btn[2]
                     if not self.pause:
                         col = r.collidepoint(mousepos())
-                        if btn[0][-1] != -1 and col:
-                            r = pygame.Rect(-btn[0][-1], -btn[0][-1], sur.get_width() + 20 + btn[0][-1]*2, sur.get_height() + 20 + btn[0][-1]*2)
-                            r.move_ip(*sze)
-                    else: col = False
-                    pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
-                    self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
-                    if col: self.touchingbtns.append((btn, r, sur, sze))
+                        if btn[-1] != -1 and col:
+                            r.x -= btn[-1]
+                            r.y -= btn[-1]
+                            r.width += btn[-1]*2
+                            r.height += btn[-1]*2
+                    else:
+                        col = False
+                    if col:
+                        self.touchingbtns.append((btn, r, sur, sze))
+                    else:
+                        pygame.draw.rect(self.WIN, btn[3], r, border_radius=8)
+                        self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
                 for btn, r, sur, sze in self.touchingbtns: # repeat so the buttons you are touching appear on top
-                    pygame.draw.rect(self.WIN, btn[0][1], r, border_radius=8)
+                    pygame.draw.rect(self.WIN, btn[3], r, border_radius=8)
                     self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
                 self.TB.update()
                 for ibox in self.input_boxes:
@@ -636,11 +640,13 @@ class Graphic:
         int
             The UID of the created element
         """
-        btnconstruct = (txt, col, txtcol, 900, font, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
-        r, _ = Button(*btnconstruct)
-        sze = self.pos_store(GO.PSTACKS[position][1](self.size, r.size), r.size, position)
-        self.buttons.append((btnconstruct, sze))
-        self.uids.append((btnconstruct, sze))
+        sur = font.render(txt, txtcol, allowed_width=900)
+        sze = [sur.get_width() + 20, sur.get_height() + 20]
+        pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
+        r = pygame.Rect(*pos, *sze)
+        btn = (sur, r, pos, col, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
+        self.buttons.append(btn)
+        self.uids.append(btn)
         if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
     

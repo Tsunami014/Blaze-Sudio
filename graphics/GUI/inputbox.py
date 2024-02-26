@@ -1,41 +1,6 @@
 # modified from https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame 
 import pygame as pg
-try:
-    import graphics.graphics_options as GO
-except:
-    import graphics_options as GO
-
-def renderTextCenteredAt(text, font, allowed_width): # modified from https://stackoverflow.com/questions/49432109/how-to-wrap-text-in-pygame-using-pygame-font-font 
-    # first, split the text into words
-    words = text.split()
-
-    # now, construct lines out of these words
-    lines = []
-    while len(words) > 0:
-        # get as many words as will fit within allowed_width
-        line_words = []
-        while len(words) > 0:
-            line_words.append(words.pop(0))
-            fw, fh = font.size(' '.join(line_words + words[:1]))
-            if fw > allowed_width:
-                break
-
-        # add a line consisting of those words
-        line = ' '.join(line_words)
-        if len(line_words) == 1 and font.size(line_words[0])[0] > allowed_width:
-            out = []
-            line = ''
-            for i in line_words[0]:
-                fw, fh = font.size(line+'--')
-                if fw > allowed_width:
-                    out.append(line+'-')
-                    line = i
-                else:
-                    line += i
-            #if line != '': out.append(line)
-            lines.extend(out)
-        lines.append(line)
-    return lines
+from graphics import graphics_options as GO
 
 class InputBox:
     def __init__(self, x, y, w, h, resize=GO.RWIDTH, placeholder='Type here!', font=GO.FSMALL, maxim=None, starting_text=''):
@@ -58,24 +23,7 @@ class InputBox:
             self.text = self.blanktxt
             repl = True
         self.text = self.text[:self.maxim]
-        lines = []
-        if self.resize == GO.RWIDTH:
-            ls = [self.text]
-        else:
-            ls = renderTextCenteredAt(self.text, self.font, self.rect.w - 5)
-            if self.resize == GO.RNONE and ls != []:
-                ls = [ls[0]]
-
-        for line in ls:
-            lines.append(self.font.render(line, True, self.color))
-        if lines == []: lines = [self.font.render('', True, self.color)]
-        nsurface = pg.Surface((max([i.get_width() for i in lines]), sum([i.get_height() for i in lines])))
-        nsurface.fill(GO.CTRANSPARENT)
-        top = 0
-        for i in lines:
-            nsurface.blit(i, (0, top))
-            top += i.get_height()
-        self.txt_surface = nsurface
+        self.txt_surface = self.font.render(self.text, self.color, allowed_width=(None if self.resize == GO.RWIDTH else self.rect.w - 5))
         if self.resize == GO.RWIDTH:
             self.rect.w = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
@@ -153,25 +101,7 @@ class NumInputBox:
     
     def render_txt(self):
         self.get()
-        lines = []
-        if self.resize == GO.RWIDTH:
-            ls = [self.num]
-        else:
-            ls = renderTextCenteredAt(self.num, self.font, self.rect.w - 5)
-            if self.resize == GO.RNONE:
-                ls = [ls[0]]
-
-        for line in ls:
-            if line.endswith('-'): line = line[:-1]
-            lines.append(self.font.render(line, True, self.color))
-        if lines == []: lines = [self.font.render('', True, self.color)]
-        nsurface = pg.Surface((max([i.get_width() for i in lines]), sum([i.get_height() for i in lines])))
-        nsurface.fill(GO.CTRANSPARENT)
-        top = 0
-        for i in lines:
-            nsurface.blit(i, (0, top))
-            top += i.get_height()
-        self.txt_surface = nsurface
+        self.txt_surface = self.font.render(self.num, self.color, allowed_width=self.rect.w - 5, renderdash=False)
         if self.resize == GO.RWIDTH:
             self.rect.w = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
