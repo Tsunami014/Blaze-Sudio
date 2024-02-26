@@ -30,14 +30,115 @@ def CRAINBOW():
     while True:
         for i in l: yield i
 
+# font Sides
+# Weighting
+SWLEFT = 0
+SWTOP = 0
+SWMID = 0.5
+SWBOT = 1
+SWRIGHT = 1
+# Direction
+SDLEFTRIGHT = 3
+SDUPDOWN = 4
+
 # Fonts
 class FNEW:
     def __init__(self, name, size, bold=False, italic=False):
         self.font = pygame.font.SysFont(name, size, bold, italic)
         self.emojifont = pygame.freetype.SysFont('segoeuisymbol', size, bold, italic)
-    def render(self, txt, col):
+    def render(self, txt, col, updownweight=SWMID, leftrightweight=SWMID, allowed_width=None, renderdash=True):
+        """
+        Renders some text with emoji support!
+
+        Parameters
+        ----------
+        txt : str
+            The text to render!
+        col : tuple[int,int,int]
+            The colour of the text
+        updownweight : GO.SW___, optional
+            The weight of the text up-down; make the text weighted towards the top, middle, or bottom, by default SWMID
+            You probably do not want to change this
+        leftrightweight : GO.SW___, optional
+            The weight of the text left-right, by default SWMID
+            This only ever comes into effect if allowed_width is not None and there is enough text to span multiple lines
+            You probably want to change this occasionally
+        allowed_width : int, optional
+            The allowed width of the text, by default None
+            If the text goes over this amount of pixels, it makes a new line
+            None disables it
+        renderdash : bool, optional
+            Whether or not to render the '-' at the end of lines of text that are too big to fit on screen, by default True
+
+        Returns
+        -------
+        pygame.Surface
+            The surface of the text!
+        """
         if txt == '':
             return pygame.Surface((0, 0))
+        if allowed_width is None:
+            return self.combine(self.split(txt, col), weight=updownweight)
+        else:
+            # Thanks to https://stackoverflow.com/questions/49432109/how-to-wrap-text-in-pygame-using-pygame-font-font for the font wrapping thing
+            # Split text into words
+            words = txt.split(' ')
+            # now, construct lines out of these words
+            lines = []
+            while len(words) > 0:
+                # get as many words as will fit within allowed_width
+                line_words = []
+                while len(words) > 0:
+                    line_words.append(words.pop(0))
+                    fw, fh = self.size(' '.join(line_words + words[:1]))
+                    if fw > allowed_width:
+                        break
+                # add a line consisting of those words
+                line = ' '.join(line_words)
+                if len(line_words) == 1 and self.size(line_words[0])[0] > allowed_width:
+                    out = []
+                    line = ''
+                    for i in line_words[0]:
+                        if renderdash:
+                            fw, fh = self.size(line+'--')
+                            if fw > allowed_width:
+                                out.append(line+'-')
+                                line = i
+                            else:
+                                line += i
+                        else:
+                            fw, fh = self.size(line+'-')
+                            if fw > allowed_width:
+                                out.append(line)
+                                line = i
+                            else:
+                                line += i
+                    #if line != '': out.append(line)
+                    lines.extend(out)
+                lines.append(line)
+            return self.combine([self.combine(self.split(i, col), updownweight) for i in lines], leftrightweight, SDUPDOWN)
+    
+    def split(self, txt, col):
+        """
+        Splits text and renders it!
+        This splits text up into 2 different parts:
+        The part with regular renderable text and the part without (i.e. emojis, other stuff)
+        It then uses the 2 different fonts, one for rendering text and the other for non-text
+        And renders them all seperately and then makes a list of the outputs!
+
+        Parameters
+        ----------
+        txt : str
+            The text to split
+        col : tuple[int,int,int]
+            The colour of the text
+
+        Returns
+        -------
+        list[pygame.Surface]
+            A list of pygame surfaces of all the different texts rendered!
+            You can use `FNEW.combine(surs)` to combine the surfaces!
+        """
         parts = []
         part = ''
         prtable = None
@@ -58,20 +159,58 @@ class FNEW:
                     prtable = isprt
             if i is not None:
                 part += i
-        sze = (sum([i.get_width() for i in parts]), max([i.get_height() for i in parts]))
+        return parts
+    
+    def combine(self, surs, weight=SWMID, dir=SDLEFTRIGHT):
+        """
+        Combines multiple surfaces into one!
+
+        Parameters
+        ----------
+        surs : list[pygame.Surface]
+            The list of surfaces to combine!
+        weight : GO.SW___, optional
+            The weight of the combine, i.e. make al the text from left to right, centred, etc., by default SWMID
+        dir : GO.SD______, optional
+            The direction of the combine; i.e. combine all the texts into one long text or make them all have new lines, by default SDLEFTRIGHT
+
+        Returns
+        -------
+        pygame.Surface
+            The combined surface!
+        """
+        if dir == SDLEFTRIGHT:
+            sze = (sum([i.get_width() for i in surs]), max([i.get_height() for i in surs]))
+        else:
+            sze = (max([i.get_width() for i in surs]), sum([i.get_height() for i in surs]))
         sur = pygame.Surface(sze).convert_alpha()
         sur.fill((255, 255, 255, 1))
-        curx = 0
-        for i in parts:
-            sur.blit(i, (curx, (sze[1]-i.get_height())*0.5))
-            curx += i.get_width()
-        return sur
+        pos = 0
+        for i in surs:
+            if dir == SDLEFTRIGHT:
+                sur.blit(i.convert_alpha(), (pos, (sze[1]-i.get_height())*weight))
+                pos += i.get_width()
+            else:
+                sur.blit(i.convert_alpha(), ((sze[0]-i.get_width())*weight, pos))
+                pos += i.get_height()
+        return sur  
     
     def size(self, txt):
-        return self.render(txt, (0, 0, 0)).get_size()
-    
-    def __getattr__(self, __name):
-        return getattr(self.font, __name)
+        """
+        Gets the size of the font if you render a certain text!
+
+        Parameters
+        ----------
+        txt : str
+            The text to render and see the size of
+
+        Returns
+        -------
+        tuple[int,int]
+            The size of the output font
+        """
+        surs = self.split(txt, (0, 0, 0))
+        return (sum([i.get_width() for i in surs]), max([i.get_height() for i in surs]))
 
 FTITLE = FNEW('Comic Sans MS', 64, True)
 FCODEFONT = FNEW('Lucida Sans Typewriter', 16)
