@@ -1,20 +1,37 @@
+from dataclasses import dataclass, field
 import pygame
 import pygame.freetype
 from string import printable
 
+def Base(cls=None, default=True):
+    def wrap(clss):
+        return dataclass(clss, unsafe_hash=True, init=default, repr=default)
+    if cls is None:
+        # @Base()
+        return wrap
+    # @Base
+    return wrap(cls)
+
 # Colours
-CTRANSPARENT = (255, 255, 255, 1)
-CWHITE = (255, 255, 255)
-CAWHITE = (200, 200, 200)
-CGREEN = (60, 200, 100)
-CRED = (255, 60, 100)
-CBLUE = (60, 100, 255)
-CBLACK = (0, 0, 0)
-CYELLOW = (255, 200, 50)
-CGREY = (125, 125, 125)
+@Base(default=False)
+class C___(tuple):
+    def __init__(self, colourtuple, name='C___'):
+        self.name = name
+    def __str__(self):
+        return 'C ' + self.name + super().__str__()
+    def __repr__(self): return str(self)
+CTRANSPARENT = C___((255, 255, 255, 1), name='TRANSPARENT')
+CWHITE =  C___((255, 255, 255), name='WHITE')
+CAWHITE = C___((200, 200, 200), name='ALMOSTWHITE')
+CGREEN =  C___((60, 200, 100),  name='GREEN')
+CRED =    C___((255, 60, 100),  name='RED')
+CBLUE =   C___((60, 100, 255),  name='BLUE')
+CBLACK =  C___((0, 0, 0),       name='BLACK')
+CYELLOW = C___((255, 200, 50),  name='YELLOW')
+CGREY =   C___((125, 125, 125), name='GREY')
 def CNEW(name):
     c = pygame.color.Color(name)
-    return (c.r, c.g, c.b)
+    return C___((c.r, c.g, c.b), name=name)
 CINACTIVE = CNEW('lightskyblue3')
 CACTIVE = CNEW('dodgerblue2')
 
@@ -32,17 +49,23 @@ def CRAINBOW():
 
 # font Sides
 # Weighting
-SWLEFT = 0
-SWTOP = 0
-SWMID = 0.5
-SWBOT = 1
-SWRIGHT = 1
+@Base
+class SW__:
+    w: int
+SWLEFT =  SW__(0)
+SWTOP =   SW__(0)
+SWMID =   SW__(0.5)
+SWBOT =   SW__(1)
+SWRIGHT = SW__(1)
 # Direction
-SDLEFTRIGHT = 3
-SDUPDOWN = 4
+@Base
+class SD__:
+    idx: int
+SDLEFTRIGHT = SD__(0)
+SDUPDOWN =    SD__(1)
 
 # Fonts
-class FNEW:
+class F___:
     def __init__(self, name, size, bold=False, italic=False):
         self.font = pygame.font.SysFont(name, size, bold, italic)
         self.emojifont = pygame.freetype.SysFont('segoeuisymbol', size, bold, italic)
@@ -171,7 +194,7 @@ class FNEW:
             The list of surfaces to combine!
         weight : GO.SW___, optional
             The weight of the combine, i.e. make al the text from left to right, centred, etc., by default SWMID
-        dir : GO.SD______, optional
+        dir : GO.SD___, optional
             The direction of the combine; i.e. combine all the texts into one long text or make them all have new lines, by default SDLEFTRIGHT
 
         Returns
@@ -188,10 +211,10 @@ class FNEW:
         pos = 0
         for i in surs:
             if dir == SDLEFTRIGHT:
-                sur.blit(i.convert_alpha(), (pos, (sze[1]-i.get_height())*weight))
+                sur.blit(i.convert_alpha(), (pos, (sze[1]-i.get_height())*weight.w))
                 pos += i.get_width()
             else:
-                sur.blit(i.convert_alpha(), ((sze[0]-i.get_width())*weight, pos))
+                sur.blit(i.convert_alpha(), ((sze[0]-i.get_width())*weight.w, pos))
                 pos += i.get_height()
         return sur  
     
@@ -212,22 +235,30 @@ class FNEW:
         surs = self.split(txt, (0, 0, 0))
         return (sum([i.get_width() for i in surs]), max([i.get_height() for i in surs]))
 
-FTITLE = FNEW('Comic Sans MS', 64, True)
-FCODEFONT = FNEW('Lucida Sans Typewriter', 16)
-FFONT = FNEW(None, 52)
-FSMALL = FNEW(None, 32)
+class FNEW(F___): pass # Making new fonts
+
+FTITLE =    F___('Comic Sans MS', 64, True)
+FCODEFONT = F___('Lucida Sans Typewriter', 16)
+FFONT =     F___(None, 52)
+FSMALL =    F___(None, 32)
 
 # Positions
-PLTOP = 0
-PLCENTER = 1
-PLBOTTOM = 2
-PCTOP = 3
-PCCENTER = 4
-PCBOTTOM = 5
-PRTOP = 6
-PRCENTER = 7
-PRBOTTOM = 8
-PFILL = 9
+@Base
+class P___:
+    idx: int
+    lmr: int | None # Left(0) Middle(1) Right(2)
+    umd: int | None # Up(0) Middle(1) Down(2)
+
+PLTOP =    P___(0, 0, 0)
+PLCENTER = P___(1, 0, 1)
+PLBOTTOM = P___(2, 0, 2)
+PCTOP =    P___(3, 1, 0)
+PCCENTER = P___(4, 1, 1)
+PCBOTTOM = P___(5, 1, 2)
+PRTOP =    P___(6, 2, 0)
+PRCENTER = P___(7, 2, 1)
+PRBOTTOM = P___(8, 2, 2)
+PFILL =    P___(9, None, None)
 
 # Stacks. Don't use unless you know what you're doing
 PSTACKS = {
@@ -245,37 +276,51 @@ PSTACKS = {
 
 PIDX = 0 # DO NOT USE UNLESS YOU REALLY KNOW WHAT YOU'RE DOING
 
-def PNEW(stack, func, idx=None): # To create new layouts
+def PNEW(stack, func, idx=None, lmr=None, umd=None): # To create new layouts
     global PIDX
     if idx == None:
         idx = PIDX
         PIDX += 1
-    PSTACKS[idx+10] = (stack, func)
-    return idx+10
+    pos = P___(idx+10, lmr, umd)
+    PSTACKS[pos] = (stack, func)
+    return pos
 
 def PSTATIC(x, y, idx=None): # To put an element at a specific x and y location
     global PIDX
     if idx == None:
         idx = PIDX
         PIDX += 1
-    PSTACKS[idx+10] = ([0, 0], lambda _, __: (x, y))
-    return idx+10
+    pos = P___(idx+10, None, None)
+    PSTACKS[pos] = ([0, 0], lambda _, __: (x, y))
+    return pos
 
 # Events
-EFIRST = 0
-ELOADUI = 1
-ETICK = 2
-EELEMENTCLICK = 3
-EEVENT = 4
-ELAST = 5
+@Base
+class E___:
+    idx: int
+    doc: str
+    passed: dict = field(default_factory=dict)
+
+EFIRST =        E___(0, 'The first event, before the screen has even displayed it\'s first frame')
+ELOADUI =       E___(1, 'Every time it loads the UI (first, when G.Refresh, etc.) it calls this function.')
+ETICK =         E___(2, 'Each tick this is ran')
+EELEMENTCLICK = E___(3, 'When an element is clicked, this is ran', {'element': 'The element that got clicked'})
+EEVENT =        E___(4, 'When a pygame event occurs (click mouse, press button, etc.)', {'element': 'The pygame.event.Event that occured'})
+ELAST =         E___(5, 'Just before quitting this is ran', {'aborted': 'Whether or not the graphic screen was aborted due to G.Abort()'})
 
 # Types
-TBUTTON = 0
-TTEXTBOX = 1
-TINPUTBOX = 2
-TSWITCH = 3
+@Base
+class T___:
+    idx: int
+TBUTTON =   T___(0)
+TTEXTBOX =  T___(1)
+TINPUTBOX = T___(2)
+TSWITCH =   T___(3)
 
 # Resizes
-RWIDTH = 0
-RHEIGHT = 1
-RNONE = 2
+@Base
+class R___:
+    idx: int
+RWIDTH =  R___(0)
+RHEIGHT = R___(1)
+RNONE =   R___(2)

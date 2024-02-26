@@ -17,7 +17,7 @@ from graphics.GUI import (
 )
 from graphics.GUI.textboxify.borders import LIGHT
 
-class GScrollable(Scrollable):
+class GScrollable(Scrollable): # TODO: FIX
     def __init__(self, WIN, pos, goalrect, sizeOfScreen, outline, bar):
         self.WIN = WIN
         self.pos = pos
@@ -443,7 +443,10 @@ class Graphic:
                                 except: pass
                             self.TB.toggleactive(not self.TB.collides(*mousepos()))
                             for i in self.touchingbtns:
-                                r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=i))
+                                b = list(i[0])
+                                b[1] = i[1]
+                                b[0] = i[2]
+                                r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=b))
                                 if r != None:
                                     self.run = False
                                     yield [r]
@@ -502,7 +505,7 @@ class Graphic:
         font : GO.FNEW, optional
             The font of the text, by default GO.FFONT (other fonts provided as GO.F___)
         col : tuple[int, int, int], optional
-            The colour of the toast, by default GO.CACTIVE (other colours provided as GO.C_____)
+            The colour of the toast, by default GO.CACTIVE (other colours provided as GO.C___)
         txtcol : tuple[int, int, int], optional
             The colour of the text, by default GO.CWHITE
         """
