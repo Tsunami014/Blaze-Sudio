@@ -5,7 +5,7 @@ from graphics import graphics_options as GO
 class InputBox:
     def __init__(self, x, y, w, h, resize=GO.RWIDTH, placeholder='Type here!', font=GO.FSMALL, maxim=None, starting_text=''):
         self.rect = pg.Rect(x, y, w, h)
-        self.color = GO.CINACTIVE
+        self.colour = GO.CINACTIVE
         self.text = starting_text
         self.active = False
         self.resize = resize
@@ -23,7 +23,7 @@ class InputBox:
             self.text = self.blanktxt
             repl = True
         self.text = self.text[:self.maxim]
-        self.txt_surface = self.font.render(self.text, self.color, allowed_width=(None if self.resize == GO.RWIDTH else self.rect.w - 5))
+        self.txt_surface = self.font.render(self.text, self.colour, allowed_width=(None if self.resize == GO.RWIDTH else self.rect.w - 5))
         if self.resize == GO.RWIDTH:
             self.rect.w = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
@@ -39,8 +39,8 @@ class InputBox:
                 self.active = not self.active
             else:
                 self.active = False
-            # Change the current color of the input box.
-            self.color = GO.CACTIVE if self.active else GO.CINACTIVE
+            # Change the current colour of the input box.
+            self.colour = GO.CACTIVE if self.active else GO.CINACTIVE
             self.render_txt()
         if event.type == pg.KEYDOWN:
             if self.active:
@@ -61,7 +61,7 @@ class InputBox:
         # Blit the text.
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         # Blit the rect.
-        pg.draw.rect(screen, self.color, self.rect, 2)
+        pg.draw.rect(screen, self.colour, self.rect, 2)
     
     def interrupt(self, screen, end_on=pg.K_RETURN, run_too=lambda screen: None, event_callback=lambda event: None):
         clock = pg.time.Clock()
@@ -85,7 +85,7 @@ class InputBox:
 class NumInputBox:
     def __init__(self, x, y, w, h, resize=GO.RWIDTH, start=0, max=float('inf'), min=float('-inf'), font=GO.FSMALL):
         self.rect = pg.Rect(x, y, w, h)
-        self.color = GO.CINACTIVE
+        self.colour = GO.CINACTIVE
         self.num = str(start)
         self.active = False
         self.resize = resize
@@ -101,7 +101,7 @@ class NumInputBox:
     
     def render_txt(self):
         self.get()
-        self.txt_surface = self.font.render(self.num, self.color, allowed_width=self.rect.w - 5, renderdash=False)
+        self.txt_surface = self.font.render(self.num, self.colour, allowed_width=self.rect.w - 5, renderdash=False)
         if self.resize == GO.RWIDTH:
             self.rect.w = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
@@ -115,8 +115,8 @@ class NumInputBox:
                 self.active = not self.active
             else:
                 self.active = False
-            # Change the current color of the input box.
-            self.color = GO.CACTIVE if self.active else GO.CINACTIVE
+            # Change the current colour of the input box.
+            self.colour = GO.CACTIVE if self.active else GO.CINACTIVE
             self.render_txt()
         if event.type == pg.KEYDOWN:
             if self.active:
@@ -144,7 +144,7 @@ class NumInputBox:
         # Blit the text.
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         # Blit the rect.
-        pg.draw.rect(screen, self.color, self.rect, 2)
+        pg.draw.rect(screen, self.colour, self.rect, 2)
     
     def interrupt(self, screen, end_on=pg.K_RETURN, run_too=lambda screen: None, event_callback=lambda event: None):
         clock = pg.time.Clock()
