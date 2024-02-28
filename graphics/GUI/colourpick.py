@@ -1,6 +1,7 @@
 import pygame
 
 # Thanks to https://stackoverflow.com/questions/73517832/how-to-make-an-color-picker-in-pygame :)
+# Too big to go in another file
 
 class ValuePicker:
     def __init__(self, x, y, w, h, default=0, type=0, border=False):
