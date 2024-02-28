@@ -1,4 +1,5 @@
 import pygame
+from math import sqrt
 
 def dropdown(win, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 255, 255), selectedcol=(0, 0, 255), mpos=None):
     if font == None: font = pygame.font.SysFont(None, 30)
@@ -35,18 +36,39 @@ def dropdown(win, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255
             win.blit(elements[i], (p[0] + spacing, p[1] + spacing))
         pygame.display.update()
 
-if __name__ == '__main__':
-    pygame.init()
-    win = pygame.display.set_mode()
-    run = True
-    while run:
-        win.fill((255, 255, 255))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                run = False
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_RIGHT:
-                dropdown(win, ['HI', 'BYE', 'HI AGAIN'])
-        pygame.display.update()
-    pygame.quit()
+class Toast:
+    def __init__(self, surf, pos, bottompos, timeout):
+        rnd = lambda inp: [round(inp[0]), round(inp[1])]
+        self.surf = surf
+        self.pos = rnd(bottompos)
+        self.end = rnd(bottompos)
+        self.goto = rnd(pos)
+        self.initdist = 255 / self.dist()
+        self.timeout = timeout
+        self.time = 0
+        self.living = True
+    
+    def dist(self):
+        return sqrt((self.goto[0] - self.pos[0])**2 + (self.goto[1] - self.pos[1])**2)
+    
+    def update(self, WIN):
+        self.time += 1
+        ns = self.surf
+        if self.goto != self.pos:
+            if self.living: ns.set_alpha(255-self.initdist*self.dist())
+            else: ns.set_alpha(self.initdist*self.dist())
+            if self.goto[0] != self.pos[0]:
+                if self.pos[0] > self.goto[0]: self.pos[0] -= 1
+                else: self.pos[0] += 1
+            if self.goto[1] != self.pos[1]:
+                if self.pos[1] > self.goto[1]: self.pos[1] -= 1
+                else: self.pos[1] += 1
+        else:
+            if not self.living:
+                return False
+        if self.time > self.timeout and self.living:
+            self.pos = self.goto
+            self.goto = self.end
+            self.living = False
+        WIN.blit(ns, self.pos)
+        return True

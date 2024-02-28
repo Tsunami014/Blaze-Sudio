@@ -2,6 +2,8 @@ from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" # Hide the annoying pygame thing
 from threading import Thread
 
+# TODO: Order the functions and have their names include their category
+
 def GraphicsDemo():
     import pygame
     import graphics.graphics_options as GO
@@ -123,6 +125,24 @@ def terrainGenDemo():
     outs, trees = m.outs
     print(outs[0])
     pass
+
+def dropdownDemo():
+    import pygame
+    from utils import dropdown
+    pygame.init()
+    win = pygame.display.set_mode()
+    run = True
+    while run:
+        win.fill((255, 255, 255))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_RIGHT:
+                dropdown(win, ['HI', 'BYE', 'HI AGAIN'])
+        pygame.display.update()
+    pygame.quit()
 
 def LoadingDemo():
     import random, asyncio, pygame
@@ -299,7 +319,7 @@ def switchDemo():
         pygame.display.update()
     pygame.quit()
 
-def almostallgraphicsDemo():
+def OtherGraphicsDemo():
     import pygame
     from pygame import locals
     from graphics.GUI import InputBox, TextBoxFrame
@@ -531,6 +551,7 @@ if __name__ == '__main__':
         def go():
             cmdd()
             return
+            # Spare code
             try:
                 cmdd()
             except Exception as e:
@@ -558,7 +579,8 @@ if __name__ == '__main__':
         Tk.Button(root, text='Colour Picker Demo',      command=lambda: cmd(colourpickDemo)                     ).pack()
         Tk.Button(root, text='Input Box Demo',          command=lambda: cmd(inputBoxDemo)                       ).pack()
         Tk.Button(root, text='Scrollable Demo',         command=lambda: cmd(scrollableDemo)                     ).pack()
-        Tk.Button(root, text='Other Graphics Demo',     command=lambda: cmd(almostallgraphicsDemo)              ).pack()
+        Tk.Button(root, text='Dropdown Demo',           command=lambda: cmd(dropdownDemo)                       ).pack()
+        Tk.Button(root, text='Other Graphics Demo',     command=lambda: cmd(OtherGraphicsDemo)                  ).pack()
 
         Tk.Label (root, text='Generation stuff:').pack()
         Tk.Button(root, text='Generate World Demo',     command=lambda: rcmd(worldsDemo), relief=Tk.RIDGE       ).pack()
