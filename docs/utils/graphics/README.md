@@ -4,7 +4,7 @@ This file is really just a very easy way for anyone to make nice graphic screens
 ## Imports
 The stuff at the top of the file. You need to:
 ```py
-import graphics.graphics_options as GO # Easy way of calling it
+import graphics.options as GO # Easy way of calling it
 from graphics import Graphic # Imports the thing that we are using
 G = Graphic() # makes a new graphics class to use :)
 ```
@@ -39,7 +39,7 @@ elif event == GO.ELOADUI:
 
 Now, the things I said above to see here are because you can change them, and I will show you how.
 
-GO to `graphics/graphics_options.py` and look at the `Positions` section (or another section, see the others)
+GO to `graphics/options.py` and look at the `Positions` section (or another section, see the others)
 
 # TODO: THIS AND OTHER DOCS
 

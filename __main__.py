@@ -6,7 +6,7 @@ from threading import Thread
 
 from overlay import Overlay, tk
 from graphics import Graphic
-from graphics import graphics_options as GO
+from graphics import options as GO
 from utils import Player
 from worldGen import World
 from ldtk import LDtkAPP

@@ -6,7 +6,7 @@ from threading import Thread
 
 def GraphicsDemo():
     import pygame
-    import graphics.graphics_options as GO
+    import graphics.options as GO
     from graphics import Graphic
     from time import sleep
     t = input('Please input the starting text for the middle: ')
@@ -172,7 +172,7 @@ def LoadingDemo():
 def ToastDemo():
     import pygame
     from graphics import Graphic
-    from graphics import graphics_options as GO
+    from graphics import options as GO
     G = Graphic()
     @G.Graphic
     def func(event, *args, element=None, **kwargs):

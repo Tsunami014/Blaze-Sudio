@@ -3,9 +3,9 @@ import pygame, asyncio, win32con
 pygame.init()
 from win32gui import SetWindowPos
 
-from graphics import graphics_stuff as GS
-from graphics import graphics_elements as GE
-from graphics import graphics_options as GO
+from graphics import stuff as GS
+from graphics import elements as GE
+from graphics import options as GO
 from graphics.loading import Loading, IsLoading
 from graphics.async_handling import Progressbar
 from graphics.GUI import (

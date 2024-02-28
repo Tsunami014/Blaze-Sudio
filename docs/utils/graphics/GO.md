@@ -4,7 +4,9 @@ The graphics options are a bunch of preset things, some of which you can make yo
 
 ## TO USE
 
-`from graphics import graphics_options as GO`
+`import graphics.options as GO` or `from graphics import options as GO`
+
+You could just go `from graphics import options` but GO (Standing for Graphics Options) is cooler and I use it everywhere and if you use it so much you may as well make it some 2-character thing for ease of typing
 
 ## Table of stuff it has in it
 

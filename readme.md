@@ -95,5 +95,5 @@ TODO: Move entire thing into one folder (so you pip install Blaze-sudio and then
 TODO: After that add optional requirements ([example](https://github.com/xtekky/gpt4free/blob/main/setup.py))
 TODO: Add type annotations
 TODO: possibly remove some of the libraries that come built in (like the one that's broken and I replaced it's main purpose)
-TODO: Make the Graphics decorator able to be called to do things (see graphics_options)
+TODO: Make the Graphics decorator able to be called to do things (see graphics.options)
 TODO: Fix graphics (I broke it! Yippee.)
