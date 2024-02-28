@@ -1,6 +1,6 @@
 import pygame
 
-class Switch(pygame.sprite.DirtySprite):
+class Switch:
     def __init__(self, win, x, y, size=20, speed=10, default=False):
         self.isswitch = True
         self.WIN = win
@@ -9,12 +9,11 @@ class Switch(pygame.sprite.DirtySprite):
         self.anim = 0
         self.speed = speed
         self.state = default
-        super().__init__()
         self.rect = pygame.Rect(x, y, size, size)
         self.barrect = pygame.Rect(x+size/4, y, size, size/2)
         self.image = pygame.Surface((0, 0))
         self.source_rect = pygame.Rect(0, 0, 0, 0)
-    def update(self):
+    def update(self, *_):
         if self.anim < 0: self.anim = 0
         if self.anim > 15*self.speed: self.anim = 15*self.speed
         if self.anim != (0 if not self.state else 15*self.speed):

@@ -9,7 +9,7 @@ class Scrollable:
         self.scroll = 0
         self.bounds = bounds
         self.outline = (outline, outlinecol)
-    def update(self, event):
+    def event_handle(self, event):
         y = event.y - 1
         if 0 <= y <= 1: y = 2
         self.scroll += y * 2

@@ -180,6 +180,33 @@ def inputBoxDemo(): # TODO: update this
     print('output:', input_box.interrupt(screen))
     pg.quit()
 
+def colourpickDemo():
+    import pygame
+    from graphics.GUI import ColourPickerBTN
+    pygame.init()
+    window = pygame.display.set_mode((500, 500))
+    clock = pygame.time.Clock()
+
+    cp = ColourPickerBTN(window, 50, 50)
+
+    run = True
+    while run:
+        clock.tick(100)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+        mouse_buttons = pygame.mouse.get_pressed()
+        if mouse_buttons[2]:
+            mp = pygame.mouse.get_pos()
+            cp.pos = (mp[0]-cp.size//2, mp[1]-cp.size//2)
+
+        window.fill(0)
+        cp.update()
+        pygame.display.flip()
+        
+    pygame.quit()
+    exit()
+
 def conversation_parserDemo():
     from conversation_parse import Generator
     # If you run this file you can see these next statements at work
@@ -438,7 +465,7 @@ def scrollableDemo():
             if event.type == pygame.QUIT:
                 quit()
             elif event.type == pygame.MOUSEWHEEL:
-                S.update(event)
+                S.event_handle(event)
         w.fill((0, 0, 0))
         S(w)
         pygame.display.update()
@@ -528,6 +555,7 @@ if __name__ == '__main__':
         Tk.Button(root, text='Loading Demo',            command=lambda: cmd(LoadingDemo)                        ).pack()
         Tk.Button(root, text='Toast Demo',              command=lambda: cmd(ToastDemo)                          ).pack()
         Tk.Button(root, text='Switch Demo',             command=lambda: cmd(switchDemo)                         ).pack()
+        Tk.Button(root, text='Colour Picker Demo',      command=lambda: cmd(colourpickDemo)                     ).pack()
         Tk.Button(root, text='Input Box Demo',          command=lambda: cmd(inputBoxDemo)                       ).pack()
         Tk.Button(root, text='Scrollable Demo',         command=lambda: cmd(scrollableDemo)                     ).pack()
         Tk.Button(root, text='Other Graphics Demo',     command=lambda: cmd(almostallgraphicsDemo)              ).pack()

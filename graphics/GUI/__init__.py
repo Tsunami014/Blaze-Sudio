@@ -1,4 +1,5 @@
-from graphics.GUI.inputbox import RESIZE_W, RESIZE_H, RESIZE_NONE, InputBox, renderTextCenteredAt
+# TODO: Categorise by moving into files (one class per file is not good)
+from graphics.GUI.inputbox import *
 from graphics.GUI.pyguix import *
 from graphics.GUI.textboxify import *
 from graphics.GUI.switch import *

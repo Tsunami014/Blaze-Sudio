@@ -11,6 +11,7 @@ In the docs you can find anything you need, including how to install. If you are
 (Thanks to the one and only `@Imzafish` for the name!)
 
 Also known as:
+ - Blaze
  - The putgamecreatorsoutofbusinessanator (Thanks to `@Faunder.real` for that one)
  - One piece of code to rule them all!
 
@@ -87,3 +88,13 @@ And my ultimate goal:
  - v5.0.0 - ?`Bonfire` - Unity integration!
  - v6.0.0 - ?`Inferno` - ???
 (You can suggest me any name/emoji on Discord for anything)
+
+# IMPORTANT TODOS
+TODO: Make this readme nicer (i.e. table of contents, nice headers, etc.)
+TODO: Move entire thing into one folder (so you pip install Blaze-sudio and then import blaze-sudios)
+TODO: After that add optional requirements ([example](https://github.com/xtekky/gpt4free/blob/main/setup.py))
+TODO: Add type annotations
+TODO: possibly remove some of the libraries that come built in (like the one that's broken and I replaced it's main purpose)
+TODO: Make the Graphics decorator able to be called to do things (see graphics_options)
+TODO: Make graphics.GUI.* all categorised and also make the classes all more generic
+TODO: Fix graphics (I broke it! Yippee.)

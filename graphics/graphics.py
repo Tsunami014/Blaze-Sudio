@@ -2,7 +2,10 @@ from copy import copy
 import pygame, asyncio, win32con
 pygame.init()
 from win32gui import SetWindowPos
-import graphics.graphics_options as GO
+
+from graphics import graphics_stuff as GS
+from graphics import graphics_elements as GE
+from graphics import graphics_options as GO
 from graphics.loading import Loading, IsLoading
 from graphics.async_handling import Progressbar
 from graphics.GUI import (
@@ -25,12 +28,23 @@ class GScrollable(Scrollable): # TODO: FIX
         self.events = []
         s = pygame.Surface(sizeOfScreen)
         self.G = Graphic(win=s, TB=False, no_id=True)
-        def func(event, *args, aborted=True, **kwargs):
+        def func(event, *_, aborted=True, **__):
             if event == GO.ETICK: return True
             elif event == GO.EELEMENTCLICK: return
             return aborted
         self.GR = self.G.Graphic(func, generator=True, update=False, events=self.getevents, mousepos=self.getmouse)()
         super().__init__(self.G.WIN, pos, goalrect, (0, sizeOfScreen[1]-goalrect[1]), outline, bar)
+    
+    def update(self, _, pause, __, events, G):
+        self.G.pause = pause
+        self.events = events
+        for ev in events:
+            if ev.type == pygame.MOUSEWHEEL and not pause:
+                self.event_handle(ev)
+        r = self(self.getevents())
+        if isinstance(r, list):
+            if r[0]: self.Abort()
+            else: self.run = False
     
     def getevents(self):
         for i in self.events:
@@ -39,7 +53,7 @@ class GScrollable(Scrollable): # TODO: FIX
             except: pass
         return self.events
     def getmouse(self):
-        p = pygame.mouse.get_pos()
+        p = pygame.mouse.get_pos() # TODO: add support for Scrollables in Scrollables by changing this line
         np = (p[0]-self.pos[0], p[1]-self.pos[1]-self.scroll)
         if np[0] > self.goalrect[0] or p[1]-self.pos[1] > self.goalrect[1]: return (float('-inf'), float('-inf'))
         return np
@@ -222,25 +236,32 @@ class Graphic:
             GraphicInfo.GRAPHICSPROCESSES[self.id] = 0
         self.bgcol = bgcol
         self.clock = pygame.time.Clock()
-        self.customs = []
-        self.statics = []
-        self.buttons = []
-        self.input_boxes = []
-        self.cps = []
-        self.toasts = []
+        self.Stuff = GS.Collection()
+        # Watch is for elements that should always exist
+        self.Stuff.watch.add_many((
+            'buttons',
+            'text',
+            'surs',
+            'switches',
+            'customs',
+            'input_boxes',
+            'scrollsables',
+            'cps', # ColourPickerS
+        ))
+        # Sprites are for things that may get deleted and nothing should happen because of it
+        self.Stuff.sprites.add_many((
+            'toasts',
+            'TextBoxes'
+        ))
+        self.touchingbtns = []
         self.store = {}
         self.rel = False
         self.ab = False
-        self.touchingbtns = []
         self.pause = False
-        self.sprites = pygame.sprite.LayeredDirty()
         self.nextuid = 0
         self.uids = []
-        self.scrollsables = []
         self.callbacks = {}
-        # This next bit is so users can store their own data and not have it interfere with anything
-        class Container: pass
-        self.Container = Container()
+        self.Container = GS.Container()
     def set_caption(caption=None, iconsur=None):
         """Sets the caption of the screen! Highly recommend to use at the start of your code.
         Also highly recommend that when you use this function you modify at least one thing as otherwise it is a waste of your time.
@@ -254,15 +275,6 @@ class Graphic:
         """
         if caption != None: pygame.display.set_caption(caption)
         if iconsur != None: pygame.display.set_icon(iconsur)
-    
-    def render(self, func=None):
-        """You probably don't want to use this unless you really know what it is you are doing."""
-        s = pygame.Surface(self.size)
-        s.fill((255, 255, 255))
-        if func != None: func(GO.ELOADUI)
-        for i in self.statics:
-            s.blit(i[0], i[1])
-        return s
     
     def Loading(self, func): # Function decorator, not to be called
         def func2():
@@ -319,7 +331,7 @@ class Graphic:
     
     def CGraphic(self, funcy): # Function decorator, not to be called
         def func2(slf, *args, **kwargs):
-            self.Graphic(funcy, slf)(*args, **kwargs) # Yes I know I'm calling it here. Deal with it.
+            self.Graphic(funcy, slf)(*args, **kwargs)
         return func2
     
     def Graphic(self, funcy, slf=None, generator=False, update=True, events=pygame.event.get, mousepos=pygame.mouse.get_pos): # Function decorator, not to be called unless you know what you're doing
@@ -347,60 +359,32 @@ class Graphic:
                 return ret
             cont = copy(self.Container)
             func(GO.EFIRST)
-            prevs = [self.statics.copy(), self.buttons.copy()]
             self.run = True
             self.ab = False
+            self.rel = True
             self.touchingbtns = []
-            s = self.render(func)
+            func(GO.ELOADUI)
             while self.run and not self.ab:
                 while IsLoading[0] or (self.id is not None and GraphicInfo.RUNNINGGRAPHIC != (self.id, idx)):
                     pass # DO NOT DO ANYTHING while loading or having multiple graphic screens open at a time
                 evnts = events()
-                if prevs != [self.statics, self.buttons] or self.rel:
-                    self.rel = False
-                    s = self.render(func)
-                    prevs = [self.statics.copy(), self.buttons.copy()]
                 self.WIN.fill(self.bgcol)
-                self.WIN.blit(s, (0, 0))
                 self.touchingbtns = []
-                for btn in self.buttons:
-                    r = btn[1].copy()
-                    sur = btn[0]
-                    sze = btn[2]
-                    if not self.pause:
-                        col = r.collidepoint(mousepos())
-                        if btn[-1] != -1 and col:
-                            r.x -= btn[-1]
-                            r.y -= btn[-1]
-                            r.width += btn[-1]*2
-                            r.height += btn[-1]*2
-                    else:
-                        col = False
-                    if col:
-                        self.touchingbtns.append((btn, r, sur, sze))
-                    else:
-                        pygame.draw.rect(self.WIN, btn[3], r, border_radius=8)
-                        self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
-                for btn, r, sur, sze in self.touchingbtns: # repeat so the buttons you are touching appear on top
-                    pygame.draw.rect(self.WIN, btn[3], r, border_radius=8)
-                    self.WIN.blit(sur, (sze[0]+10, sze[1]+10))
+                GE.Sprite.RECTS = []
+                self.Stuff.update_all(mousepos(), events(), self)
+                if self.Stuff.diff() or self.rel:
+                    self.rel = False
+                    func(GO.ELOADUI)
+                for col, r, sur, pos, _ in self.touchingbtns: # repeat so the buttons you are touching appear on top
+                    pygame.draw.rect(self.WIN, col, r, border_radius=8)
+                    self.WIN.blit(sur, (pos[0]+10, pos[1]+10))
                 self.TB.update()
-                for ibox in self.input_boxes:
-                    ibox.draw(self.WIN)
-                for i in self.cps:
-                    if not self.pause:
-                        i.update(mousepos)
-                    i.draw()
-                self.sprites.update()
-                rects = self.sprites.draw(self.WIN)
-                pygame.display.update(rects)
-                for cls, pass_events in self.customs:
-                    if pass_events: cls.execute(self.WIN, evnts)
-                    else: cls.execute(self.WIN)
+                pygame.display.update(GE.Sprite.RECTS)
                 if func(GO.ETICK) is False:
                     self.run = False
+                # TODO: Find some way of moving all this into the files
                 dels = []
-                for i in self.toasts:
+                for i in self.Stuff['toasts']:
                     if i.update(self.WIN) == False:
                         dels.append(i)
                 for i in dels: self.toasts.remove(i)
@@ -411,12 +395,12 @@ class Graphic:
                     if event.type == pygame.QUIT:
                         run = False
                     if not self.pause:
-                        for ibox in self.input_boxes:
-                            if ibox.handle_event(event, pygame.K_RETURN) == False:
-                                func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=ibox.text))
+                        for ibox in self.Stuff['input_boxes']:
+                            if ibox.handle_event(event) == False:
+                                func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=str(ibox.get())))
                                 blocked = True
                     else:
-                        for ibox in self.input_boxes: ibox.active = False
+                        for ibox in self.Stuff['input_boxes']: ibox.active = False
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.run = False
@@ -424,40 +408,29 @@ class Graphic:
                             self.TB.pressed(event)
                             blocked = True
                         if event.key == pygame.K_RETURN and self.TB.active == -1 and not any([i.active for i in self.input_boxes]):
-                            for sprite in self.sprites:
-                                if isinstance(sprite, TextBoxFrame):
-                                    if sprite.words:
-                                        sprite.reset()
-                                    else:
-                                        func(GO.EELEMENTCLICK, Element(GO.TTEXTBOX, self.uids.index(sprite), self, sprite=sprite))
-                            if not any([isinstance(i, TextBoxFrame) for i in self.sprites]):
+                            for sprite in self.Stuff['TextBoxes']:
+                                if sprite.words:
+                                    sprite.reset()
+                                else:
+                                    func(GO.EELEMENTCLICK, Element(GO.TTEXTBOX, self.uids.index(sprite), self, sprite=sprite))
+                            if len(self.Stuff['TextBoxes']) == 0:
                                 self.pause = False
                     elif event.type == pygame.MOUSEBUTTONDOWN and not self.pause:
                         if event.button == pygame.BUTTON_LEFT:
-                            for i in self.sprites:
-                                try:
-                                    assert i.isswitch
-                                    if i.rect.collidepoint(*mousepos()):
-                                        i.state = not i.state
-                                        func(GO.EELEMENTCLICK, Element(GO.TSWITCH, self.uids.index(i[0]), self, sw=i))
-                                except: pass
+                            for i in self.Stuff['switches']:
+                                if i.rect.collidepoint(*mousepos()):
+                                    i.state = not i.state
+                                    func(GO.EELEMENTCLICK, Element(GO.TSWITCH, self.uids.index(i[0]), self, sw=i))
                             self.TB.toggleactive(not self.TB.collides(*mousepos()))
                             for i in self.touchingbtns:
                                 b = list(i[0])
                                 b[1] = i[1]
                                 b[0] = i[2]
-                                r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[0]), self, btn=b))
+                                r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[-1]), self, btn=b))
                                 if r != None:
                                     self.run = False
                                     yield [r]
-                    elif event.type == pygame.MOUSEWHEEL and not self.pause:
-                        for i in self.scrollsables: i.update(event)
                     if not self.pause and not blocked: func(GO.EEVENT, event)
-                for i in self.scrollsables:
-                    r = i(evs)
-                    if isinstance(r, list):
-                        if r[0]: self.Abort()
-                        else: self.run = False
                 yield None
                 if update:
                     pygame.display.flip()
@@ -569,7 +542,7 @@ class Graphic:
         else:
             `sprite.execute(pygame.Surface)` which will be ran every tick, being passed the pygame window which can be blit'ed onto
         """
-        self.customs.append((sprite, pass_events))
+        self.Stuff['customs'].append(GE.Custom(sprite, pass_events))
     
     def add_text(self, txt, colour, position, font=GO.FFONT):
         """Adds text to the GUI!
@@ -587,7 +560,7 @@ class Graphic:
         """
         obj = font.render(txt, colour)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
-        self.statics.append((obj, pos))
+        self.Stuff['text'].append(GE.Static(obj, pos))
     
     def add_surface(self, obj, position):
         """Adds a surface to the GUI!
@@ -600,7 +573,7 @@ class Graphic:
             The position on the screen this element will be placed
         """
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
-        self.statics.append((obj, pos))
+        self.Stuff['surs'].append(GE.Static(obj, pos))
     
     def add_empty_space(self, position, wid, hei):
         """Makes a piece of empty space.
@@ -647,8 +620,8 @@ class Graphic:
         sze = [sur.get_width() + 20, sur.get_height() + 20]
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         r = pygame.Rect(*pos, *sze)
-        btn = (sur, r, pos, col, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
-        self.buttons.append(btn)
+        btn = GE.Button(sur, r, pos, col, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
+        self.Stuff['buttons'].append(btn)
         self.uids.append(btn)
         if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
@@ -693,7 +666,8 @@ class Graphic:
         dialog_box.set_portrait(portrait)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, dialog_box.rect.size), dialog_box.rect.size, position)
         dialog_box.rect.topleft = pos
-        self.sprites.add(dialog_box)
+        dialog_box = GE.Sprite(dialog_box)
+        self.Stuff['TextBoxes'].append(dialog_box)
         self.pause = True
         self.uids.append(dialog_box)
         if callback != None: self.callbacks[len(self.uids) - 1] = callback
@@ -735,7 +709,7 @@ class Graphic:
         if width != None: sze[0] = width
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         ibox = InputBox(*pos, *sze, resize, placeholder, font, maximum, start) # TODO: Positioning and custom width & height & resize
-        self.input_boxes.append(ibox)
+        self.Stuff['input_boxes'].append(ibox)
         self.uids.append(ibox)
         if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
@@ -774,7 +748,7 @@ class Graphic:
         sze[1] += 10
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         ibox = NumInputBox(*pos, *sze, resize, start, *bounds, font) # TODO: Positioning and custom width & height & resize
-        self.input_boxes.append(ibox)
+        self.Stuff['input_boxes'].append(ibox)
         self.uids.append(ibox)
         if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
@@ -802,7 +776,7 @@ class Graphic:
         sze = (size*1.5, size*1.5)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         sw = Switch(self.WIN, pos[0]+size/4, pos[1]+size/4, size, 2, default)
-        self.sprites.add(sw)
+        self.Stuff['switches'].append(sw)
         self.uids.append(sw)
         if callback != None: self.callbacks[len(self.uids) - 1] = callback
         return len(self.uids) - 1
@@ -827,7 +801,7 @@ class Graphic:
         """
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, (size, size)), (size, size), position)
         btn = ColourPickerBTN(self.WIN, *pos, size, sow)
-        self.cps.append(btn)
+        self.Stuff['cps'].append(btn)
         self.uids.append(btn)
         return len(self.uids) - 1
     
@@ -856,7 +830,7 @@ class Graphic:
         """
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, size), size, position)
         s = GScrollable(self.WIN, pos, size, sos, outline, bar)
-        self.scrollsables.append(s)
+        self.Stuff['scrollsables'].append(s)
         self.uids.append(s)
         return (len(self.uids) - 1, s.G)
     
@@ -878,18 +852,13 @@ class Graphic:
     
     def Clear(self):
         GO.PIDX = 0
-        self.statics = []
-        self.customs = []
-        self.buttons = []
-        self.input_boxes = []
         self.store = {}
-        self.sprites.empty()
         self.pause = False
         self.nextuid = 0
         self.uids = []
-        self.scrollsables = []
-        self.cps = []
         self.callbacks = {}
+        self.touchingbtns = []
+        self.Stuff.clear()
     
     def Abort(self):
         self.ab = True
