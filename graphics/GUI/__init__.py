@@ -1,3 +1,4 @@
+# TODO: Categorise by moving into files (one class per file is not good)
 from graphics.GUI.inputbox import *
 from graphics.GUI.pyguix import *
 from graphics.GUI.textboxify import *

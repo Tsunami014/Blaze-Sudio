@@ -2,6 +2,7 @@
 import pygame as pg
 from graphics import graphics_options as GO
 
+# TODO: Give classes update func and remove interrupt
 class InputBox:
     def __init__(self, x, y, w, h, resize=GO.RWIDTH, placeholder='Type here!', font=GO.FSMALL, maxim=None, starting_text=''):
         self.rect = pg.Rect(x, y, w, h)
@@ -31,7 +32,7 @@ class InputBox:
         if repl:
             self.text = ''
 
-    def handle_event(self, event, end_on=None):
+    def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
             if self.rect.collidepoint(event.pos):
@@ -44,17 +45,13 @@ class InputBox:
             self.render_txt()
         if event.type == pg.KEYDOWN:
             if self.active:
-                if event.key == pg.K_RETURN:
-                    if pg.K_RETURN != end_on:
-                        print(self.text)
-                        self.text = ''
-                elif event.key == pg.K_BACKSPACE:
+                if event.key == pg.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
                 # Re-render the text.
                 self.render_txt()
-                if end_on != None and event.key == end_on:
+                if event.key == pg.K_RETURN:
                     return False
 
     def draw(self, screen):
@@ -63,24 +60,12 @@ class InputBox:
         # Blit the rect.
         pg.draw.rect(screen, self.colour, self.rect, 2)
     
-    def interrupt(self, screen, end_on=pg.K_RETURN, run_too=lambda screen: None, event_callback=lambda event: None):
-        clock = pg.time.Clock()
-        done = False
-
-        while not done:
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    done = True
-                if self.handle_event(event, end_on) == False:
-                    done = True
-                event_callback(event)
-
-            screen.fill((30, 30, 30))
-            self.draw(screen)
-            run_too(screen)
-            pg.display.flip()
-            clock.tick(30)
-        return self.text
+    def update(self, sur, pause, mousePos, events, G):
+        self.draw(sur)
+        if not pause:
+            for event in events:
+                if self.handle_event(event) == False:
+                    G.Abort()
 
 class NumInputBox:
     def __init__(self, x, y, w, h, resize=GO.RWIDTH, start=0, max=float('inf'), min=float('-inf'), font=GO.FSMALL):
@@ -107,7 +92,7 @@ class NumInputBox:
         elif self.resize == GO.RHEIGHT:
             self.rect.h = self.txt_surface.get_height() + 10
 
-    def handle_event(self, event, end_on=None):
+    def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
             if self.rect.collidepoint(event.pos):
@@ -120,11 +105,7 @@ class NumInputBox:
             self.render_txt()
         if event.type == pg.KEYDOWN:
             if self.active:
-                if event.key == pg.K_RETURN:
-                    if pg.K_RETURN != end_on:
-                        print(self.num)
-                        self.num = ''
-                elif event.key == pg.K_BACKSPACE:
+                if event.key == pg.K_BACKSPACE:
                     try: self.num = ('-' if self.num.startswith('-') else '') + \
                                     str(int(self.num[:-1]))
                     except: self.num = '0'
@@ -137,7 +118,7 @@ class NumInputBox:
                     except: pass
                 # Re-render the text.
                 self.render_txt()
-                if end_on != None and event.key == end_on:
+                if event.key == pg.K_RETURN:
                     return False
 
     def draw(self, screen):
@@ -146,21 +127,9 @@ class NumInputBox:
         # Blit the rect.
         pg.draw.rect(screen, self.colour, self.rect, 2)
     
-    def interrupt(self, screen, end_on=pg.K_RETURN, run_too=lambda screen: None, event_callback=lambda event: None):
-        clock = pg.time.Clock()
-        done = False
-
-        while not done:
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    done = True
-                if self.handle_event(event, end_on) == False:
-                    done = True
-                event_callback(event)
-
-            screen.fill((30, 30, 30))
-            self.draw(screen)
-            run_too(screen)
-            pg.display.flip()
-            clock.tick(30)
-        return self.text
+    def update(self, sur, pause, mousePos, events, G):
+        self.draw(sur)
+        if not pause:
+            for event in events:
+                if self.handle_event(event) == False:
+                    G.Abort()

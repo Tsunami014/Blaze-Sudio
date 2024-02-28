@@ -3,6 +3,7 @@ import pygame
 import pygame.freetype
 from string import printable
 
+# TODO: Modify the __str__ and __repr__ of the class to a name
 def Base(cls=None, default=True):
     def wrap(clss):
         return dataclass(clss, unsafe_hash=True, init=default, repr=default)
@@ -18,7 +19,7 @@ class C___(tuple):
     def __init__(self, colourtuple, name='C___'):
         self.name = name
     def __str__(self):
-        return 'C ' + self.name + super().__str__()
+        return f'<C{self.name} col=({str(list(self))[1:-1]})>'
     def __repr__(self): return str(self)
 CTRANSPARENT = C___((255, 255, 255, 1), name='TRANSPARENT')
 CWHITE =  C___((255, 255, 255), name='WHITE')
