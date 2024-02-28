@@ -1,5 +1,5 @@
 import pygame
-from graphics import graphics_options as GO
+from graphics import options as GO
 
 class Switch:
     def __init__(self, win, x, y, size=20, speed=10, default=False):

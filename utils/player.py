@@ -1,6 +1,6 @@
 from math import sqrt, ceil
 import pygame
-import graphics.graphics_options as GO
+import graphics.options as GO
 
 class Player:
     def __init__(self, world, Loading, quitfunc):

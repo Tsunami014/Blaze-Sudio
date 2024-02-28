@@ -1,5 +1,5 @@
 import asyncio, pygame
-import graphics.graphics_options as GO
+import graphics.options as GO
 
 # Define the colors
 BLACK = (0, 0, 0)

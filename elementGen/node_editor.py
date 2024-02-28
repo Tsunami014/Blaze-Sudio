@@ -1,5 +1,5 @@
 import pygame, os, dill, json
-import graphics.graphics_options as GO
+import graphics.options as GO
 from graphics import Graphic
 import elementGen.node_parser as np
 import elementGen.types as Ts
