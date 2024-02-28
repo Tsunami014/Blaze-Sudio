@@ -2,9 +2,30 @@ from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" # Hide the annoying pygame thing
 from threading import Thread
 
-# TODO: Order the functions and have their names include their category
+# TODO: update everything that needs to be updated
 
-def GraphicsDemo():
+# I think that the things need to be by themselves
+# What I mean by that is, let's take graphics as an example;
+# With things like the dropdown and the input boxes, they are
+# Implemented in the main Graphics class, but the demos should test
+# Their individual code, not how they work in a class
+
+# NODE STUFF
+
+def NNodeEditorDemo():
+    from elementGen import NodeSelector
+    print(NodeSelector(2))
+
+def NNodeParserDemo():
+    from elementGen import allCategories, allNodes, Parse
+    alls = allCategories()
+    print('All categories and nodes:', {i: allNodes(i) for i in alls})
+    tests = Parse('math')
+    print('Test results of function Add with inputs 3 & 4:', tests('Add', 3, 4))
+
+# GRAPHICS STUFF
+
+def GGraphicsDemo():
     import pygame
     import graphics.options as GO
     from graphics import Graphic
@@ -103,30 +124,7 @@ def GraphicsDemo():
     print(test('Right click! ' + t))
     pygame.quit() # this here for very fast quitting
 
-def worldsDemo():
-    from utils import World
-    World('test', 'Test World', 'A world for testing random stuff', 5, 100, override=True, callback=print)
-
-def terrainGenDemo():
-    from random import randint
-    from utils import MapGen
-    size = 500 # 1500
-    n = 256
-    inp = input('Input nothing to use random seed, input "." to use a preset good seed, or input your own INTEGER seed > ')
-    if inp == '':
-        map_seed = randint(0, 999999)
-    elif inp == '.':
-        map_seed = 762345
-    else:
-        map_seed = int(inp)
-    useall = input('Type anything here to show all steps in terrain generation, or leave this blank and press enter to just show the finished product. > ') != ''
-    m = MapGen()
-    for txt in m.generate(size, map_seed, n, useall=useall, showAtEnd=True): print(txt)
-    outs, trees = m.outs
-    print(outs[0])
-    pass
-
-def dropdownDemo():
+def GDropdownDemo():
     import pygame
     from utils import dropdown
     pygame.init()
@@ -144,7 +142,7 @@ def dropdownDemo():
         pygame.display.update()
     pygame.quit()
 
-def LoadingDemo():
+def GLoadingDemo():
     import random, asyncio, pygame
     from graphics import Graphic
     from time import sleep
@@ -169,7 +167,7 @@ def LoadingDemo():
     pygame.quit()
     print('Ran for %i seconds%s' % (ret.i, (' Successfully! :)' if succeeded else ' And failed :(')))
 
-def ToastDemo():
+def GToastDemo():
     import pygame
     from graphics import Graphic
     from graphics import options as GO
@@ -192,7 +190,7 @@ def ToastDemo():
     func()
     pygame.quit()
 
-def inputBoxDemo(): # TODO: update this
+def GInputBoxDemo():
     import pygame as pg
     from graphics.GUI import InputBox
     screen = pg.display.set_mode((640, 480))
@@ -200,7 +198,7 @@ def inputBoxDemo(): # TODO: update this
     print('output:', input_box.interrupt(screen))
     pg.quit()
 
-def colourpickDemo():
+def GColourPickDemo():
     import pygame
     from graphics.GUI import ColourPickerBTN
     pygame.init()
@@ -227,68 +225,7 @@ def colourpickDemo():
     pygame.quit()
     exit()
 
-def conversation_parserDemo():
-    from conversation_parse import Generator
-    # If you run this file you can see these next statements at work
-    # Each you can see is separated, by a like of ~~~~~~~~~~
-    # You can see the different start params at work, with the same sample prompt
-    def gen():
-        g = Generator()
-        yield g([(1, 2), 2])
-        yield g([(0, 0), 3])
-        yield g([(0, 3), 1])
-        yield g([(3, 1), 2])
-        yield g([(0, 2), 0])
-        yield '\nAnd here are some randomly generated ones:\n' + g()
-        while True:
-            yield g()
-    g = gen()
-    print('Here are some I prepared earlier:\n')
-    while True:
-        print(next(g))
-        if input() != '':
-            break
-def tinyLLMDemo():
-    import asyncio
-    from bot import TinyLLM, lm
-    tllm = TinyLLM()
-    prompt = f"System: Reply as a helpful assistant. Currently {lm.get_date()}."
-    while True:
-        inp = input('> ')
-        if inp == '': break
-        prompt += f"\n\nUser: {inp}"
-        i = asyncio.run(tllm.interrupt(inp))
-        prompt += "\n\nAssistant:"
-        end = asyncio.run(tllm(prompt))
-        print(i)
-        print(end)
-        prompt += f" {end}"
-
-def testLLMDemo():
-    from bot import test_tinyllm
-    test_tinyllm()
-
-def rateAIsDemo():
-    import asyncio
-    from bot import rate_all
-    asyncio.run(rate_all())
-
-def api_keysDemo():
-    from keys.api_keys import SaveAPIKeysDialog
-    SaveAPIKeysDialog()
-
-def node_editorDemo():
-    from elementGen import NodeSelector
-    print(NodeSelector(2))
-
-def node_parserDemo():
-    from elementGen import allCategories, allNodes, Parse
-    alls = allCategories()
-    print('All categories and nodes:', {i: allNodes(i) for i in alls})
-    tests = Parse('math')
-    print('Test results of function Add with inputs 3 & 4:', tests('Add', 3, 4))
-
-def switchDemo():
+def GSwitchDemo():
     import pygame
     from graphics.GUI import Switch
     pygame.init()
@@ -319,7 +256,7 @@ def switchDemo():
         pygame.display.update()
     pygame.quit()
 
-def OtherGraphicsDemo():
+def GOtherGraphicsDemo(): # TODO: Evaluate whether the stuff in this is worth keeping
     import pygame
     from pygame import locals
     from graphics.GUI import InputBox, TextBoxFrame
@@ -457,7 +394,7 @@ def OtherGraphicsDemo():
             print("You canceled the MessageBox instance.")
             run = False
 
-def overlaysDemo():
+def OOverlaysDemo():
     from overlay import Overlay, tk
     from time import sleep
     o = Overlay((200, 200), (10, 10))
@@ -473,7 +410,7 @@ def overlaysDemo():
     tk.Label(o2(), text='I WILL NEVER BE DESTROYED').pack()
     while o.running(): pass
 
-def scrollableDemo():
+def GScrollableDemo():
     import pygame
     from graphics.GUI import Scrollable
     pygame.init()
@@ -490,7 +427,87 @@ def scrollableDemo():
         S(w)
         pygame.display.update()
 
-def LDtkAPPDemo():
+# GENERATION STUFF
+
+def TWorldsDemo():
+    from utils import World
+    World('test', 'Test World', 'A world for testing random stuff', 5, 100, override=True, callback=print)
+
+def TTerrainGenDemo():
+    from random import randint
+    from utils import MapGen
+    size = 500 # 1500
+    n = 256
+    inp = input('Input nothing to use random seed, input "." to use a preset good seed, or input your own INTEGER seed > ')
+    if inp == '':
+        map_seed = randint(0, 999999)
+    elif inp == '.':
+        map_seed = 762345
+    else:
+        map_seed = int(inp)
+    useall = input('Type anything here to show all steps in terrain generation, or leave this blank and press enter to just show the finished product. > ') != ''
+    m = MapGen()
+    for txt in m.generate(size, map_seed, n, useall=useall, showAtEnd=True): print(txt)
+    outs, trees = m.outs
+    print(outs[0])
+    pass
+
+# AI STUFF
+
+def ATinyLLMDemo():
+    import asyncio
+    from bot import TinyLLM, lm
+    tllm = TinyLLM()
+    prompt = f"System: Reply as a helpful assistant. Currently {lm.get_date()}."
+    while True:
+        inp = input('> ')
+        if inp == '': break
+        prompt += f"\n\nUser: {inp}"
+        i = asyncio.run(tllm.interrupt(inp))
+        prompt += "\n\nAssistant:"
+        end = asyncio.run(tllm(prompt))
+        print(i)
+        print(end)
+        prompt += f" {end}"
+
+def ATestLLMDemo():
+    from bot import test_tinyllm
+    test_tinyllm()
+
+def ARateAIsDemo():
+    import asyncio
+    from bot import rate_all
+    asyncio.run(rate_all())
+
+# OTHER STUFF
+
+def OConversationParserDemo():
+    from conversation_parse import Generator
+    # If you run this file you can see these next statements at work
+    # Each you can see is separated, by a like of ~~~~~~~~~~
+    # You can see the different start params at work, with the same sample prompt
+    def gen():
+        g = Generator()
+        yield g([(1, 2), 2])
+        yield g([(0, 0), 3])
+        yield g([(0, 3), 1])
+        yield g([(3, 1), 2])
+        yield g([(0, 2), 0])
+        yield '\nAnd here are some randomly generated ones:\n' + g()
+        while True:
+            yield g()
+    g = gen()
+    print('Here are some I prepared earlier:\n')
+    while True:
+        print(next(g))
+        if input() != '':
+            break
+
+def OApiKeysDemo():
+    from keys.api_keys import SaveAPIKeysDialog
+    SaveAPIKeysDialog()
+
+def OLDtkAPPDemo():
     from ldtk import LDtkAPP
     app = LDtkAPP()
     app.launch()
@@ -567,35 +584,35 @@ if __name__ == '__main__':
             widget.destroy()
         Tk.Button(root, text='EXIT', command=root.destroy).pack()
         
-        Tk.Label (root, text='Node stuff:').pack()
-        Tk.Button(root, text='Node Editor Demo',        command=lambda: cmd(node_editorDemo)                    ).pack()
-        Tk.Button(root, text='Node Parser Demo',        command=lambda: rcmd(node_parserDemo), relief=Tk.RIDGE  ).pack()
+        Tk.Label (root, text='Node stuff:').pack() # Nodes
+        Tk.Button(root, text='Node Editor Demo',        command=lambda: cmd(NNodeEditorDemo)                    ).pack()
+        Tk.Button(root, text='Node Parser Demo',        command=lambda: rcmd(NNodeParserDemo), relief=Tk.RIDGE  ).pack()
 
-        Tk.Label (root, text='Graphics stuff:').pack()
-        Tk.Button(root, text='Graphics Demo',           command=lambda: cmd(GraphicsDemo)                       ).pack()
-        Tk.Button(root, text='Loading Demo',            command=lambda: cmd(LoadingDemo)                        ).pack()
-        Tk.Button(root, text='Toast Demo',              command=lambda: cmd(ToastDemo)                          ).pack()
-        Tk.Button(root, text='Switch Demo',             command=lambda: cmd(switchDemo)                         ).pack()
-        Tk.Button(root, text='Colour Picker Demo',      command=lambda: cmd(colourpickDemo)                     ).pack()
-        Tk.Button(root, text='Input Box Demo',          command=lambda: cmd(inputBoxDemo)                       ).pack()
-        Tk.Button(root, text='Scrollable Demo',         command=lambda: cmd(scrollableDemo)                     ).pack()
-        Tk.Button(root, text='Dropdown Demo',           command=lambda: cmd(dropdownDemo)                       ).pack()
-        Tk.Button(root, text='Other Graphics Demo',     command=lambda: cmd(OtherGraphicsDemo)                  ).pack()
+        Tk.Label (root, text='Graphics stuff:').pack() # Graphics
+        Tk.Button(root, text='Graphics Demo',           command=lambda: cmd(GGraphicsDemo)                       ).pack()
+        Tk.Button(root, text='Loading Demo',            command=lambda: cmd(GLoadingDemo)                        ).pack()
+        Tk.Button(root, text='Toast Demo',              command=lambda: cmd(GToastDemo)                          ).pack()
+        Tk.Button(root, text='Switch Demo',             command=lambda: cmd(GSwitchDemo)                         ).pack()
+        Tk.Button(root, text='Colour Picker Demo',      command=lambda: cmd(GColourPickDemo)                     ).pack()
+        Tk.Button(root, text='Input Box Demo',          command=lambda: cmd(GInputBoxDemo)                       ).pack()
+        Tk.Button(root, text='Scrollable Demo',         command=lambda: cmd(GScrollableDemo)                     ).pack()
+        Tk.Button(root, text='Dropdown Demo',           command=lambda: cmd(GDropdownDemo)                       ).pack()
+        Tk.Button(root, text='Other Graphics Demo',     command=lambda: cmd(GOtherGraphicsDemo)                  ).pack()
 
-        Tk.Label (root, text='Generation stuff:').pack()
-        Tk.Button(root, text='Generate World Demo',     command=lambda: rcmd(worldsDemo), relief=Tk.RIDGE       ).pack()
-        Tk.Button(root, text='Generate Terrain Demo',   command=lambda: rcmd(terrainGenDemo), relief=Tk.RIDGE   ).pack()
+        Tk.Label (root, text='Generation stuff:').pack() # Terrain
+        Tk.Button(root, text='Generate World Demo',     command=lambda: rcmd(TWorldsDemo), relief=Tk.RIDGE       ).pack()
+        Tk.Button(root, text='Generate Terrain Demo',   command=lambda: rcmd(TTerrainGenDemo), relief=Tk.RIDGE   ).pack()
 
-        Tk.Label (root, text='AI stuff:').pack()
-        Tk.Button(root, text='TinyLLM Demo',            command=lambda: rcmd(tinyLLMDemo), relief=Tk.RIDGE      ).pack()
-        Tk.Button(root, text='Test LLM Demo',           command=lambda: rcmd(testLLMDemo), relief=Tk.RIDGE      ).pack()
-        Tk.Button(root, text='Rate AIs Demo',           command=lambda: rcmd(rateAIsDemo), relief=Tk.RIDGE      ).pack()
+        Tk.Label (root, text='AI stuff:').pack() # Ai
+        Tk.Button(root, text='TinyLLM Demo',            command=lambda: rcmd(ATinyLLMDemo), relief=Tk.RIDGE      ).pack()
+        Tk.Button(root, text='Test LLM Demo',           command=lambda: rcmd(ATestLLMDemo), relief=Tk.RIDGE      ).pack()
+        Tk.Button(root, text='Rate AIs Demo',           command=lambda: rcmd(ARateAIsDemo), relief=Tk.RIDGE      ).pack()
         
-        Tk.Label (root, text='Other stuff:').pack()
-        Tk.Button(root, text='API Keys Demo',           command=lambda: cmd(api_keysDemo),                      ).pack()
-        Tk.Button(root, text='Overlays Demo',           command=lambda: cmd(overlaysDemo),                      ).pack()
-        Tk.Button(root, text='LDtk app Demo',           command=lambda: cmd(LDtkAPPDemo),                       ).pack()
-        Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(conversation_parserDemo), relief=Tk.SUNKEN ).pack()
+        Tk.Label (root, text='Other stuff:').pack() # Other
+        Tk.Button(root, text='API Keys Demo',           command=lambda: cmd(OApiKeysDemo),                       ).pack()
+        Tk.Button(root, text='Overlays Demo',           command=lambda: cmd(OOverlaysDemo),                      ).pack()
+        Tk.Button(root, text='LDtk app Demo',           command=lambda: cmd(OLDtkAPPDemo),                       ).pack()
+        Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(OConversationParserDemo), relief=Tk.SUNKEN ).pack()
         root.protocol("WM_DELETE_WINDOW", root.destroy)
     load()
     def btt():

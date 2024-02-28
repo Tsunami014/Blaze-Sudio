@@ -90,10 +90,15 @@ And my ultimate goal:
 (You can suggest me any name/emoji on Discord for anything)
 
 # IMPORTANT TODOS
+We use a todo in front of everything so my parser can pick it up and yell at me about them
+## STUFF THAT VERY MUCH NEEDS DOING
 TODO: Make this readme nicer (i.e. table of contents, nice headers, etc.)
 TODO: Move entire thing into one folder (so you pip install Blaze-sudio and then import blaze-sudios)
 TODO: After that add optional requirements ([example](https://github.com/xtekky/gpt4free/blob/main/setup.py))
 TODO: Add type annotations
-TODO: possibly remove some of the libraries that come built in (like the one that's broken and I replaced it's main purpose)
+TODO: possibly remove some of the libraries that come built in (like the one that's broken and I replaced it's main purpose) (see `demos.py`'s `GOtherGraphicsDemo`)
 TODO: Make the Graphics decorator able to be called to do things (see graphics.options)
 TODO: Fix graphics (I broke it! Yippee.)
+## STUFF I'M DOING AT SOME POINT THAT ISN'T AS URGENT AS ABOVE
+TODO: Have `__main__.py` have demos in it
+TODO: Make the buttons in the LDTK window do something
