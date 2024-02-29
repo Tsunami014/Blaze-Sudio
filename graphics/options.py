@@ -39,11 +39,14 @@ CACTIVE = CNEW('dodgerblue2')
 def CRAINBOW():
     l = [
         CRED,
+        CNEW('orange'),
         CYELLOW,
         CGREEN,
         CBLUE,
-        CBLACK,
-        CGREY
+        CNEW('pink'),
+        CNEW('purple'),
+        CGREY,
+        CACTIVE
     ]
     while True:
         for i in l: yield i
@@ -278,6 +281,7 @@ PSTACKS = {
 PIDX = 0 # DO NOT USE UNLESS YOU REALLY KNOW WHAT YOU'RE DOING
 
 def PNEW(stack, func, idx=None, lmr=None, umd=None): # To create new layouts
+    # TODO: Make this able to take PRTOP as func and work out the function itself
     global PIDX
     if idx == None:
         idx = PIDX

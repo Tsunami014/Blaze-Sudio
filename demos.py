@@ -10,6 +10,14 @@ from threading import Thread
 # Implemented in the main Graphics class, but the demos should test
 # Their individual code, not how they work in a class
 
+CATEGORYNAMES = {
+    'N': 'Nodes',
+    'G': 'Graphics',
+    'T': 'Terrain',
+    'A': 'AI',
+    'O': 'Other'
+}
+
 # NODE STUFF
 
 def NNodeEditorDemo():

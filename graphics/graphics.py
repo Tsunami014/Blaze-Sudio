@@ -20,7 +20,7 @@ from graphics.GUI import (
 )
 from graphics.GUI.textboxify.borders import LIGHT
 
-class GScrollable(Scrollable): # TODO: FIX
+class GScrollable(Scrollable):
     def __init__(self, WIN, pos, goalrect, sizeOfScreen, outline, bar):
         self.WIN = WIN
         self.pos = pos
@@ -336,6 +336,7 @@ class Graphic:
     
     def Graphic(self, funcy, slf=None, generator=False, update=True, events=pygame.event.get, mousepos=pygame.mouse.get_pos): # Function decorator, not to be called unless you know what you're doing
         def func2(*args, **kwargs):
+            stuff = self.Stuff.copy()
             prev = GraphicInfo.RUNNINGGRAPHIC
             if self.id is None:
                 idx = None
@@ -371,7 +372,7 @@ class Graphic:
                 self.WIN.fill(self.bgcol)
                 self.touchingbtns = []
                 GE.Sprite.RECTS = []
-                self.Stuff.update_all(mousepos(), events(), self)
+                self.Stuff.update_all(mousepos(), evnts.copy(), self)
                 if self.Stuff.diff() or self.rel:
                     self.rel = False
                     func(GO.ELOADUI)
@@ -389,7 +390,7 @@ class Graphic:
                         dels.append(i)
                 for i in dels: self.toasts.remove(i)
                 evs = []
-                for event in evnts:
+                for event in evnts.copy():
                     evs.append(event)
                     blocked = False
                     if event.type == pygame.QUIT:
@@ -440,6 +441,7 @@ class Graphic:
             GraphicInfo.RUNNINGGRAPHIC = prev # Give back the permission to go to the previous graphic screen
             self.ab = False
             self.run = True
+            self.Stuff = stuff
             yield [ret]
         def func3(*args, **kwargs):
             f = func2(*args, **kwargs)
@@ -544,7 +546,7 @@ class Graphic:
         """
         self.Stuff['customs'].append(GE.Custom(sprite, pass_events))
     
-    def add_text(self, txt, colour, position, font=GO.FFONT):
+    def add_text(self, txt, colour, position, font=GO.FFONT, allowed_width=900):
         """Adds text to the GUI!
 
         Parameters
@@ -557,8 +559,10 @@ class Graphic:
             The position on the screen this element will be placed
         font : GO.FNEW, optional
             The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
+        allowed_width : int, optional
+            The allowed width of the font, by default 900
         """
-        obj = font.render(txt, colour)
+        obj = font.render(txt, colour, allowed_width=allowed_width)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
         self.Stuff['text'].append(GE.Static(obj, pos))
     
@@ -590,7 +594,7 @@ class Graphic:
         """
         self.pos_store(GO.PSTACKS[position][1](self.size, (wid, hei)), (wid, hei), position)
     
-    def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, on_hover_enlarge=True, callback=None):
+    def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, allowed_width=900, on_hover_enlarge=True, callback=None):
         """Adds a button to the GUI!
 
         Parameters
@@ -605,6 +609,8 @@ class Graphic:
             The colour of the text. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN), by default GO.CBLACK
         font : GO.FNEW, optional
             The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
+        allowed_width : int, optional
+            The allowed_width of the font, by default 900
         on_hover_enlarge : bool/int, optional
             Whether to enlarge the button on hover. If this is an int it will be used as the size increase of said button. By default True
         callback : function(Element), optional
@@ -616,7 +622,7 @@ class Graphic:
         int
             The UID of the created element
         """
-        sur = font.render(txt, txtcol, allowed_width=900)
+        sur = font.render(txt, txtcol, allowed_width=allowed_width)
         sze = [sur.get_width() + 20, sur.get_height() + 20]
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         r = pygame.Rect(*pos, *sze)
@@ -817,6 +823,8 @@ class Graphic:
             The size of the scrollable box
         sos : tuple[int, int]
             The size of the screen (How big the created tiny Graphic screen will be)
+            If this is > size you can scroll through it
+            Currently only works for horizontal scrolling
         outline : int, optional
             The thickness of the outline, 0 to turn it off, by default 10
         bar : bool, optional
@@ -828,6 +836,7 @@ class Graphic:
         tuple[int, Graphic]
             (the UID of the element, The Graphic class created which is put onto the main one)
         """
+        # TODO: FIX POSITIONING
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, size), size, position)
         s = GScrollable(self.WIN, pos, size, sos, outline, bar)
         self.Stuff['scrollsables'].append(s)
@@ -860,5 +869,5 @@ class Graphic:
         self.touchingbtns = []
         self.Stuff.clear()
     
-    def Abort(self):
+    def Abort(self, *args):
         self.ab = True
