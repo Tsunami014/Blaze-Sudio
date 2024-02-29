@@ -3,10 +3,14 @@ class Container:
 
 class Stuff:
     NAMES = []
-    CALLBACK = lambda: None
 
-    def __init__(self):
-        self.setup()
+    def __init__(self, overrideCategories=None):
+        if overrideCategories is None:
+            self.setup()
+        else:
+            self.categories = overrideCategories
+            self.watch = self.categories.copy()
+            self.sync()
     
     def setup(self):
         self.categories = {}
@@ -23,11 +27,14 @@ class Stuff:
             self.sync()
             return True
         return False
+
+    def copy(self):
+        return Stuff(self.categories.copy())
     
     def get(self):
         l = []
-        for i in self.categories.items():
-            l.extend(i)
+        for i in self.categories:
+            l.extend(self.categories[i])
         return l
     
     def update_all(self, mousePos, events, G):
@@ -44,7 +51,12 @@ class Stuff:
         self.sync()
     
     def sync(self):
-        self.NAMES = list(self.categories.keys())
+        for i in self.categories:
+            if i not in self.NAMES:
+                self.NAMES.append(i)
+    
+    def __len__(self):
+        return len(self.get())
     
     def __getitem__(self, _key):
         return self.categories[_key]
@@ -54,13 +66,16 @@ class Stuff:
         self.sync()
     
     def __str__(self):
-        return '<Stuff with %i objects>'%len(self.get())
+        return '<Stuff with %i objects>'%len(self)
     def __repr__(self): return str(self)
 
 class Collection:
-    def __init__(self):
-        self.watch = Stuff()
-        self.sprites = Stuff()
+    def __init__(self, watch=None, sprites=None):
+        if watch is None: self.watch = Stuff()
+        else: self.watch = watch
+
+        if sprites is None: self.sprites = Stuff()
+        else: self.sprites = sprites
     
     def getall(self):
         return self.watch.get() + self.sprites.get()
@@ -72,9 +87,15 @@ class Collection:
     def diff(self):
         return self.watch.diff()
     
+    def copy(self):
+        return Collection(self.watch.copy(), self.sprites.copy())
+    
     def update_all(self, mousePos, events, G):
         self.watch.update_all(mousePos, events, G)
         self.sprites.update_all(mousePos, events, G)
+    
+    def __len__(self):
+        return len(self.watch) + len(self.sprites)
     
     def __getitem__(self, _name):
         try:

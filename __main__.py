@@ -6,10 +6,11 @@ from threading import Thread
 
 from overlay import Overlay, tk
 from graphics import Graphic
-from graphics import options as GO
+import graphics.options as GO
 from utils import Player
 from worldGen import World
 from ldtk import LDtkAPP
+import demos
 from elementGen import NodeSelector, NodeEditor, modifyCats
 G = Graphic()
 
@@ -111,8 +112,7 @@ class Game:
                                             NodeEditor(ret, G)
                                             G.ab = False
                                         elif element == 3:
-                                            pass
-                                            # raise NotImplementedError('THIS IS STILL IN PROGRESS!')
+                                            G.Toast('THIS IS STILL IN PROGRESS!')
                                 if options() == False:
                                     r = False
                     quickacts()
@@ -133,6 +133,7 @@ class Game:
             try:
                 G.Container.win.kill()
             except: pass
+    @G.Catch
     @G.CGraphic
     def world_select(self, event, element=None, aborted=False):
         if event == GO.EFIRST:
@@ -172,7 +173,7 @@ class Game:
                     self.world_edit(bef)
                 
                 def still_in_progress(_):
-                    raise NotImplementedError('THIS IS STILL IN PROGRESS!')
+                    G.Toast('THIS IS STILL IN PROGRESS!')
 
                 LTOP = GO.PNEW([1, 1], GO.PSTACKS[GO.PLTOP][1])
                 RBOT = GO.PNEW([-1, -1], GO.PSTACKS[GO.PRBOTTOM][1])
@@ -222,30 +223,69 @@ class Game:
             else:
                 G.Container.Selection = G.Container.res.worlds[element.uid-2].name
                 G.Reload()
-        elif event == GO.ELAST:
-            pass
+    
+    @G.Catch
+    @G.CGraphic
+    def run_demo(self, event, demoname, *_, **__):
+        if event == GO.ELOADUI:
+            G.Clear()
+            G.add_text(demoname, GO.CBLACK, GO.PCCENTER, GO.FTITLE)
+    
+    @G.CGraphic
+    def demoScreen(self, event, *_, **__):
+        if event == GO.ELOADUI:
+            G.Clear()
+            ds = [i for i in dir(demos) if not i.startswith('__') and i not in [
+                'Thread', 'environ', 'CATEGORYNAMES'
+            ]]
+            dems = {}
+            for i in ds:
+                cat = demos.CATEGORYNAMES[i[0]]
+                if cat in dems:
+                    dems[cat].append(i[1:])
+                else:
+                    dems[cat] = [i[1:]]
+            
+            font = GO.FFONT
+            aw = G.size[0]-50
+            
+            size = (G.size[0], max(
+                sum([
+                    font.render(i, GO.CBLACK, allowed_width=aw).get_size()[1]-20 for i in ds
+                ])+sum([
+                    font.render(i, GO.CBLACK, allowed_width=aw).get_size()[1]-20 for i in dems
+                ]),
+            G.size[1])+40)
+            LTOP = GO.PNEW([1, 1], GO.PSTACKS[GO.PLTOP][1])
+            _, newG = G.add_Scrollable(GO.PLTOP, G.size, size)
+            newG.add_empty_space(LTOP, 20, 20)
+            newG.add_button('Back', GO.CGREY, LTOP, font=font, callback=G.Abort)
+            newG.add_empty_space(GO.PCTOP, 0, 20)
+            col = GO.CRAINBOW()
+            for i in dems:
+                newG.add_text(i, GO.CBLACK, GO.PCTOP, font, aw)
+                for j in dems[i]:
+                    newG.add_button(j, next(col), GO.PCTOP, font=font, allowed_width=aw, callback=lambda _: self.run_demo(j))
+    
     @G.CGraphic
     def welcome(self, event, element=None, aborted=False):
-        if event == GO.EFIRST:
-            pass
-        elif event == GO.ELOADUI:
+        if event == GO.ELOADUI:
             G.Clear()
             CBOT = GO.PNEW([1, 0], GO.PSTACKS[GO.PCBOTTOM][1])
-            G.add_empty_space(CBOT, -50, 0)
+            G.add_empty_space(CBOT, -100, 0)
             G.add_text('Welcome to Blaze Sudios! 🦊', GO.CBLUE, GO.PCCENTER, GO.FTITLE)
             G.add_button('Start', GO.CGREEN, CBOT)
             G.add_empty_space(CBOT, 20, 0)
+            G.add_button('Demos', GO.CBLUE, CBOT)
+            G.add_empty_space(CBOT, 20, 0)
             G.add_button('Tutorial', GO.CRED, CBOT)
         elif event == GO.EELEMENTCLICK:
-            @G.Catch
-            def start():
-                if element == 0:
-                    self.world_select()
-                else:
-                    raise NotImplementedError('THIS IS STILL IN PROGRESS!')
-            start()
-        elif event == GO.ELAST:
-            pass
+            if element == 0:
+                self.world_select()
+            elif element == 1:
+                self.demoScreen()
+            else:
+                G.Toast('THIS IS STILL IN PROGRESS!')
 
 print('Finished loading modules! Launching app...')
 if __name__ == '__main__':
