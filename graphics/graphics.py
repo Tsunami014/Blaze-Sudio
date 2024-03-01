@@ -262,7 +262,7 @@ class Graphic:
         self.uids = []
         self.callbacks = {}
         self.Container = GS.Container()
-    def set_caption(caption=None, iconsur=None):
+    def set_caption(self, caption=None, iconsur=None):
         """Sets the caption of the screen! Highly recommend to use at the start of your code.
         Also highly recommend that when you use this function you modify at least one thing as otherwise it is a waste of your time.
 
@@ -276,7 +276,11 @@ class Graphic:
         if caption != None: pygame.display.set_caption(caption)
         if iconsur != None: pygame.display.set_icon(iconsur)
     
-    def Loading(self, func): # Function decorator, not to be called
+    def Loading(self, func):
+        """
+        @G.Loading
+        Makes a Loading screen while you do a function!
+        """
         def func2():
             return Loading(func)(self.WIN, GO.FTITLE)
         return func2
@@ -307,7 +311,12 @@ class Graphic:
         asyncio.get_event_loop().stop()
         return res
 
-    def Catch(self, func): # Function decorator, not to be called
+    def Catch(self, func):
+        """
+        @G.Catch
+        A function decorator to run the function, but if it encounters any errors it will \
+spawn up another Graphic screen allowing you to go back to the previous screen, or raise it for debugging.
+        """
         def func2(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
@@ -329,12 +338,39 @@ class Graphic:
                     raise e
         return func2
     
-    def CGraphic(self, funcy): # Function decorator, not to be called
+    def CGraphic(self, funcy):
+        """
+        @G.CGraphic
+        Passes a class to a Graphic screen!
+        This can also be done with `G.Graphic(self)`
+        """
         def func2(slf, *args, **kwargs):
             self.Graphic(funcy, slf)(*args, **kwargs)
         return func2
     
-    def Graphic(self, funcy, slf=None, generator=False, update=True, events=pygame.event.get, mousepos=pygame.mouse.get_pos): # Function decorator, not to be called unless you know what you're doing
+    def Graphic(self, funcy, slf=None, /, *, generator=False, update=True, events=pygame.event.get, mousepos=pygame.mouse.get_pos):
+        """
+        @G.Graphic
+        @G.Graphic(slf=None, **options)
+        Makes a Graphic class!
+        TODO: Add more options for here
+
+        Parameters
+        ----------
+        funcy : function
+            The function to wrap
+        slf : class object, optional
+            The class to pass to all the function calls if any, by default None
+        generator : bool, optional
+            Whether or not this function is a generator, by default False
+        update : bool, optional
+            Whether or not to update the screen, by default True
+            This may be false if for example something else updates the screen too and you don't want that flickering
+        events : function, optional
+            The function to call to get all the current events, by default pygame.event.get
+        mousepos : function, optional
+            The function to call to get the current mouse position, by default pygame.mouse.get_pos
+        """
         def func2(*args, **kwargs):
             stuff = self.Stuff.copy()
             prev = GraphicInfo.RUNNINGGRAPHIC
