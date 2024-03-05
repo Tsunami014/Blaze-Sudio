@@ -1,5 +1,6 @@
 from threading import Thread, _active
-import ctypes, pygame
+import asyncio, pygame, ctypes
+import graphics.options as GO
 
 IsLoading = [False]
 
@@ -54,7 +55,7 @@ class LoadingScreen:
         pygame.display.update()
         self.clock.tick(60)
 
-def Loading(func):
+def LoadingDecorator(func):
     def func2(WIN, font): # TODO: get window and use own font. Font can be override.
         IsLoading[0] = True
         class main:
@@ -80,3 +81,82 @@ def Loading(func):
         IsLoading[0] = False
         return (not end), m
     return func2
+
+class Progressbar:
+    def __init__(self, width, height):
+        self.tasks = []
+        self.size = (width, height)
+        self.font = GO.FNEW('Arial', 20)
+        self.txt = ''
+    
+    def set_txt(self, txt):
+        self.txt = txt
+    
+    def whileloading(self, x, y, border, window, update_func, loadingtxtColour):
+        # Create the loading bar surface
+        bar = pygame.Surface(self.size)
+        bar.fill(GO.CBLACK)
+        bar.set_colorkey(GO.CBLACK)
+        prev_screen = window.copy()
+        running = True
+        clock = pygame.time.Clock()
+        dots = '.'
+        dotcounter = 0
+        while running:
+            # Handle the events
+            for event in pygame.event.get():
+                # If the user clicks the close button, exit the loop
+                if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    running = False
+                    break
+            
+            dotcounter += 1
+            if dotcounter > 60 / 3:
+                if dots == '.': dots = '..'
+                elif dots == '..': dots = '...'
+                elif dots == '...': dots = '.'
+                dotcounter = 0
+            
+            # Clear the window
+            window.fill(GO.CWHITE)
+            window.blit(prev_screen, (0, 0))
+            # Get the number of completed tasks from the future
+            completed = sum([int(i.done()) for i in self.tasks])
+            # Draw the loading bar border
+            pygame.draw.rect(window, GO.CBLACK, (x, y, bar.get_width(), bar.get_height()))
+            # Draw the loading bar fill
+            try: perc = 100/len(self.tasks) * completed
+            except ZeroDivisionError: perc = 0
+            perc = (perc * 100) // 100
+            pygame.draw.rect(bar, GO.CGREEN, (border, border, (bar.get_width() - 2 * border) / 100 * perc, bar.get_height() - 2 * border))
+            window.blit(self.font.render(self.txt.format(str(completed), str(len(self.tasks)), str(perc), dots), loadingtxtColour), (0, 0))
+            # Blit the loading bar surface onto the window
+            window.blit(bar, (x, y))
+            update_func()
+            # Update the display
+            pygame.display.flip()
+            clock.tick(60)
+            if perc == 100:
+                running = False
+                break
+            # Print the number of completed tasks
+            #print(f"Completed {completed} tasks out of 10")
+        self.txt = ''
+    
+    async def main(self, tasks):
+        self.tasks = [asyncio.create_task(_) for _ in tasks]
+        self.results = await asyncio.gather(*self.tasks, return_exceptions=True)
+    
+    def __call__(self, window, x, y, border_width, tasks, loadingtxt='Loading{3} {2}% ({0} / {1})', loadingtxtColour=GO.CBLACK, update_func=lambda: None):
+        if self.txt == '': # If something changed the text before it got time to initialise
+            self.txt = loadingtxt
+        # Create an asyncio event loop
+        self.results = None
+        loop = asyncio.get_event_loop()
+        def run():
+            task = loop.create_task(self.main(tasks))
+            loop.run_until_complete(task)
+        loop.run_in_executor(None, run)
+        self.whileloading(x, y, border_width, window, update_func, loadingtxtColour)
+        loop.stop()
+        return self.results
