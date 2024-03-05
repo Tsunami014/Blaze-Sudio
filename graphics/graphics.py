@@ -1,13 +1,16 @@
 from copy import copy
 import pygame, asyncio, win32con
 pygame.init()
-from win32gui import SetWindowPos
+from win32gui import SetWindowPos, SetFocus
 
 from graphics import stuff as GS
 from graphics import elements as GE
 from graphics import options as GO
-from graphics.loading import Loading, IsLoading
-from graphics.async_handling import Progressbar
+from graphics.loading import (
+    LoadingDecorator, 
+    IsLoading, 
+    Progressbar
+)
 from graphics.GUI import (
     TextBoxFrame, 
     InputBox, 
@@ -282,10 +285,10 @@ class Graphic:
         Makes a Loading screen while you do a function!
         """
         def func2():
-            return Loading(func)(self.WIN, GO.FTITLE)
+            return LoadingDecorator(func)(self.WIN, GO.FTITLE)
         return func2
     
-    def PBLoading(self, tasks, loadingtxt='Loading{3} {2}% ({0} / {1})'): # TODO: allow aborting
+    def PBLoading(self, tasks, loadingtxt='Loading{3} {2}% ({0} / {1})'):
         """Have a loading screen! Like G.Loading, but with a progressbar!
 
         Parameters
@@ -491,8 +494,10 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
     def BringToFront(self):
         # Set window position center-screen and on top of other windows
         # Here 2nd parameter (-1) is essential for putting window on top
-        SetWindowPos(pygame.display.get_wm_info()['window'], -1, 0, 0, 0, 0, 1)
-        SetWindowPos(pygame.display.get_wm_info()['window'], win32con.HWND_NOTOPMOST, 0, 0, 0, 0, 1)
+        hwnd = pygame.display.get_wm_info()['window']
+        SetWindowPos(hwnd, -1, 0, 0, 0, 0, 1)
+        SetWindowPos(hwnd, win32con.HWND_NOTOPMOST, 0, 0, 0, 0, 1)
+        SetFocus(hwnd)
 
     def Toast(self, text, timeout=120, pos=GO.PCBOTTOM, dist=20, spacing=5, font=GO.FFONT, col=GO.CACTIVE, txtcol=GO.CWHITE):
         """
