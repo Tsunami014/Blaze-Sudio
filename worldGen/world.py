@@ -2,15 +2,14 @@ from os.path import exists, join
 from random import choice
 from math import floor, sqrt, ceil
 from copy import deepcopy
-from shutil import copytree
 import shutil, json
+from pygame import Surface, Rect
+import pygame.draw
 
 from utils.characters import *
 from utils.storyline import *
-from worldGen.terrainGen import *
 import ldtk.Pyldtk as ldtk
-from pygame import Surface, Rect
-import pygame.draw
+from worldGen.terrainGen import *
 
 folder = 'data/worlds/'
 
@@ -150,7 +149,7 @@ class World:
             #txt = txt.replace('"~', '[').replace('~"', ']')
             #txt = txt.replace('                            ]', ']').replace('                    ]', ']')
             callback('Copying tree...')
-            copytree(join(os.getcwd(),'data/defaultWorld'), join(os.getcwd(), path))
+            shutil.copytree(join(os.getcwd(),'data/defaultWorld'), join(os.getcwd(), path))
             callback('Saving to files...')
             json.dump({
                 'version': "2.0", # Change every time something changes
