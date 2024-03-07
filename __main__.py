@@ -301,7 +301,7 @@ if __name__ == '__main__':
                 for i in dems:
                     newG.add_text(i, GO.CBLACK, GO.PCTOP, font, aw)
                     for j in dems[i]:
-                        newG.add_button(j, next(col), GO.PCTOP, font=font, allowed_width=aw, callback=lambda _: self.run_demo(j))
+                        newG.add_button(j, next(col), GO.PCTOP, font=font, allowed_width=aw, callback=lambda _, n=j: self.run_demo(n))
         
         @G.CGraphic
         def welcome(self, event, element=None, aborted=False):
