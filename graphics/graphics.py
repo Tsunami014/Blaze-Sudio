@@ -1,7 +1,6 @@
 from copy import copy
-import pygame, asyncio, win32con
+import pygame, asyncio, win32gui, win32com.client, pythoncom
 pygame.init()
-from win32gui import SetWindowPos, SetFocus
 
 from graphics import stuff as GS
 from graphics import elements as GE
@@ -492,12 +491,13 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         else: return func3
     
     def BringToFront(self):
-        # Set window position center-screen and on top of other windows
-        # Here 2nd parameter (-1) is essential for putting window on top
         hwnd = pygame.display.get_wm_info()['window']
-        SetWindowPos(hwnd, -1, 0, 0, 0, 0, 1)
-        SetWindowPos(hwnd, win32con.HWND_NOTOPMOST, 0, 0, 0, 0, 1)
-        SetFocus(hwnd)
+        win32gui.ShowWindow(hwnd,5)
+        pythoncom.CoInitialize()
+        shell = win32com.client.Dispatch("WScript.Shell")
+        shell.SendKeys(' ') #Undocks my focus from wherever it may be
+        # Another answer said to use shell.SendKeys('%'), but... This works better
+        win32gui.SetForegroundWindow(hwnd)
 
     def Toast(self, text, timeout=120, pos=GO.PCBOTTOM, dist=20, spacing=5, font=GO.FFONT, col=GO.CACTIVE, txtcol=GO.CWHITE):
         """
