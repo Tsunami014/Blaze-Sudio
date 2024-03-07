@@ -104,3 +104,5 @@ TODO: Make graphics run WAY faster (currently EXTREMLY SLOW)
 TODO: Have `__main__.py` have demos in it
 TODO: Make the buttons in the LDTK window do something
 TODO: Make `__main__.py` load the graphics then have a progressbar loading everything else
+TODO: Make `loading.py` MUCH better (can rewrite it if you want, just need to also update `graphics.py`)
+TODO: remove UIPack and wait for me to finish my one
