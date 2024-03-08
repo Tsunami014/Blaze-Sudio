@@ -353,7 +353,7 @@ if __name__ == '__main__':
                 G.Clear()
                 CBOT = GO.PNEW([1, 0], GO.PSTACKS[GO.PCBOTTOM][1])
                 G.add_empty_space(CBOT, -100, 0)
-                G.add_text('Welcome to Blaze Sudios! 🦊', GO.CBLUE, GO.PCCENTER, GO.FTITLE)
+                G.add_text('Welcome to...\nBlaze Sudios! 🦊', GO.CBLUE, GO.PCCENTER, GO.FTITLE)
                 G.add_button('Start', GO.CGREEN, CBOT)
                 G.add_empty_space(CBOT, 20, 0)
                 G.add_button('Demos', GO.CBLUE, CBOT)

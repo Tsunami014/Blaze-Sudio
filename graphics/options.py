@@ -107,43 +107,46 @@ class F___:
         if allowed_width is None:
             return self.combine(self.split(txt, col), weight=updownweight)
         else:
-            # Thanks to https://stackoverflow.com/questions/49432109/how-to-wrap-text-in-pygame-using-pygame-font-font for the font wrapping thing
-            # Split text into words
-            words = txt.split(' ')
-            # now, construct lines out of these words
-            lines = []
-            while len(words) > 0:
-                # get as many words as will fit within allowed_width
-                line_words = []
+            masterlines = []
+            for l in txt.split('\n'):
+                # Thanks to https://stackoverflow.com/questions/49432109/how-to-wrap-text-in-pygame-using-pygame-font-font for the font wrapping thing
+                # Split text into words
+                words = l.split(' ')
+                # now, construct lines out of these words
+                lines = []
                 while len(words) > 0:
-                    line_words.append(words.pop(0))
-                    fw, fh = self.size(' '.join(line_words + words[:1]))
-                    if fw > allowed_width:
-                        break
-                # add a line consisting of those words
-                line = ' '.join(line_words)
-                if len(line_words) == 1 and self.size(line_words[0])[0] > allowed_width:
-                    out = []
-                    line = ''
-                    for i in line_words[0]:
-                        if renderdash:
-                            fw, fh = self.size(line+'--')
-                            if fw > allowed_width:
-                                out.append(line+'-')
-                                line = i
+                    # get as many words as will fit within allowed_width
+                    line_words = []
+                    while len(words) > 0:
+                        line_words.append(words.pop(0))
+                        fw, fh = self.size(' '.join(line_words + words[:1]))
+                        if fw > allowed_width:
+                            break
+                    # add a line consisting of those words
+                    line = ' '.join(line_words)
+                    if len(line_words) == 1 and self.size(line_words[0])[0] > allowed_width:
+                        out = []
+                        line = ''
+                        for i in line_words[0]:
+                            if renderdash:
+                                fw, fh = self.size(line+'--')
+                                if fw > allowed_width:
+                                    out.append(line+'-')
+                                    line = i
+                                else:
+                                    line += i
                             else:
-                                line += i
-                        else:
-                            fw, fh = self.size(line+'-')
-                            if fw > allowed_width:
-                                out.append(line)
-                                line = i
-                            else:
-                                line += i
-                    #if line != '': out.append(line)
-                    lines.extend(out)
-                lines.append(line)
-            return self.combine([self.combine(self.split(i, col), updownweight) for i in lines], leftrightweight, SDUPDOWN)
+                                fw, fh = self.size(line+'-')
+                                if fw > allowed_width:
+                                    out.append(line)
+                                    line = i
+                                else:
+                                    line += i
+                        #if line != '': out.append(line)
+                        lines.extend(out)
+                    lines.append(line)
+                masterlines.extend(lines)
+            return self.combine([self.combine(self.split(i, col), updownweight) for i in masterlines], leftrightweight, SDUPDOWN)
     
     def split(self, txt, col):
         """
