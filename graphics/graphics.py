@@ -446,7 +446,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                         elif self.TB.active != -1:
                             self.TB.pressed(event)
                             blocked = True
-                        if event.key == pygame.K_RETURN and self.TB.active == -1 and not any([i.active for i in self.input_boxes]):
+                        if event.key == pygame.K_RETURN and self.TB.active == -1 and not any([i.active for i in self.Stuff['input_boxes']]):
                             for sprite in self.Stuff['TextBoxes']:
                                 if sprite.words:
                                     sprite.reset()

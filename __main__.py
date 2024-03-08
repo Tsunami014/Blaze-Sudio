@@ -299,11 +299,10 @@ if __name__ == '__main__':
                     G.Reload()
                 except:
                     pass
-            elif event == GO.EELEMENTCLICK:
-                pass # This will be the inputbox
-                # G.Container.inputting[1].set()
-                # G.Container.Q.put(inputboxtxt)
-                # G.Container.inputting[0] = False
+            elif event == GO.EELEMENTCLICK: # This will be the inputbox
+                G.Container.Q.put(element.txt.strip())
+                G.Container.inputting[1].set()
+                G.Container.inputting[0] = False
             elif event == GO.ELAST:
                 if G.Container.p.is_alive():
                     G.Container.p.kill()
