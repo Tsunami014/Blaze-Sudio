@@ -598,6 +598,8 @@ if __name__ == '__main__':
         root.update()
         def go():
             cmdd()
+            globals()['print'] = oprint
+            globals()['input'] = oinput
             return
             # Spare code
             try:
@@ -605,8 +607,6 @@ if __name__ == '__main__':
             except Exception as e:
                 print('AN EXCEPTION HAS OCURRED:', type(e), e, sep='\n') # Breakpoint here and in console use
                 # `e.with_traceback()`
-            globals()['print'] = oprint
-            globals()['input'] = oinput
         t = Thread(target=go, daemon=False)
         t.start()
         

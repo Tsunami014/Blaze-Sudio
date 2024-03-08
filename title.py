@@ -137,3 +137,24 @@ class TitleScreen:
         self.t.join()
         self.joining = True
         self.t2.join()
+
+def wrapdemo(Q, EV, demoname):
+    import demos
+    def newprint(*msg, sep=' ', end='\n'):
+        Q.put([0, sep.join(msg)+end])
+    def newinp(msg):
+        EV.clear()
+        Q.put([1, msg])
+        while not EV.is_set():
+            pass # Don't block the process
+        return Q.get()
+    oldprt = print
+    globals()['print'] = newprint
+    oldinp = input
+    globals()['input'] = newinp
+    try:
+        getattr(demos, demoname)()
+    except Exception as e:
+        Q.put([2, e])
+        while True:
+            pass # Breakpoint here to catch error
