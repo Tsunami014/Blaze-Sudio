@@ -67,7 +67,7 @@ class InputBox:
             # Change the current colour of the input box.
             self.colour = GO.CACTIVE if self.active else GO.CINACTIVE
             self.render_txt()
-        if event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
@@ -86,10 +86,6 @@ class InputBox:
     
     def update(self, sur, pause, mousePos, events, G):
         self.draw(sur)
-        if not pause:
-            for event in events:
-                if self.handle_event(event) == False:
-                    G.Abort()
 
 class NumInputBox:
     def __init__(self, x, y, w, h, resize=GO.RWIDTH, start=0, max=float('inf'), min=float('-inf'), font=GO.FSMALL):

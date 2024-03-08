@@ -277,8 +277,9 @@ if __name__ == '__main__':
                 G.add_text(demoname, GO.CBLACK, GO.PCTOP, GO.FTITLE)
                 G.add_text(''.join(G.Container.msgs), GO.CBLACK, GO.PCCENTER, allowed_width=900)
                 if G.Container.inputting[0]:
-                    G.add_text(G.Container.inputting[2], GO.CBLACK, GO.PCBOTTOM)
-                    G.add_input(GO.PCBOTTOM, resize=GO.RWIDTH)
+                    BOT = GO.PNEW([1, 0], GO.PSTACKS[GO.PCBOTTOM][1])
+                    G.add_text(G.Container.inputting[2], GO.CBLACK, BOT)
+                    G.add_input(BOT, resize=GO.RWIDTH )
             elif event == GO.ETICK:
                 if not G.Container.p.is_alive():
                     G.Abort()
