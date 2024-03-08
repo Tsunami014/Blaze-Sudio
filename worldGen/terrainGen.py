@@ -1,24 +1,26 @@
 # https://github.com/BilHim/minecraft-world-generation/blob/main/src/Minecraft%20Terrain%20Generation%20in%20Python%20-%20By%20Bilal%20Himite.ipynb
 import logging
-logging.info('Loading TerrainGen (1/5): Basic imports...')
+logging.info('Loading TerrainGen (1/8): Basic imports...')
 import numpy as np
 import os
-logging.info('Loading TerrainGen (2/5): Drawing tools...')
-from skimage.draw import polygon
+logging.info('Loading TerrainGen (2/8): Drawing tools: PIL...')
 from PIL import Image
+logging.info('Loading TerrainGen (3/8): Drawing tools: Skimage...')
+from skimage.draw import polygon
+logging.info('Loading TerrainGen (4/8): Drawing tools: ndimage...')
 from scipy import ndimage
-logging.info('Loading TerrainGen (3/5): Noise grneration...')
+logging.info('Loading TerrainGen (5/8): Noise generation...')
 from random import randint
 from NPerlinNoise import Noise
 from skimage import exposure
-logging.info('Loading TerrainGen (4/5): Matplotlib...')
+logging.info('Loading TerrainGen (6/8): Matplotlib...')
 from matplotlib import pyplot as plt
-logging.info('Loading TerrainGen (5/5): Others...')
+logging.info('Loading TerrainGen (7/8): Scipy stuff 1...')
 from scipy.spatial import Voronoi
 from scipy.special import expit
-from scipy.interpolate import interp1d
-from scipy.ndimage.filters import gaussian_filter
+logging.info('Loading TerrainGen (8 /8): Scipy stuff 2...')
 from scipy.ndimage.morphology import binary_dilation
+from scipy.interpolate import interp1d
 
 def floodfill(matrix, x, y):
     tofill = [(x, y)]
@@ -698,12 +700,12 @@ class MapGen:
 
         for i in range(biome_count):
             biome_masks[i, biome_map==i] = 1
-            biome_masks[i] = gaussian_filter(biome_masks[i], sigma=16)
+            biome_masks[i] = ndimage.gaussian_filter(biome_masks[i], sigma=16)
 
         # Remove ocean from masks
         blurred_land_mask = land_mask
         blurred_land_mask = binary_dilation(land_mask, iterations=32).astype(np.float64)
-        blurred_land_mask = gaussian_filter(blurred_land_mask, sigma=16)
+        blurred_land_mask = ndimage.gaussian_filter(blurred_land_mask, sigma=16)
 
         biome_masks = biome_masks*blurred_land_mask
 
@@ -749,7 +751,7 @@ class MapGen:
         rivers = np.logical_or(new_biome_bound, new_cell_bound)*river_mask
 
         loose_river_mask = binary_dilation(rivers, iterations=8)
-        rivers_height = gaussian_filter(rivers.astype(np.float64), sigma=2)*loose_river_mask
+        rivers_height = ndimage.gaussian_filter(rivers.astype(np.float64), sigma=2)*loose_river_mask
 
         adjusted_height_river_map = adjusted_height_map*(1-rivers_height) - 0.05*rivers
 

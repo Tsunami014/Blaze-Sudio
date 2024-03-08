@@ -148,12 +148,11 @@ def wrapdemo(Q, EV, demoname):
         while not EV.is_set():
             pass # Don't block the process
         return Q.get()
-    oldprt = print
-    globals()['print'] = newprint
-    oldinp = input
-    globals()['input'] = newinp
+    func = getattr(demos, demoname)
+    func.__globals__['print'] = newprint
+    func.__globals__['input'] = newinp
     try:
-        getattr(demos, demoname)()
+        func() 
     except Exception as e:
         Q.put([2, e])
         while True:

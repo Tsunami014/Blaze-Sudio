@@ -5,7 +5,7 @@ if __name__ == '__main__':
     from multiprocessing import freeze_support
     freeze_support()
     from title import TitleScreen
-    l = TitleScreen(600, 50, 17)
+    l = TitleScreen(600, 50, 19) # 17
     l(5, 'Loading{3}')
     def nxt(name):
         l.update()
@@ -266,7 +266,6 @@ if __name__ == '__main__':
         @G.CGraphic
         def run_demo(self, event, demoname, element=None, **__):
             if event == GO.EFIRST:
-                
                 G.Container.msgs = []
                 ev = MP.Event()
                 G.Container.inputting = [False, ev, None]
@@ -276,7 +275,7 @@ if __name__ == '__main__':
             elif event == GO.ELOADUI:
                 G.Clear()
                 G.add_text(demoname, GO.CBLACK, GO.PCTOP, GO.FTITLE)
-                G.add_text(''.join(G.Container.msgs), GO.CBLACK, GO.PCCENTER, allowed_width=300)
+                G.add_text(''.join(G.Container.msgs), GO.CBLACK, GO.PCCENTER, allowed_width=900)
                 if G.Container.inputting[0]:
                     G.add_text(G.Container.inputting[2], GO.CBLACK, GO.PCBOTTOM)
                     G.add_input(GO.PCBOTTOM, resize=GO.RWIDTH)
@@ -331,9 +330,9 @@ if __name__ == '__main__':
                 
                 size = (G.size[0], max(
                     sum([
-                        font.render(i, GO.CBLACK, allowed_width=aw).get_size()[1]-20 for i in ds
+                        font.render(i, GO.CBLACK, allowed_width=aw).get_size()[1]+20 for i in ds
                     ])+sum([
-                        font.render(i, GO.CBLACK, allowed_width=aw).get_size()[1]-20 for i in dems
+                        font.render(i, GO.CBLACK, allowed_width=aw).get_size()[1]  for i in dems
                     ]),
                 G.size[1])+40)
                 LTOP = GO.PNEW([1, 1], GO.PSTACKS[GO.PLTOP][1])
