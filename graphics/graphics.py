@@ -480,6 +480,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             self.ab = False
             self.run = True
             self.Stuff = stuff
+            self.touchingbtns = []
             yield [ret]
         def func3(*args, **kwargs):
             f = func2(*args, **kwargs)

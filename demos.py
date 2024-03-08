@@ -489,6 +489,19 @@ def ARateAIsDemo():
 
 # OTHER STUFF
 
+def ODemoTest():
+    from time import sleep
+    r = True
+    while r:
+        print('This is a demo test!')
+        sleep(2)
+        print('This tests to make sure that the demo software is working.')
+        sleep(4)
+        if input('Understand? (y/n) >').lower() == 'y':
+            r = False
+    print('Good. See you soon!')
+    sleep(3)
+
 def OConversationParserDemo():
     from conversation_parse import Generator
     # If you run this file you can see these next statements at work
