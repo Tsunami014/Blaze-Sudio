@@ -43,18 +43,17 @@ class InputBox:
         return self.text
     
     def render_txt(self):
-        repl = False
-        if (not self.active) and self.text == '':
-            self.text = self.blanktxt
-            repl = True
+        txtcol = self.colour
         self.text = self.text[:self.maxim]
-        self.txt_surface = self.font.render(self.text, self.colour, allowed_width=(None if self.resize == GO.RWIDTH else self.rect.w - 5))
+        txt = self.text
+        if txt == '':
+            txt = self.blanktxt
+            txtcol = GO.CINACTIVE
+        self.txt_surface = self.font.render(txt, txtcol, allowed_width=(None if self.resize == GO.RWIDTH else self.rect.w - 5))
         if self.resize == GO.RWIDTH:
             self.rect.w = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
             self.rect.h = self.txt_surface.get_height() + 10
-        if repl:
-            self.text = ''
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
