@@ -108,7 +108,7 @@ class F___:
             return self.combine(self.split(txt, col), weight=updownweight)
         else:
             masterlines = []
-            for l in txt.split('\n'):
+            for l in txt.strip('\n').split('\n'):
                 # Thanks to https://stackoverflow.com/questions/49432109/how-to-wrap-text-in-pygame-using-pygame-font-font for the font wrapping thing
                 # Split text into words
                 words = l.split(' ')
