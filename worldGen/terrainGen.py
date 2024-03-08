@@ -1,17 +1,19 @@
 # https://github.com/BilHim/minecraft-world-generation/blob/main/src/Minecraft%20Terrain%20Generation%20in%20Python%20-%20By%20Bilal%20Himite.ipynb
 import logging
-logging.info('Loading TerrainGen (1/3): Basic imports...')
-from random import randint
+logging.info('Loading TerrainGen (1/5): Basic imports...')
 import numpy as np
 import os
+logging.info('Loading TerrainGen (2/5): Drawing tools...')
 from skimage.draw import polygon
 from PIL import Image
+from scipy import ndimage
+logging.info('Loading TerrainGen (3/5): Noise grneration...')
+from random import randint
 from NPerlinNoise import Noise
 from skimage import exposure
-logging.info('Loading TerrainGen (2/3): Matplotlib...')
+logging.info('Loading TerrainGen (4/5): Matplotlib...')
 from matplotlib import pyplot as plt
-logging.info('Loading TerrainGen (3/3): Scipy...')
-from scipy import ndimage
+logging.info('Loading TerrainGen (5/5): Others...')
 from scipy.spatial import Voronoi
 from scipy.special import expit
 from scipy.interpolate import interp1d

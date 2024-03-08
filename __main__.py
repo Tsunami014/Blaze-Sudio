@@ -5,7 +5,7 @@ if __name__ == '__main__':
     from multiprocessing import freeze_support
     freeze_support()
     from title import TitleScreen
-    l = TitleScreen(600, 50, 15)
+    l = TitleScreen(600, 50, 17)
     l(5, 'Loading{3}')
     def nxt(name):
         l.update()
