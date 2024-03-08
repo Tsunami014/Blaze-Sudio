@@ -24,6 +24,8 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
     nxt('Core modules')
     import os, json
+    import multiprocessing as MP
+    from title import wrapdemo
     nxt('Pygame')
     import pygame
     nxt('Graphics')
@@ -262,10 +264,50 @@ if __name__ == '__main__':
         
         @G.Catch
         @G.CGraphic
-        def run_demo(self, event, demoname, *_, **__):
-            if event == GO.ELOADUI:
+        def run_demo(self, event, demoname, element=None, **__):
+            if event == GO.EFIRST:
+                
+                G.Container.msgs = []
+                ev = MP.Event()
+                G.Container.inputting = [False, ev, None]
+                G.Container.Q = MP.Queue()
+                G.Container.p = MP.Process(target=wrapdemo, args=(G.Container.Q, ev, demoname), daemon=True)
+                G.Container.p.start()
+            elif event == GO.ELOADUI:
                 G.Clear()
-                G.add_text(demoname, GO.CBLACK, GO.PCCENTER, GO.FTITLE)
+                G.add_text(demoname, GO.CBLACK, GO.PCTOP, GO.FTITLE)
+                G.add_text(''.join(G.Container.msgs), GO.CBLACK, GO.PCCENTER, allowed_width=300)
+                if G.Container.inputting[0]:
+                    G.add_text(G.Container.inputting[2], GO.CBLACK, GO.PCBOTTOM)
+                    G.add_input(GO.PCBOTTOM, resize=GO.RWIDTH)
+            elif event == GO.ETICK:
+                if not G.Container.p.is_alive():
+                    G.Abort()
+                    return
+                try:
+                    resp = G.Container.Q.get_nowait()
+                    if resp[0] == 0:
+                        G.Container.msgs.append(resp[1]) # printed
+                    elif resp[0] == 1:
+                        G.Container.inputting[0] = True
+                        G.Container.inputting[2] = resp[1]
+                    elif resp[0] == 2:
+                        @G.Catch
+                        def raiseError():
+                            raise resp[1]
+                        raiseError()
+                    G.Reload()
+                except:
+                    pass
+            elif event == GO.EELEMENTCLICK:
+                pass # This will be the inputbox
+                # G.Container.inputting[1].set()
+                # G.Container.Q.put(inputboxtxt)
+                # G.Container.inputting[0] = False
+            elif event == GO.ELAST:
+                if G.Container.p.is_alive():
+                    G.Container.p.kill()
+                    G.Container.p.join()
         
         @G.CGraphic
         def demoScreen(self, event, *_, **__):
@@ -275,8 +317,10 @@ if __name__ == '__main__':
                     'Thread', 'environ', 'CATEGORYNAMES'
                 ]]
                 dems = {}
+                demcats = {}
                 for i in ds:
                     cat = demos.CATEGORYNAMES[i[0]]
+                    demcats[i[1:]] = i
                     if cat in dems:
                         dems[cat].append(i[1:])
                     else:
@@ -301,7 +345,8 @@ if __name__ == '__main__':
                 for i in dems:
                     newG.add_text(i, GO.CBLACK, GO.PCTOP, font, aw)
                     for j in dems[i]:
-                        newG.add_button(j, next(col), GO.PCTOP, font=font, allowed_width=aw, callback=lambda _, n=j: self.run_demo(n))
+                        real = demcats[j]
+                        newG.add_button(j, next(col), GO.PCTOP, font=font, allowed_width=aw, callback=lambda _, n=real: self.run_demo(n))
         
         @G.CGraphic
         def welcome(self, event, element=None, aborted=False):
