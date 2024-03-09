@@ -268,18 +268,22 @@ if __name__ == '__main__':
             if event == GO.EFIRST:
                 G.Container.msgs = []
                 ev = MP.Event()
+                G.Container.has_started = MP.Event()
                 G.Container.inputting = [False, ev, None]
                 G.Container.Q = MP.Queue()
-                G.Container.p = MP.Process(target=wrapdemo, args=(G.Container.Q, ev, demoname), daemon=True)
+                G.Container.p = MP.Process(target=wrapdemo, args=(G.Container.Q, ev, G.Container.has_started, demoname), daemon=True)
                 G.Container.p.start()
             elif event == GO.ELOADUI:
                 G.Clear()
                 G.add_text(demoname, GO.CBLACK, GO.PCTOP, GO.FTITLE)
-                G.add_text(''.join(G.Container.msgs), GO.CBLACK, GO.PCCENTER, allowed_width=900)
-                if G.Container.inputting[0]:
-                    BOT = GO.PNEW([1, 0], GO.PSTACKS[GO.PCBOTTOM][1])
-                    G.add_text(G.Container.inputting[2], GO.CBLACK, BOT)
-                    G.add_input(BOT, resize=GO.RWIDTH )
+                if not G.Container.has_started.is_set():
+                    G.add_text('Loading...', GO.CBLACK, GO.PCCENTER, allowed_width=900)
+                else: 
+                    G.add_text(''.join(G.Container.msgs), GO.CBLACK, GO.PCCENTER, allowed_width=900)
+                    if G.Container.inputting[0]:
+                        BOT = GO.PNEW([1, 0], GO.PSTACKS[GO.PCBOTTOM][1])
+                        G.add_text(G.Container.inputting[2], GO.CBLACK, BOT)
+                        G.add_input(BOT, resize=GO.RWIDTH)
             elif event == GO.ETICK:
                 if not G.Container.p.is_alive():
                     G.Abort()
