@@ -138,7 +138,7 @@ class TitleScreen:
         self.joining = True
         self.t2.join()
 
-def wrapdemo(Q, EV, demoname):
+def wrapdemo(Q, EV, started, demoname):
     import demos
     def newprint(*msg, sep=' ', end='\n'):
         Q.put([0, sep.join(msg)+end])
@@ -151,6 +151,7 @@ def wrapdemo(Q, EV, demoname):
     func = getattr(demos, demoname)
     func.__globals__['print'] = newprint
     func.__globals__['input'] = newinp
+    started.set()
     try:
         func() 
     except Exception as e:

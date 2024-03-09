@@ -98,11 +98,9 @@ TODO: After that add optional requirements ([example](https://github.com/xtekky/
 TODO: Add type annotations
 TODO: possibly remove some of the libraries that come built in (like the one that's broken and I replaced it's main purpose) (see `demos.py`'s `GOtherGraphicsDemo`)
 TODO: Make the Graphics decorator able to be called to do things (see graphics.options)
-TODO: Fix graphics (I broke it! Yippee.)
 TODO: Make graphics run WAY faster (currently EXTREMLY SLOW)
 ## STUFF I'M DOING AT SOME POINT THAT ISN'T AS URGENT AS ABOVE
-TODO: Have `__main__.py` have demos in it
 TODO: Make the buttons in the LDTK window do something
-TODO: Make `__main__.py` load the graphics then have a progressbar loading everything else
 TODO: Make `loading.py` MUCH better (can rewrite it if you want, just need to also update `graphics.py`)
 TODO: remove UIPack and wait for me to finish my one
+Make GO.PNEW easier (e.g. have GO.P___ all have their functions in them and stuff so you don't need GO.PSTACKS)
