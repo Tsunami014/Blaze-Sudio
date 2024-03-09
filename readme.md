@@ -2,7 +2,7 @@
 # CURRENT VERSION: v2.0.0-beta (💥 Flare)
 Actually playable! Run `__main__.py`!
 (After you install the dependancies, of course)
-## DOCS ARE [HERE!](https://tsunami014.gitbook.io/blaze-sudios/)
+## Docs are [here](https://tsunami014.gitbook.io/blaze-sudios/) and website is [here](https://tsunami014.github.io/Blaze-Sudio/)!
 In the docs you can find anything you need, including how to install. If you are working offline, you can look [here](docs/SUMMARY.md) for all the pages in the docs to look at them (because all the docs are on this repo)
 
 ![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio)
