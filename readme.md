@@ -2,11 +2,19 @@
 # CURRENT VERSION: v2.0.0-beta (💥 Flare)
 Actually playable! Run `__main__.py`!
 (After you install the dependancies, of course)
-## Docs are [here](https://tsunami014.gitbook.io/blaze-sudios/) and website is [here](https://tsunami014.github.io/Blaze-Sudio/)!
-In the docs you can find anything you need, including how to install. If you are working offline, you can look [here](docs/SUMMARY.md) for all the pages in the docs to look at them (because all the docs are on this repo)
 
-![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio)
+![I've done a crap ton of commits](https://badgen.net/github/commits/Tsunami014/Blaze-Sudio?color=orange)
+![I've also done a ton of releases too](https://badgen.net/github/releases/Tsunami014/Blaze-Sudio?color=purple)
+![Open Issues](https://badgen.net/github/open-issues/Tsunami014/Blaze-Sudio?color=red&label=open%20issues)
+![Worked on since Aug 19, 2023](https://badgen.net/badge/worked%20on%20since/Aug%2019,%202023?color=pink)
+
+[![Docs](https://badgen.net/badge/docs/tsunami014.gitbook.io)](https://tsunami014.gitbook.io/blaze-sudios/)
+[![Website](https://badgen.net/badge/docs/tsunami014.github.io)](https://tsunami014.github.io/Blaze-Sudio/)
+
+![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=green)
 (but really, if you look in the commits it's just me) (At the MOMENT, I'm hoping I can get others to help too if they want!)
+
+In the docs you can find anything you need, including how to install. If you are working offline, you can look [here](docs/SUMMARY.md) for all the pages in the docs to look at them (because all the docs are on this repo)
 
 (Thanks to the one and only `@Imzafish` for the name!)
 
@@ -18,33 +26,6 @@ Also known as:
 ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png)
 
 (And for all those who love catchphrases: `Oh, I want to make a game the easy way! How?` `I'll Blaze it!` (like "I'll chatGPT it" but cooler 😎))
-
-# What I'm working on:
-
-Stages of production (SOP):
- 1. just an idea at the moment
- 2. early stages
- 3. in progress, you can test it out
- 4. finished, but more features/stuff coming soon
- 5. finished, probably only going to get an update once every blue moon
-
-| What is it | Stage of production (SOP) | Testable? | My rating on how well I did at it /5 |
-|:----------:|:-------------------------:|:---------:|:---------:|
-| Node stuff | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
-| Graphics | ![Finished, more features soon](https://badgen.net/badge/Production/4?color=green) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
-| World/terrain generation | ![Finished, more features soon](https://badgen.net/badge/Production/4?color=green) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
-| AIs | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
-| Conversation Parse | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟🌟🌟 |
-| Main code | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![__main\_\_.py:Testable!](https://badgen.net/badge/__main__.py/Testable!?color=green) | 🌟🌟🌟⭐ |
-| API Keys interface (I don't think I need it, so I'll probably delete it at some point) | ![Finished](https://badgen.net/badge/Production/5?color=blue) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) (files are in `keys` directory, I moved it in there so it doesn't work yet) | ⭐ |
-| Speech-To-Text | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
-| Image generator | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
-| Music generator | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
-| GUI | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
-| Overlay windows | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ![demos.py:Testable!](https://badgen.net/badge/demos.py/Testable!?color=green) | 🌟🌟🌟⭐ |
-| LDtk integration | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
-| A nice clean Github repo | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | N/A | 🌟🌟🌟⭐ |
-| Hyperanalysis Drive (also known as Qibli Simulator) | ![Idea](https://badgen.net/badge/Production/1?color=pink) | ![Not testable](https://badgen.net/badge/%20/Not%20testable?color=red) | TBD |
 
 Also please note that this is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! I would love to have some help with this project!
 
@@ -59,48 +40,19 @@ Things to note:
 
 TODO: get link to Pyldtk
 
-Please join our [Discord server](https://discord.gg/9zrGKtF6Cs) for any information, queries, bugs, conversations, etc. that you may have!
-
-## Game Ideas
-The purpose of this bit here is ideas so that later when I am wondering what features to put in I can attempt making these and see what *isn't* there to put in
- - The metro game (stocks but with your stuff and on metro)
- - Super Mario Galaxy 3
- - LOZ Tears of the Kingdom 2
- - Dragon animation studio
- - Newest Super Mario bros ~~WII~~
- - Bluey AI
- - Hey Grapefruit desktop
- - Something for vtubing
- - Wings of fire Jade Mountain adventures
- - A game where you go through all the games above and end really bittersweet (do NOT stuff up on the music for this one)
-
-And my ultimate goal:
-## To make something where you input your idea and it generates you a game from the description
-## OR, to input the name of a movie, TV show, existing game, etc. and it to make you a game based off of that
-
-# Quote me on these:
-## Please ignore the fact these are rip-offs or that it's copying. I don't care. This is meant to be a fun project. These'll all be fan-made. I'm not planning to become rich off of those games. I made them for my own enjoyment and I'm showing them here so the world can enjoy it with me.
-## ALSO for my own personal reminder: These games should all have endings. I started making this on the hope that it can make me stuck in a game forever and never end. As I'm coming through with this's development, I now realise that all good things must come to an end. It'll just be SO SAD oh my GOSH but I want my users to feel happy; They got to play the game of their dreams, and it would've ended happily, but still ended. There's no going back. It's all known territory. So the only thing left to do is to move on and embrace the change. (I want all the games to have a bittersweet ending)
+Please join our Discord server here: [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have!
 
 # Next versions coming soon:
- - v3.0.0 - 🌋`Fire` - cos by then it'll be on fire :grin: - all functionality complete!
- - v4.0.0 - 🔥`Blaze` - AI generate you the game! (And help you create the game by generating bits of it)
- - v5.0.0 - ?`Bonfire` - Unity integration!
- - v6.0.0 - ?`Inferno` - ???
-(You can suggest me any name/emoji on Discord for anything)
+ - v3.0.0 - 🌿`Kindle` - Able to make an actual game! Not just a world! Because you all know that to make a big fire you must first put in kindling
+ - v4.0.0 - ♨️`Smolder` - Pretty cool so far and have ability to make an OK game that one could submit for a competition or something. (WINGS OF FIRE REFERENCE)
+ - v5.0.0 - 🌋`Fire` - cos by then it'll be on fire :grin: - all functionality complete!
+ - v6.0.0 - ❤️‍🔥`Pyre` - AI generate whole/parts of the game and integration with the editors!
+ - v7.0.0 - ☄️`Bonfire` - Unity integration..?
+(You can suggest me any name/emoji on Discord for anything!)
 
-# IMPORTANT TODOS
-We use a todo in front of everything so my parser can pick it up and yell at me about them
-## STUFF THAT VERY MUCH NEEDS DOING
-TODO: Make this readme nicer (i.e. table of contents, nice headers, etc.)
-TODO: Move entire thing into one folder (so you pip install Blaze-sudio and then import blaze-sudios)
-TODO: After that add optional requirements ([example](https://github.com/xtekky/gpt4free/blob/main/setup.py))
-TODO: Add type annotations
-TODO: possibly remove some of the libraries that come built in (like the one that's broken and I replaced it's main purpose) (see `demos.py`'s `GOtherGraphicsDemo`)
-TODO: Make the Graphics decorator able to be called to do things (see graphics.options)
-TODO: Make graphics run WAY faster (currently EXTREMLY SLOW)
-## STUFF I'M DOING AT SOME POINT THAT ISN'T AS URGENT AS ABOVE
-TODO: Make the buttons in the LDTK window do something
-TODO: Make `loading.py` MUCH better (can rewrite it if you want, just need to also update `graphics.py`)
-TODO: remove UIPack and wait for me to finish my one
-Make GO.PNEW easier (e.g. have GO.P___ all have their functions in them and stuff so you don't need GO.PSTACKS)
+## Possible future names/emojis
+Char, hearth, wildfire, firestorm, inferno
+
+🧨🧯💎⚡️👑✨🗝️🏹🍂🌙🪷
+
+Finding emojis is HARD
