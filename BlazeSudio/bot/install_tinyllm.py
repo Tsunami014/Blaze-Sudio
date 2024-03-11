@@ -1,19 +1,19 @@
 import languagemodels as lm
-import json, os
+import json
+from BlazeSudio.bot.set_preferences import get_pref_file
 
 # NOTE: The chat models for anything lower than 4 GB SUCK LIKE HELL
 # I TRIED TO MAKE THEM WORK AND THEY WON'T
 # KEEP THE CHAT AT 4GB
 
 def installed(new=None): # if new == None, don't change anything
-    if not os.path.exists('bot/preferences.json'):
-        with open('bot/preferences.json', 'w+') as f:
-            f.write(open('bot/preferencesDefault.json', 'r').read())
-    with open(f'bot/preferences.json', 'r+') as f:
+    with get_pref_file('r+') as f:
         d = json.load(f)
         if new != None:
             d['downloaded tinyllms'] = new
-            json.dump(d, f, indent=4)
+            with get_pref_file('w') as f2:
+                json.dump(d, f2, indent=4)
+                f2.flush()
     return d['downloaded tinyllms']
 
 def install_tinyllm(ram):
