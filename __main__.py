@@ -29,22 +29,22 @@ if __name__ == '__main__':
     nxt('Pygame')
     import pygame
     nxt('Graphics')
-    from graphics import Graphic
-    import graphics.options as GO
+    from BlazeSudio.graphics import Graphic
+    import BlazeSudio.graphics.options as GO
     nxt('Overlay')
     from overlay import Overlay, tk
     nxt('Player')
-    from utils import Player
+    from BlazeSudio.utils import Player
     nxt('World generator')
-    from worldGen import World
+    from BlazeSudio.worldGen import World
     nxt('LDtk app')
-    from ldtk import LDtkAPP
+    from BlazeSudio.ldtk import LDtkAPP
     nxt('Demos')
     import demos
     nxt('Threads')
     from threading import Thread
     nxt('Element Editor')
-    from elementGen import NodeSelector, NodeEditor, modifyCats
+    from BlazeSudio.elementGen import NodeSelector, NodeEditor, modifyCats
     logger.handlers.clear()
     logger.setLevel(logging.WARNING)
     G = Graphic()

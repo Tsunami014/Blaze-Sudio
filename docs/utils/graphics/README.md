@@ -4,8 +4,8 @@ This file is really just a very easy way for anyone to make nice graphic screens
 ## Imports
 The stuff at the top of the file. You need to:
 ```py
-import graphics.options as GO # Easy way of calling it
-from graphics import Graphic # Imports the thing that we are using
+import BlazeSudio.graphics.options as GO # Easy way of calling it
+from BlazeSudio.graphics import Graphic # Imports the thing that we are using
 G = Graphic() # makes a new graphics class to use :)
 ```
 ## The basics

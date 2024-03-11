@@ -25,7 +25,7 @@ class CustomHandler(Handler):
 from threading import Thread
 import pygame, os
 import multiprocessing as MP
-import graphics.options as GO
+import BlazeSudio.graphics.options as GO
 
 class TitleScreen:
     def __init__(self, width, height, amount):

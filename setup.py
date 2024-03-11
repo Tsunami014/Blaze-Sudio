@@ -1,4 +1,4 @@
-from setuptools import setup#, find_packages
+from setuptools import setup, find_packages
 import codecs
 import os
 
@@ -16,9 +16,11 @@ setup(
     download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v2.0.0-beta.tar.gz',
     long_description_content_type="text/markdown",
     long_description=long_description,
-    packages=['utils','graphics','elementGen','overlay','ldtk','bot','worldGen'],#find_packages(),
-    author='Max Worrall',
-    author_email='max.worrall@education.nsw.gov.au',
+    packages=find_packages(),
+    include_package_data=True,
+    package_data={'BlazeSudio' :['BlazeSudio/data/*']},
+    author='Tsunami014 (Max)',
+    author_email='tsunami014@duck.com',
     install_requires=[
         'requests',
         'connect-markdown-renderer',
