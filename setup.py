@@ -18,7 +18,7 @@ setup(
     long_description=long_description,
     packages=find_packages(),
     include_package_data=True,
-    package_data={'BlazeSudio' :['BlazeSudio/data/*']},
+    package_data={'BlazeSudio' :['BlazeSudio/data/*', 'BlazeSudio/bot/preferencesDefault.json']},
     author='Tsunami014 (Max)',
     author_email='tsunami014@duck.com',
     install_requires=[

@@ -1,28 +1,30 @@
-import json, os
+import json
+from importlib.resources import files
+
 from BlazeSudio.bot.AIs import AI
 
-def get_all_ais():
-    return AI().AIs
-
-def get_all_ai_names():
-    return [str(i) for i in AI().AIs]
+def get_pref_file(mode='r', ensure_existance=True):
+    file = files('BlazeSudio') / 'bot/preferences.json'
+    if ensure_existance:
+        if not file.exists():
+            default = (files('BlazeSudio') / 'bot/preferencesDefault.json').read_text()
+            o = file.open('w+')
+            o.write(default)
+            o.flush()
+    return file.open(mode)
 
 def set_preferences(prefs):
     eprefs = get_preferences()
     eprefs.update(prefs)
-    if not os.path.exists('bot/preferences.json'):
-        with open('bot/preferences.json', 'w+') as f:
-            f.write(open('bot/preferencesDefault.json', 'r').read())
-    with open('bot/preferences.json', 'w') as f:
-        d = json.load(open('bot/preferences.json', 'r'))
+    # We know it exists as we called get_preferences() which should make it if it doesn't exist, so we don't need extra checks
+    with get_pref_file('w', ensure_existance=False) as f:
+        d = json.load(get_pref_file(ensure_existance=False))
         d['models'].update(eprefs)
         json.dump(d, f, indent=4)
+        f.flush()
 
 def get_preferences(specifics=None):
-    if not os.path.exists('bot/preferences.json'):
-        with open('bot/preferences.json', 'w+') as f:
-            f.write(open('bot/preferencesDefault.json', 'r').read())
-    with open('bot/preferences.json', 'r') as f:
+    with get_pref_file() as f:
         prefs = json.load(f)['models']
     if specifics:
         try: return prefs[specifics]
