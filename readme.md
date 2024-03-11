@@ -57,13 +57,3 @@ Char, hearth, wildfire, firestorm, inferno
 
 Finding emojis is HARD
 
-
-REMOVE THIS BEFORE NEXT COMMIT
-Need to do in this huge refactor:
- - Make the files work (```
-File "C:\Users\TEMP.MAX-TSUNAMI014\AppData\Local\Programs\Python\Python311\Lib\site-packages\BlazeSudio\elementGen\node_editor.py", line 7, in <module>
-    categories = ['data/elements/'+i.name for i in os.scandir('data/elements') if i.is_dir()]
-                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [WinError 3] The system cannot find the path specified: 'data/elements
-```)
-
