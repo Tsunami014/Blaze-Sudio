@@ -5,14 +5,14 @@ from threading import Thread
 # TODO: update everything that needs to be updated
 
 # I think that the things need to be by themselves
-# What I mean by that is, let's take graphics as an example;
+# What I mean by that is, let's take BlazeSudio.graphics as an example;
 # With things like the dropdown and the input boxes, they are
-# Implemented in the main Graphics class, but the demos should test
+# Implemented in the main BlazeSudio.graphics class, but the demos should test
 # Their individual code, not how they work in a class
 
 CATEGORYNAMES = {
     'N': 'Nodes',
-    'G': 'Graphics',
+    'G': 'BlazeSudio.graphics',
     'T': 'Terrain',
     'A': 'AI',
     'O': 'Other'
@@ -21,22 +21,22 @@ CATEGORYNAMES = {
 # NODE STUFF
 
 def NNodeEditorDemo():
-    from elementGen import NodeSelector
+    from BlazeSudio.elementGen import NodeSelector
     print(NodeSelector(2))
 
 def NNodeParserDemo():
-    from elementGen import allCategories, allNodes, Parse
+    from BlazeSudio.elementGen import allCategories, allNodes, Parse
     alls = allCategories()
     print('All categories and nodes:', {i: allNodes(i) for i in alls})
     tests = Parse('math')
     print('Test results of function Add with inputs 3 & 4:', tests('Add', 3, 4))
 
-# GRAPHICS STUFF
+# BlazeSudio.graphics STUFF
 
 def GGraphicsDemo():
     import pygame
     import BlazeSudio.graphics.options as GO
-    from graphics import Graphic
+    from BlazeSudio.graphics import Graphic
     from time import sleep
     t = input('Please input the starting text for the middle: ')
     G = Graphic()
@@ -49,8 +49,15 @@ def GGraphicsDemo():
     def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
         if event == GO.EFIRST: # First, before anything else happens in the function
             G.Container.txt = txt
-        if event == GO.ELOADUI: # Load the graphics
-            CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1], 0) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
+        if event == GO.ELOADUI: # Load the BlazeSudio.graphics
+            CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1]) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
+            LBOT = GO.PNEW([0, -1], GO.PSTACKS[GO.PLBOTTOM][1])
+            try:
+                prevs = [G.uids[i].get() for i in (G.Container.switches+[G.Container.numinp,G.Container.inp])] + [G.uids[G.Container.colour].picker.p]
+                prevTG = [G.uids[G.Container.scrollable].G.uids[G.Container.otherswitch].get(), G.uids[G.Container.scrollable].scroll]
+            except:
+                prevs = [False, False, 0, '', (0, 0.5)]
+                prevTG = [False, 0]
             G.Clear()
             G.add_text('HI', GO.CGREEN, GO.PRBOTTOM, GO.FTITLE)
             G.add_text(':) ', GO.CBLACK, GO.PRBOTTOM, GO.FTITLE)
@@ -134,7 +141,7 @@ def GGraphicsDemo():
 
 def GDropdownDemo():
     import pygame
-    from utils import dropdown
+    from BlazeSudio.utils import dropdown
     pygame.init()
     win = pygame.display.set_mode()
     run = True
@@ -152,7 +159,7 @@ def GDropdownDemo():
 
 def GLoadingDemo():
     import random, asyncio, pygame
-    from graphics import Graphic
+    from BlazeSudio.graphics import Graphic
     from time import sleep
     G = Graphic()
     
@@ -177,8 +184,8 @@ def GLoadingDemo():
 
 def GToastDemo():
     import pygame
-    from graphics import Graphic
-    from graphics import options as GO
+    from BlazeSudio.graphics import Graphic
+    from BlazeSudio.graphics import options as GO
     G = Graphic()
     @G.Graphic
     def func(event, *args, element=None, **kwargs):
@@ -200,7 +207,7 @@ def GToastDemo():
 
 def GInputBoxDemo():
     import pygame as pg
-    from graphics.GUI import InputBox
+    from BlazeSudio.graphics.GUI import InputBox
     screen = pg.display.set_mode((640, 480))
     input_box = InputBox(100, 100, 140, 32, 'type here!')
     print('output:', input_box.interrupt(screen))
@@ -208,7 +215,7 @@ def GInputBoxDemo():
 
 def GColourPickDemo():
     import pygame
-    from graphics.GUI import ColourPickerBTN
+    from BlazeSudio.graphics.GUI import ColourPickerBTN
     pygame.init()
     window = pygame.display.set_mode((500, 500))
     clock = pygame.time.Clock()
@@ -235,7 +242,7 @@ def GColourPickDemo():
 
 def GSwitchDemo():
     import pygame
-    from graphics.GUI import Switch
+    from BlazeSudio.graphics.GUI import Switch
     pygame.init()
     win = pygame.display.set_mode()
     sprites = pygame.sprite.LayeredDirty()
@@ -267,9 +274,9 @@ def GSwitchDemo():
 def GOtherGraphicsDemo(): # TODO: Evaluate whether the stuff in this is worth keeping
     import pygame
     from pygame import locals
-    from graphics.GUI import InputBox, TextBoxFrame
-    from graphics.GUI.pyguix import gui as ui
-    from graphics.GUI.textboxify.borders import LIGHT, BARBER_POLE
+    from BlazeSudio.graphics.GUI import InputBox, TextBoxFrame
+    from BlazeSudio.graphics.GUI.pyguix import gui as ui
+    from BlazeSudio.graphics.GUI.textboxify.borders import LIGHT, BARBER_POLE
 
     class SnapHUDPartInfoExample(ui.SnapHUDPartInfo):
 
@@ -403,7 +410,7 @@ def GOtherGraphicsDemo(): # TODO: Evaluate whether the stuff in this is worth ke
             run = False
 
 def OOverlaysDemo():
-    from overlay import BlazeSudio.Overlay, tk
+    from overlay import Overlay, tk
     from time import sleep
     o = Overlay((200, 200), (10, 10))
 
@@ -420,7 +427,7 @@ def OOverlaysDemo():
 
 def GScrollableDemo():
     import pygame
-    from graphics.GUI import Scrollable
+    from BlazeSudio.graphics.GUI import Scrollable
     pygame.init()
     w = pygame.display.set_mode()
     from tkinter.filedialog import askopenfilename
@@ -438,12 +445,12 @@ def GScrollableDemo():
 # GENERATION STUFF
 
 def TWorldsDemo():
-    from utils import World
+    from BlazeSudio.utils import World
     World('test', 'Test World', 'A world for testing random stuff', 5, 100, override=True, callback=print)
 
 def TTerrainGenDemo():
     from random import randint
-    from utils import MapGen
+    from BlazeSudio.utils import MapGen
     size = 500 # 1500
     n = 256
     inp = input('Input nothing to use random seed, input "." to use a preset good seed, or input your own INTEGER seed > ')
@@ -464,7 +471,7 @@ def TTerrainGenDemo():
 
 def ATinyLLMDemo():
     import asyncio
-    from bot import TinyLLM, lm
+    from BlazeSudio.bot import TinyLLM, lm
     tllm = TinyLLM()
     prompt = f"System: Reply as a helpful assistant. Currently {lm.get_date()}."
     while True:
@@ -479,12 +486,12 @@ def ATinyLLMDemo():
         prompt += f" {end}"
 
 def ATestLLMDemo():
-    from bot import test_tinyllm
+    from BlazeSudio.bot import test_tinyllm
     test_tinyllm()
 
 def ARateAIsDemo():
     import asyncio
-    from bot import rate_all
+    from BlazeSudio.bot import rate_all
     asyncio.run(rate_all())
 
 # OTHER STUFF
@@ -503,7 +510,7 @@ def ODemoTest():
     sleep(3)
 
 def OConversationParserDemo():
-    from conversation_parse import Generator
+    from BlazeSudio.conversation_parse import Generator
     # If you run this file you can see these next statements at work
     # Each you can see is separated, by a like of ~~~~~~~~~~
     # You can see the different start params at work, with the same sample prompt
@@ -524,12 +531,8 @@ def OConversationParserDemo():
         if input() != '':
             break
 
-def OApiKeysDemo():
-    from keys.api_keys import SaveAPIKeysDialog
-    SaveAPIKeysDialog()
-
 def OLDtkAPPDemo():
-    from ldtk import BlazeSudio.LDtkAPP
+    from BlazeSudio.ldtk import LDtkAPP
     app = LDtkAPP()
     app.launch()
     app.wait_for_win()
@@ -609,7 +612,7 @@ if __name__ == '__main__':
         Tk.Button(root, text='Node Editor Demo',        command=lambda: cmd(NNodeEditorDemo)                    ).pack()
         Tk.Button(root, text='Node Parser Demo',        command=lambda: rcmd(NNodeParserDemo), relief=Tk.RIDGE  ).pack()
 
-        Tk.Label (root, text='Graphics stuff:').pack() # Graphics
+        Tk.Label (root, text='Graphics stuff:').pack() # BlazeSudio.graphics
         Tk.Button(root, text='Graphics Demo',           command=lambda: cmd(GGraphicsDemo)                       ).pack()
         Tk.Button(root, text='Loading Demo',            command=lambda: cmd(GLoadingDemo)                        ).pack()
         Tk.Button(root, text='Toast Demo',              command=lambda: cmd(GToastDemo)                          ).pack()
@@ -630,7 +633,6 @@ if __name__ == '__main__':
         Tk.Button(root, text='Rate AIs Demo',           command=lambda: rcmd(ARateAIsDemo), relief=Tk.RIDGE      ).pack()
         
         Tk.Label (root, text='Other stuff:').pack() # Other
-        Tk.Button(root, text='API Keys Demo',           command=lambda: cmd(OApiKeysDemo),                       ).pack()
         Tk.Button(root, text='Overlays Demo',           command=lambda: cmd(OOverlaysDemo),                      ).pack()
         Tk.Button(root, text='LDtk app Demo',           command=lambda: cmd(OLDtkAPPDemo),                       ).pack()
         Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(OConversationParserDemo), relief=Tk.SUNKEN ).pack()
