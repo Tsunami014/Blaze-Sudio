@@ -35,7 +35,7 @@ def NNodeParserDemo():
 
 def GGraphicsDemo():
     import pygame
-    import graphics.options as GO
+    import BlazeSudio.graphics.options as GO
     from graphics import Graphic
     from time import sleep
     t = input('Please input the starting text for the middle: ')
@@ -425,7 +425,7 @@ def GOtherGraphicsDemo(): # TODO: Evaluate whether the stuff in this is worth ke
             run = False
 
 def OOverlaysDemo():
-    from overlay import Overlay, tk
+    from overlay import BlazeSudio.Overlay, tk
     from time import sleep
     o = Overlay((200, 200), (10, 10))
 
@@ -552,7 +552,7 @@ def OApiKeysDemo():
     SaveAPIKeysDialog()
 
 def OLDtkAPPDemo():
-    from ldtk import LDtkAPP
+    from ldtk import BlazeSudio.LDtkAPP
     app = LDtkAPP()
     app.launch()
     app.wait_for_win()
