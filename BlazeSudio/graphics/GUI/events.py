@@ -51,7 +51,7 @@ class Toast:
     def dist(self):
         return sqrt((self.goto[0] - self.pos[0])**2 + (self.goto[1] - self.pos[1])**2)
     
-    def update(self, WIN):
+    def update(self, WIN, *args):
         self.time += 1
         ns = self.surf
         if self.goto != self.pos:
