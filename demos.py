@@ -425,7 +425,7 @@ def GOtherGraphicsDemo(): # TODO: Evaluate whether the stuff in this is worth ke
             run = False
 
 def OOverlaysDemo():
-    from overlay import Overlay, tk
+    from BlazeSudio.overlay import Overlay, tk
     from time import sleep
     o = Overlay((200, 200), (10, 10))
 
