@@ -1,12 +1,13 @@
-import os, re, inspect, ast
+import re, inspect, ast
 from typing import Any
 from random import random
 from copy import deepcopy
+from importlib.resources import files
 
 import BlazeSudio.elementGen.types as Ts
 
 def allCategories():
-    l = [i.name for i in os.scandir('data/nodes') if i.is_file() and i.name != 'types.json']
+    l = [i.name for i in (files('BlazeSudio') / 'data/nodes').iterdir() if i.is_file() and i.name != 'types.json']
     l.sort()
     return l
 
@@ -155,7 +156,7 @@ class Parse:
     def __init__(self, category, nodeL):
         if not category.endswith('.py'): category += '.py'
         self.category = category
-        self.rfunc = open('data/nodes/'+category).read()
+        self.rfunc = (files('BlazeSudio') / ('data/nodes/'+category)).read_text()
         self.data = {}
         spl = self.rfunc.split('\n#======#\n')[1:]
         self.names = {}

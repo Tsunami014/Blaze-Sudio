@@ -7,6 +7,7 @@
  - [ ] Make graphics run WAY faster (currently EXTREMLY SLOW)
  - [ ] Make `loading.py` MUCH faster (can rewrite it if you want, just need to also update `graphics.py`)
  - [ ] Make GO.PNEW easier (e.g. have GO.P___ all have their functions in them and stuff so you don't need GO.PSTACKS)
+ - [ ] Fix import system to make things load faster
 
 # Important todos (for after everything gets back to normal)
  - [ ] Add optional requirements ([example](https://github.com/xtekky/gpt4free/blob/main/setup.py))

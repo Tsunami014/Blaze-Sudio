@@ -8,7 +8,6 @@ nest_asyncio.apply()
 
 from BlazeSudio.conversation_parse import PARSE
 from BlazeSudio.utils.characters import *
-from keys.api_keys import loadAPIkeys
 from BlazeSudio.bot.gpt4real import G4A
 from BlazeSudio.bot.basebots import *
 

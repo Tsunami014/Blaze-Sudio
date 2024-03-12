@@ -1,10 +1,12 @@
-import pygame, os, dill, json
+import pygame, dill, json
+from importlib.resources import files
+
 import BlazeSudio.graphics.options as GO
 from BlazeSudio.graphics import Graphic
 import BlazeSudio.elementGen.node_parser as np
 import BlazeSudio.elementGen.types as Ts
 
-categories = ['data/elements/'+i.name for i in os.scandir('data/elements') if i.is_dir()]
+categories = ['data/elements/'+i.name for i in (files('BlazeSudio') / 'data/elements').iterdir() if i.is_dir()]
 
 def modifyCats(func): # Function decorator
     def func2():
@@ -17,7 +19,7 @@ def modifyCats(func): # Function decorator
 class Nodes(list):
     def __init__(self, l=[]):
         '''A class for storing Nodes!'''
-        with open('data/nodes/types.json') as f:
+        with (files('BlazeSudio') / 'data/nodes/types.json').open() as f:
             self.json = json.load(f)
         super().__init__(l)
     def sorts(self, whitelisted=[], blacklisted=[]):
@@ -82,8 +84,8 @@ def NodeSelector(continue_to_edit=0, G=None):
         if event == GO.EFIRST:
             @G.Loading
             def load(self):
-                self.items = [i for i in os.scandir(category) if i.is_file() and i.name.endswith('.elm')]
-                self.iteminfo = [dill.load(open(f'{category}/{i.name}', 'rb')) for i in self.items]
+                self.items = [i for i in (files('BlazeSudio') / category) if i.is_file() and i.name.endswith('.elm')]
+                self.iteminfo = [dill.loads((files('BlazeSudio') / f'{category}/{i.name}').read_bytes()) for i in self.items]
                 self.subs = ['Go back to the previous page', 'Make a new item from scratch'] + [i['idea'] for i in self.iteminfo]
             cont, res = load()
             G.Container.res = res
@@ -263,11 +265,11 @@ def NodeEditor(path, G=None):
             G.Container.DONTDOIT = False
             if path.endswith('.elm'):
                 path = path[:-4]
-            if not os.path.exists(path+'.elm'):
+            if not (files('BlazeSudio') / (path+'.elm')).exists():
                 # Version: major.minor
-                dill.dump({"idea": "BLANK", "name": "New File", "version": "0.4"}, open(path+'.elm', 'wb+'))
+                dill.dump({"idea": "BLANK", "name": "New File", "version": "0.4"}, (files('BlazeSudio') / (path+'.elm')).open('wb+'))
             # TODO: version checking and updating (not for versions less than 1.0 which is the liftoff version)
-            G.Container.contents = dill.load(open(path+'.elm', 'rb'))
+            G.Container.contents = dill.loads((files('BlazeSudio') / path+'.elm').read_bytes())
             if 'nodes' in G.Container.contents:
                 G.Container.nodes = G.Container.contents['nodes']
             else:
@@ -495,7 +497,7 @@ def NodeEditor(path, G=None):
                         path = path[:-4]
                     G.Container.contents['nodes'] = G.Container.nodes
                     G.Container.contents['connections'] = G.Container.connections
-                    dill.dump(G.Container.contents, open(path+'.elm', 'wb+')) # Save
+                    dill.dump(G.Container.contents, (files('BlazeSudio') / (path+'.elm')).open('wb+')) # Save
                     G.Container.saved = True
                     G.toasts = []
                     G.Toast('Saved!')
@@ -523,7 +525,7 @@ def NodeEditor(path, G=None):
                 if path.endswith('.elm'):
                     path = path[:-4]
                 if G.Container.name != path.split('/')[1]:
-                    os.remove(path+'.elm')
+                    (files('BlazeSudio') / (path+'.elm')).rmdir()
                     path = '/'.join(path.split('/')[:-1]) + '/' + G.Container.name
-                    dill.dump(G.Container.contents, open(path+'.elm', 'wb+'))
+                    dill.dump(G.Container.contents, (files('BlazeSudio') / (path+'.elm')).open('wb+'))
     return editor(path)
