@@ -29,12 +29,13 @@ class thread_with_exception(Thread):
                 return id
   
     def raise_exception(self):
-        thread_id = self.get_id()
-        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id),
-              ctypes.py_object(SystemExit))
-        if res > 1:
-            ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id), 0)
-            print('Exception raise failure')
+        if self.is_alive():
+            thread_id = self.get_id()
+            res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id),
+                ctypes.py_object(SystemExit))
+            if res > 1:
+                ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id), 0)
+                print('Exception raise failure')
 
 class LoadingScreen:
     def __init__(self, WIN, font):
@@ -155,8 +156,14 @@ class Progressbar:
         loop = asyncio.get_event_loop()
         def run():
             task = loop.create_task(self.main(tasks))
-            loop.run_until_complete(task)
-        loop.run_in_executor(None, run)
-        self.whileloading(x, y, border_width, window, update_func, loadingtxtColour)
-        loop.stop()
-        return self.results
+            try:
+                loop.run_until_complete(task)
+            except:
+                pass
+        def runn():
+            loop.run_in_executor(None, run)
+            self.whileloading(x, y, border_width, window, update_func, loadingtxtColour)
+            loop.stop()
+            asyncio.get_event_loop().stop()
+            return self.results
+        return runn

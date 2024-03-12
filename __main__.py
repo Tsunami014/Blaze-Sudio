@@ -25,14 +25,13 @@ if __name__ == '__main__':
     nxt('Core modules')
     import os, json
     import multiprocessing as MP
-    from title import wrapdemo
     nxt('Pygame')
     import pygame
     nxt('Graphics')
-    from BlazeSudio.graphics import Graphic
+    from BlazeSudio.graphics import Graphic, thread_with_exception
     import BlazeSudio.graphics.options as GO
     nxt('Overlay')
-    from overlay import Overlay, tk
+    from BlazeSudio.overlay import Overlay, tk
     nxt('Player')
     from BlazeSudio.utils import Player
     nxt('World generator')
@@ -41,6 +40,7 @@ if __name__ == '__main__':
     from BlazeSudio.ldtk import LDtkAPP
     nxt('Demos')
     import demos
+    from title import wrapdemo
     nxt('Threads')
     from threading import Thread
     nxt('Element Editor')
@@ -240,22 +240,21 @@ if __name__ == '__main__':
                     async def wait(i):
                         while True:
                             if dones[i]: return True
+                    tasks = [wait(i) for i in range(NumOTasks)]
+                    pbar, func = G.PBLoading(tasks, 'Loading...')
                     def NW(dones, done): # TODO: make a GUI screen to ask for title and description
                         def CB(txt):
-                            G.Container.pbar.set_txt('{2}% ({0} / {1}): ' + txt.replace('...', '{3}'))
+                            pbar.set_txt('{2}% ({0} / {1}): ' + txt.replace('...', '{3}'))
                             for i in range(len(dones)):
                                 if dones[i] == False:
                                     dones[i] = True
                                     return
-                        while G.Container.pbar == None:
-                            pass
                         done[0] = World('newworld', 'New World', 'a new world', 16, 100, override=True, callback=CB)
                         for i in range(len(dones)): dones[i] = True
-                    t = Thread(target=NW, daemon=True, args=(dones, done))
-                    tasks = [wait(i) for i in range(NumOTasks)]
-                    G.Container.pbar = None
+                    t = thread_with_exception(target=NW, daemon=True, args=(dones, done))
                     t.start()
-                    G.PBLoading(tasks, 'Loading...')
+                    func()
+                    t.raise_exception()
                     if done[0] is not False:
                         return self.world(done[0], newworld=True)
                 else:

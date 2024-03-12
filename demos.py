@@ -186,7 +186,7 @@ def GLoadingDemo():
         return seconds
     
     tasks = [wait_random() for _ in range(500)]
-    print(G.PBLoading(tasks))
+    print(G.PBLoading(tasks)[1]() or 'You quit the loading! Why?')
     
     @G.Loading
     def test_loading(self):
