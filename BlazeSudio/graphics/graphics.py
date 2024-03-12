@@ -303,15 +303,17 @@ class Graphic:
 
         Returns
         -------
-        list
-            The output list of all the return values of each of the functions inputted
+        tuple[Progressbar, function]
+            The Progressbar object and the function which runs the progressbar
+            Call `function()` to run the progressbar.
+            The function will return the output list of all the return values of each of the functions inputted
+            But if you quit the loading then the function will return None
         """
         self.WIN.fill(GO.CWHITE)
         pygame.display.update()
-        self.Container.pbar = Progressbar(600, 50)
-        res = self.Container.pbar(self.WIN, (self.size[0] - 600) // 2, (self.size[1] - 50) // 2, 5, tasks, loadingtxt)
-        asyncio.get_event_loop().stop()
-        return res
+        pbar = Progressbar(600, 50)
+        res = pbar(self.WIN, (self.size[0] - 600) // 2, (self.size[1] - 50) // 2, 5, tasks, loadingtxt)
+        return pbar, res
 
     def Catch(self, func):
         """
