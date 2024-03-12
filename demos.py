@@ -539,7 +539,10 @@ def OLDtkAPPDemo():
     winopen = True
     while winopen:
         winopen = app.is_win_open()
-        app.make_full()
+        try:
+            app.make_full()
+        except:
+            winopen = False
 
 if __name__ == '__main__':
     import tkinter as Tk # Because everyone has tkinter
