@@ -1,10 +1,10 @@
-from os.path import exists, join
 from random import choice
 from math import floor, sqrt, ceil
 from copy import deepcopy
-import shutil, json
+import json, shutil
 from pygame import Surface, Rect
 import pygame.draw
+from importlib.resources import files
 
 from BlazeSudio.utils.characters import *
 from BlazeSudio.utils.storyline import *
@@ -13,7 +13,7 @@ from BlazeSudio.worldGen.terrainGen import *
 
 folder = 'data/worlds/'
 
-empty = json.load(open('data/defaultWorld/world.ldtk'))
+empty = json.loads((files('BlazeSudio') / 'data/defaultWorld/world.ldtk').read_text())
 
 def create_iid():
     # 8d9217c0-3b70-11ee-849e-1d317aac187d
@@ -54,14 +54,15 @@ class World:
         if not path.endswith('\\'): path += '\\'
         self.path = path
         self.data = {}
-        if exists(path) and not override:
-            self.data = json.load(open(path+'world.ldtk', 'r'))
-            dat = json.load(open(path+'dat.json', 'r'))
+        if (files('BlazeSudio') / path).exists() and not override:
+            self.data = json.loads((files('BlazeSudio') / (path+'world.ldtk')).read_text())
+            dat = json.loads((files('BlazeSudio') / (path+'dat.json')).read_text())
             self.name = dat['name']
             self.idea = dat['idea']
         elif make_new:
-            if os.path.exists('data/worlds/'+filename):
-                shutil.rmtree('data/worlds/'+filename)
+            pth = files('BlazeSudio') / ('data/worlds/'+filename)
+            if pth.exists():
+                pth.rmtree()
             if name == '' or idea == '' or size == None:
                 raise KeyError('You MUST have name, idea and size args OR turn make_new on OR turn override off because the file does not exist or overrride is on!')
             self.name = name
@@ -149,7 +150,7 @@ class World:
             #txt = txt.replace('"~', '[').replace('~"', ']')
             #txt = txt.replace('                            ]', ']').replace('                    ]', ']')
             callback('Copying tree...')
-            shutil.copytree(join(os.getcwd(),'data/defaultWorld'), join(os.getcwd(), path))
+            shutil.copytree(str(files('BlazeSudio') / 'data/defaultWorld'), str(files('BlazeSudio') / path))
             callback('Saving to files...')
             json.dump({
                 'version': "2.0", # Change every time something changes
@@ -157,8 +158,8 @@ class World:
                 # MAJOR version update = something updates and is so bad it breaks any feature
                 'name': name,
                 'idea': idea
-                }, open(join(os.getcwd(), path, 'dat.json'), 'w+'))
-            open(join(os.getcwd(), path, 'world.ldtk'), 'w+').write(txt)
+                }, (files('BlazeSudio') / (path+'dat.json')).open('w+'))
+            (files('BlazeSudio') / (path+'world.ldtk')).open('w+').write(txt)
         self.ldtk = ldtk.LdtkJSON(self.data, self.path)
     
     def gen_minimap(self, maxsize=(64, 64), highlights={}):
