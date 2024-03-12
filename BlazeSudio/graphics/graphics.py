@@ -428,7 +428,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                 for i in self.Stuff['toasts']:
                     if i.update(self.WIN) == False:
                         dels.append(i)
-                for i in dels: self.toasts.remove(i)
+                for i in dels: self.Stuff['toasts'].remove(i)
                 evs = []
                 for event in evnts.copy():
                     evs.append(event)
@@ -531,13 +531,13 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         
         txt = font.render(text, txtcol)
         sur = pygame.Surface((txt.get_size()[0]+spacing*2, txt.get_size()[1]+spacing*2))
-        sur.fill([255, 255, 255, 0])
+        sur.fill((255, 255, 255, 1))
         pygame.draw.rect(sur, col, sur.get_rect(), border_radius=spacing)
         sur.blit(txt, (spacing, spacing))
 
-        pos = GO.PNEW(*GO.PSTACKS[pos])
-        npos = self.pos_store(GO.PSTACKS[pos][1](self.size, sur.get_size()), sur.get_size(), pos)
-        self.toasts.append(Toast(sur, (npos[0]+GO.PSTACKS[pos][0][0]*dist, npos[1]+GO.PSTACKS[pos][0][1]*dist), npos, timeout))
+        bpos = GO.PSTACKS[pos][1](self.size, sur.get_size()) # Basic/Bottom pos
+        npos = (bpos[0]+GO.PSTACKS[pos][0][0]*dist, bpos[1]+GO.PSTACKS[pos][0][1]*dist) # New pos
+        self.Stuff['toasts'].append(Toast(sur, npos, bpos, timeout))
 
     def Dropdown(self, elements, spacing=5, font=GO.FFONT, activecol=GO.CACTIVE, bgcol=GO.CBLACK, txtcol=GO.CWHITE, pos=None):
         """Spawns a dropdown!
