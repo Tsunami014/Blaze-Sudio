@@ -6,8 +6,8 @@ class Container:
 def update(f, **kwargs):
     outkws = {}
     for name, param in inspect.signature(f).parameters.items():
-        if name in kwargs.keys():
-            outkws[name] = kwargs[name]
+        if name.lower() in kwargs.keys():
+            outkws[name] = kwargs[name.lower()]
     f(**outkws)
 
 class Stuff:
