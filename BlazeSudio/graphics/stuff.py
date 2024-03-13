@@ -1,5 +1,14 @@
+import inspect
+
 class Container:
     pass
+
+def update(f, **kwargs):
+    outkws = {}
+    for name, param in inspect.signature(f).parameters.items():
+        if name in kwargs.keys():
+            outkws[name] = kwargs[name]
+    f(**outkws)
 
 class Stuff:
     NAMES = []
@@ -37,10 +46,10 @@ class Stuff:
             l.extend(self.categories[i])
         return l
     
-    def update_all(self, mousePos, events, G):
+    def update_all(self, mousePos, events, G, func=lambda *args, **kwargs: None):
         for i in self.categories:
             for j in self.categories[i]:
-                j.update(G.WIN, G.pause, mousePos, events, G)
+                update(j.update, win=G.WIN, sur=G.WIN, pause=G.pause, mousePos=mousePos, events=events, G=G, func=func)
     
     def add(self, _name):
         self.categories[_name] = []
@@ -90,9 +99,9 @@ class Collection:
     def copy(self):
         return Collection(self.watch.copy(), self.sprites.copy())
     
-    def update_all(self, mousePos, events, G):
-        self.watch.update_all(mousePos, events, G)
-        self.sprites.update_all(mousePos, events, G)
+    def update_all(self, mousePos, events, G, func=lambda*args, **kwargs: None):
+        self.watch.update_all  (mousePos, events, G, func)
+        self.sprites.update_all(mousePos, events, G, func)
     
     def __len__(self):
         return len(self.watch) + len(self.sprites)

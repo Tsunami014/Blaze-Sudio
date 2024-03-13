@@ -1,6 +1,8 @@
 import pygame
 from math import sqrt
 
+# sur/win, pause, mousePos, events, G, func
+
 def dropdown(win, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 255, 255), selectedcol=(0, 0, 255), mpos=None):
     if font == None: font = pygame.font.SysFont(None, 30)
     elements = [font.render(i, txtcolour) for i in elms]
@@ -51,7 +53,7 @@ class Toast:
     def dist(self):
         return sqrt((self.goto[0] - self.pos[0])**2 + (self.goto[1] - self.pos[1])**2)
     
-    def update(self, WIN, *args):
+    def update(self, WIN):
         self.time += 1
         ns = self.surf
         if self.goto != self.pos:

@@ -1,5 +1,5 @@
 from copy import copy
-import pygame, asyncio, win32gui, win32com.client, pythoncom
+import pygame, win32gui, win32com.client, pythoncom
 pygame.init()
 
 from BlazeSudio.graphics import stuff as GS
@@ -19,6 +19,7 @@ from BlazeSudio.graphics.GUI import (
     Scrollable, 
     ColourPickerBTN, 
     Toast,
+    Element,
 )
 from BlazeSudio.graphics.GUI.textboxify.borders import LIGHT
 
@@ -102,96 +103,24 @@ class TerminalBar:
         h = r.get_height()+self.spacing*2
         return pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h).collidepoint(x, y)
 
-class Element:
-    def __init__(self, typ, uid, G, **kwargs):
-        if typ not in [getattr(GO, i) for i in dir(GO) if i.startswith('T')]:
-            raise TypeError(
-                f'Input \'type\' MUST be GO.T___ (e.g. GO.TBUTTON), not {str(typ)}!'
-            )
-        self.uid = uid
-        self.name = [i for i in dir(GO) if i.startswith('T')][[getattr(GO, i) for i in dir(GO) if i.startswith('T')].index(typ)]
-        self.type = typ
-        self.G = G
-        try:
-            if self.type == GO.TBUTTON:
-                self.btn = kwargs['btn']
-                self.txt = self.btn[-2]
-            elif self.type == GO.TTEXTBOX:
-                self.sprite = kwargs['sprite']
-            elif self.type == GO.TINPUTBOX:
-                self.sprite = kwargs['sprite']
-                self.txt = kwargs['txt']
-            elif self.type == GO.TSWITCH:
-                self.sprite = kwargs['sw']
-        except KeyError as e:
-            raise TypeError(
-                f'{self.name} Element requires kwarg "{str(e)}" but was not provided!'
-            )
-    
-    def remove(self):
-        """Removes an element.
-
-        Only works on:
-         - GO.TTEXTBOX
-         - GO.TINPUTBOX
-         - GO.TSWITCH
-        """
-        if self.type == GO.TTEXTBOX:
-            self.G.sprites.remove(self.sprite)
-        elif self.type == GO.TINPUTBOX:
-            self.G.input_boxes.remove(self.sprite)
-        elif self.type == GO.TSWITCH:
-            self.G.sprites.remove(self.sprite)
-        else:
-            raise NotImplementedError(
-                f'Remove has not been implemented for this element with type {self.name}!'
-            )
-    
-    def set_text(self, txt):
-        """Sets text of an element.
-
-        Only works on:
-         - GO.TTEXTBOX (A TextBox element)
-         
-        Parameters:
-        txt : str
-        """
-        if self.type == GO.TTEXTBOX:
-            self.sprite.reset(hard=True)
-            self.sprite.set_text(txt)
-        else:
-            raise NotImplementedError(
-                f'Set text has not been implemented for this element with type {self.name}!'
-            )
-    
-    def get(self):
-        """Gets the state of this element.
-        
-        Only works on:
-         - GO.TSWITCH
-         - GO.TINPUTBOX
-        
-        Returns
-        -------
-        bool
-            Whether the switch is on or not 
-        """
-        if self.type == GO.TSWITCH:
-            return self.sprite.get()
-        elif self.type == GO.TINPUTBOX:
-            return self.sprite.text
-        else:
-            raise NotImplementedError(
-                f'Set text has not been implemented for this element with type {self.name}!'
-            )
-    
-    def __eq__(self, other):
-        return self.uid == other
-
 class GraphicInfo:
     NUMGRAPHICSS = 0
     GRAPHICSPROCESSES = {}
     RUNNINGGRAPHIC = (None, None)
+
+class _FakeUIDs:
+    def __getattr__(self, _name):
+        return 1
+    def __getitem__(self, _name):
+        return 1
+    def index(self, item):
+        return 1
+
+class CustomGraphic: # This is if you don't want to use the actual graphics library and just want to use your own stuff
+    def __init__(self, win):
+        self.WIN = win
+        self.pause = False
+        self.uids = _FakeUIDs()
 
 class Graphic:
     def __init__(self, bgcol=GO.CWHITE, TB=True, win=None, no_id=False):
@@ -423,15 +352,13 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                 pygame.display.update(GE.Sprite.RECTS)
                 if func(GO.ETICK) is False:
                     self.run = False
-                # TODO: Find some way of moving all this into the files
+                # TODO: Move this to its file
                 dels = []
                 for i in self.Stuff['toasts']:
                     if i.update(self.WIN) == False:
                         dels.append(i)
                 for i in dels: self.Stuff['toasts'].remove(i)
-                evs = []
                 for event in evnts.copy():
-                    evs.append(event)
                     blocked = False
                     if event.type == pygame.QUIT:
                         self.run = False
