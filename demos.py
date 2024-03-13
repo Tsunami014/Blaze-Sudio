@@ -231,34 +231,33 @@ def GInputBoxDemo():
 def GColourPickDemo():
     import pygame
     from BlazeSudio.graphics.GUI import ColourPickerBTN
+    from BlazeSudio.graphics import Thing, CustomGraphic, handle_events
     pygame.init()
     window = pygame.display.set_mode((500, 500))
+    G = CustomGraphic(window)
     clock = pygame.time.Clock()
 
-    cp = ColourPickerBTN(window, 50, 50)
+    cp = Thing(ColourPickerBTN(window, 50, 50))
 
     run = True
     while run:
         clock.tick(100)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
+        evs, run = handle_events()
         mouse_buttons = pygame.mouse.get_pressed()
         if mouse_buttons[2]:
             mp = pygame.mouse.get_pos()
             cp.pos = (mp[0]-cp.size//2, mp[1]-cp.size//2)
 
         window.fill(0)
-        cp.update()
+        cp.update_obj(evs, G)
         pygame.display.flip()
         
     pygame.quit()
-    exit()
 
 def GSwitchDemo():
     import pygame
     from BlazeSudio.graphics.GUI import Switch
-    from BlazeSudio.graphics import Stuff, CustomGraphic
+    from BlazeSudio.graphics import Stuff, CustomGraphic, handle_events
     pygame.init()
     win = pygame.display.set_mode()
     stuff = Stuff()
@@ -273,14 +272,9 @@ def GSwitchDemo():
     G = CustomGraphic(win)
     run = True
     while run:
-        evs = pygame.event.get()
-        if any([
-            event.type == pygame.QUIT or 
-            (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE) 
-            for event in evs]):
-            run = False
+        evs, run = handle_events()
         win.fill((255, 255, 255))
-        stuff.update_all(pygame.mouse.get_pos(), evs, G)
+        stuff.update_all(evs, G)
         pygame.display.update()
     pygame.quit()
 
@@ -446,10 +440,15 @@ def GScrollableDemo():
     from tkinter.filedialog import askopenfilename
     im = pygame.image.load(askopenfilename(defaultextension='.png', filetypes=[('.png', '.png'), ('.jpg', '.jpg')]))
     S = Scrollable(im, (20, 20), (500, 500), (0, im.get_height()-500))
-    while True:
+    run = True
+    while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                quit()
+                run = False
+                break
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                run = False
+                break
             elif event.type == pygame.MOUSEWHEEL:
                 S.event_handle(event)
         w.fill((0, 0, 0))

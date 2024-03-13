@@ -341,7 +341,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                 self.WIN.fill(self.bgcol)
                 self.touchingbtns = []
                 GE.Sprite.RECTS = []
-                self.Stuff.update_all(mousepos(), evnts.copy(), self)
+                self.Stuff.update_all(evnts.copy(), self, mousepos())
                 if self.Stuff.diff() or self.rel:
                     self.rel = False
                     func(GO.ELOADUI)

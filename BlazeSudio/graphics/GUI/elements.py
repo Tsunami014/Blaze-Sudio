@@ -1,7 +1,7 @@
 import pygame
 from BlazeSudio.graphics import options as GO
 
-# sur/win, pause, mousePos, events, G
+# sur/win, pause, mousePos, events, G, func
 
 class Element:
     def __init__(self, typ, uid, G, **kwargs):

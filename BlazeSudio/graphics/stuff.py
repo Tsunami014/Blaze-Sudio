@@ -1,7 +1,24 @@
 import inspect
+import pygame
+
+# A Thing is a singular object
+# A Stuff is a collection of objects
+# A Collection is 2 Stuffs; one which is being watched and the other is not
 
 class Container:
     pass
+
+def handle_events():
+    evs = pygame.event.get()
+    cont = True
+    for ev in evs:
+        if ev.type == pygame.QUIT:
+            cont = False
+            break
+        elif ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE:
+            cont = False
+            break
+    return evs, cont
 
 def update(f, **kwargs):
     outkws = {}
@@ -9,6 +26,22 @@ def update(f, **kwargs):
         if name.lower() in kwargs.keys():
             outkws[name] = kwargs[name.lower()]
     f(**outkws)
+
+_BLANKFUNC = lambda *args, **kwargs: None
+
+class Thing:
+    def __init__(self, obj):
+        self.obj = obj
+    
+    def update_obj(self, events, G, mousePos=None, func=_BLANKFUNC):
+        if mousePos is None:
+            mousePos = pygame.mouse.get_pos()
+        update(self.obj.update, win=G.WIN, sur=G.WIN, pause=G.pause, mousePos=mousePos, events=events, G=G, func=func)
+
+    def update(self, win, pause, mousePos, events, G, func):
+        '''DO NOT CALL THIS FUNCTION IN YOUR CODE: INSTEAD USE `Thing.update_obj()`
+           (I mean, you *can* use this, but `update_obj()` requires less kwargs, so use that for simplicity)'''
+        update(self.obj.update, win=win, sur=win, pause=pause, mousePos=mousePos, events=events, G=G, func=func)
 
 class Stuff:
     NAMES = []
@@ -46,7 +79,9 @@ class Stuff:
             l.extend(self.categories[i])
         return l
     
-    def update_all(self, mousePos, events, G, func=lambda *args, **kwargs: None):
+    def update_all(self, events, G, mousePos=None, func=_BLANKFUNC):
+        if mousePos is None:
+            mousePos = pygame.mouse.get_pos()
         for i in self.categories:
             for j in self.categories[i]:
                 update(j.update, win=G.WIN, sur=G.WIN, pause=G.pause, mousePos=mousePos, events=events, G=G, func=func)
@@ -99,9 +134,9 @@ class Collection:
     def copy(self):
         return Collection(self.watch.copy(), self.sprites.copy())
     
-    def update_all(self, mousePos, events, G, func=lambda*args, **kwargs: None):
-        self.watch.update_all  (mousePos, events, G, func)
-        self.sprites.update_all(mousePos, events, G, func)
+    def update_all(self, events, G, mousePos=None, func=_BLANKFUNC):
+        self.watch.update_all  (events, G, mousePos, func)
+        self.sprites.update_all(events, G, mousePos, func)
     
     def __len__(self):
         return len(self.watch) + len(self.sprites)
