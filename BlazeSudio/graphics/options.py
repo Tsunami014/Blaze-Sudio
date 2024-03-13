@@ -320,10 +320,11 @@ ELAST =         E___(5, 'Just before quitting this is ran', {'aborted': 'Whether
 @Base
 class T___:
     idx: int
-TBUTTON =   T___(0)
-TTEXTBOX =  T___(1)
-TINPUTBOX = T___(2)
-TSWITCH =   T___(3)
+    name: str
+TBUTTON =   T___(0, 'Button'  )
+TTEXTBOX =  T___(1, 'Textbox' )
+TINPUTBOX = T___(2, 'Inputbox')
+TSWITCH =   T___(3, 'Switch'  )
 
 # Resizes
 @Base

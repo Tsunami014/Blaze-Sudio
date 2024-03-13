@@ -243,31 +243,29 @@ def GColourPickDemo():
 def GSwitchDemo():
     import pygame
     from BlazeSudio.graphics.GUI import Switch
+    from BlazeSudio.graphics import Stuff, CustomGraphic
     pygame.init()
     win = pygame.display.set_mode()
-    sprites = pygame.sprite.LayeredDirty()
+    stuff = Stuff()
+    stuff.add('switches')
     curpos = (10, 10)
     for _ in range(19):
         s = Switch(win, *curpos, size=10+2*_)
-        sprites.add(s)
+        stuff['switches'].append(s)
         sze = s.rect.size
         curpos = (curpos[0] + sze[0] + 10, curpos[1] + sze[1] + 10)
     
+    G = CustomGraphic(win)
     run = True
     while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    run = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == pygame.BUTTON_LEFT:
-                    for i in sprites:
-                        if i.rect.collidepoint(*pygame.mouse.get_pos()):
-                            i.state = not i.state
+        evs = pygame.event.get()
+        if any([
+            event.type == pygame.QUIT or 
+            (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE) 
+            for event in evs]):
+            run = False
         win.fill((255, 255, 255))
-        sprites.update()
+        stuff.update_all(pygame.mouse.get_pos(), evs, G)
         pygame.display.update()
     pygame.quit()
 

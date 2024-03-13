@@ -54,6 +54,6 @@ Testable things can be tested from the demos in `__main__.py` or from `demos.py`
 | LDtk integration | ![Early Stages](https://badgen.net/badge/Production/2?color=orange) | ❌ | TBD |
 | A nice clean Github repo | ![In Progress](https://badgen.net/badge/Production/3?color=yellow) | N/A | 🌟🌟🌟⭐ |
 
-# ![Ideas](https://badgen.net/badge//Ideas?color=pink&label=)
+# ![Ideas](https://badgen.net/badge/%20/Ideas?color=pink&label=)
  - Hyperanalysis Drive (also known as Qibli Simulator); Track player's every move to feed into an algorithm for personalised gameplay
  - OFTEN (Old Fashioned Times Engineering Nuiances) (Acronym subject to change); Try to make a game with old fashioned hardware! Makes making a game much harder, the result much worse, but it just shows you how hard it was back then, and it'll be such a cool feat too!

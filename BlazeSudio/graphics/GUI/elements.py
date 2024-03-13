@@ -1,6 +1,93 @@
 import pygame
 from BlazeSudio.graphics import options as GO
 
+# sur/win, pause, mousePos, events, G
+
+class Element:
+    def __init__(self, typ, uid, G, **kwargs):
+        if not isinstance(typ, GO.T___):
+            raise TypeError(
+                f'Input \'type\' MUST be GO.T___ (e.g. GO.TBUTTON), not {str(typ)}!'
+            )
+        self.uid = uid
+        self.name = typ.name
+        self.type = typ
+        self.G = G
+        try:
+            if self.type == GO.TBUTTON:
+                self.btn = kwargs['btn']
+                self.txt = self.btn[-2]
+            elif self.type == GO.TTEXTBOX:
+                self.sprite = kwargs['sprite']
+            elif self.type == GO.TINPUTBOX:
+                self.sprite = kwargs['sprite']
+                self.txt = kwargs['txt']
+            elif self.type == GO.TSWITCH:
+                self.sprite = kwargs['sw']
+        except KeyError as e:
+            raise TypeError(
+                f'{self.name} Element requires kwarg "{str(e)}" but was not provided!'
+            )
+    
+    def remove(self):
+        """Removes an element.
+
+        Only works on:
+         - GO.TTEXTBOX
+         - GO.TINPUTBOX
+         - GO.TSWITCH
+        """
+        if self.type == GO.TTEXTBOX:
+            self.G.sprites.remove(self.sprite)
+        elif self.type == GO.TINPUTBOX:
+            self.G.input_boxes.remove(self.sprite)
+        elif self.type == GO.TSWITCH:
+            self.G.sprites.remove(self.sprite)
+        else:
+            raise NotImplementedError(
+                f'Remove has not been implemented for this element with type {self.name}!'
+            )
+    
+    def set_text(self, txt):
+        """Sets text of an element.
+
+        Only works on:
+         - GO.TTEXTBOX (A TextBox element)
+         
+        Parameters:
+        txt : str
+        """
+        if self.type == GO.TTEXTBOX:
+            self.sprite.reset(hard=True)
+            self.sprite.set_text(txt)
+        else:
+            raise NotImplementedError(
+                f'Set text has not been implemented for this element with type {self.name}!'
+            )
+    
+    def get(self):
+        """Gets the state of this element.
+        
+        Only works on:
+         - GO.TSWITCH
+         - GO.TINPUTBOX
+        
+        Returns
+        -------
+        bool
+            Whether the switch is on or not 
+        """
+        if self.type == GO.TSWITCH:
+            return self.sprite.get()
+        elif self.type == GO.TINPUTBOX:
+            return self.sprite.text
+        else:
+            raise NotImplementedError(
+                f'Set text has not been implemented for this element with type {self.name}!'
+            )
+    
+    def __eq__(self, other):
+        return self.uid == other
 class Switch:
     def __init__(self, win, x, y, size=20, speed=10, default=False):
         self.isswitch = True
@@ -14,7 +101,7 @@ class Switch:
         self.barrect = pygame.Rect(x+size/4, y, size, size/2)
         self.image = pygame.Surface((0, 0))
         self.source_rect = pygame.Rect(0, 0, 0, 0)
-    def update(self, *_):
+    def update(self, pause, mousePos, events, G, func):
         if self.anim < 0: self.anim = 0
         if self.anim > 15*self.speed: self.anim = 15*self.speed
         if self.anim != (0 if not self.state else 15*self.speed):
@@ -22,6 +109,12 @@ class Switch:
             else: self.anim -= 1
         pygame.draw.rect(self.WIN, (125, 125, 125), self.barrect, border_radius=self.size)
         pygame.draw.circle(self.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (self.pos[0]+self.size/4+(self.anim/self.speed)*(self.size/20), self.pos[1]+self.size/4), self.size/2)
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN and not pause:
+                if event.button == pygame.BUTTON_LEFT:
+                    if self.rect.collidepoint(mousePos):
+                        self.state = not self.state
+                        func(GO.EELEMENTCLICK, Element(GO.TSWITCH, G.uids.index(self), G, sw=self))
     def get(self):
         return self.state
 
@@ -83,7 +176,7 @@ class InputBox:
         # Blit the rect.
         pygame.draw.rect(screen, self.colour, self.rect, 2)
     
-    def update(self, sur, pause, mousePos, events, G):
+    def update(self, sur):
         self.draw(sur)
 
 class NumInputBox:
@@ -146,7 +239,7 @@ class NumInputBox:
         # Blit the rect.
         pygame.draw.rect(screen, self.colour, self.rect, 2)
     
-    def update(self, sur, pause, mousePos, events, G):
+    def update(self, sur, pause, events, G):
         self.draw(sur)
         if not pause:
             for event in events:
