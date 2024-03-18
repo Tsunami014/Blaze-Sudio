@@ -31,7 +31,7 @@ Also please note that this is a very early version, and there are many things th
 
 Things to note:
 1. # **<u>still in progress</u>**
-2. This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix), [Pyldtk](https://github.com/hpparvi/ldtk) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). This is for a couple of reasons:
+2. This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix), [Pyldtk](https://github.com/LGgameLAB/pyLdtk) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). This is for a couple of reasons:
     1. (the main big one) It can't be installed with pip (maybe it got taken down? I don't know)
     2. I don't have to wory about dependancy issues with those two packages
     3. I can modify it myself
