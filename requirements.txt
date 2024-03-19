@@ -1,3 +1,4 @@
+Blaze-Sudio
 requests
 connect-markdown-renderer
 pygame
