@@ -19,18 +19,15 @@ In the docs you can find anything you need, including how to install. If you are
 (Thanks to the one and only `@Imzafish` for the name!)
 
 Also known as:
- - Blaze
  - The putgamecreatorsoutofbusinessanator (Thanks to `@Faunder.real` for that one)
  - One piece of code to rule them all!
 
 ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png)
 
-(And for all those who love catchphrases: `Oh, I want to make a game the easy way! How?` `I'll Blaze it!` (like "I'll chatGPT it" but cooler 😎))
-
 Also please note that this is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! I would love to have some help with this project!
 
 Things to note:
-1. # **<u>still in progress</u>**
+1. # **<u>Still in progress</u>**
 2. This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix), [Pyldtk](https://github.com/LGgameLAB/pyLdtk) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). This is for a couple of reasons:
     1. (the main big one) It can't be installed with pip (maybe it got taken down? I don't know)
     2. I don't have to wory about dependancy issues with those two packages
@@ -48,12 +45,3 @@ Please join our Discord server here: [![Discord server link](https://badgen.net/
  - v6.0.0 - ❤️‍🔥`Bonfire` - AI generate whole/parts of the game and integration with the editors!
  - v7.0.0 - ☄️`Inferno` - Unity integration..?
  - v8.0.0 - 🍂`Firestorm`- Seamless intergration with Unity and maybe Unreal game engine?
-  (You can suggest me any name/emoji on Discord for anything!)
-
-## Possible future names/emojis
-Char, hearth,  
-
-🧨🧯💎⚡️👑✨🗝️🏹🌙🪷
-
-Finding emojis is HARD
-
