@@ -45,14 +45,15 @@ Please join our Discord server here: [![Discord server link](https://badgen.net/
  - v3.0.0 - 🌿`Kindle` - Able to make an actual game! Not just a world! Because you all know that to make a big fire you must first put in kindling
  - v4.0.0 - ♨️`Smolder` - Pretty cool so far and have ability to make an OK game that one could submit for a competition or something. (WINGS OF FIRE REFERENCE)
  - v5.0.0 - 🌋`Fire` - cos by then it'll be on fire :grin: - all functionality complete!
- - v6.0.0 - ❤️‍🔥`Pyre` - AI generate whole/parts of the game and integration with the editors!
- - v7.0.0 - ☄️`Bonfire` - Unity integration..?
-(You can suggest me any name/emoji on Discord for anything!)
+ - v6.0.0 - ❤️‍🔥`Bonfire` - AI generate whole/parts of the game and integration with the editors!
+ - v7.0.0 - ☄️`Inferno` - Unity integration..?
+ - v8.0.0 - 🍂`Firestorm`- Seamless intergration with Unity and maybe Unreal game engine?
+  (You can suggest me any name/emoji on Discord for anything!)
 
 ## Possible future names/emojis
-Char, hearth, wildfire, firestorm, inferno
+Char, hearth,  
 
-🧨🧯💎⚡️👑✨🗝️🏹🍂🌙🪷
+🧨🧯💎⚡️👑✨🗝️🏹🌙🪷
 
 Finding emojis is HARD
 
