@@ -12,7 +12,6 @@ Actually playable! Run `__main__.py`!
 [![Website](https://badgen.net/badge/docs/tsunami014.github.io)](https://tsunami014.github.io/Blaze-Sudio/)
 
 ![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=green)
-(but really, if you look in the commits it's just me) (At the MOMENT, I'm hoping I can get others to help too if they want!)
 
 In the docs you can find anything you need, including how to install. If you are working offline, you can look [here](docs/SUMMARY.md) for all the pages in the docs to look at them (because all the docs are on this repo)
 
