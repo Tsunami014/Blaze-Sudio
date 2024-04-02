@@ -44,3 +44,7 @@ Please join our Discord server here: [![Discord server link](https://badgen.net/
  - v6.0.0 - ❤️‍🔥`Bonfire` - AI generate whole/parts of the game and integration with the editors!
  - v7.0.0 - ☄️`Inferno` - Unity integration..?
  - v8.0.0 - 🍂`Firestorm`- Seamless intergration with Unity and maybe Unreal game engine?
+
+## Star History (Going to be the funnyest thing to look at until I actually get this going really well)
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Tsunami014/Blaze-Sudio&type=Timeline)](https://star-history.com/#Tsunami014/Blaze-Sudio&Timeline)
