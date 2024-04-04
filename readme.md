@@ -11,7 +11,7 @@ Actually playable! Run `__main__.py`!
 [![Docs](https://badgen.net/badge/docs/tsunami014.gitbook.io)](https://tsunami014.gitbook.io/blaze-sudios/)
 [![Website](https://badgen.net/badge/docs/tsunami014.github.io)](https://tsunami014.github.io/Blaze-Sudio/)
 
-![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=green)
+![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=green), see [here](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors) for a full breakdown of how much each person's done
 
 In the docs you can find anything you need, including how to install. If you are working offline, you can look [here](docs/SUMMARY.md) for all the pages in the docs to look at them (because all the docs are on this repo)
 
@@ -48,3 +48,4 @@ Please join our Discord server here: [![Discord server link](https://badgen.net/
 ## Star History (Going to be the funnyest thing to look at until I actually get this going really well)
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Tsunami014/Blaze-Sudio&type=Timeline)](https://star-history.com/#Tsunami014/Blaze-Sudio&Timeline)
+
