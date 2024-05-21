@@ -22,9 +22,12 @@ def handle_events():
 
 def update(f, **kwargs):
     outkws = {}
+    kwargs = {i.lower(): j for i, j in kwargs.items()}
     for name, param in inspect.signature(f).parameters.items():
         if name.lower() in kwargs.keys():
             outkws[name] = kwargs[name.lower()]
+        if name.strip('_') == '' and not '*' in str(param):
+            outkws[name] = None
     f(**outkws)
 
 _BLANKFUNC = lambda *args, **kwargs: None
