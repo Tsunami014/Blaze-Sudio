@@ -3,6 +3,7 @@
  - [x] Completly redo the file directory structure for the pypi package
  - [ ] Make all the demos work (add some, remove others)
  - [ ] Make `__main__.py` work again!
+ - [ ] Make cross-platform
 ## Next version: Speed
  - [ ] Make graphics run WAY faster and **efficient** (currently EXTREMLY SLOW)
  - [ ] Make `loading.py` MUCH faster (can rewrite it if you want, just need to also update `graphics.py`)
@@ -16,6 +17,7 @@
  - [ ] Make the buttons in the LDTK window do something
 ## Version after that
  - [ ] Make multiple different terrain gens for some fast and some slow generation!
+ - [ ] Remove all the need for different AIs and instead use my AIHub I also made to make it easier and in a different package
 ## Every version following:
  - Add more stuff to the node editor and stuff!
 ## When I get to next major version after that:

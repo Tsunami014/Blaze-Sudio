@@ -6,7 +6,7 @@ import os
 logging.info('Loading TerrainGen (2/8): Drawing tools: PIL...')
 from PIL import Image
 logging.info('Loading TerrainGen (3/8): Drawing tools: Skimage...')
-from skimage.draw import polygon
+from skimage.draw import polygon # TODO: Replace with something else that loads faster
 logging.info('Loading TerrainGen (4/8): Drawing tools: ndimage...')
 from scipy import ndimage
 logging.info('Loading TerrainGen (5/8): Noise generation...')
@@ -14,7 +14,7 @@ from random import randint
 from NPerlinNoise import Noise
 from skimage import exposure
 logging.info('Loading TerrainGen (6/8): Matplotlib...')
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt # TODO: Figure out either how to fix the error this makes OR remove it. (probably )
 logging.info('Loading TerrainGen (7/8): Scipy stuff 1...')
 from scipy.spatial import Voronoi
 from scipy.special import expit

@@ -1,4 +1,4 @@
-import pygame, dill, json
+import pygame, dill, json, os
 from importlib.resources import files
 
 import BlazeSudio.graphics.options as GO
@@ -6,7 +6,12 @@ from BlazeSudio.graphics import Graphic
 import BlazeSudio.elementGen.node_parser as np
 import BlazeSudio.elementGen.types as Ts
 
-categories = ['data/elements/'+i.name for i in (files('BlazeSudio') / 'data/elements').iterdir() if i.is_dir()]
+folder = (files('BlazeSudio') / 'data/elements')
+if not folder.exists():
+    folder.mkdir()
+    for i in ['characters', 'events', 'other']:
+        (folder / i).mkdir()
+categories = ['data/elements/'+i.name for i in folder.iterdir() if i.is_dir()]
 
 def modifyCats(func): # Function decorator
     def func2():

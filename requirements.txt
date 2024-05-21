@@ -1,4 +1,3 @@
-Blaze-Sudio
 requests
 connect-markdown-renderer
 pygame
@@ -12,5 +11,4 @@ bs4
 googlesearch-python
 html2text
 dill
-pywin32
 nest_asyncio

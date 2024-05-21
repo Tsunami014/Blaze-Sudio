@@ -43,14 +43,14 @@ if __name__ == '__main__':
     from title import wrapdemo
     nxt('Threads')
     from threading import Thread
-    nxt('Element Editor')
+    nxt('ElementGen')
     from BlazeSudio.elementGen import NodeSelector, NodeEditor, modifyCats
+    nxt('Cleaning up and starting...')
     logger.handlers.clear()
     logger.setLevel(logging.WARNING)
+    l.join()
     G = Graphic()
     G.set_caption('Blaze Sudios!', pygame.image.load('images/FoxIconSmall.png'))
-    l.update()
-    l.join()
 
     class Game:
         def __init__(self):
@@ -84,7 +84,6 @@ if __name__ == '__main__':
                 def load(slf):
                     slf.win = LDtkAPP()
                     slf.win.open('data/worlds/%s/world.ldtk'%worldname)
-                    slf.win.wait_for_win()
                     slf.overlay = Overlay((120, 50), (G.size[0]-20-110, 40), lambda: G.Abort()) # Covering nothing
                     # We have to do it in the actual main thread
                     def play(): G.Container.current = 1
@@ -108,11 +107,9 @@ if __name__ == '__main__':
                     def useMain(func):
                         def func2():
                             G.Container.over.hide()
-                            G.BringToFront()
                             func()
                             t = Thread(target=G.Container.over.show, daemon=True) # For some reason showing it in the main thread causes problems
                             t.start()
-                            G.Container.win.focusWIN()
                             G.Reload()
                         return func2
                     if G.Container.current == 1:
@@ -162,10 +159,6 @@ if __name__ == '__main__':
                     G.Container.current = 0
                     G.run = True
                     G.ab = False
-                if not G.Container.win.is_win_open():
-                    G.Abort()
-                    return False
-                G.Container.win.make_full()
             elif event == GO.ELAST:
                 G.Container.over.destroy()
                 try:
@@ -371,6 +364,5 @@ if __name__ == '__main__':
                     G.Toast('THIS IS STILL IN PROGRESS!')
 
     g = Game()
-    G.BringToFront()
     g.welcome()
     pygame.quit()

@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Run Main",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "__main__.py",
             "console": "integratedTerminal",
@@ -14,7 +14,7 @@
         },
         {
             "name": "Run Demos",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "demos.py",
             "console": "integratedTerminal",
@@ -22,7 +22,7 @@
         },
         {
             "name": "Current File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",

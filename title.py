@@ -25,7 +25,6 @@ class CustomHandler(Handler):
 from threading import Thread
 import pygame, os
 import multiprocessing as MP
-import BlazeSudio.graphics.options as GO
 
 class TitleScreen:
     def __init__(self, width, height, amount):
@@ -56,9 +55,9 @@ class TitleScreen:
         pygame.display.update()
 
         bar = pygame.Surface(self.size)
-        bar.fill(GO.CBLACK)
-        bar.set_colorkey(GO.CBLACK)
-        font = GO.FNEW('Arial', 20)
+        bar.fill(0)
+        bar.set_colorkey(0)
+        font = pygame.font.SysFont('Arial', 20)
 
         prev_screen = window.copy()
         running = True
@@ -89,16 +88,16 @@ class TitleScreen:
                 dotcounter = 0
             
             # Clear the window
-            window.fill(GO.CWHITE)
+            window.fill((255, 255, 255))
             window.blit(prev_screen, (0, 0))
             # Draw the loading bar border
-            pygame.draw.rect(window, GO.CBLACK, (x, y, bar.get_width(), bar.get_height()))
+            pygame.draw.rect(window, 0, (x, y, bar.get_width(), bar.get_height()))
             # Draw the loading bar fill
             try: perc = 100/self.STATUS[1] * self.STATUS[0]
             except ZeroDivisionError: perc = 0
             perc = (perc * 100) // 100
-            pygame.draw.rect(bar, GO.CGREEN, (border, border, (bar.get_width() - 2 * border) / 100 * perc, bar.get_height() - 2 * border))
-            window.blit(font.render(self.txt.format(str(self.STATUS[0]), str(self.STATUS[1]), str(perc), dots), loadingtxtColour), (0, 0))
+            pygame.draw.rect(bar, (10, 255, 50), (border, border, (bar.get_width() - 2 * border) / 100 * perc, bar.get_height() - 2 * border))
+            window.blit(font.render(self.txt.format(str(self.STATUS[0]), str(self.STATUS[1]), str(perc), dots), 1, loadingtxtColour), (0, 0))
             # Blit the loading bar surface onto the window
             window.blit(bar, (x, y))
             # Update the display
@@ -108,7 +107,7 @@ class TitleScreen:
                 running = False
                 break
         self.txt = ''
-        pygame.quit()
+        pygame.display.quit()
     
     def wait_for_aborted(self):
         while not self.joining:
@@ -118,7 +117,7 @@ class TitleScreen:
     def updateQ(self):
         self.Q.put((self.STATUS, self.txt))
     
-    def __call__(self, border_width, loadingtxt='Loading{3} {2}% ({0} / {1})', loadingtxtColour=GO.CBLACK):
+    def __call__(self, border_width, loadingtxt='Loading{3} {2}% ({0} / {1})', loadingtxtColour=(0, 0, 0)):
         if self.txt == '': # If something changed the text before it got time to initialise
             self.txt = loadingtxt
         self.Q = MP.Queue()

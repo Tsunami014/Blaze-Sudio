@@ -2,7 +2,7 @@ import os, time
 import g4f
 
 import asyncio, aiohttp
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+# asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 import nest_asyncio
 nest_asyncio.apply()
 
