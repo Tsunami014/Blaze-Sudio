@@ -388,13 +388,10 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                             for i in self.Stuff['switches']:
                                 if i.rect.collidepoint(*mousepos()):
                                     i.state = not i.state
-                                    func(GO.EELEMENTCLICK, Element(GO.TSWITCH, self.uids.index(i[0]), self, sw=i))
+                                    func(GO.EELEMENTCLICK, Element(GO.TSWITCH, self.uids.index(i), self, sw=i))
                             self.TB.toggleactive(not self.TB.collides(*mousepos()))
                             for i in self.touchingbtns:
-                                b = list(i[0])
-                                b[1] = i[1]
-                                b[0] = i[2]
-                                r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[-1]), self, btn=b))
+                                r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[-1]), self, btn=i[-1]))
                                 if r != None:
                                     self.run = False
                                     yield [r]

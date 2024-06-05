@@ -254,7 +254,6 @@ if __name__ == '__main__':
                     G.Container.Selection = G.Container.res.worlds[element.uid-2].name
                     G.Reload()
         
-        @G.Catch
         @G.CGraphic
         def run_demo(self, event, demoname, element=None, **__):
             if event == GO.EFIRST:
