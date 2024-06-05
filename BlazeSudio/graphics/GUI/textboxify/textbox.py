@@ -257,6 +257,10 @@ class TextBoxFrame(pygame.sprite.DirtySprite):
             )
 
         self.dirty = 1
+    
+    def draw(self, win):
+        self.update()
+        win.blit(self.image, self.rect.topleft)
 
     def _adjust(self, size, side):
         """Adjust the box size after the box border sprites."""

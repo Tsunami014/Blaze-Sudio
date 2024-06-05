@@ -18,7 +18,7 @@ class Sprite:
         self.sprite = sprite
     def update(self, sur, *_):
         self.sprite.update()
-        self.RECTS.append(self.sprite.draw())
+        self.RECTS.append(self.sprite.draw(sur))
 
 class Custom:
     def __init__(self, cls, pass_events):

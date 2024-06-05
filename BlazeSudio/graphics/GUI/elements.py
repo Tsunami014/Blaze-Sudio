@@ -16,7 +16,7 @@ class Element:
         try:
             if self.type == GO.TBUTTON:
                 self.btn = kwargs['btn']
-                self.txt = self.btn[-2]
+                self.txt = self.btn.txt
             elif self.type == GO.TTEXTBOX:
                 self.sprite = kwargs['sprite']
             elif self.type == GO.TINPUTBOX:
