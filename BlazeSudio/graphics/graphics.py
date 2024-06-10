@@ -10,7 +10,7 @@ from BlazeSudio.graphics.loading import (
     IsLoading, 
     Progressbar
 )
-from BlazeSudio.graphics.GUI import (
+from BlazeSudio.graphics.GUI import ( # TODO: Replace 'Switch' with 'GUI.Switch'
     TextBoxFrame, 
     InputBox, 
     Switch, 
@@ -22,6 +22,9 @@ from BlazeSudio.graphics.GUI import (
     ReturnState
 )
 from BlazeSudio.graphics.GUI.textboxify.borders import LIGHT
+
+# TODO: make pstacks dynamic
+# TODO: make initial creation of elements faster
 
 class GScrollable(Scrollable):
     def __init__(self, G, pos, goalrect, sizeOfScreen, outline, bar):
@@ -498,9 +501,10 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
-        obj = font.render(txt, colour, allowed_width=allowed_width)
+        func = lambda t: font.render(t, colour, allowed_width=allowed_width)
+        obj = func(txt)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
-        t = GE.Static(self, obj, pos)
+        t = GE.Text(self, func, txt, pos)
         self.Stuff['text'].append(t)
         return t
     
@@ -565,11 +569,12 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
-        sur = font.render(txt, txtcol, allowed_width=allowed_width)
+        func = lambda t: font.render(t, txtcol, allowed_width=allowed_width)
+        sur = func(txt)
         sze = [sur.get_width() + 20, sur.get_height() + 20]
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         r = pygame.Rect(*pos, *sze)
-        btn = GE.Button(self, r, pos, col, sur, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
+        btn = GE.Button(self, r, pos, col, func, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
         self.Stuff['buttons'].append(btn)
         if callback != None:
             self.callbacks[btn] = callback
@@ -792,6 +797,11 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         return pos2
     
     def Reload(self):
+        """
+        Reloads the screen, removing all the current things and rerunning the ELOADUI for the current function.
+        
+        This is ill-advised, because it is slow if you have many things to load. Instead, try `.set` on the elements you wish to update.
+        """
         self.rel = True
     
     def Clear(self):
