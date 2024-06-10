@@ -38,7 +38,6 @@ def GGraphicsDemo():
     import BlazeSudio.graphics.options as GO
     from BlazeSudio.graphics import Graphic
     from time import sleep
-    t = input('Please input the starting text for the middle: ')
     G = Graphic()
     @G.Loading
     def test_loading(self):
@@ -49,12 +48,12 @@ def GGraphicsDemo():
     def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
         if event == GO.EFIRST: # First, before anything else happens in the function
             G.Container.txt = txt
-        if event == GO.ELOADUI: # Load the BlazeSudio.graphics
+        if event == GO.ELOADUI: # Load the graphics in!
             CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1]) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
             LBOT = GO.PNEW([0, -1], GO.PSTACKS[GO.PLBOTTOM][1])
             try:
-                prevs = [G.uids[i].get() for i in (G.Container.switches+[G.Container.numinp,G.Container.inp])] + [G.uids[G.Container.colour].picker.p]
-                prevTG = [G.uids[G.Container.scrollable].G.uids[G.Container.otherswitch].get(), G.uids[G.Container.scrollable].scroll]
+                prevs = [i.get() for i in (G.Container.switches+[G.Container.numinp,G.Container.inp])] + [G.Container.colour.picker.p]
+                prevTG = [G.Container.otherswitch.get(), G.Container.scrollable.scroll]
             except:
                 prevs = [False, False, 0, '', (0, 0.5)]
                 prevTG = [False, 0]
@@ -83,10 +82,10 @@ def GGraphicsDemo():
                 G.add_switch(GO.PRTOP, default=prevs[1])
             ]
             G.Container.colour = G.add_colour_pick(GO.PRTOP)
-            G.uids[G.Container.colour].picker.p = prevs[4]
+            G.Container.colour.picker.p = prevs[4]
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
-            G.Container.scrollable, S = G.add_Scrollable(TOPLEFT, (250, 200), (250, 350))
-            G.uids[G.Container.scrollable].scroll = prevTG[1]
+            S, G.Container.scrollable = G.add_Scrollable(TOPLEFT, (250, 200), (250, 350))
+            G.Container.scrollable.scroll = prevTG[1]
             S.add_empty_space(GO.PCTOP, 10, 20)
             S.add_button('Scroll me!', GO.CBLUE, GO.PCTOP)
             G.Container.otherinp = S.add_input(GO.PCTOP, placeholder='I reset!!')
@@ -125,7 +124,7 @@ def GGraphicsDemo():
                 else:
                     element.remove()
             elif element.type == GO.TINPUTBOX:
-                G.Container.txt = element.txt
+                G.Container.txt = element.get().strip()
                 element.remove()
                 G.Reload()
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
@@ -143,15 +142,15 @@ def GGraphicsDemo():
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             return {
                 'Aborted?': aborted, 
-                'Text in textbox': G.uids[G.Container.inp].get(),
-                'Num in num textbox': G.uids[G.Container.numinp].get(),
-                'Big switch state': G.uids[G.Container.switches[0]].get(),
-                'Small switch state': G.uids[G.Container.switches[1]].get(),
-                'Switch in scrollable area state': G.uids[G.Container.scrollable].G.uids[G.Container.otherswitch].get(),
-                'Text in textbox in scrollable area': G.uids[G.Container.scrollable].G.uids[G.Container.otherinp].get()
+                'Text in textbox': G.Container.inp.get(),
+                'Num in num textbox': G.Container.numinp.get(),
+                'Big switch state': G.Container.switches[0].get(),
+                'Small switch state': G.Container.switches[1].get(),
+                'Switch in scrollable area state': G.Container.otherswitch.get(),
+                'Text in textbox in scrollable area': G.Container.otherinp.get()
                 } # Whatever you return here will be returned by the function
     
-    print(test('Right click! ' + t))
+    print(test('Right click or press anything or press ctrl+s!'))
     pygame.quit() # this here for very fast quitting
 
 def GDropdownDemo():

@@ -1,9 +1,10 @@
 import pygame
 from math import sqrt
+from BlazeSudio.graphics.GUI.elements import Element
+import BlazeSudio.graphics.options as GO # TODO: Replace more things in here with GO stuff
 
-# sur/win, pause, mousePos, events, G, func
-
-def dropdown(win, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 255, 255), selectedcol=(0, 0, 255), mpos=None):
+def dropdown(G, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 255, 255), selectedcol=(0, 0, 255), mpos=None):
+    win = G.WIN
     if font == None: font = pygame.font.SysFont(None, 30)
     elements = [font.render(i, txtcolour) for i in elms]
     mx = max([i.get_width() + spacing*2 for i in elements])
@@ -38,8 +39,10 @@ def dropdown(win, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255
             win.blit(elements[i], (p[0] + spacing, p[1] + spacing))
         pygame.display.update()
 
-class Toast:
-    def __init__(self, surf, pos, bottompos, timeout):
+class Toast(Element):
+    type = GO.TTOAST
+    def __init__(self, G, surf, pos, bottompos, timeout):
+        super().__init__(G)
         rnd = lambda inp: [round(inp[0]), round(inp[1])]
         self.surf = surf
         self.pos = rnd(bottompos)
@@ -53,7 +56,7 @@ class Toast:
     def dist(self):
         return sqrt((self.goto[0] - self.pos[0])**2 + (self.goto[1] - self.pos[1])**2)
     
-    def update(self, WIN):
+    def update(self, mousePos, events):
         self.time += 1
         ns = self.surf
         if self.goto != self.pos:
@@ -67,10 +70,9 @@ class Toast:
                 else: self.pos[1] += 1
         else:
             if not self.living:
-                return False
+                self.remove()
         if self.time > self.timeout and self.living:
             self.pos = self.goto
             self.goto = self.end
             self.living = False
-        WIN.blit(ns, self.pos)
-        return True
+        self.G.WIN.blit(ns, self.pos)

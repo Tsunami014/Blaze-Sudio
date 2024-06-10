@@ -1,4 +1,6 @@
 import pygame
+from BlazeSudio.graphics.GUI.elements import Element
+from BlazeSudio.graphics import options as GO # TODO: Replace more values in here with the GO variants
 
 # Thanks to https://stackoverflow.com/questions/73517832/how-to-make-an-color-picker-in-pygame :)
 # Too big to go in another file
@@ -130,9 +132,10 @@ class ColourPicker:
         pygame.draw.rect(surf, (155, 155, 155), (self.rect.left-4, self.rect.top-4, self.rect.width+8, h+8), border_radius=8, width=8)
         pygame.draw.circle(surf, self.get_colour(), center, 25)
 
-class ColourPickerBTN:
-    def __init__(self, win, x, y, size=20, sizeofpicker=200):
-        self.win = win
+class ColourPickerBTN(Element):
+    type = GO.TCOLOURPICK
+    def __init__(self, G, x, y, size=20, sizeofpicker=200):
+        super().__init__(G)
         self.sop = sizeofpicker
         self.size = size
         self.pos = (x, y)
@@ -146,12 +149,12 @@ class ColourPickerBTN:
         c = self.get_colour()
         return (c.r, c.b, c.g)
     
-    def update(self, sur, pause, mousePos, events, G):
-        if pause:
+    def update(self, mousePos, events):
+        if self.G.pause:
             self.active = False
         mouse_buttons = pygame.mouse.get_pressed()
         rect = pygame.Rect(*self.pos, self.size, self.size)
-        if not pause:
+        if not self.G.pause:
             if mouse_buttons[0] and rect.collidepoint(mousePos):
                 s = self.picker.get_size()
                 if self.pos[0] - s[0] < 0 and self.pos[1] - s[1] < 0:
@@ -171,7 +174,7 @@ class ColourPickerBTN:
     
     def draw(self):
         if self.active:
-            self.picker.draw(self.win)
-        pygame.draw.rect(self.win, (0, 0, 0), (self.pos[0]-2, self.pos[1]-2, self.size+4, self.size+4), border_radius=8)
-        pygame.draw.rect(self.win, (255, 255, 255), pygame.Rect(*self.pos, self.size, self.size), border_radius=8)
-        pygame.draw.rect(self.win, self.get_colour(), (self.pos[0]+self.size//4, self.pos[1]+self.size//4, self.size-self.size//2, self.size-self.size//2), border_radius=8)
+            self.picker.draw(self.G.WIN)
+        pygame.draw.rect(self.G.WIN, (0, 0, 0), (self.pos[0]-2, self.pos[1]-2, self.size+4, self.size+4), border_radius=8)
+        pygame.draw.rect(self.G.WIN, (255, 255, 255), pygame.Rect(*self.pos, self.size, self.size), border_radius=8)
+        pygame.draw.rect(self.G.WIN, self.get_colour(), (self.pos[0]+self.size//4, self.pos[1]+self.size//4, self.size-self.size//2, self.size-self.size//2), border_radius=8)

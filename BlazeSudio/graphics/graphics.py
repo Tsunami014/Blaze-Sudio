@@ -19,35 +19,38 @@ from BlazeSudio.graphics.GUI import (
     Scrollable, 
     ColourPickerBTN, 
     Toast,
-    Element,
+    ReturnState
 )
 from BlazeSudio.graphics.GUI.textboxify.borders import LIGHT
 
 class GScrollable(Scrollable):
-    def __init__(self, WIN, pos, goalrect, sizeOfScreen, outline, bar):
-        self.WIN = WIN
-        self.pos = pos
-        self.goalrect = goalrect
+    def __init__(self, G, pos, goalrect, sizeOfScreen, outline, bar):
+        super().__init__(G, pos, goalrect, (0, sizeOfScreen[1]-goalrect[1]), outline, bar)
         self.events = []
         s = pygame.Surface(sizeOfScreen)
-        self.G = Graphic(win=s, TB=False, no_id=True)
+        self.newG = Graphic(win=s, TB=False, no_id=True)
         def func(event, *_, aborted=True, **__):
             if event == GO.ETICK: return True
             elif event == GO.EELEMENTCLICK: return
             return aborted
-        self.GR = self.G.Graphic(func, generator=True, update=False, events=self.getevents, mousepos=self.getmouse)()
-        super().__init__(self.G.WIN, pos, goalrect, (0, sizeOfScreen[1]-goalrect[1]), outline, bar)
+        self.GR = self.newG.Graphic(func, generator=True, update=False, events=self.getevents, mousepos=self.getmouse)()
     
-    def update(self, _, pause, __, events, G):
-        self.G.pause = pause
+    def get(self):
+        """Get the Graphic in the scrollable"""
+        return self.newG
+    
+    def update(self, mousePos, events):
+        self.newG.pause = self.G.pause
+        
         self.events = events
-        for ev in events:
-            if ev.type == pygame.MOUSEWHEEL and not pause:
-                self.event_handle(ev)
-        r = self(self.getevents())
-        if isinstance(r, list):
-            if r[0]: self.Abort()
-            else: self.run = False
+        r = next(self.GR)
+        self.sur = self.newG.WIN
+        super().update(mousePos, events)
+        if r != None:
+            if r[0]:
+                self.Abort()
+            else:
+                self.run = False
     
     def getevents(self):
         for i in self.events:
@@ -55,19 +58,12 @@ class GScrollable(Scrollable):
                 i.pos = self.getmouse()
             except: pass
         return self.events
+    
     def getmouse(self):
         p = pygame.mouse.get_pos() # TODO: add support for Scrollables in Scrollables by changing this line
         np = (p[0]-self.pos[0], p[1]-self.pos[1]-self.scroll)
         if np[0] > self.goalrect[0] or p[1]-self.pos[1] > self.goalrect[1]: return (float('-inf'), float('-inf'))
         return np
-    
-    def __call__(self, events):
-        self.events = events
-        r = next(self.GR)
-        self.sur = self.G.WIN
-        super().__call__(self.WIN)
-        if r != None: return r
-        return False
 
 class TerminalBar:
     def __init__(self, win, spacing=5):
@@ -108,19 +104,11 @@ class GraphicInfo:
     GRAPHICSPROCESSES = {}
     RUNNINGGRAPHIC = (None, None)
 
-class _FakeUIDs:
-    def __getattr__(self, _name):
-        return 1
-    def __getitem__(self, _name):
-        return 1
-    def index(self, item):
-        return 1
-
 class CustomGraphic: # This is if you don't want to use the actual graphics library and just want to use your own stuff
+    # TODO: Remove this class
     def __init__(self, win):
         self.WIN = win
         self.pause = False
-        self.uids = _FakeUIDs()
 
 class Graphic:
     def __init__(self, bgcol=GO.CWHITE, TB=True, win=None, no_id=False):
@@ -184,13 +172,10 @@ class Graphic:
             'toasts',
             'TextBoxes'
         ))
-        self.touchingbtns = []
         self.store = {}
         self.rel = False
         self.ab = False
         self.pause = False
-        self.nextuid = 0
-        self.uids = []
         self.callbacks = {}
         self.Container = GS.Container()
     def set_caption(self, caption=None, iconsur=None):
@@ -316,8 +301,8 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             def func(event, element=None, aborted=False):
                 stacks = GO.PSTACKS.copy()
                 pidx = GO.PIDX
-                if event == GO.EELEMENTCLICK and element.uid in self.callbacks:
-                    ret = self.callbacks[element.uid](element)
+                if event == GO.EELEMENTCLICK and element in self.callbacks:
+                    ret = self.callbacks[element](element)
                 if slf == None:
                     ret = funcy(event, *args, element=element, aborted=aborted, **kwargs)
                 else:
@@ -332,70 +317,58 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             self.run = True
             self.ab = False
             self.rel = True
-            self.touchingbtns = []
             func(GO.ELOADUI)
             while self.run and not self.ab:
                 while IsLoading[0] or (self.id is not None and GraphicInfo.RUNNINGGRAPHIC != (self.id, idx)):
                     pass # DO NOT DO ANYTHING while loading or having multiple graphic screens open at a time
                 evnts = events()
                 self.WIN.fill(self.bgcol)
-                self.touchingbtns = []
-                GE.Sprite.RECTS = []
-                self.Stuff.update_all(evnts.copy(), self, mousepos())
+                returns = self.Stuff.update(mousepos(), evnts.copy())
+                blocked = False
+                for obj in returns:
+                    retValue = returns[obj]
+                    if retValue is None:
+                        continue
+                    
+                    for ret in retValue.get():
+                        if ret == ReturnState.ABORT:
+                            self.Abort()
+                        elif ret == ReturnState.CALL:
+                            r = func(GO.EELEMENTCLICK, obj)
+                            if r != None:
+                                self.run = False
+                                yield [r]
+                        elif ret == ReturnState.TBUTTON:
+                            obj.update(mousepos(), evnts.copy(), True) # Redraw forcefully on top of everything else
                 if self.Stuff.diff() or self.rel:
                     self.rel = False
                     func(GO.ELOADUI)
-                for col, r, sur, pos, _ in self.touchingbtns: # repeat so the buttons you are touching appear on top
-                    pygame.draw.rect(self.WIN, col, r, border_radius=8)
-                    self.WIN.blit(sur, (pos[0]+10, pos[1]+10))
                 self.TB.update()
-                pygame.display.update(GE.Sprite.RECTS)
                 if func(GO.ETICK) is False:
                     self.run = False
-                # TODO: Move this to its file
-                dels = []
-                for i in self.Stuff['toasts']:
-                    if i.update(self.WIN) == False:
-                        dels.append(i)
-                for i in dels: self.Stuff['toasts'].remove(i)
                 for event in evnts.copy():
-                    blocked = False
                     if event.type == pygame.QUIT:
                         self.run = False
-                    if not self.pause:
-                        for ibox in self.Stuff['input_boxes']:
-                            if ibox.handle_event(event) == False:
-                                func(GO.EELEMENTCLICK, Element(GO.TINPUTBOX, self.uids.index(ibox), self, sprite=ibox, txt=str(ibox.get())))
-                                blocked = True
-                    else:
-                        for ibox in self.Stuff['input_boxes']: ibox.active = False
+                    if not self.pause and not blocked:
+                        func(GO.EEVENT, event)
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.run = False
                         elif self.TB.active != -1:
                             self.TB.pressed(event)
                             blocked = True
-                        if event.key == pygame.K_RETURN and self.TB.active == -1 and not any([i.active for i in self.Stuff['input_boxes']]):
-                            for sprite in self.Stuff['TextBoxes']:
-                                if sprite.words:
-                                    sprite.reset()
-                                else:
-                                    func(GO.EELEMENTCLICK, Element(GO.TTEXTBOX, self.uids.index(sprite), self, sprite=sprite))
-                            if len(self.Stuff['TextBoxes']) == 0:
-                                self.pause = False
+                        # TODO: Integrate with textbox class
+                        # if event.key == pygame.K_RETURN and self.TB.active == -1 and not any([i.active for i in self.Stuff['input_boxes']]):
+                        #     for sprite in self.Stuff['TextBoxes']:
+                        #         if sprite.words:
+                        #             sprite.reset()
+                        #         else:
+                        #             func(GO.EELEMENTCLICK, Element(GO.TTEXTBOX, self.uids.index(sprite), self, sprite=sprite))
+                        #     if len(self.Stuff['TextBoxes']) == 0:
+                        #         self.pause = False
                     elif event.type == pygame.MOUSEBUTTONDOWN and not self.pause:
                         if event.button == pygame.BUTTON_LEFT:
-                            for i in self.Stuff['switches']:
-                                if i.rect.collidepoint(*mousepos()):
-                                    i.state = not i.state
-                                    func(GO.EELEMENTCLICK, Element(GO.TSWITCH, self.uids.index(i), self, sw=i))
                             self.TB.toggleactive(not self.TB.collides(*mousepos()))
-                            for i in self.touchingbtns:
-                                r = func(GO.EELEMENTCLICK, Element(GO.TBUTTON, self.uids.index(i[-1]), self, btn=i[-1]))
-                                if r != None:
-                                    self.run = False
-                                    yield [r]
-                    if not self.pause and not blocked: func(GO.EEVENT, event)
                 yield None
                 if update:
                     pygame.display.flip()
@@ -406,7 +379,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             self.ab = False
             self.run = True
             self.Stuff = stuff
-            self.touchingbtns = []
             yield [ret]
         def func3(*args, **kwargs):
             f = func2(*args, **kwargs)
@@ -442,6 +414,10 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The colour of the toast, by default GO.CACTIVE (other colours provided as GO.C___)
         txtcol : tuple[int, int, int], optional
             The colour of the text, by default GO.CWHITE
+        
+        Returns
+        -------
+            Element: The created element
         """
         
         txt = font.render(text, txtcol)
@@ -452,7 +428,9 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
 
         bpos = GO.PSTACKS[pos][1](self.size, sur.get_size()) # Basic/Bottom pos
         npos = (bpos[0]+GO.PSTACKS[pos][0][0]*dist, bpos[1]+GO.PSTACKS[pos][0][1]*dist) # New pos
-        self.Stuff['toasts'].append(Toast(sur, npos, bpos, timeout))
+        t = Toast(self, sur, npos, bpos, timeout)
+        self.Stuff['toasts'].append(t)
+        return t
 
     def Dropdown(self, elements, spacing=5, font=GO.FFONT, activecol=GO.CACTIVE, bgcol=GO.CBLACK, txtcol=GO.CWHITE, pos=None):
         """Spawns a dropdown!
@@ -482,11 +460,12 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The index of the input elements list that was selected, else None if nothing selected
             False if you exited from the menu using escape or closing the window. This will also exit the GUI.
         """
-        d = dropdown(self.WIN, elements, spacing, font, bgcol, txtcol, activecol, pos)
-        if d is False: self.run = False
+        d = dropdown(self, elements, spacing, font, bgcol, txtcol, activecol, pos)
+        if d is False:
+            self.run = False
         return d
     
-    def add_custom(self, sprite, pass_events=False):
+    def add_custom(self, sprite):
         """
         Adds a custom sprite to the screen!
 
@@ -494,16 +473,10 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         ----------
         sprite : Any
             The sprite to add!
-        pass_events : bool
-            Whether or not to pass the list of pygame events that have occured that tick to the function
         
-        The sprite MUST have the following attribute:
-        if pass_events == True:
-            `sprite.execute(pygame.Surface, list[pygame.event.Event])` which will be ran every tick, being passed the pygame window which can be blit'ed onto and all the pygame events that have happened that tick
-        else:
-            `sprite.execute(pygame.Surface)` which will be ran every tick, being passed the pygame window which can be blit'ed onto
+        The sprite MUST have an `update` function which takes in 2 arguments: the current mouse position, and then the current events.
         """
-        self.Stuff['customs'].append(GE.Custom(sprite, pass_events))
+        self.Stuff['customs'].append(sprite)
     
     def add_text(self, txt, colour, position, font=GO.FFONT, allowed_width=900):
         """Adds text to the GUI!
@@ -520,10 +493,16 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
         allowed_width : int, optional
             The allowed width of the font, by default 900
+        
+        Returns
+        -------
+            Element: The created element
         """
         obj = font.render(txt, colour, allowed_width=allowed_width)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
-        self.Stuff['text'].append(GE.Static(obj, pos))
+        t = GE.Static(self, obj, pos)
+        self.Stuff['text'].append(t)
+        return t
     
     def add_surface(self, obj, position):
         """Adds a surface to the GUI!
@@ -534,9 +513,15 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The surface to add to the screen!
         position : GO.P___ (e.g. GO.PRBOTTOM)
             The position on the screen this element will be placed
+        
+        Returns
+        -------
+            Element: The created element
         """
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
-        self.Stuff['surs'].append(GE.Static(obj, pos))
+        s = GE.Static(self, obj, pos)
+        self.Stuff['surs'].append(s)
+        return s
     
     def add_empty_space(self, position, wid, hei):
         """Makes a piece of empty space.
@@ -575,21 +560,20 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         callback : function(Element), optional
             The function to call when this element is pressed, by default None
             Please note that the main function will ALSO be called when this is pressed
-
+        
         Returns
         -------
-        int
-            The UID of the created element
+            Element: The created element
         """
         sur = font.render(txt, txtcol, allowed_width=allowed_width)
         sze = [sur.get_width() + 20, sur.get_height() + 20]
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
         r = pygame.Rect(*pos, *sze)
-        btn = GE.Button(sur, r, pos, col, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
+        btn = GE.Button(self, r, pos, col, sur, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
         self.Stuff['buttons'].append(btn)
-        self.uids.append(btn)
-        if callback != None: self.callbacks[len(self.uids) - 1] = callback
-        return len(self.uids) - 1
+        if callback != None:
+            self.callbacks[btn] = callback
+        return btn
     
     def add_TextBox(self, txt, position, border=LIGHT, indicator=None, portrait=None, callback=None):
         """Makes a new TextBox in the GUI!
@@ -609,13 +593,12 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         callback : function(Element), optional
             The function to call when this textbox is dismissed, by default None
             Please note that the main function will ALSO be called when this is dismissed
-
+        
         Returns
         -------
-        int
-            the UID of this element
+            TextBoxFrame: The created element
         """
-        dialog_box = TextBoxFrame(
+        dialog_box = TextBoxFrame( # TODO: Make more integrated with the rest of the graphics
             text=txt,
             text_width=320,
             lines=2,
@@ -631,12 +614,11 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         dialog_box.set_portrait(portrait)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, dialog_box.rect.size), dialog_box.rect.size, position)
         dialog_box.rect.topleft = pos
-        dialog_box = GE.Sprite(dialog_box)
         self.Stuff['TextBoxes'].append(dialog_box)
         self.pause = True
-        self.uids.append(dialog_box)
-        if callback != None: self.callbacks[len(self.uids) - 1] = callback
-        return len(self.uids) - 1
+        if callback != None:
+            self.callbacks[dialog_box] = callback
+        return dialog_box
     
     def add_input(self, position, font=GO.FSMALL, width=None, resize=GO.RHEIGHT, placeholder='Type Here', maximum=100, start='', callback=None):
         """Adds an input box :)
@@ -663,11 +645,10 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         callback : function(Element), optional
             The function to call when you press enter while inputting into this element, by default None
             Please note that the main function will ALSO be called when you press enter while inputting into this element
-
+        
         Returns
         -------
-        int
-            the UID of this element
+            Element: The created element
         """
         sze = list(font.size(placeholder))
         if maximum == None: maximum = sze+5
@@ -675,11 +656,11 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         else: sze[0] += 5
         sze[1] += 10
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
-        ibox = InputBox(*pos, *sze, resize, placeholder, font, maximum, start) # TODO: Positioning and custom width & height & resize
+        ibox = InputBox(self, *pos, *sze, resize, placeholder, font, maximum, start) # TODO: Positioning and custom width & height & resize
         self.Stuff['input_boxes'].append(ibox)
-        self.uids.append(ibox)
-        if callback != None: self.callbacks[len(self.uids) - 1] = callback
-        return len(self.uids) - 1
+        if callback != None:
+            self.callbacks[ibox] = callback
+        return ibox
     
     def add_num_input(self, position, font=GO.FSMALL, width=None, resize=GO.RHEIGHT, start=0, bounds=(float('-inf'), float('inf')), callback=None):
         """Adds an input box for numbers :)
@@ -703,22 +684,21 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         callback : function(Element), optional
             The function to call when you press enter while inputting into this element, by default None
             Please note that the main function will ALSO be called when you press enter while inputting into this element
-
+        
         Returns
         -------
-        int
-            the UID of this element
+            Element: The created element
         """
         sze = list(font.size(str(start)))
         if width != None: sze[0] = font.size('9'*width)[0]+5
         sze[0] += 5
         sze[1] += 10
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
-        ibox = NumInputBox(*pos, *sze, resize, start, *bounds, font) # TODO: Positioning and custom width & height & resize
+        ibox = NumInputBox(self, *pos, *sze, resize, start, *bounds, font) # TODO: Positioning and custom width & height & resize
         self.Stuff['input_boxes'].append(ibox)
-        self.uids.append(ibox)
-        if callback != None: self.callbacks[len(self.uids) - 1] = callback
-        return len(self.uids) - 1
+        if callback != None:
+            self.callbacks[ibox] = callback
+        return ibox
     
     def add_switch(self, position, size=20, default=False, callback=None):
         """Adds a switch to the GUI! :)
@@ -734,19 +714,18 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         callback : function(Element), optional
             The function to call when this element is pressed, by default None
             Please note that the main function will ALSO be called when this is pressed
-
+        
         Returns
         -------
-        int
-            the UID of this element
+            Element: The created element
         """
         sze = (size*1.5, size*1.5)
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
-        sw = Switch(self.WIN, pos[0]+size/4, pos[1]+size/4, size, 2, default)
+        sw = Switch(self, pos[0]+size/4, pos[1]+size/4, size, 2, default)
         self.Stuff['switches'].append(sw)
-        self.uids.append(sw)
-        if callback != None: self.callbacks[len(self.uids) - 1] = callback
-        return len(self.uids) - 1
+        if callback != None:
+            self.callbacks[sw] = callback
+        return sw
 
     def add_colour_pick(self, position, size=20, sow=200):
         """Adds a colour picker button to the GUI!
@@ -760,17 +739,15 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The size of the colour picker button, by default 20
         sow : int, optional
             The size of the colour picker window, by default 200
-
+        
         Returns
         -------
-        int
-            the UID of this element
+            Element: The created element
         """
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, (size, size)), (size, size), position)
-        btn = ColourPickerBTN(self.WIN, *pos, size, sow)
+        btn = ColourPickerBTN(self, *pos, size, sow)
         self.Stuff['cps'].append(btn)
-        self.uids.append(btn)
-        return len(self.uids) - 1
+        return btn
     
     def add_Scrollable(self, position, size, sos, outline=10, bar=True):
         """Adds a Scrollable window to the Graphic screen!
@@ -794,15 +771,14 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
 
         Returns
         -------
-        tuple[int, Graphic]
-            (the UID of the element, The Graphic class created which is put onto the main one)
+        tuple[Graphic, Element]
+            (The Graphic class created which is put onto the main one, the Element which is the new scrollable)
         """
         # TODO: FIX POSITIONING
         pos = self.pos_store(GO.PSTACKS[position][1](self.size, size), size, position)
-        s = GScrollable(self.WIN, pos, size, sos, outline, bar)
+        s = GScrollable(self, pos, size, sos, outline, bar)
         self.Stuff['scrollsables'].append(s)
-        self.uids.append(s)
-        return (len(self.uids) - 1, s.G)
+        return s.newG, s
     
     def pos_store(self, pos, sze, func):
         sizeing = GO.PSTACKS[func][0]
@@ -824,10 +800,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         GO.PIDX = 0
         self.store = {}
         self.pause = False
-        self.nextuid = 0
-        self.uids = []
         self.callbacks = {}
-        self.touchingbtns = []
         self.Stuff.clear()
     
     def Abort(self, *args):

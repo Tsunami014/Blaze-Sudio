@@ -1,12 +1,13 @@
 from dataclasses import dataclass, field
+from re import T
 import pygame
 import pygame.freetype
 from string import printable
 
 # TODO: Modify the __str__ and __repr__ of the class to a name
-def Base(cls=None, default=True):
+def Base(cls=None, default=True, str=True):
     def wrap(clss):
-        return dataclass(clss, unsafe_hash=True, init=default, repr=default)
+        return dataclass(clss, unsafe_hash=True, init=default, repr=default and str)
     if cls is None:
         # @Base()
         return wrap
@@ -317,14 +318,23 @@ EEVENT =        E___(4, 'When a pygame event occurs (click mouse, press button, 
 ELAST =         E___(5, 'Just before quitting this is ran', {'aborted': 'Whether or not the graphic screen was aborted due to G.Abort()'})
 
 # Types
-@Base
+@Base(str=False)
 class T___:
+    def __str__(self):
+        return f'<T{self.name}>'
+    def __repr__(self): return str(self)
     idx: int
     name: str
-TBUTTON =   T___(0, 'Button'  )
-TTEXTBOX =  T___(1, 'Textbox' )
-TINPUTBOX = T___(2, 'Inputbox')
-TSWITCH =   T___(3, 'Switch'  )
+TBUTTON =     T___(0, 'Button'    )
+TTEXTBOX =    T___(1, 'Textbox'   )
+TNUMBOX =     T___(2, 'Numbox'    )
+TINPUTBOX =   T___(3, 'Inputbox'  )
+TSWITCH =     T___(4, 'Switch'    )
+TSCROLLABLE = T___(5, 'Scrollable')
+TSTATIC =     T___(6, 'Static'    )
+TCOLOURPICK = T___(7, 'ColourPick')
+TTOAST =      T___(8, 'Toast'     )
+
 
 # Resizes
 @Base
