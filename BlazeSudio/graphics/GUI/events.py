@@ -53,6 +53,14 @@ class Toast(Element):
         self.time = 0
         self.living = True
     
+    def get(self):
+        """Get the time through the animation"""
+        return self.time
+    
+    def set(self, t):
+        """Set the time through the animation"""
+        self.time = t
+    
     def dist(self):
         return sqrt((self.goto[0] - self.pos[0])**2 + (self.goto[1] - self.pos[1])**2)
     

@@ -46,11 +46,10 @@ def GGraphicsDemo():
     
     @G.Graphic
     def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
-        if event == GO.EFIRST: # First, before anything else happens in the function
-            G.Container.txt = txt
         if event == GO.ELOADUI: # Load the graphics in!
             CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1]) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
             LBOT = GO.PNEW([0, -1], GO.PSTACKS[GO.PLBOTTOM][1])
+            # Attempt to load previous values
             try:
                 prevs = [i.get() for i in (G.Container.switches+[G.Container.numinp,G.Container.inp])] + [G.Container.colour.picker.p]
                 prevTG = [G.Container.otherswitch.get(), G.Container.scrollable.scroll]
@@ -63,7 +62,7 @@ def GGraphicsDemo():
             G.add_empty_space(GO.PCCENTER, 0, -150) # Yes, you can have negative space. This makes the next things shifted the other direction.
             G.add_text('This is a cool thing', GO.CBLUE, GO.PCCENTER)
             G.add_text('Sorry, I meant a cool TEST', GO.CRED, GO.PCCENTER)
-            G.add_text(G.Container.txt, GO.CGREEN, GO.PCCENTER)
+            G.Container.txt = G.add_text(txt, GO.CGREEN, GO.PCCENTER)
             G.add_empty_space(LBOT, 0, 20)
             G.add_button('Button 1 :D', GO.CYELLOW, LBOT)
             G.add_text('Buttons above [^] and below [v]', GO.CBLUE, LBOT)
@@ -91,8 +90,7 @@ def GGraphicsDemo():
             G.Container.otherinp = S.add_input(GO.PCTOP, placeholder='I reset!!')
             S.add_button('Bye!', GO.CGREEN, GO.PCTOP)
             def pressed(elm):
-                G.Container.txt = 'You pressed the button in the Scrollable :)'
-                G.Reload()
+                G.Container.txt.set('You pressed the button in the Scrollable :)')
             S.add_button('Press me!', GO.CRED, GO.PCTOP, callback=pressed)
             G.Container.otherswitch = S.add_switch(GO.PCTOP, default=prevTG[0])
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
@@ -106,8 +104,7 @@ def GGraphicsDemo():
                 # So in that example button1 is the UID. Maybe try saving it to the container tho! Example shown by the exit button.
                 if element == 2:
                     succeeded, ret = test_loading()
-                    G.Container.txt = ('Ran for %i seconds%s' % (ret.i+1, (' Successfully! :)' if succeeded else ' And failed :(')))
-                    G.Reload()
+                    G.Container.txt.set('Ran for %i seconds%s' % (ret.i+1, (' Successfully! :)' if succeeded else ' And failed :(')))
                 elif element == G.Container.exitbtn:
                     G.Abort()
                 elif element == 1:
@@ -115,8 +112,7 @@ def GGraphicsDemo():
                     G.add_TextBox('HALLOOOO! :)', bot)
                     G.Container.idx = 0
                 else:
-                    G.Container.txt = element.txt # put name of button in middle
-                    G.Reload()
+                    G.Container.txt.set(element.txt) # put name of button in middle
             elif element.type == GO.TTEXTBOX:
                 if G.Container.idx == 0:
                     element.set_text("Happy coding!")
@@ -124,20 +120,17 @@ def GGraphicsDemo():
                 else:
                     element.remove()
             elif element.type == GO.TINPUTBOX:
-                G.Container.txt = element.get().strip()
+                G.Container.txt.set(element.get().strip())
                 element.remove()
-                G.Reload()
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.KEYDOWN:
                 if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
-                    G.Container.txt = 'Saved! (Don\'t worry - this does nothing)'
-                    G.Reload()
+                    G.Container.txt.set('Saved! (Don\'t worry - this does nothing)')
             elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
                 opts = ['HI', 'BYE', 'HI AGAIN']
                 resp = G.Dropdown(opts)
                 if isinstance(resp, int):
-                    G.Container.txt = opts[resp]
-                    G.Reload()
+                    G.Container.txt.set(opts[resp])
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             return {

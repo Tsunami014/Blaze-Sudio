@@ -145,9 +145,16 @@ class ColourPickerBTN(Element):
     
     def get_colour(self):
         return self.picker.get_colour()
+    
     def get(self):
+        """Get the rgb colour of the picker"""
         c = self.get_colour()
         return (c.r, c.b, c.g)
+    
+    def set(self, r, g, b):
+        """Set the rgb colour of the picker"""
+        self.picker.p = (r/360, g/100)
+        self.picker.values[2].p = b/100
     
     def update(self, mousePos, events):
         if self.G.pause:

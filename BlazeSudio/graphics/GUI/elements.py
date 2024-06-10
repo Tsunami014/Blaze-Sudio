@@ -20,6 +20,9 @@ class Element:
     def get(self):
         pass
     
+    def set(self):
+        pass
+    
     # Utility functions
     def __eq__(self, other):
         return self.uid == other
@@ -29,20 +32,6 @@ class Element:
     
     def __str__(self):
         return f'<{self.__class__.__name__}({str(self.get())})>'
-    def __repr__(self): return str(self)
-
-class ReturnGroup:
-    def __init__(self, *states):
-        self.states = list(states)
-    
-    def append(self, otherState):
-        self.states.append(otherState)
-    
-    def get(self):
-        return self.states
-    
-    def __str__(self):
-        return f'<ReturnGroup with states {self.states}>'
     def __repr__(self): return str(self)
 
 class ReturnState(Enum):
@@ -67,6 +56,21 @@ class ReturnState(Enum):
         return ReturnGroup(self, otherState)
     def get(self):
         return [self]
+
+class ReturnGroup:
+    def __init__(self, *states):
+        self.states = list(states)
+    
+    def append(self, otherState):
+        self.states.append(otherState)
+    
+    def get(self):
+        return self.states
+    
+    def __str__(self):
+        return f'<ReturnGroup with states {self.states}>'
+    def __repr__(self): return str(self)
+
 
 class Switch(Element):
     type = GO.TSWITCH
@@ -96,8 +100,11 @@ class Switch(Element):
                         return ReturnState.CALL
     
     def get(self):
-        """Get the state of the switch"""
+        """Get the state of the switch (on or off)"""
         return self.state
+    def set(self, newState):
+        """Set the state of the switch (on or off)"""
+        self.state = newState
 
 # InputBoxes code modified from https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame 
 
@@ -118,6 +125,10 @@ class InputBox(Element): # TODO: Make not need separate x, y, w, h, but instead 
     def get(self):
         """Get the text in the inputbox"""
         return self.text
+    
+    def set(self, txt):
+        """Set the text in the textbox"""
+        self.text = txt
     
     def _render_txt(self):
         txtcol = self.colour
@@ -180,6 +191,10 @@ class NumInputBox(InputBox):
         """Get the number in the numbox"""
         return self.realnum
 
+    def set(self, newNum):
+        """Set the number in the numbox"""
+        self.realnum = newNum
+
     def _handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
@@ -227,6 +242,10 @@ class Scrollable(Element):
     def get(self):
         """Get the scroll value"""
         return self.scroll
+    
+    def set(self, scroll):
+        """Set the scroll value"""
+        self.scroll = scroll
     
     def update(self, mousePos, events):
         for ev in events:
