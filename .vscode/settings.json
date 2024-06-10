@@ -23,5 +23,6 @@
         "other",
         "nodes"
     ],
-    "wolf.disableHotModeWarning": true
+    "wolf.disableHotModeWarning": true,
+    "python.REPL.enableREPLSmartSend": false
 }

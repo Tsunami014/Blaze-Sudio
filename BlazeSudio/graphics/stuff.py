@@ -1,9 +1,8 @@
-import inspect
 import pygame
 
 # A Thing is a singular object
 # A Stuff is a collection of objects
-# A Collection is 2 Stuffs; one which is being watched and the other is not
+# A Collection is 2 Stuffs; one which is being watched for any modifications and the other is not
 
 class Container:
     pass
@@ -20,31 +19,12 @@ def handle_events():
             break
     return evs, cont
 
-def update(f, **kwargs):
-    outkws = {}
-    kwargs = {i.lower(): j for i, j in kwargs.items()}
-    for name, param in inspect.signature(f).parameters.items():
-        if name.lower() in kwargs.keys():
-            outkws[name] = kwargs[name.lower()]
-        if name.strip('_') == '' and not '*' in str(param):
-            outkws[name] = None
-    f(**outkws)
-
-_BLANKFUNC = lambda *args, **kwargs: None
-
 class Thing:
     def __init__(self, obj):
         self.obj = obj
     
-    def update_obj(self, events, G, mousePos=None, func=_BLANKFUNC):
-        if mousePos is None:
-            mousePos = pygame.mouse.get_pos()
-        update(self.obj.update, win=G.WIN, sur=G.WIN, pause=G.pause, mousePos=mousePos, events=events, G=G, func=func)
-
-    def update(self, win, pause, mousePos, events, G, func):
-        '''DO NOT CALL THIS FUNCTION IN YOUR CODE: INSTEAD USE `Thing.update_obj()`
-           (I mean, you *can* use this, but `update_obj()` requires less kwargs, so use that for simplicity)'''
-        update(self.obj.update, win=win, sur=win, pause=pause, mousePos=mousePos, events=events, G=G, func=func)
+    def update(self, mousePos, events):
+        return {self.obj: self.obj.update(mousePos, events)}
 
 class Stuff:
     NAMES = []
@@ -82,12 +62,12 @@ class Stuff:
             l.extend(self.categories[i])
         return l
     
-    def update_all(self, events, G, mousePos=None, func=_BLANKFUNC):
-        if mousePos is None:
-            mousePos = pygame.mouse.get_pos()
+    def update(self, mousePos, events):
+        returns = {}
         for i in self.categories:
             for j in self.categories[i]:
-                update(j.update, win=G.WIN, sur=G.WIN, pause=G.pause, mousePos=mousePos, events=events, G=G, func=func)
+                returns[j] = j.update(mousePos, events)
+        return returns
     
     def add(self, _name):
         self.categories[_name] = []
@@ -101,6 +81,17 @@ class Stuff:
         for i in self.categories:
             if i not in self.NAMES:
                 self.NAMES.append(i)
+    
+    def remove(self, obj):
+        for i in self.categories:
+            if obj in self.categories[i]:
+                self.categories[i].remove(obj)
+    
+    def __iter__(self):
+        outl = []
+        for i in self.categories.values():
+            outl.extend(i)
+        return iter(outl)
     
     def __len__(self):
         return len(self.get())
@@ -118,14 +109,24 @@ class Stuff:
 
 class Collection:
     def __init__(self, watch=None, sprites=None):
-        if watch is None: self.watch = Stuff()
-        else: self.watch = watch
+        if watch is None:
+            self.watch = Stuff()
+        else:
+            self.watch = watch
 
-        if sprites is None: self.sprites = Stuff()
-        else: self.sprites = sprites
+        if sprites is None:
+            self.sprites = Stuff()
+        else:
+            self.sprites = sprites
     
     def getall(self):
         return self.watch.get() + self.sprites.get()
+    
+    def remove(self, obj):
+        if obj in self.watch:
+            self.watch.remove(obj)
+        if obj in self.sprites:
+            self.sprites.remove(obj)
     
     def clear(self):
         self.watch.clear()
@@ -137,9 +138,10 @@ class Collection:
     def copy(self):
         return Collection(self.watch.copy(), self.sprites.copy())
     
-    def update_all(self, events, G, mousePos=None, func=_BLANKFUNC):
-        self.watch.update_all  (events, G, mousePos, func)
-        self.sprites.update_all(events, G, mousePos, func)
+    def update(self, mousePos, events):
+        outs = self.watch.update(mousePos, events)
+        outs.update(self.sprites.update(mousePos, events))
+        return outs
     
     def __len__(self):
         return len(self.watch) + len(self.sprites)

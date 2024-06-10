@@ -20,8 +20,11 @@ from . import settings
 from .text import Text
 from .util import CustomSprite, fix_corners, load_image
 
+# TODO: Make this whole module cleaner
+from BlazeSudio.graphics.GUI.elements import Element
 
-class TextBoxFrame(pygame.sprite.DirtySprite):
+
+class TextBoxFrame(Element):
     """Class for creating customizable dialog boxes.
 
     Args:
@@ -371,7 +374,7 @@ class TextBoxFrame(pygame.sprite.DirtySprite):
         return blocks
 
 
-class TextBox(pygame.sprite.DirtySprite):
+class TextBox(Element):
     """Class for creating simple text boxes.
 
     Args:
