@@ -703,7 +703,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             self.callbacks[ibox] = callback
         return ibox
     
-    def add_switch(self, position, size=20, default=False, callback=None):
+    def add_switch(self, position, size=20, speed=2, default=False, callback=None):
         """Adds a switch to the GUI! :)
 
         Parameters
@@ -712,6 +712,8 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The position on the screen this element will be placed
         size : int, optional
             The size of the switch, by default 20
+        speed : int, optional
+            The movement the switch button travels every frame in it's animation (i.e. the speed), by default 2
         default : bool, optional
             Whether the switch starts as on or off, by default False
         callback : function(Element), optional
@@ -722,7 +724,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
-        sw = GUI.Switch(self, position, size, 2, default)
+        sw = GUI.Switch(self, position, size, speed, default)
         self.Stuff['switches'].append(sw)
         if callback != None:
             self.callbacks[sw] = callback

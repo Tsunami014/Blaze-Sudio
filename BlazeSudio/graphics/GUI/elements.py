@@ -90,21 +90,23 @@ class ReturnGroup:
 
 class Switch(Element):
     type = GO.TSWITCH
-    def __init__(self, G, pos, size=20, speed=10, default=False):
-        super().__init__(G, pos, (size, size/2))
+    def __init__(self, G, pos, size=20, speed=1, default=False):
+        self.btnSze = size
+        super().__init__(G, pos, (size*2, size))
         self.anim = 0
         self.speed = speed
         self.state = default
     
     def update(self, mousePos, events):
-        if self.anim < 0: self.anim = 0
-        if self.anim > 15*self.speed: self.anim = 15*self.speed
-        if self.anim != (0 if not self.state else 15*self.speed):
-            if self.state: self.anim += 1
-            else: self.anim -= 1
+        self.anim = min(max(self.anim, 0), self.btnSze)
+        if self.anim != (0 if not self.state else self.btnSze):
+            if self.state:
+                self.anim += self.speed
+            else:
+                self.anim -= self.speed
         x, y = self.stackP()
-        pygame.draw.rect(self.G.WIN, (125, 125, 125), pygame.Rect(x+self.size[0]/4, y, *self.size), border_radius=self.size[0])
-        pygame.draw.circle(self.G.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (x+self.size[0]/4+(self.anim/self.speed)*(self.size[0]/20), y+self.size[1]/4), self.size[0]/2)
+        pygame.draw.rect(self.G.WIN, (125, 125, 125), pygame.Rect(x+self.btnSze/2, y+self.btnSze/4, self.btnSze, self.btnSze/2), border_radius=self.btnSze)
+        pygame.draw.circle(self.G.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (x+self.btnSze/2+self.anim, y+self.btnSze/2), self.btnSze/2)
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and not self.G.pause:
                 if event.button == pygame.BUTTON_LEFT:
