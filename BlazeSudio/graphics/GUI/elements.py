@@ -11,7 +11,7 @@ class Element:
         self.G = G
         self.pos = pos
         self.size = size
-        self.stackP = StackPart(G.stacks, pos, size, G.WIN.get_size())
+        self.stackP = StackPart(G.stacks, pos, size, G.size)
         self.uid = self.NEXT_UID[0]
         self.NEXT_UID[0] += 1
     
@@ -22,7 +22,7 @@ class Element:
     def change_pos(self, newPos):
         self.stackP.remove()
         self.pos = newPos
-        self.stackP = StackPart(self.G.stacks, newPos, self.size, self.G.WIN.get_size())
+        self.stackP = StackPart(self.G.stacks, newPos, self.size, self.G.size)
     
     # Required subclass functions
     def update(self, mousePos, events):
@@ -340,10 +340,10 @@ class Button(Element):
     type = GO.TBUTTON
     def __init__(self, G, pos, col, fontfunc, txt, on_hover_enlarge):
         self.fontFunc = fontfunc
+        self.OHE = on_hover_enlarge
         self.set(txt) # Sets self.txt and generates self.sur
         super().__init__(G, pos, self.sur.get_size())
         self.col = col
-        self.OHE = on_hover_enlarge
     
     def get(self):
         """Get the text on the button"""
@@ -353,10 +353,13 @@ class Button(Element):
         """Set the text on the button"""
         self.txt = newTxt
         self.sur = self.fontFunc(self.txt)
-        self.size = self.sur.get_size()
+        s = self.sur.get_size()
+        self.size = (s[0] + self.OHE*2, s[1] + self.OHE*2)
     
     def update(self, mousePos, events, force_draw=False):
         r = pygame.Rect(*self.stackP(), *self.sur.get_size())
+        r.x += self.OHE
+        r.y += self.OHE
         if not self.G.pause:
             if r.collidepoint(mousePos):
                 if self.OHE != -1:
