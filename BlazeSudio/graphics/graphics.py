@@ -11,7 +11,7 @@ from BlazeSudio.graphics.loading import (
 )
 from BlazeSudio.graphics import stacks as STACKS
 import BlazeSudio.graphics.GUI.elements as GUI
-from BlazeSudio.graphics.GUI import ColourPickerBTN
+from BlazeSudio.graphics.GUI import ColourPickerBTN, dropdown
 from BlazeSudio.graphics.GUI.textboxify.borders import LIGHT
 
 # TODO: make initial creation of elements faster
@@ -458,7 +458,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The index of the input elements list that was selected, else None if nothing selected
             False if you exited from the menu using escape or closing the window. This will also exit the GUI.
         """
-        d = GUI.dropdown(self, elements, spacing, font, bgcol, txtcol, activecol, pos)
+        d = dropdown(self, elements, spacing, font, bgcol, txtcol, activecol, pos)
         if d is False:
             self.run = False
         return d
@@ -569,7 +569,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             Element: The created element
         """
         func = lambda t: font.render(t, txtcol, allowed_width=allowed_width)
-        sur = func(txt)
         btn = GUI.Button(self, position, col, func, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
         self.Stuff['buttons'].append(btn)
         if callback != None:

@@ -66,8 +66,8 @@ def GGraphicsDemo():
             G.add_empty_space(LBOT, 0, 20)
             G.add_button('Button 1 :D', GO.CYELLOW, LBOT)
             G.add_text('Buttons above [^] and below [v]', GO.CBLUE, LBOT)
-            G.add_button('Textbox test', GO.CBLUE, LBOT)
-            G.add_button('Loading test', GO.CGREEN, LBOT)
+            G.Container.TextboxBtn = G.add_button('Textbox test', GO.CBLUE, LBOT)
+            G.Container.LoadingBtn = G.add_button('Loading test', GO.CGREEN, LBOT)
             G.Container.exitbtn = G.add_button('EXIT', GO.CRED, GO.PLCENTER)
             G.add_empty_space(CTOP, -150, 0) # Center it a little more
             G.add_text('Are you ', GO.CBLACK, CTOP)
@@ -102,12 +102,12 @@ def GGraphicsDemo():
                 # UID gets generated based off order: so UID of 2 means second thing created that makes a UID.
                 # When you create a thing that makes a UID it returns it. e.g. button1 = G.add_button(etc.)
                 # So in that example button1 is the UID. Maybe try saving it to the container tho! Example shown by the exit button.
-                if element == 2:
+                if element == G.Container.LoadingBtn:
                     succeeded, ret = test_loading()
                     G.Container.txt.set('Ran for %i seconds%s' % (ret.i+1, (' Successfully! :)' if succeeded else ' And failed :(')))
                 elif element == G.Container.exitbtn:
                     G.Abort()
-                elif element == 1:
+                elif element == G.Container.TextboxBtn:
                     bot = GO.PNEW((0, 0), GO.PCBOTTOM.func, 1)
                     G.add_TextBox('HALLOOOO! :)', bot)
                     G.Container.idx = 0
@@ -121,11 +121,10 @@ def GGraphicsDemo():
                     element.remove()
             elif element.type == GO.TINPUTBOX:
                 G.Container.txt.set(element.get().strip())
-                element.remove()
-        elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
+        elif event == GO.EEVENT: # When something like a mouse or keyboard button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.KEYDOWN:
                 if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
-                    G.Container.txt.set('Saved! (Don\'t worry - this does nothing)')
+                    G.Toast('Saved! (Don\'t worry - this does nothing)')
             elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
                 opts = ['HI', 'BYE', 'HI AGAIN']
                 resp = G.Dropdown(opts)

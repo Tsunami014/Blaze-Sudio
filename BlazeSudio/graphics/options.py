@@ -241,6 +241,8 @@ class F___:
         tuple[int,int]
             The winSze of the output font
         """
+        if txt == '':
+            return (0, 0)
         surs = self.split(txt, (0, 0, 0))
         return (sum([i.get_width() for i in surs]), max([i.get_height() for i in surs]))
 
