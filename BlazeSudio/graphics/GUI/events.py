@@ -42,14 +42,13 @@ def dropdown(G, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 
 class Toast(Element):
     type = GO.TTOAST
     def __init__(self, G, pos, surf, dist, timeout):
-        super().__init__(G, pos)
-        find = lambda poss: poss()
+        super().__init__(G, pos, surf.get_size())
         rnd = lambda inp: [round(inp[0]), round(inp[1])]
         self.surf = surf
-        endpos = find(pos)
+        endpos = self.stackP() # TODO: Make this not use all the previous positions in the stack; i.e. be it's own separate position for just long enough for this to live and die
         bottompos = (endpos[0]+pos.stack[0]*dist, endpos[1]+pos.stack[1]*dist) # New pos
-        self.curPos = rnd(find(bottompos))
-        self.end = rnd(find(bottompos))
+        self.curPos = rnd(bottompos)
+        self.end = rnd(bottompos)
         self.goto = rnd(endpos)
         self.initdist = 255 / self.dist()
         self.timeout = timeout
