@@ -11,7 +11,7 @@ from BlazeSudio.graphics.loading import (
 )
 from BlazeSudio.graphics import stacks as STACKS
 import BlazeSudio.graphics.GUI.elements as GUI
-from BlazeSudio.graphics.GUI import ColourPickerBTN, dropdown
+from BlazeSudio.graphics.GUI import ColourPickerBTN, dropdown, Toast
 from BlazeSudio.graphics.GUI.textboxify.borders import LIGHT
 
 # TODO: make initial creation of elements faster
@@ -426,7 +426,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         pygame.draw.rect(sur, col, sur.get_rect(), border_radius=spacing)
         sur.blit(txt, (spacing, spacing))
 
-        t = GUI.Toast(self, sur, dist, timeout)
+        t = Toast(self, pos, sur, dist, timeout)
         self.Stuff['toasts'].append(t)
         return t
 
