@@ -134,11 +134,9 @@ class ColourPicker:
 
 class ColourPickerBTN(Element):
     type = GO.TCOLOURPICK
-    def __init__(self, G, x, y, size=20, sizeofpicker=200):
-        super().__init__(G)
+    def __init__(self, G, pos, size=20, sizeofpicker=200):
+        super().__init__(G, pos, (size, size))
         self.sop = sizeofpicker
-        self.size = size
-        self.pos = (x, y)
         self.picker = ColourPicker(0, 0, border=self.sop//10, w=self.sop)
         self.picker.p = (0, 0.5)
         self.active = False
@@ -160,28 +158,27 @@ class ColourPickerBTN(Element):
         if self.G.pause:
             self.active = False
         mouse_buttons = pygame.mouse.get_pressed()
-        rect = pygame.Rect(*self.pos, self.size, self.size)
+        x, y = self.stackP()
+        rect = pygame.Rect(x, y, *self.size)
         if not self.G.pause:
             if mouse_buttons[0] and rect.collidepoint(mousePos):
                 s = self.picker.get_size()
-                if self.pos[0] - s[0] < 0 and self.pos[1] - s[1] < 0:
-                    self.picker.set_position(self.pos[0]+self.size*2, self.pos[1]+self.size*2)
-                elif self.pos[0] - s[0] < 0:
-                    self.picker.set_position(self.pos[0]+self.size*2, self.pos[1]-s[1]+20)
-                elif self.pos[1] - s[1] < 0:
-                    self.picker.set_position(self.pos[0]-s[0]+20, self.pos[1]+self.size*2)
+                if x - s[0] < 0 and y - s[1] < 0:
+                    self.picker.set_position(x+self.size*2, y+self.size*2)
+                elif x - s[0] < 0:
+                    self.picker.set_position(x+self.size*2, y-s[1]+20)
+                elif y - s[1] < 0:
+                    self.picker.set_position(x-s[0]+20, y+self.size[0]*2)
                 else:
-                    self.picker.set_position(self.pos[0]-s[0]+20, self.pos[1]-s[1]+20)
+                    self.picker.set_position(x-s[0]+20, y-s[1]+20)
                 self.active = True
             elif mouse_buttons[0] and not rect.collidepoint(mousePos) and not pygame.Rect(self.picker.rect.x, self.picker.rect.y, *self.picker.get_size()).collidepoint(mousePos):
                 self.active = False
         if self.active:
             self.picker.update(mousePos)
-        self.draw()
-    
-    def draw(self):
+        
         if self.active:
             self.picker.draw(self.G.WIN)
-        pygame.draw.rect(self.G.WIN, (0, 0, 0), (self.pos[0]-2, self.pos[1]-2, self.size+4, self.size+4), border_radius=8)
-        pygame.draw.rect(self.G.WIN, (255, 255, 255), pygame.Rect(*self.pos, self.size, self.size), border_radius=8)
-        pygame.draw.rect(self.G.WIN, self.get_colour(), (self.pos[0]+self.size//4, self.pos[1]+self.size//4, self.size-self.size//2, self.size-self.size//2), border_radius=8)
+        pygame.draw.rect(self.G.WIN, (0, 0, 0), (x-2, y-2, self.size[0]+4, self.size[1]+4), border_radius=8)
+        pygame.draw.rect(self.G.WIN, (255, 255, 255), pygame.Rect(x, y, *self.size), border_radius=8)
+        pygame.draw.rect(self.G.WIN, self.get_colour(), (x+self.size[0]//4, y+self.size[1]//4, self.size[0]-self.size[0]//2, self.size[1]-self.size[1]//2), border_radius=8)

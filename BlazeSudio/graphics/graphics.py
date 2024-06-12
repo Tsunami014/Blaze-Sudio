@@ -3,30 +3,26 @@ import pygame
 pygame.init()
 
 from BlazeSudio.graphics import stuff as GS
-from BlazeSudio.graphics import elements as GE
 from BlazeSudio.graphics import options as GO
 from BlazeSudio.graphics.loading import (
     LoadingDecorator, 
     IsLoading, 
     Progressbar
 )
-from BlazeSudio.graphics.GUI import ( # TODO: Replace 'Switch' with 'GUI.Switch'
-    TextBoxFrame, 
-    InputBox, 
-    Switch, 
-    dropdown, 
-    NumInputBox, 
-    Scrollable, 
-    ColourPickerBTN, 
-    Toast,
-    ReturnState
-)
+from BlazeSudio.graphics import stacks as STACKS
+import BlazeSudio.graphics.GUI.elements as GUI
+from BlazeSudio.graphics.GUI import ColourPickerBTN
 from BlazeSudio.graphics.GUI.textboxify.borders import LIGHT
 
-# TODO: make pstacks dynamic
 # TODO: make initial creation of elements faster
 
-class GScrollable(Scrollable):
+# Graphics elements # TODO:
+# [ ] Checkbox
+# [ ] Slider / progressbar (combine into one)
+# [ ] Tabbed layout
+# [ ] Any sort of layout, really (Just use things like scrollables) (Maybe in a new file)
+
+class GScrollable(GUI.Scrollable):
     def __init__(self, G, pos, goalrect, sizeOfScreen, outline, bar):
         super().__init__(G, pos, goalrect, (0, sizeOfScreen[1]-goalrect[1]), outline, bar)
         self.events = []
@@ -64,8 +60,9 @@ class GScrollable(Scrollable):
     
     def getmouse(self):
         p = pygame.mouse.get_pos() # TODO: add support for Scrollables in Scrollables by changing this line
-        np = (p[0]-self.pos[0], p[1]-self.pos[1]-self.scroll)
-        if np[0] > self.goalrect[0] or p[1]-self.pos[1] > self.goalrect[1]: return (float('-inf'), float('-inf'))
+        x, y = self.stackP()
+        np = (p[0]-x, p[1]-y-self.scroll)
+        if np[0] > self.size[0] or p[1]-y > self.size[1]: return (float('-inf'), float('-inf'))
         return np
 
 class TerminalBar:
@@ -158,6 +155,7 @@ class Graphic:
             GraphicInfo.GRAPHICSPROCESSES[self.id] = 0
         self.bgcol = bgcol
         self.clock = pygame.time.Clock()
+        self.stacks = STACKS.Stack()
         self.Stuff = GS.Collection()
         # Watch is for elements that should always exist
         self.Stuff.watch.add_many((
@@ -169,11 +167,12 @@ class Graphic:
             'input_boxes',
             'scrollsables',
             'cps', # ColourPickerS
+            'Empties',
         ))
         # Sprites are for things that may get deleted and nothing should happen because of it
         self.Stuff.sprites.add_many((
             'toasts',
-            'TextBoxes'
+            'TextBoxes',
         ))
         self.store = {}
         self.rel = False
@@ -302,7 +301,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                 GraphicInfo.GRAPHICSPROCESSES[self.id] += 1
                 GraphicInfo.RUNNINGGRAPHIC = (self.id, idx)
             def func(event, element=None, aborted=False):
-                stacks = GO.PSTACKS.copy()
                 pidx = GO.PIDX
                 if event == GO.EELEMENTCLICK and element in self.callbacks:
                     ret = self.callbacks[element](element)
@@ -312,7 +310,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                     ret = funcy(slf, event, *args, element=element, aborted=aborted, **kwargs)
                 if self.id is not None:
                     GraphicInfo.RUNNINGGRAPHIC = (self.id, idx)
-                GO.PSTACKS = stacks
                 GO.PIDX = pidx
                 return ret
             cont = copy(self.Container)
@@ -334,18 +331,18 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                         continue
                     
                     for ret in retValue.get():
-                        if ret == ReturnState.ABORT:
+                        if ret == GUI.ReturnState.ABORT:
                             self.Abort()
-                        elif ret == ReturnState.CALL:
+                        elif ret == GUI.ReturnState.CALL:
                             r = func(GO.EELEMENTCLICK, obj)
                             if r != None:
                                 self.run = False
                                 yield [r]
-                        elif ret == ReturnState.TBUTTON:
+                        elif ret == GUI.ReturnState.TBUTTON:
                             obj.update(mousepos(), evnts.copy(), True) # Redraw forcefully on top of everything else
-                if self.Stuff.diff() or self.rel:
-                    self.rel = False
-                    func(GO.ELOADUI)
+                #if self.Stuff.diff() or self.rel: # TODO: remove
+                #    self.rel = False
+                #    func(GO.ELOADUI)
                 self.TB.update()
                 if func(GO.ETICK) is False:
                     self.run = False
@@ -429,15 +426,13 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         pygame.draw.rect(sur, col, sur.get_rect(), border_radius=spacing)
         sur.blit(txt, (spacing, spacing))
 
-        bpos = GO.PSTACKS[pos][1](self.size, sur.get_size()) # Basic/Bottom pos
-        npos = (bpos[0]+GO.PSTACKS[pos][0][0]*dist, bpos[1]+GO.PSTACKS[pos][0][1]*dist) # New pos
-        t = Toast(self, sur, npos, bpos, timeout)
+        t = GUI.Toast(self, sur, dist, timeout)
         self.Stuff['toasts'].append(t)
         return t
 
     def Dropdown(self, elements, spacing=5, font=GO.FFONT, activecol=GO.CACTIVE, bgcol=GO.CBLACK, txtcol=GO.CWHITE, pos=None):
-        """Spawns a dropdown!
-        This will pause everything else! You will need to click out of the dropdown to exit it.
+        """Spawns a GUI.dropdown!
+        This will pause everything else! You will need to click out of the GUI.dropdown to exit it.
 
         Parameters
         ----------
@@ -450,11 +445,11 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         activecol : tuple[int, int, int], optional
             The colour when you hover your mouse over an option, by default GO.CACTIVE
         bgcol : tuple[int, int, int], optional
-            The colour of the background of the dropdown, by default GO.CBLACK
+            The colour of the background of the GUI.dropdown, by default GO.CBLACK
         txtcol : tuple[int, int, int], optional
-            The colour of the text of the dropdown, by default GO.CWHITE
+            The colour of the text of the GUI.dropdown, by default GO.CWHITE
         pos : tuple[int, int], optional
-            The position of the dropdown, by default the mouse location
+            The position of the GUI.dropdown, by default the mouse location
         For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
 
         Returns
@@ -463,7 +458,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The index of the input elements list that was selected, else None if nothing selected
             False if you exited from the menu using escape or closing the window. This will also exit the GUI.
         """
-        d = dropdown(self, elements, spacing, font, bgcol, txtcol, activecol, pos)
+        d = GUI.dropdown(self, elements, spacing, font, bgcol, txtcol, activecol, pos)
         if d is False:
             self.run = False
         return d
@@ -501,10 +496,9 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
-        func = lambda t: font.render(t, colour, allowed_width=allowed_width)
+        func = lambda t: font.render(t, colour, allowed_width=allowed_width) # TODO: Remove this and implement it in the text class itself
         obj = func(txt)
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
-        t = GE.Text(self, func, txt, pos)
+        t = GUI.Text(self, position, func, txt)
         self.Stuff['text'].append(t)
         return t
     
@@ -522,8 +516,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, obj.get_size()), obj.get_size(), position)
-        s = GE.Static(self, obj, pos)
+        s = GUI.Static(self, position, obj)
         self.Stuff['surs'].append(s)
         return s
     
@@ -539,8 +532,14 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The width of the empty space (can be negative to push the elements back)
         hei : int
             The height of the empty space (can be negative to push the elements back)
+        
+        Returns
+        -------
+            Element: The created element (which is the blank space)
         """
-        self.pos_store(GO.PSTACKS[position][1](self.size, (wid, hei)), (wid, hei), position)
+        space = GUI.Empty(self, position, (wid, hei))
+        self.Stuff['Empties'].append(space)
+        return space
     
     def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, allowed_width=900, on_hover_enlarge=True, callback=None):
         """Adds a button to the GUI!
@@ -571,10 +570,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         """
         func = lambda t: font.render(t, txtcol, allowed_width=allowed_width)
         sur = func(txt)
-        sze = [sur.get_width() + 20, sur.get_height() + 20]
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
-        r = pygame.Rect(*pos, *sze)
-        btn = GE.Button(self, r, pos, col, func, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
+        btn = GUI.Button(self, position, col, func, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
         self.Stuff['buttons'].append(btn)
         if callback != None:
             self.callbacks[btn] = callback
@@ -601,9 +597,9 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         
         Returns
         -------
-            TextBoxFrame: The created element
+            GUI.TextBoxFrame: The created element
         """
-        dialog_box = TextBoxFrame( # TODO: Make more integrated with the rest of the graphics
+        dialog_box = GUI.TextBoxFrame( # TODO: Make more integrated with the rest of the graphics
             text=txt,
             text_width=320,
             lines=2,
@@ -617,8 +613,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         
         dialog_box.set_indicator(indicator)
         dialog_box.set_portrait(portrait)
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, dialog_box.rect.size), dialog_box.rect.size, position)
-        dialog_box.rect.topleft = pos
+        dialog_box.rect.topleft = position # TODO: Fix
         self.Stuff['TextBoxes'].append(dialog_box)
         self.pause = True
         if callback != None:
@@ -655,11 +650,15 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
-        sze = list(font.size(placeholder))
+        sze = list(font.winSze(placeholder))
+        if maximum is None:
+            maximum = sze+5
+        if width is not None:
+            sze[0] = width+5
+        else:
+            sze[0] += 5
         sze[1] += 10
-        if width != None: sze[0] = width
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
-        ibox = InputBox(self, *pos, *sze, resize, placeholder, font, maximum, start) # TODO: Positioning and custom width & height & resize
+        ibox = GUI.InputBox(self, position, sze, resize, placeholder, font, maximum, start) # TODO: Positioning and custom width & height & resize
         self.Stuff['input_boxes'].append(ibox)
         if callback != None:
             self.callbacks[ibox] = callback
@@ -692,12 +691,12 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
-        sze = list(font.size(str(start)))
-        if width != None: sze[0] = font.size('9'*width)[0]+5
+        sze = list(font.winSze(str(start)))
+        if width is not None:
+            sze[0] = font.winSze('9'*width)[0]+5
         sze[0] += 5
         sze[1] += 10
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
-        ibox = NumInputBox(self, *pos, *sze, resize, start, *bounds, font) # TODO: Positioning and custom width & height & resize
+        ibox = GUI.NumInputBox(self, position, sze, resize, start, *bounds, font) # TODO: Positioning and custom width & height & resize
         self.Stuff['input_boxes'].append(ibox)
         if callback != None:
             self.callbacks[ibox] = callback
@@ -722,9 +721,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
-        sze = (size*1.5, size*1.5)
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, sze), sze, position)
-        sw = Switch(self, pos[0]+size/4, pos[1]+size/4, size, 2, default)
+        sw = GUI.Switch(self, position, size, 2, default)
         self.Stuff['switches'].append(sw)
         if callback != None:
             self.callbacks[sw] = callback
@@ -747,13 +744,12 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, (size, size)), (size, size), position)
-        btn = ColourPickerBTN(self, *pos, size, sow)
+        btn = ColourPickerBTN(self, position, size, sow)
         self.Stuff['cps'].append(btn)
         return btn
     
     def add_Scrollable(self, position, size, sos, outline=10, bar=True):
-        """Adds a Scrollable window to the Graphic screen!
+        """Adds a GUI.Scrollable window to the Graphic screen!
         This is like another really tiny Graphic screen inside the big one, but the tiny one you can scroll!
 
         Parameters
@@ -777,24 +773,9 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         tuple[Graphic, Element]
             (The Graphic class created which is put onto the main one, the Element which is the new scrollable)
         """
-        # TODO: FIX POSITIONING
-        pos = self.pos_store(GO.PSTACKS[position][1](self.size, size), size, position)
-        s = GScrollable(self, pos, size, sos, outline, bar)
+        s = GScrollable(self, position, size, sos, outline, bar)
         self.Stuff['scrollsables'].append(s)
         return s.newG, s
-    
-    def pos_store(self, pos, sze, func):
-        sizeing = GO.PSTACKS[func][0]
-        if func not in self.store:
-            self.store[func] = [sze[0]*sizeing[0], sze[1]*sizeing[1]]
-            return pos
-        pos2 = [None, None]
-        if pos[0] < 0: pos2[0] = pos[0]+(0-self.store[func][0])*sizeing[0]
-        else: pos2[0] = pos[0]+self.store[func][0]
-        if pos[1] < 0: pos2[1] = pos[1]+(0-self.store[func][1])*sizeing[1]
-        else: pos2[1] = pos[1]+self.store[func][1]
-        self.store[func] = [self.store[func][0] + sze[0]*sizeing[0], self.store[func][1] + sze[1]*sizeing[1]]
-        return pos2
     
     def Reload(self):
         """
@@ -810,6 +791,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         self.pause = False
         self.callbacks = {}
         self.Stuff.clear()
+        self.stacks.clear()
     
     def Abort(self, *args):
         self.ab = True
