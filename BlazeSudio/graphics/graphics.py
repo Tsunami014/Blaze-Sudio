@@ -541,7 +541,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         self.Stuff['Empties'].append(space)
         return space
     
-    def add_button(self, txt, col, position, txtcol=GO.CBLACK, font=GO.FFONT, allowed_width=900, on_hover_enlarge=True, callback=None):
+    def add_button(self, txt, col, position, spacing=5, txtcol=GO.CBLACK, font=GO.FFONT, allowed_width=900, on_hover_enlarge=True, callback=None):
         """Adds a button to the GUI!
 
         Parameters
@@ -552,6 +552,8 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The colour of the button. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
         position : GO.P___ (e.g. GO.PRBOTTOM)
             The position on the screen this element will be placed
+        spacing : int, optional
+            The spacing of the button's text to the outside of the button, by default 5
         txtcol : tuple[int, int, int], optional
             The colour of the text. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN), by default GO.CBLACK
         font : GO.FNEW, optional
@@ -568,8 +570,8 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
-        func = lambda t: font.render(t, txtcol, allowed_width=allowed_width)
-        btn = GUI.Button(self, position, col, func, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
+        func = lambda t: font.render(t, txtcol, allowed_width=allowed_width) # TODO: Make this rendering built into the button class
+        btn = GUI.Button(self, position, col, spacing, func, txt, (-1 if on_hover_enlarge==False else (10 if on_hover_enlarge==True else on_hover_enlarge)))
         self.Stuff['buttons'].append(btn)
         if callback != None:
             self.callbacks[btn] = callback
