@@ -47,8 +47,8 @@ def GGraphicsDemo():
     @G.Graphic
     def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
         if event == GO.ELOADUI: # Load the graphics in!
-            CTOP = GO.PNEW([1, 0], GO.PSTACKS[GO.PCTOP][1]) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
-            LBOT = GO.PNEW([0, -1], GO.PSTACKS[GO.PLBOTTOM][1])
+            CTOP = GO.PNEW((1, 0), GO.PCTOP.func) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
+            LBOT = GO.PNEW((0, -1), GO.PLBOTTOM.func)
             # Attempt to load previous values
             try:
                 prevs = [i.get() for i in (G.Container.switches+[G.Container.numinp,G.Container.inp])] + [G.Container.colour.picker.p]
@@ -108,7 +108,7 @@ def GGraphicsDemo():
                 elif element == G.Container.exitbtn:
                     G.Abort()
                 elif element == 1:
-                    bot = GO.PNEW([0, 0], GO.PSTACKS[GO.PCBOTTOM][1], 1)
+                    bot = GO.PNEW((0, 0), GO.PCBOTTOM.func, 1)
                     G.add_TextBox('HALLOOOO! :)', bot)
                     G.Container.idx = 0
                 else:

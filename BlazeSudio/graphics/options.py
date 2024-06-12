@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from re import T
+from types import FunctionType
+from typing import Any
 import pygame
 import pygame.freetype
 from string import printable
@@ -71,9 +72,9 @@ SDUPDOWN =    SD__(1)
 
 # Fonts
 class F___:
-    def __init__(self, name, size, bold=False, italic=False):
-        self.font = pygame.font.SysFont(name, size, bold, italic)
-        self.emojifont = pygame.freetype.SysFont('segoeuisymbol', size, bold, italic)
+    def __init__(self, name, winSze, bold=False, italic=False):
+        self.font = pygame.font.SysFont(name, winSze, bold, italic)
+        self.emojifont = pygame.freetype.SysFont('segoeuisymbol', winSze, bold, italic)
     def render(self, txt, col, updownweight=SWMID, leftrightweight=SWMID, allowed_width=None, renderdash=True):
         """
         Renders some text with emoji support!
@@ -120,24 +121,24 @@ class F___:
                     line_words = []
                     while len(words) > 0:
                         line_words.append(words.pop(0))
-                        fw, fh = self.size(' '.join(line_words + words[:1]))
+                        fw, fh = self.winSze(' '.join(line_words + words[:1]))
                         if fw > allowed_width:
                             break
                     # add a line consisting of those words
                     line = ' '.join(line_words)
-                    if len(line_words) == 1 and self.size(line_words[0])[0] > allowed_width:
+                    if len(line_words) == 1 and self.winSze(line_words[0])[0] > allowed_width:
                         out = []
                         line = ''
                         for i in line_words[0]:
                             if renderdash:
-                                fw, fh = self.size(line+'--')
+                                fw, fh = self.winSze(line+'--')
                                 if fw > allowed_width:
                                     out.append(line+'-')
                                     line = i
                                 else:
                                     line += i
                             else:
-                                fw, fh = self.size(line+'-')
+                                fw, fh = self.winSze(line+'-')
                                 if fw > allowed_width:
                                     out.append(line)
                                     line = i
@@ -226,19 +227,19 @@ class F___:
                 pos += i.get_height()
         return sur  
     
-    def size(self, txt):
+    def winSze(self, txt):
         """
-        Gets the size of the font if you render a certain text!
+        Gets the winSze of the font if you render a certain text!
 
         Parameters
         ----------
         txt : str
-            The text to render and see the size of
+            The text to render and see the winSze of
 
         Returns
         -------
         tuple[int,int]
-            The size of the output font
+            The winSze of the output font
         """
         surs = self.split(txt, (0, 0, 0))
         return (sum([i.get_width() for i in surs]), max([i.get_height() for i in surs]))
@@ -251,57 +252,49 @@ FFONT =     F___(None, 52)
 FSMALL =    F___(None, 32)
 
 # Positions
-@Base
+@Base(str=False)
 class P___:
     idx: int
     lmr: int | None # Left(0) Middle(1) Right(2)
     umd: int | None # Up(0) Middle(1) Down(2)
+    stack: tuple[int,int]
+    func: FunctionType
+    
+    def __call__(self, winSze, objSze, sumSze):
+        out = self.func(winSze, objSze)
+        return [out[0] + sumSze[0]*self.stack[0], out[1] + sumSze[1]*self.stack[1]]
+    
+    def __str__(self):
+        return f'<Position {"None" if self.lmr is None else ["Left", "Middle", "Right"][self.lmr]} {"None" if self.umd is None else ["Up", "Middle", "Down"][self.umd]} stacking {self.stack}>'
+    def __repr__(self): return str(self)
 
-PLTOP =    P___(0, 0, 0)
-PLCENTER = P___(1, 0, 1)
-PLBOTTOM = P___(2, 0, 2)
-PCTOP =    P___(3, 1, 0)
-PCCENTER = P___(4, 1, 1)
-PCBOTTOM = P___(5, 1, 2)
-PRTOP =    P___(6, 2, 0)
-PRCENTER = P___(7, 2, 1)
-PRBOTTOM = P___(8, 2, 2)
-PFILL =    P___(9, None, None)
-
-# Stacks. Don't use unless you know what you're doing
-PSTACKS = {
-    PLTOP:    ([1, 0],  lambda size, sizeofobj: (0, 0)),
-    PLCENTER: ([1, 0],  lambda size, sizeofobj: (0, round(size[1]/2-sizeofobj[1]/2))),
-    PLBOTTOM: ([1, 0],  lambda size, sizeofobj: (0, size[1]-sizeofobj[1])),
-    PCTOP:    ([0, 1],  lambda size, sizeofobj: (round(size[0]/2-sizeofobj[0]/2), 0)),
-    PCCENTER: ([0, 1],  lambda size, sizeofobj: (round(size[0]/2-sizeofobj[0]/2), round(size[1]/2-sizeofobj[1]/2))),
-    PCBOTTOM: ([0, -1], lambda size, sizeofobj: (round(size[0]/2-sizeofobj[0]/2), size[1]-sizeofobj[1])),
-    PRTOP:    ([-1, 0], lambda size, sizeofobj: (size[0]-sizeofobj[0], 0)),
-    PRCENTER: ([-1, 0], lambda size, sizeofobj: (size[0]-sizeofobj[0], round(size[1]/2-sizeofobj[1]/2))),
-    PRBOTTOM: ([-1, 0], lambda size, sizeofobj: (size[0]-sizeofobj[0], size[1]-sizeofobj[1])),
-    PFILL:    ([0, 0],  lambda size, sizeofobj: (0, 0))
-}
+PLTOP =    P___(0, 0, 0, (1, 0),  lambda _, __: (0, 0))
+PLCENTER = P___(1, 0, 1, (1, 0),  lambda winSze, objSze: (0, round(winSze[1]/2-objSze[1]/2)))
+PLBOTTOM = P___(2, 0, 2, (1, 0),  lambda winSze, objSze: (0, winSze[1]-objSze[1]))
+PCTOP =    P___(3, 1, 0, (0, 1),  lambda winSze, objSze: (round(winSze[0]/2-objSze[0]/2), 0))
+PCCENTER = P___(4, 1, 1, (0, 1),  lambda winSze, objSze: (round(winSze[0]/2-objSze[0]/2), round(winSze[1]/2-objSze[1]/2)))
+PCBOTTOM = P___(5, 1, 2, (0, 1),  lambda winSze, objSze: (round(winSze[0]/2-objSze[0]/2), winSze[1]-objSze[1]))
+PRTOP =    P___(6, 2, 0, (-1, 0), lambda winSze, objSze: (winSze[0]-objSze[0], 0))
+PRCENTER = P___(7, 2, 1, (-1, 0), lambda winSze, objSze: (winSze[0]-objSze[0], round(winSze[1]/2-objSze[1]/2)))
+PRBOTTOM = P___(8, 2, 2, (-1, 0), lambda winSze, objSze: (winSze[0]-objSze[0], winSze[1]-objSze[1]))
+PFILL =    P___(9, None, None, (0, 0), lambda _, __: (0, 0))
 
 PIDX = 0 # DO NOT USE UNLESS YOU REALLY KNOW WHAT YOU'RE DOING
 
-def PNEW(stack, func, idx=None, lmr=None, umd=None): # To create new layouts
+def PNEW(stack, func, lmr=None, umd=None, idx=None): # To create new layouts
     # TODO: Make this able to take PRTOP as func and work out the function itself
     global PIDX
-    if idx == None:
+    if idx is None:
         idx = PIDX
         PIDX += 1
-    pos = P___(idx+10, lmr, umd)
-    PSTACKS[pos] = (stack, func)
-    return pos
+    return P___(idx+10, lmr, umd, stack, func)
 
 def PSTATIC(x, y, idx=None): # To put an element at a specific x and y location
     global PIDX
-    if idx == None:
+    if idx is None:
         idx = PIDX
         PIDX += 1
-    pos = P___(idx+10, None, None)
-    PSTACKS[pos] = ([0, 0], lambda _, __: (x, y))
-    return pos
+    return P___(idx+10, None, None, (0, 0), lambda _, __: (x, y))
 
 # Events
 @Base
@@ -334,6 +327,7 @@ TSCROLLABLE = T___(5, 'Scrollable')
 TSTATIC =     T___(6, 'Static'    )
 TCOLOURPICK = T___(7, 'ColourPick')
 TTOAST =      T___(8, 'Toast'     )
+TEMPTY =      T___(9, 'Empty'     )
 
 
 # Resizes

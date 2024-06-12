@@ -206,8 +206,8 @@ if __name__ == '__main__':
                     def still_in_progress(_):
                         G.Toast('THIS IS STILL IN PROGRESS!')
 
-                    LTOP = GO.PNEW([1, 1], GO.PSTACKS[GO.PLTOP][1])
-                    RBOT = GO.PNEW([-1, -1], GO.PSTACKS[GO.PRBOTTOM][1])
+                    LTOP = GO.PNEW((1, 1), GO.PLTOP.func)
+                    RBOT = GO.PNEW((-1, -1), GO.PRBOTTOM.func)
                     ng.add_empty_space(LTOP, 20, 20)
                     ng.add_button('Close', GO.CBLUE, LTOP, callback=close)
                     ng.add_empty_space(GO.PLCENTER, 20, 0)
@@ -272,7 +272,7 @@ if __name__ == '__main__':
                 else: 
                     G.add_text(''.join(G.Container.msgs), GO.CBLACK, GO.PCCENTER, allowed_width=900)
                     if G.Container.inputting[0]:
-                        BOT = GO.PNEW([1, 0], GO.PSTACKS[GO.PCBOTTOM][1])
+                        BOT = GO.PNEW((1, 0), GO.PCBOTTOM.func)
                         G.add_text(G.Container.inputting[2], GO.CBLACK, BOT)
                         G.add_input(BOT, resize=GO.RWIDTH)
             elif event == GO.ETICK:
@@ -330,7 +330,7 @@ if __name__ == '__main__':
                         font.render(i, GO.CBLACK, allowed_width=aw).get_size()[1]  for i in dems
                     ]),
                 G.size[1])+40)
-                LTOP = GO.PNEW([1, 1], GO.PSTACKS[GO.PLTOP][1])
+                LTOP = GO.PNEW((1, 1), GO.PLTOP.func)
                 _, newG = G.add_Scrollable(GO.PLTOP, G.size, size)
                 newG.add_empty_space(LTOP, 20, 20)
                 newG.add_button('Back', GO.CGREY, LTOP, font=font, callback=G.Abort)
@@ -346,7 +346,7 @@ if __name__ == '__main__':
         def welcome(self, event, element=None, aborted=False):
             if event == GO.ELOADUI:
                 G.Clear()
-                CBOT = GO.PNEW([1, 0], GO.PSTACKS[GO.PCBOTTOM][1])
+                CBOT = GO.PNEW((1, 0), GO.PCBOTTOM.func)
                 G.add_empty_space(CBOT, -100, 0)
                 G.add_text('Welcome to...\nBlaze Sudios! 🦊', GO.CBLUE, GO.PCCENTER, GO.FTITLE)
                 G.add_button('Start', GO.CGREEN, CBOT)

@@ -1,17 +1,28 @@
 from enum import Enum
+from typing import Any
 import pygame
 from BlazeSudio.graphics import options as GO
+from BlazeSudio.graphics.stacks import StackPart
 
 class Element:
     NEXT_UID = [0]
     type = None
-    def __init__(self, G):
+    def __init__(self, G, pos, size):
         self.G = G
+        self.pos = pos
+        self.size = size
+        self.stackP = StackPart(G.stacks, pos, size, G.WIN.get_size())
         self.uid = self.NEXT_UID[0]
         self.NEXT_UID[0] += 1
     
     def remove(self):
+        self.stackP.remove()
         self.G.Stuff.remove(self)
+    
+    def change_pos(self, newPos):
+        self.stackP.remove()
+        self.pos = newPos
+        self.stackP = StackPart(self.G.stacks, newPos, self.size, self.G.WIN.get_size())
     
     # Required subclass functions
     def update(self, mousePos, events):
@@ -29,6 +40,11 @@ class Element:
     
     def __hash__(self):
         return hash(self.uid)
+    
+    def __setattr__(self, name: str, value: Any) -> None:
+        super().__setattr__(name, value)
+        if name == 'size' and 'stackP' in self.__dict__: # Safeguard against running this before initialisation of stackP
+            self.stackP.setSize(self.size) # Automatically update stackP size whenever you set self.size
     
     def __str__(self):
         return f'<{self.__class__.__name__}({str(self.get())})>'
@@ -74,15 +90,11 @@ class ReturnGroup:
 
 class Switch(Element):
     type = GO.TSWITCH
-    def __init__(self, G, x, y, size=20, speed=10, default=False):
-        super().__init__(G)
-        self.pos = (x, y)
-        self.size = size
+    def __init__(self, G, pos, size=20, speed=10, default=False):
+        super().__init__(G, pos, (size, size/2))
         self.anim = 0
         self.speed = speed
         self.state = default
-        self.rect = pygame.Rect(x, y, size, size)
-        self.barrect = pygame.Rect(x+size/4, y, size, size/2)
     
     def update(self, mousePos, events):
         if self.anim < 0: self.anim = 0
@@ -90,12 +102,13 @@ class Switch(Element):
         if self.anim != (0 if not self.state else 15*self.speed):
             if self.state: self.anim += 1
             else: self.anim -= 1
-        pygame.draw.rect(self.G.WIN, (125, 125, 125), self.barrect, border_radius=self.size)
-        pygame.draw.circle(self.G.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (self.pos[0]+self.size/4+(self.anim/self.speed)*(self.size/20), self.pos[1]+self.size/4), self.size/2)
+        x, y = self.stackP()
+        pygame.draw.rect(self.G.WIN, (125, 125, 125), pygame.Rect(x+self.size[0]/4, y, *self.size), border_radius=self.size[0])
+        pygame.draw.circle(self.G.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (x+self.size[0]/4+(self.anim/self.speed)*(self.size[0]/20), y+self.size[1]/4), self.size[0]/2)
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and not self.G.pause:
                 if event.button == pygame.BUTTON_LEFT:
-                    if self.rect.collidepoint(mousePos):
+                    if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
                         self.state = not self.state
                         return ReturnState.CALL
     
@@ -108,11 +121,10 @@ class Switch(Element):
 
 # InputBoxes code modified from https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame 
 
-class InputBox(Element): # TODO: Make not need separate x, y, w, h, but instead have it get inputted as a rect-like tuple
+class InputBox(Element):
     type = GO.TINPUTBOX
-    def __init__(self, G, x, y, w, h, resize=GO.RWIDTH, placeholder='Type here!', font=GO.FSMALL, maxim=None, starting_text=''):
-        super().__init__(G)
-        self.rect = pygame.Rect(x, y, w, h)
+    def __init__(self, G, pos, sze, resize=GO.RWIDTH, placeholder='Type here!', font=GO.FSMALL, maxim=None, starting_text=''):
+        super().__init__(G, pos, sze)
         self.colour = GO.CINACTIVE
         self.text = starting_text
         self.active = False
@@ -137,16 +149,17 @@ class InputBox(Element): # TODO: Make not need separate x, y, w, h, but instead 
         if txt == '':
             txt = self.blanktxt
             txtcol = GO.CINACTIVE
-        self.txt_surface = self.font.render(txt, txtcol, allowed_width=(None if self.resize == GO.RWIDTH else self.rect.w - 5), renderdash=self.renderdash)
+        self.txt_surface = self.font.render(txt, txtcol, allowed_width=(None if self.resize == GO.RWIDTH else self.size[0] - 5), renderdash=self.renderdash)
         if self.resize == GO.RWIDTH:
-            self.rect.w = self.txt_surface.get_width() + 10
+            self.size[0] = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
-            self.rect.h = self.txt_surface.get_height() + 10
+            self.size[1] = self.txt_surface.get_height() + 10
+        self.stackP.setSize(self.size)
 
     def _handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
-            if self.rect.collidepoint(event.pos):
+            if pygame.Rect(*self.stackP(), *self.size).collidepoint(event.pos):
                 # Toggle the active variable.
                 self.active = not self.active
             else:
@@ -172,17 +185,18 @@ class InputBox(Element): # TODO: Make not need separate x, y, w, h, but instead 
                     return ReturnState.CALL
         self._render_txt()
         # Blit the text.
-        self.G.WIN.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+        x, y = self.stackP()
+        self.G.WIN.blit(self.txt_surface, (x+5, y+5))
         # Blit the rect.
-        pygame.draw.rect(self.G.WIN, self.colour, self.rect, 2)
+        pygame.draw.rect(self.G.WIN, self.colour, pygame.Rect(x, y, *self.size), 2)
     
     def get(self):
         return self.text
 
 class NumInputBox(InputBox):
     type = GO.TNUMBOX
-    def __init__(self, G, x, y, w, h, resize=GO.RWIDTH, start=0, max=float('inf'), min=float('-inf'), font=GO.FSMALL, placeholder='Type number here!'):
-        super().__init__(G, x, y, w, h, resize, placeholder, font, None, starting_text=str(start))
+    def __init__(self, G, pos, sze, resize=GO.RWIDTH, start=0, max=float('inf'), min=float('-inf'), font=GO.FSMALL, placeholder='Type number here!'):
+        super().__init__(G, pos, sze, resize, placeholder, font, None, starting_text=str(start))
         self.realnum = start
         self.limits = (min, max)
         self.renderdash = False
@@ -198,7 +212,7 @@ class NumInputBox(InputBox):
     def _handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
-            if self.rect.collidepoint(event.pos):
+            if pygame.Rect(*self.stackP(), *self.size).collidepoint(event.pos):
                 # Toggle the active variable.
                 self.active = not self.active
             else:
@@ -231,10 +245,8 @@ class NumInputBox(InputBox):
 class Scrollable(Element):
     type = GO.TSCROLLABLE
     def __init__(self, G, pos, goalrect, bounds=(0, float('inf')), outline=10, bar=True, outlinecol=(155, 155, 155)):
-        super().__init__(G)
+        super().__init__(G, pos, goalrect)
         self.bar = bar
-        self.pos = pos
-        self.goalrect = goalrect
         self.scroll = 0
         self.bounds = bounds
         self.outline = (outline, outlinecol)
@@ -251,20 +263,111 @@ class Scrollable(Element):
         for ev in events:
             if ev.type == pygame.MOUSEWHEEL:
                 y = ev.y - 1
-                if 0 <= y <= 1: y = 2
+                if 0 <= y <= 1:
+                    y = 2
                 self.scroll += y * 2
                 self.scroll = -min(max(self.bounds[0], -self.scroll), self.bounds[1])
-        s = pygame.Surface(self.goalrect)
+        s = pygame.Surface(self.size)
         s.blit(self.sur, (0, self.scroll))
-        self.G.WIN.blit(s, self.pos)
-        if self.outline[0] != 0: pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(*self.pos, *self.goalrect), self.outline[0], 3)
+        x, y = self.stackP()
+        self.G.WIN.blit(s, (x, y))
+        if self.outline[0] != 0:
+            pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
         if self.bar:
             try:
                 try:
                     w = self.outline[0]/2
                 except ZeroDivisionError:
                     w = 0
-                p = (self.pos[0]+self.goalrect[0]-w, self.pos[1]+((-self.scroll) / self.bounds[1])*(self.goalrect[1]-40)+20)
+                p = (x+self.size[0]-w, y+((-self.scroll) / self.bounds[1])*(self.size[1]-40)+20)
                 pygame.draw.line(self.G.WIN, (200, 50, 50), (p[0], p[1]-20), (p[0], p[1]+20), 10)
             except:
                 pass
+
+class Empty(Element):
+    type = GO.TEMPTY
+    def __init__(self, G, pos, size):
+        super().__init__(G, pos, size)
+    
+    def get(self):
+        """Get the size"""
+        return self.size
+    
+    def set(self, size):
+        """Set the size"""
+        self.size = size
+
+class Static(Element):
+    type = GO.TSTATIC
+    def __init__(self, G, pos, sur):
+        super().__init__(G, pos, self.sur.get_size())
+        self.sur = sur
+    
+    def get(self):
+        """Get the surface"""
+        return self.sur
+    
+    def set(self, sur):
+        """Set the surface"""
+        self.sur = sur
+        self.size = self.sur.get_size()
+    
+    def update(self, mpos, events):
+        self.G.WIN.blit(self.sur, self.stackP())
+
+class Text(Element):
+    type = GO.TSTATIC
+    def __init__(self, G, pos, func, txt):
+        self.func = func
+        self.set(txt)
+        super().__init__(G, pos, self.sur.get_size())
+    
+    def get(self):
+        """Get the text of this text element"""
+        return self.txt
+    
+    def set(self, newTxt):
+        """Sets the text of this text element"""
+        self.txt = newTxt
+        self.sur = self.func(self.txt)
+        self.size = self.sur.get_size()
+    
+    def update(self, mpos, events):
+        self.G.WIN.blit(self.sur, self.stackP())
+
+
+class Button(Element):
+    type = GO.TBUTTON
+    def __init__(self, G, pos, col, fontfunc, txt, on_hover_enlarge):
+        self.fontFunc = fontfunc
+        self.set(txt) # Sets self.txt and generates self.sur
+        super().__init__(G, pos, self.sur.get_size())
+        self.col = col
+        self.OHE = on_hover_enlarge
+    
+    def get(self):
+        """Get the text on the button"""
+        return self.txt
+    
+    def set(self, newTxt):
+        """Set the text on the button"""
+        self.txt = newTxt
+        self.sur = self.fontFunc(self.txt)
+        self.size = self.sur.get_size()
+    
+    def update(self, mousePos, events, force_draw=False):
+        r = pygame.Rect(*self.stackP(), *self.sur.get_size())
+        if not self.G.pause:
+            if r.collidepoint(mousePos):
+                if self.OHE != -1:
+                    r.x -= self.OHE
+                    r.y -= self.OHE
+                    r.width += self.OHE*2
+                    r.height += self.OHE*2
+                if not force_draw:
+                    if any([i.type == pygame.MOUSEBUTTONDOWN for i in events]):
+                        return ReturnState.CALL + ReturnState.TBUTTON
+                    return ReturnState.TBUTTON
+        pygame.draw.rect(self.G.WIN, self.col, r, border_radius=8)
+        x, y = self.stackP()
+        self.G.WIN.blit(self.sur, (x+10, y+10))

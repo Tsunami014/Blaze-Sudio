@@ -41,13 +41,16 @@ def dropdown(G, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 
 
 class Toast(Element):
     type = GO.TTOAST
-    def __init__(self, G, surf, pos, bottompos, timeout):
-        super().__init__(G)
+    def __init__(self, G, pos, surf, dist, timeout):
+        super().__init__(G, pos)
+        find = lambda poss: poss()
         rnd = lambda inp: [round(inp[0]), round(inp[1])]
         self.surf = surf
-        self.pos = rnd(bottompos)
-        self.end = rnd(bottompos)
-        self.goto = rnd(pos)
+        endpos = find(pos)
+        bottompos = (endpos[0]+pos.stack[0]*dist, endpos[1]+pos.stack[1]*dist) # New pos
+        self.curPos = rnd(find(bottompos))
+        self.end = rnd(find(bottompos))
+        self.goto = rnd(endpos)
         self.initdist = 255 / self.dist()
         self.timeout = timeout
         self.time = 0
@@ -62,25 +65,25 @@ class Toast(Element):
         self.time = t
     
     def dist(self):
-        return sqrt((self.goto[0] - self.pos[0])**2 + (self.goto[1] - self.pos[1])**2)
+        return sqrt((self.goto[0] - self.curPos[0])**2 + (self.goto[1] - self.curPos[1])**2)
     
     def update(self, mousePos, events):
         self.time += 1
         ns = self.surf
-        if self.goto != self.pos:
+        if self.goto != self.curPos:
             if self.living: ns.set_alpha(255-self.initdist*self.dist())
             else: ns.set_alpha(self.initdist*self.dist())
-            if self.goto[0] != self.pos[0]:
-                if self.pos[0] > self.goto[0]: self.pos[0] -= 1
-                else: self.pos[0] += 1
-            if self.goto[1] != self.pos[1]:
-                if self.pos[1] > self.goto[1]: self.pos[1] -= 1
-                else: self.pos[1] += 1
+            if self.goto[0] != self.curPos[0]:
+                if self.curPos[0] > self.goto[0]: self.curPos[0] -= 1
+                else: self.curPos[0] += 1
+            if self.goto[1] != self.curPos[1]:
+                if self.curPos[1] > self.goto[1]: self.curPos[1] -= 1
+                else: self.curPos[1] += 1
         else:
             if not self.living:
                 self.remove()
         if self.time > self.timeout and self.living:
-            self.pos = self.goto
+            self.curPos = self.goto
             self.goto = self.end
             self.living = False
-        self.G.WIN.blit(ns, self.pos)
+        self.G.WIN.blit(ns, self.curPos)
