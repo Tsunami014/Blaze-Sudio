@@ -144,7 +144,7 @@ class InputBox(Element):
     
     def _render_txt(self):
         txtcol = self.colour
-        self.text = self.text[:self.maxim]
+        self.text = self.text.strip('\r\n')[:self.maxim]
         txt = self.text
         if txt == '':
             txt = self.blanktxt
