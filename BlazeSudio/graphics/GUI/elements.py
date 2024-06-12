@@ -154,7 +154,6 @@ class InputBox(Element):
             self.size[0] = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
             self.size[1] = self.txt_surface.get_height() + 10
-        self.stackP.setSize(self.size)
 
     def _handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -320,7 +319,7 @@ class Text(Element):
     def __init__(self, G, pos, func, txt):
         self.func = func
         self.set(txt)
-        super().__init__(G, pos, self.sur.get_size())
+        super().__init__(G, pos, self.size)
     
     def get(self):
         """Get the text of this text element"""
@@ -338,11 +337,12 @@ class Text(Element):
 
 class Button(Element):
     type = GO.TBUTTON
-    def __init__(self, G, pos, col, fontfunc, txt, on_hover_enlarge):
+    def __init__(self, G, pos, col, spacing, fontfunc, txt, on_hover_enlarge):
         self.fontFunc = fontfunc
+        self.spacing = spacing
         self.OHE = on_hover_enlarge
         self.set(txt) # Sets self.txt and generates self.sur
-        super().__init__(G, pos, self.sur.get_size())
+        super().__init__(G, pos, self.size)
         self.col = col
     
     def get(self):
@@ -354,12 +354,14 @@ class Button(Element):
         self.txt = newTxt
         self.sur = self.fontFunc(self.txt)
         s = self.sur.get_size()
-        self.size = (s[0] + self.OHE*2, s[1] + self.OHE*2)
+        self.size = (s[0] + self.OHE*2 + self.spacing*2, s[1] + self.OHE*2 + self.spacing*2)
     
     def update(self, mousePos, events, force_draw=False):
-        r = pygame.Rect(*self.stackP(), *self.sur.get_size())
+        r = pygame.Rect(*self.stackP(), *self.size)
         r.x += self.OHE
         r.y += self.OHE
+        r.width -= self.OHE
+        r.height -= self.OHE
         if not self.G.pause:
             if r.collidepoint(mousePos):
                 if self.OHE != -1:
@@ -372,5 +374,4 @@ class Button(Element):
                         return ReturnState.CALL + ReturnState.TBUTTON
                     return ReturnState.TBUTTON
         pygame.draw.rect(self.G.WIN, self.col, r, border_radius=8)
-        x, y = self.stackP()
-        self.G.WIN.blit(self.sur, (x+10, y+10))
+        self.G.WIN.blit(self.sur, (r.x + (r.width-self.sur.get_width())/2, r.y + (r.height-self.sur.get_height())/2))
