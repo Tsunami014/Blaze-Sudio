@@ -77,7 +77,7 @@ def GGraphicsDemo():
             G.add_empty_space(GO.PCCENTER, 0, 50)
             G.Container.numinp = G.add_num_input(GO.PCCENTER, GO.FFONT, 4, start=prevs[2], bounds=(-255, 255))
             G.Container.switches = [
-                G.add_switch(GO.PRTOP, 40, prevs[0]),
+                G.add_switch(GO.PRTOP, 40, speed=1, default=prevs[0]),
                 G.add_switch(GO.PRTOP, default=prevs[1])
             ]
             G.Container.colour = G.add_colour_pick(GO.PRTOP)
