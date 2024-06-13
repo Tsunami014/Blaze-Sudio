@@ -9,11 +9,11 @@ with codecs.open(os.path.join(here, "readme.md"), encoding="utf-8") as fh:
 
 setup(
     name='Blaze-Sudio',
-    version='2.0.0',
+    version='2.1.0',
     license='Apache',
     description='This is the really cool studio to create games!',
     url='https://github.com/Tsunami014/Blaze-Sudio',
-    download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v2.0.0-beta.tar.gz',
+    download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v2.1.0-beta.tar.gz',
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),
@@ -21,7 +21,7 @@ setup(
     package_data={'BlazeSudio' :['BlazeSudio/data/*', 'BlazeSudio/bot/preferencesDefault.json']},
     author='Tsunami014 (Max)',
     author_email='tsunami014@duck.com',
-    install_requires=[
+    install_requires=[ # TODO: Update this with the actual packages
         'requests',
         'connect-markdown-renderer',
         'pygame',
@@ -37,8 +37,7 @@ setup(
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
         'Topic :: Software Development :: Build Tools',
-        #"Operating System :: Unix",
-        #"Operating System :: MacOS :: MacOS X",
+        "Operating System :: Unix",
         "Operating System :: Microsoft :: Windows"
     ]
 )

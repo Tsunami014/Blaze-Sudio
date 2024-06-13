@@ -1,6 +1,5 @@
 # Roadmap
 ## Current version: Structure
- - [x] Completly redo the file directory structure for the pypi package
  - [ ] Make all the demos work (add some, remove others)
  - [ ] Make `__main__.py` work again!
  - [x] Make cross-platform
@@ -8,7 +7,7 @@
  - [ ] Make graphics run WAY faster and **efficient** (currently EXTREMLY SLOW)
  - [ ] Overhaul of `terrainGen.py` to remove most of the dependancies, making there less things to install and also load WAYYY faster.
  - [ ] Make `loading.py` MUCH faster (can rewrite it if you want, just need to also update `graphics.py`)
- - [x] Make GO.PNEW easier (e.g. have GO.P___ all have their functions in them and stuff so you don't need GO.PSTACKS)
+ - [ ] Make the graphics faster to make elements
  - [ ] Fix import system to make things load faster
  - [ ] Make progressbars load stuff in the background for faster launching of the app
 ## Version after: GUI

@@ -1,5 +1,5 @@
 # Welcome to Blaze Sudios!
-# CURRENT VERSION: v2.0.0-beta (💥 Flare)
+# CURRENT VERSION: v2.1.0-beta (💥 Flare)
 Actually playable! Run `__main__.py`!
 (After you install the dependancies, of course)
 
@@ -28,9 +28,9 @@ Also please note that this is a very early version, and there are many things th
 Things to note:
 1. # **<u>Still in progress</u>**
 2. This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix), [Pyldtk](https://github.com/LGgameLAB/pyLdtk) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). This is for a couple of reasons:
-    1. (the main big one) It can't be installed with pip (maybe it got taken down? I don't know)
+    1. (The main one) I can modify it myself
+    1. It can't be installed with pip (maybe it got taken down? I don't know, or maybe I'm just bad (says the person who made *this*))
     2. I don't have to wory about dependancy issues with those two packages
-    3. I can modify it myself
     4. You guys don't have to install another package
     5. It won't ever change (unless I change it myself)
 
