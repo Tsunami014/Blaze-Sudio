@@ -48,12 +48,12 @@ class TextBox(Element):
         pos,
         font,
         dist=20,
-        padding=(50, 50),
+        padding=(10, 10),
         speeds=(2, 5),
         lines=2,
         text=None,
         font_colour=(255, 255, 255),
-        text_wid=200,
+        text_wid=300,
         bg_colour=(0, 0, 0),
         transparent=False,
     ):
@@ -106,6 +106,7 @@ class TextBox(Element):
         self.timer = 0
         self.printedWrds = ""
         self.full = False
+        self.forceFull = False
 
     def update(self, mousePos, events):
         sur = pygame.Surface(self.size)
@@ -128,7 +129,7 @@ class TextBox(Element):
                 if self.timer >= self.speeds[0]:
                     doNext = True
             if doNext or self.forceFull:
-                _, lines = self.font.render(self.printedWrds + self.words[len(self.printedWrds)], 0, allowed_width=self.__text_wid, verbose=True)
+                _, lines = self.font.render(self.printedWrds + self.words[len(self.printedWrds)], 0, allowed_width=self.__text_wid-(self.padding[0]//2), verbose=True)
                 if lines <= self.__lines:
                     self.timer = 0
                     self.printedWrds += self.words[len(self.printedWrds)]
@@ -140,7 +141,7 @@ class TextBox(Element):
         if self.full:
             self.forceFull = False
         
-        outSur = self.font.render(self.printedWrds, self.__font_colour, allowed_width=self.__text_wid)
+        outSur = self.font.render(self.printedWrds, self.__font_colour, allowed_width=self.__text_wid-self.padding[0])
         
         x, y = self.stackP()
         pygame.draw.rect(self.G.WIN, self.__bg_colour[1], (*self._adjust((x, y), False), *self._adjust(self.size, True)))
@@ -155,7 +156,10 @@ class TextBox(Element):
                 if not self.full:
                     self.forceFull = True
                 else:
-                    return ReturnState.CALL
+                    if len(self.printedWrds) < len(self.words):
+                        self.clear()
+                    else:
+                        return ReturnState.CALL
     
     def remove(self):
         self.G.pause = False
@@ -170,7 +174,8 @@ class TextBoxAdv(TextBox):
         pos (BlazeSudio.Graphic.P___): The position of the textbox on the screen (required).
         font (BlazeSudio.Graphic.F___): The font to render the text with (required).
         dist (int): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
-        padding (int): The spacing between the border of the box and the text itself.
+        padding (tuple): The spacing between the border of the box and the text itself.
+        portrait_padding (tuple): The padding between the border and the portrait and the text (border to portrait x, border to portrait y, portrait to text x)
         speeds (tuple): The speeds of the text, in frames: (regular char speed, punctuation char speed).
         lines (int): Number of printed lines.
         text (str): Text to print.
@@ -188,12 +193,13 @@ class TextBoxAdv(TextBox):
         pos,
         font,
         dist=20,
-        padding=(50, 50),
+        padding=(10, 10),
+        portrait_padding=(10, 10, 10),
         speeds=(2, 5),
         lines=2,
         text=None,
         font_colour=(255, 255, 255),
-        text_wid=150,
+        text_wid=200,
         bg_colour=(0, 0, 0),
         border=None,
         transparent=False,
@@ -212,6 +218,7 @@ class TextBoxAdv(TextBox):
             bg_colour,
             transparent
         )
+        self.portrait_padding = portrait_padding
 
         self.__indicator = None
         self.__portrait = None
