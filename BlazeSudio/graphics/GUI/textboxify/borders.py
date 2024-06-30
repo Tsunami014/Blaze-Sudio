@@ -25,44 +25,41 @@ Attributes:
 
 """
 
-
-import os.path
-
 from .settings import BORDER_DIR
 
 
 # Border sprites.
 DEFAULT = {
-    "corner": os.path.join(BORDER_DIR, "default", "corner.png"),
-    "side": os.path.join(BORDER_DIR, "default", "side.png"),
+    "corner": BORDER_DIR / "default/corner.png",
+    "side": BORDER_DIR / "default/side.png",
     "size": [10, 10],
     "colorkey": None,
     "animate": False,
 }
 DARK = {
-    "corner": os.path.join(BORDER_DIR, "dark", "corner.png"),
-    "side": os.path.join(BORDER_DIR, "dark", "side.png"),
+    "corner": BORDER_DIR / "dark/corner.png",
+    "side": BORDER_DIR / "dark/side.png",
     "size": [10, 10],
     "colorkey": (0, 255, 38),
     "animate": False,
 }
 LIGHT = {
-    "corner": os.path.join(BORDER_DIR, "light", "corner.png"),
-    "side": os.path.join(BORDER_DIR, "light", "side.png"),
+    "corner": BORDER_DIR / "light/corner.png",
+    "side": BORDER_DIR / "light/side.png",
     "size": [5, 5],
     "colorkey": (0, 255, 38),
     "animate": False,
 }
 BLINK = {
-    "corner": os.path.join(BORDER_DIR, "blink", "corner.png"),
-    "side": os.path.join(BORDER_DIR, "blink", "side.png"),
+    "corner": BORDER_DIR / "blink/corner.png",
+    "side": BORDER_DIR / "blink/side.png",
     "size": [15, 15],
     "colorkey": (11, 219, 6),
     "animate": True,
 }
 BARBER_POLE = {
-    "corner": os.path.join(BORDER_DIR, "barber_pole", "corner.png"),
-    "side": os.path.join(BORDER_DIR, "barber_pole", "side.png"),
+    "corner": BORDER_DIR / "barber_pole/corner.png",
+    "side": BORDER_DIR / "barber_pole/side.png",
     "size": [20, 20],
     "colorkey": (11, 219, 6),
     "animate": True,

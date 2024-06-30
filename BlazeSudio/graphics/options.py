@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from types import FunctionType
-from typing import Any
 import pygame
 import pygame.freetype
 from string import printable
@@ -71,11 +70,22 @@ SDLEFTRIGHT = SD__(0)
 SDUPDOWN =    SD__(1)
 
 # Fonts
+ERRORED = False
 class F___:
-    def __init__(self, name, winSze, bold=False, italic=False):
-        self.font = pygame.font.SysFont(name, winSze, bold, italic)
-        self.emojifont = pygame.freetype.SysFont('segoeuisymbol', winSze, bold, italic)
-    def render(self, txt, col, updownweight=SWMID, leftrightweight=SWMID, allowed_width=None, renderdash=True):
+    def __init__(self, name, size, bold=False, italic=False):
+        self.font = pygame.font.SysFont(name, size, bold, italic)
+        fonts = pygame.sysfont.get_fonts()
+        emojis = [font for font in fonts if "emoji" in font]
+        if len(emojis) == 0:
+            global ERRORED
+            if not ERRORED:
+                print("Unable to find a font that supports emojis for your system! Using regular fonts instead.")
+                ERRORED = True
+            self.emojifont = self.font
+        else:
+            self.emojifont = pygame.font.SysFont(emojis[0], size, bold, italic)
+    
+    def render(self, txt, col, updownweight=SWMID, leftrightweight=SWMID, allowed_width=None, renderdash=True, verbose=False):
         """
         Renders some text with emoji support!
 
@@ -98,15 +108,27 @@ class F___:
             None disables it
         renderdash : bool, optional
             Whether or not to render the '-' at the end of lines of text that are too big to fit on screen, by default True
+        verbose : bool, optional
+            Returns extra information, by default False
 
         Returns
         -------
-        pygame.Surface
-            The surface of the text!
+        If not verbose:
+            pygame.Surface
+                The surface of the text!
+        Else:
+            pygame.Surface
+                The surface of the text!
+            int
+                The amount of lines rendered
         """
-        if txt == '':
+        if txt.strip() == '':
+            if verbose:
+                return pygame.Surface((0, 0)), 0
             return pygame.Surface((0, 0))
         if allowed_width is None:
+            if verbose:
+                return self.combine(self.split(txt, col), weight=updownweight), 1
             return self.combine(self.split(txt, col), weight=updownweight)
         else:
             masterlines = []
@@ -148,7 +170,10 @@ class F___:
                         lines.extend(out)
                     lines.append(line)
                 masterlines.extend(lines)
-            return self.combine([self.combine(self.split(i, col), updownweight) for i in masterlines], leftrightweight, SDUPDOWN)
+            combined = self.combine([self.combine(self.split(i, col), updownweight) for i in masterlines if i != ''], leftrightweight, SDUPDOWN)
+            if verbose:
+                return combined, len(masterlines)
+            return combined
     
     def split(self, txt, col):
         """
@@ -185,7 +210,7 @@ class F___:
                 if prtable:
                     parts.append(self.font.render(part, 1, col))
                 else:
-                    parts.append(self.emojifont.render(part, col)[0])
+                    parts.append(self.emojifont.render(part, 1, col))
                 part = ''
                 if i is not None:
                     prtable = isprt
@@ -225,7 +250,11 @@ class F___:
             else:
                 sur.blit(i.convert_alpha(), ((sze[0]-i.get_width())*weight.w, pos))
                 pos += i.get_height()
-        return sur  
+        return sur
+    
+    @property
+    def linesize(self):
+        return max(self.font.get_linesize(), self.emojifont.get_linesize())
     
     def winSze(self, txt):
         """
@@ -265,6 +294,9 @@ class P___:
     def __call__(self, winSze, objSze, sumSze):
         out = self.func(winSze, objSze)
         return [out[0] + sumSze[0]*self.stack[0], out[1] + sumSze[1]*self.stack[1]]
+
+    def copy(self):
+        return PNEW(self.stack, self.func, self.lmr, self.umd)
     
     def __str__(self):
         return f'<Position {"None" if self.lmr is None else ["Left", "Middle", "Right"][self.lmr]} {"None" if self.umd is None else ["Up", "Middle", "Down"][self.umd]} stacking {self.stack}>'
@@ -321,9 +353,9 @@ class T___:
     idx: int
     name: str
 TBUTTON =     T___(0, 'Button'    )
-TTEXTBOX =    T___(1, 'Textbox'   )
+TINPUTBOX =   T___(1, 'Inputbox'  )
 TNUMBOX =     T___(2, 'Numbox'    )
-TINPUTBOX =   T___(3, 'Inputbox'  )
+TTEXTBOX =    T___(3, 'Textbox'   )
 TSWITCH =     T___(4, 'Switch'    )
 TSCROLLABLE = T___(5, 'Scrollable')
 TSTATIC =     T___(6, 'Static'    )

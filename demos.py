@@ -115,9 +115,9 @@ def GGraphicsDemo():
                     G.Container.txt.set(element.txt) # put name of button in middle
             elif element.type == GO.TTEXTBOX:
                 if G.Container.idx == 0:
-                    element.set_text("Happy coding!")
+                    element.set ("Happy coding!")
                     G.Container.idx = 1
-                else:
+                else: 
                     element.remove()
             elif element.type == GO.TINPUTBOX:
                 G.Container.txt.set(element.get().strip())
@@ -225,7 +225,7 @@ def GColourPickDemo():
     from BlazeSudio.graphics import Thing, CustomGraphic, handle_events
     pygame.init()
     window = pygame.display.set_mode((500, 500))
-    G = CustomGraphic(window)
+    G = CustomGraphic(window) 
     clock = pygame.time.Clock()
 
     cp = Thing(ColourPickerBTN(window, 50, 50))
