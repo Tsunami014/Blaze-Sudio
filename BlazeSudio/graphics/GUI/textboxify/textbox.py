@@ -62,6 +62,7 @@ class TextBox(Element):
         super().__init__(G, pos.copy(), self.size)
 
         self.full = False
+        self.forceFull = False
         self.timer = 0
 
         if text:
@@ -126,13 +127,18 @@ class TextBox(Element):
             else:
                 if self.timer >= self.speeds[0]:
                     doNext = True
-            if doNext:
+            if doNext or self.forceFull:
                 _, lines = self.font.render(self.printedWrds + self.words[len(self.printedWrds)], 0, allowed_width=self.__text_wid, verbose=True)
                 if lines <= self.__lines:
                     self.timer = 0
                     self.printedWrds += self.words[len(self.printedWrds)]
                     if len(self.printedWrds) >= len(self.words):
                         self.full = True
+                else:
+                    self.full = True
+        
+        if self.full:
+            self.forceFull = False
         
         outSur = self.font.render(self.printedWrds, self.__font_colour, allowed_width=self.__text_wid)
         
@@ -146,7 +152,10 @@ class TextBox(Element):
                    ev.key == pygame.K_RETURN or \
                    ev.key == pygame.K_SPACE
                ):
-                return ReturnState.CALL
+                if not self.full:
+                    self.forceFull = True
+                else:
+                    return ReturnState.CALL
     
     def remove(self):
         self.G.pause = False
@@ -301,37 +310,28 @@ class TextBoxAdv(TextBox):
         self.rect.topleft = pos
 
     def update(self, mousePos, events):
-        return super().update(mousePos, events)
-        """
         # Update the text.
-        self.__textbox.update()
-        self.words = self.__textbox.words
+        ret = super().update(mousePos, events)
+        
+        x, y = self.stackP()
 
-        # Draw background with transparency.
-        self.image = self._draw_background(self.image, self.__bg_colour, self.__alpha)
-
-        # Set box padding.
-        padding = (self.__padding[0] // 2, self.__padding[1] // 2)
-
-        # Draw text with or without a portrait.
-        self._draw_content(self.image, self.__textbox, self.__portrait, padding)
-
-        # Draw animated idling symbol.
-        self._draw_indicator(
-            self.image, self.__textbox, self.__indicator, self.__lines, padding
-        )
+        if self.full and self.__indicator:
+            self.__indicator.animate(pygame.time.get_ticks())
+            im = self.__indicator.image
+            self.G.WIN.blit(im, (x + self.size[0] - (self.padding[0] // 2) - im.get_width(), y + self.size[1] - (self.padding[1] // 2) - im.get_height()))
+        
+        # Draw portrait
 
         # Draw box border.
-        if self.__border:
-            self._draw_border(
-                self.image,
-                self.__border,
-                self.__corner,
-                self.__side,
-                self.__bg_colour,
-            )
-
-        self.dirty = 1"""
+        # if self.__border:
+        #     self._draw_border(
+        #         self.image,
+        #         self.__border,
+        #         self.__corner,
+        #         self.__side,
+        #         self.__bg_colour,
+        #     )
+        return ret
 
     def _adjust(self, size, typ):
         """Include the border size and portrait"""
@@ -377,15 +377,6 @@ class TextBoxAdv(TextBox):
             surface.blit(text.image, (padding[0] + portrait.width, padding[1]))
         else:
             surface.blit(text.image, padding)
-
-    def _draw_indicator(self, surface, text, indicator, lines, padding):
-        """Draw animated idling symbol"""
-
-        if text.idle and indicator:
-            x = surface.get_width() - padding[0]
-            y = text.linesize * lines + padding[1] - indicator.height
-            indicator.animate(pygame.time.get_ticks())
-            surface.blit(indicator.image, (x, y))
 
     def _draw_border(self, surface, border, corner, side, bg_colour):
         """Draws the border and then fixes the corners if needed."""

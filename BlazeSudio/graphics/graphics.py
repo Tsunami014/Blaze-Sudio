@@ -605,7 +605,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             border=border,
         )
         
-        #dialog_box.set_indicator(indicator)
+        dialog_box.set_indicator(indicator)
         #dialog_box.set_portrait(portrait)
         self.Stuff['TextBoxes'].append(dialog_box)
         self.pause = True
