@@ -1,13 +1,13 @@
 """This module contains classes for creating text boxes.
 
-Both TextBox and TextBoxFrame are the same when it comes to print out
+Both TextBox and TextBoxAdv are the same when it comes to print out
 text inside a box on the screen. However, TextBox has less features than
-TextBoxFrame.
+TextBoxAdv.
 
 TextBox is useful if you only want to print out text on the
 screen without much configurations.
 
-TextBoxFrame is useful if you want to design unique dialog boxes with certain
+TextBoxAdv is useful if you want to design unique dialog boxes with certain
 borders, backgrounds, portraits, indication symbols and animations.
 """
 
@@ -17,65 +17,193 @@ import string
 import pygame
 
 from . import settings
-from .text import Text
-from .util import CustomSprite, fix_corners, load_image
+from .util import CustomSprite, fix_corners
 
-# TODO: Make this whole module cleaner
-from BlazeSudio.graphics.GUI.elements import Element
+from BlazeSudio.graphics.GUI.elements import Element, ReturnState
+from BlazeSudio.graphics.options import TTEXTBOX
 
-
-class TextBoxFrame(Element):
-    """Class for creating customizable dialog boxes.
+class TextBox(Element):
+    type = TTEXTBOX
+    """Class for creating simple text boxes.
 
     Args:
-        text_width (int): max with of the printed text (required).
-        pos (tuple): x & y coordinates to place the topleft corner of the box (required).
-        lines (int): number of printed lines.
+        G (BlazeGudio.Graphic.Graphic): The graphic screen to be on (required).
+        pos (BlazeSudio.Graphic.P___): The position of the textbox on the screen (required).
+        font (BlazeSudio.Graphic.F___): The font to render the text with (required).
+        dist (int): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
+        padding (tuple): Space between text and edge
+        speeds (tuple): The speeds of the text, in frames: (regular char speed, punctuation char speed).
+        lines (int): Number of printed lines.
         text (str): Text to print.
-        padding (tuple): space between text and border.
-        font_color (tuple): text color, RGB value.
-        font_name (str): name of a installed font or path to a font file.
-        font_size (int): size of the text font.
-        bg_color (tuple): background color, RGB value.
-        border (dict): border sprite settings.
-        alpha (int): value from 0 to 255, were 0-254 is transparent and 255 is opaque.
+        font_colour (tuple|BlazeSudio.Graphic.C___): Text colour, RGB value.
+        text_wid (tuple): The maximum width of the text.
+        bg_colour (tuple|BlazeSudio.Graphic.C___): Background colour, RGB value.
+        transparent (bool): if the box should be transparent or have a background colour.
 
     """
 
     def __init__(
         self,
-        text_width,
+        G,
         pos,
-        lines=1,
-        text=None,
+        font,
+        dist=20,
         padding=(50, 50),
-        font_color=(255, 255, 255),
-        font_name=None,
-        font_size=35,
-        bg_color=(0, 0, 0),
-        border=None,
-        alpha=255,
+        speeds=(2, 5),
+        lines=2,
+        text=None,
+        font_colour=(255, 255, 255),
+        text_wid=200,
+        bg_colour=(0, 0, 0),
+        transparent=False,
     ):
-        super().__init__()
+        self.linesize = font.linesize
+        self.size = self._adjust((text_wid + padding[0] * 2, self.linesize * lines + padding[1] * 2), True)
+        super().__init__(G, pos.copy(), self.size)
 
-        # Initialize text content.
-        self.__textbox = TextBox(
-            text=text,
-            text_width=text_width,
-            lines=lines,
-            pos=pos,
-            font_name=font_name,
-            font_size=font_size,
-            font_color=font_color,
-            bg_color=bg_color,
-            transparent=False if alpha == 255 else True,
+        self.full = False
+        self.timer = 0
+
+        if text:
+            self.words = text
+        else:
+            self.words = ""
+        self.printedWrds = ""
+        
+        self.speeds = speeds
+        self.font = font
+        self.padding = padding
+
+        self.__dist = dist
+        self.__font_colour = font_colour
+        self.__text_wid = text_wid
+        self.__lines = lines
+        self.__bg_colour = (transparent, bg_colour)
+
+    def set(self, text):
+        """Set new text message to print out.
+
+        Args:
+            words (str): new text to print.
+        """
+        self.clear()
+        self.words = text
+    
+    def get(self):
+        """Returns a tuple: (Entire text, Text printed so far)"""
+        return self.words, self.printedWrds
+    
+    def _adjust(self, position, typ):
+        """Function used when setting a size or position that can be filled in for a subclass (e.g. to include a border)
+        typ = False: is setting the position
+        typ = True: is setting the size"""
+        return position
+
+    def clear(self):
+        """Clears the dialog box, ready for new text to be filled"""
+        self.words = self.words[len(self.printedWrds):]
+        self.timer = 0
+        self.printedWrds = ""
+        self.full = False
+
+    def update(self, mousePos, events):
+        sur = pygame.Surface(self.size)
+        if self.__bg_colour[0]:
+            sur.fill(self.__bg_colour[1])
+        else:
+            sur.fill((255, 255, 255, 1))
+        
+        if not self.words:
+            self.full = True
+        
+        if not self.full:
+            self.timer += 1
+            nxtChar = self.words[len(self.printedWrds)]
+            doNext = False
+            if nxtChar in string.punctuation:
+                if self.timer >= self.speeds[1]:
+                    doNext = True
+            else:
+                if self.timer >= self.speeds[0]:
+                    doNext = True
+            if doNext:
+                _, lines = self.font.render(self.printedWrds + self.words[len(self.printedWrds)], 0, allowed_width=self.__text_wid, verbose=True)
+                if lines <= self.__lines:
+                    self.timer = 0
+                    self.printedWrds += self.words[len(self.printedWrds)]
+                    if len(self.printedWrds) >= len(self.words):
+                        self.full = True
+        
+        outSur = self.font.render(self.printedWrds, self.__font_colour, allowed_width=self.__text_wid)
+        
+        x, y = self.stackP()
+        pygame.draw.rect(self.G.WIN, self.__bg_colour[1], (*self._adjust((x, y), False), *self._adjust(self.size, True)))
+        self.G.WIN.blit(outSur, self._adjust((x + self.padding[0], y + self.__dist + self.padding[1]), False))
+        
+        for ev in events:
+            if ev.type == pygame.MOUSEBUTTONDOWN or \
+               ev.type == pygame.KEYDOWN and (
+                   ev.key == pygame.K_RETURN or \
+                   ev.key == pygame.K_SPACE
+               ):
+                return ReturnState.CALL
+    
+    def remove(self):
+        self.G.pause = False
+        super().remove()
+
+
+class TextBoxAdv(TextBox):
+    """Class for creating customizable dialog boxes.
+
+    Args:
+        G (BlazeGudio.Graphic.Graphic): The graphic screen to be on (required).
+        pos (BlazeSudio.Graphic.P___): The position of the textbox on the screen (required).
+        font (BlazeSudio.Graphic.F___): The font to render the text with (required).
+        dist (int): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
+        padding (int): The spacing between the border of the box and the text itself.
+        speeds (tuple): The speeds of the text, in frames: (regular char speed, punctuation char speed).
+        lines (int): Number of printed lines.
+        text (str): Text to print.
+        font_colour (tuple|BlazeSudio.Graphic.C___): Text colour, RGB value.
+        text_wid (int): Max width of the printed text.
+        bg_colour (tuple|BlazeSudio.Graphic.C___): Background colour, RGB value.
+        border (dict): Border sprite settings.
+        transparent (bool): if the box should be transparent or have a background colour.
+
+    """
+
+    def __init__(
+        self,
+        G,
+        pos,
+        font,
+        dist=20,
+        padding=(50, 50),
+        speeds=(2, 5),
+        lines=2,
+        text=None,
+        font_colour=(255, 255, 255),
+        text_wid=150,
+        bg_colour=(0, 0, 0),
+        border=None,
+        transparent=False,
+    ):
+        super().__init__(
+            G,
+            pos,
+            font,
+            dist,
+            padding,
+            speeds,
+            lines,
+            text,
+            font_colour,
+            text_wid,
+            bg_colour,
+            transparent
         )
 
-        self.__alpha = alpha
-        self.__lines = lines
-        self.__text_width = text_width
-        self.__bg_color = (*bg_color, alpha)
-        self.__padding = padding
         self.__indicator = None
         self.__portrait = None
         self.__border = border
@@ -83,7 +211,6 @@ class TextBoxFrame(Element):
         # Always check if border evaluate to true because corner and side
         # doesn't get created when there isn't any border to draw.
         if self.__border:
-
             # Create topleft corner sprite.
             self.__corner = CustomSprite(
                 self.__border["corner"],
@@ -98,25 +225,6 @@ class TextBoxFrame(Element):
                 self.__border["colorkey"]
             )
 
-        # Text box size including the frame.
-        w = text_width + padding[0]
-        h = self.__textbox.linesize * lines + padding[1]
-
-        self.size = self._adjust((w, h), self.__side) if self.__border else (w, h)
-        self.image = pygame.Surface(self.size).convert()
-        self.rect = self.image.get_rect()
-        self.rect.topleft = pos
-
-    @property
-    def words(self):
-        """list: Return list with all words not yet printed."""
-
-        return self.__textbox.words
-
-    @words.setter
-    def words(self, words):
-        self.__words = words
-
     def set_indicator(self, sprite=None, size=None, colorkey=None, scale=None):
         """Initilize animated idle symbol.
 
@@ -127,7 +235,7 @@ class TextBoxFrame(Element):
         Args:
             sprite (str): path to sprite file.
             size (tuple): width, height of sprite frame.
-            colorkey (tuple): color to remove from sprite, RGB value.
+            colorkey (tuple): colour to remove from sprite, RGB value.
             scale (tuple): new width, height to scale sprite to.
         """
 
@@ -154,7 +262,7 @@ class TextBoxFrame(Element):
         Args:
             sprite (str): path to sprite file.
             size (tuple): width, height of sprite frame.
-            colorkey (tuple): color to remove from sprite, RGB value.
+            colorkey (tuple): colour to remove from sprite, RGB value.
             scale (tuple): new width, height to scale sprite to.
 
         """
@@ -192,51 +300,15 @@ class TextBoxFrame(Element):
         self.rect = self.image.get_rect()
         self.rect.topleft = pos
 
-    def set_text(self, text):
-        """Set new text message to print out.
-
-        Args:
-            words (str): new text to print.
-
+    def update(self, mousePos, events):
+        return super().update(mousePos, events)
         """
-
-        self.__textbox.set_text(text)
-
-    def reset(self, hard=False):
-        """Reset dialog box.
-
-        Args:
-            hard (bool): False only cleans the box before moving to the next
-                page to print the remaining words. True resets the entire class
-                to default values to prepare to print new text from the beginning.
-        """
-
-        if hard:
-            # Reset to default values.
-            self.__textbox.reset(hard)
-        else:
-            # Reset the filled box and continue with the remaining words.
-            if self.__textbox.full:
-                self.__textbox.reset()
-
-                if self.__border:
-                    self._draw_border(
-                        self.image,
-                        self.__border,
-                        self.__corner,
-                        self.__side,
-                        self.__bg_color,
-                    )
-
-    def update(self):
-        """Update all changes that has been made to the text box."""
-
         # Update the text.
         self.__textbox.update()
         self.words = self.__textbox.words
 
         # Draw background with transparency.
-        self.image = self._draw_background(self.image, self.__bg_color, self.__alpha)
+        self.image = self._draw_background(self.image, self.__bg_colour, self.__alpha)
 
         # Set box padding.
         padding = (self.__padding[0] // 2, self.__padding[1] // 2)
@@ -256,17 +328,14 @@ class TextBoxFrame(Element):
                 self.__border,
                 self.__corner,
                 self.__side,
-                self.__bg_color,
+                self.__bg_colour,
             )
 
-        self.dirty = 1
-    
-    def draw(self, win):
-        self.update()
-        win.blit(self.image, self.rect.topleft)
+        self.dirty = 1"""
 
-    def _adjust(self, size, side):
-        """Adjust the box size after the box border sprites."""
+    def _adjust(self, size, typ):
+        """Include the border size and portrait"""
+        return size
 
         w = size[0] - size[0] % side.width
         h = size[1] - size[1] % side.height
@@ -296,20 +365,6 @@ class TextBoxFrame(Element):
                 dest.blit(blocks["TOP"], (0 + src_w * block, 0))
                 dest.blit(blocks["BOTTOM"], (0 + src_w * block, dest_h - src_h))
 
-    def _draw_background(self, surface, color, alpha):
-        """Draw box background."""
-
-        # Draw background with transparency.
-        if 0 <= alpha < 255:
-            surface = surface.convert_alpha()
-            surface.fill(color)
-
-        # Draw background with no transparency.
-        else:
-            surface.fill(color)
-
-        return surface
-
     def _draw_content(self, surface, text, portrait, padding):
         """Draw box text and portrait."""
 
@@ -332,7 +387,7 @@ class TextBoxFrame(Element):
             indicator.animate(pygame.time.get_ticks())
             surface.blit(indicator.image, (x, y))
 
-    def _draw_border(self, surface, border, corner, side, bg_color):
+    def _draw_border(self, surface, border, corner, side, bg_colour):
         """Draws the border and then fixes the corners if needed."""
 
         blocks = self._rotate_border_blocks(corner, side)
@@ -353,7 +408,7 @@ class TextBoxFrame(Element):
         fix_corners(
             surface=surface,
             corner_size=corner.size,
-            bg_color=bg_color,
+            bg_colour=bg_colour,
             colorkey=border["colorkey"],
         )
 
@@ -370,177 +425,4 @@ class TextBoxFrame(Element):
             "BOTTOM": pygame.transform.rotate(side.image, 90),
             "RIGHT": pygame.transform.rotate(side.image, 180),
         }
-
         return blocks
-
-
-class TextBox(Element):
-    """Class for creating simple text boxes.
-
-    Args:
-        text_width (int): max with of the printed text (required).
-        pos (tuple): x & y coordinates to place the topleft corner of the box (required).
-        text (str): Text to print.
-        lines (int): number of printed lines.
-        font_name (str): name of a installed font or path to a font file.
-        font_size (int): size of the text font.
-        font_color (tuple): text color, RGB value.
-        bg_color (tuple): background color, RGB value.
-        transparent (bool): if the box should be transparent or have a background color.
-
-    """
-
-    def __init__(
-        self,
-        text_width,
-        pos,
-        text=None,
-        lines=1,
-        font_name=None,
-        font_size=35,
-        font_color=(255, 255, 255),
-        bg_color=(0, 0, 0),
-        transparent=False,
-    ):
-        super().__init__()
-
-        self.full = False
-        self.idle = False
-
-        if text:
-            self.words = self._to_list(text)
-        else:
-            self.words = ""
-
-        self.linesize = Text(text=" ", font=font_name, size=font_size).linesize
-
-        self.__font_name = font_name
-        self.__font_size = font_size
-        self.__font_color = font_color
-        self.__bg_color = bg_color
-        self.__transparent = transparent
-        self.__pos = pos
-
-        # Offset have to be set to zero to be able to print one liners.
-        self.__offset = 0 if lines == 1 else self.linesize
-
-        # Text cursor position.
-        self.__x, self.__y = 0, 0
-        self.__w, self.__h = (text_width, self.linesize * lines)
-
-        # Calculate how many character that can fit on one line.
-        # Use the widest character to be sure that everything will fits.
-        chars = {
-            char: Text(char, font=font_name, size=font_size).width
-            for char in string.printable
-        }
-        widest = chars[max(chars, key=chars.get)]
-        self.__max = self.__w // widest
-
-        self.image = pygame.Surface((self.__w, self.__h)).convert()
-        self.image.fill(bg_color)
-        self.rect = self.image.get_rect()
-        self.rect.topleft = pos
-
-        if transparent:
-            self.image.set_colorkey(bg_color)
-
-    def set_text(self, text):
-        """Set new text message to print out.
-
-        Args:
-            words (str): new text to print.
-
-        """
-
-        self.words = self._to_list(text)
-
-    def reset(self, hard=False):
-        """Reset dialog box.
-
-        Args:
-            hard (bool): False only cleans the box before moving to the next
-                page to print the remaining words. True resets the entire class
-                to default values to prepare to print new text from the beginning.
-        """
-
-        # Reset box to default values when whole message has been printed.
-        if hard:
-            self.__x, self.__y = 0, 0
-            self.full = False
-            self.idle = False
-            self.image = pygame.Surface((self.__w, self.__h)).convert()
-            self.image.fill(self.__bg_color)
-            self.rect = self.image.get_rect()
-            self.rect.topleft = self.__pos
-
-            if self.__transparent:
-                self.image.set_colorkey(self.__bg_color)
-
-        # Reset the filled box and continue with the remaining words.
-        else:
-            if self.full:
-                self.image.fill(self.__bg_color)
-                self.__x, self.__y = 0, 0
-                self.full = False
-                self.idle = False
-
-    def update(self):
-        """Update all changes that has been made to the text box."""
-
-        # Print as long as there are words and text box isn't full.
-        if self.words and not self.full:
-
-            word_string = self._split_up(self.words.pop(0))
-            word_surface = Text(
-                text=word_string,
-                font=self.__font_name,
-                size=self.__font_size,
-                color=self.__font_color,
-                background=self.__bg_color,
-            )
-
-            # Print new words until all lines in the box are filled.
-            if self.__y < self.__h - self.__offset:
-
-                # Print new words until the current line is filled.
-                if self.__x + word_surface.width < self.__w:
-                    self.image.blit(word_surface.image, (self.__x, self.__y))
-                    self.__x += word_surface.width
-                    self.dirty = 1
-
-                # Go to next the line.
-                else:
-                    self.__x = 0
-                    self.__y += word_surface.height
-                    self.words.insert(0, word_string)
-                    self.dirty = 1
-
-            # All lines in the box are filled with words.
-            else:
-                self.full = True
-                self.words.insert(0, word_string)
-
-        # Stuff to do while box is idle.
-        else:
-            self.idle = True
-
-    def _to_list(self, msg):
-        """Convert string into list with words and characters to print."""
-
-        # Split text into words and remove any '\n' and spaces.
-        words = list(filter(("").__ne__, msg.replace("\n", " ").split(" ")))
-        # Insert space between every second word.
-        words = list(v + " " * (i % 1 == 0) for i, v in enumerate(words))
-
-        return words
-
-    def _split_up(self, word):
-        """Split up long words into characters to be able to fit inside box."""
-
-        if len(word) > self.__max:
-            # Insert characters of too long words into the list.
-            self.words = list(word) + self.words
-            return self.words.pop(0)
-
-        return word

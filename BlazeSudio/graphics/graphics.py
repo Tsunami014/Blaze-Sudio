@@ -11,7 +11,7 @@ from BlazeSudio.graphics.loading import (
 )
 from BlazeSudio.graphics import stacks as STACKS
 import BlazeSudio.graphics.GUI.elements as GUI
-from BlazeSudio.graphics.GUI import ColourPickerBTN, dropdown, Toast
+from BlazeSudio.graphics.GUI import ColourPickerBTN, dropdown, Toast, TextBoxAdv
 from BlazeSudio.graphics.GUI.textboxify.borders import LIGHT
 
 # TODO: make initial creation of elements faster
@@ -21,6 +21,7 @@ from BlazeSudio.graphics.GUI.textboxify.borders import LIGHT
 # [ ] Slider / progressbar (combine into one)
 # [ ] Tabbed layout
 # [ ] Any sort of layout, really (Just use things like scrollables) (Maybe in a new file)
+# [ ] Everything in Gradio
 
 class GScrollable(GUI.Scrollable):
     def __init__(self, G, pos, goalrect, sizeOfScreen, outline, bar):
@@ -357,15 +358,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                         elif self.TB.active != -1:
                             self.TB.pressed(event)
                             blocked = True
-                        # TODO: Integrate with textbox class
-                        # if event.key == pygame.K_RETURN and self.TB.active == -1 and not any([i.active for i in self.Stuff['input_boxes']]):
-                        #     for sprite in self.Stuff['TextBoxes']:
-                        #         if sprite.words:
-                        #             sprite.reset()
-                        #         else:
-                        #             func(GO.EELEMENTCLICK, Element(GO.TTEXTBOX, self.uids.index(sprite), self, sprite=sprite))
-                        #     if len(self.Stuff['TextBoxes']) == 0:
-                        #         self.pause = False
                     elif event.type == pygame.MOUSEBUTTONDOWN and not self.pause:
                         if event.button == pygame.BUTTON_LEFT:
                             self.TB.toggleactive(not self.TB.collides(*mousepos()))
@@ -577,7 +569,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             self.callbacks[btn] = callback
         return btn
     
-    def add_TextBox(self, txt, position, border=LIGHT, indicator=None, portrait=None, callback=None):
+    def add_TextBox(self, txt, position, font=GO.FFONT, border=LIGHT, indicator=None, portrait=None, callback=None):
         """Makes a new TextBox in the GUI!
 
         Parameters
@@ -586,6 +578,8 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The text to be displayed in the textbox.
         position : GO.P___ (e.g. GO.PRBOTTOM)
             The position on the screen this element will be placed
+        font : GO.F___ (e.g. GO.FFONT), optional
+            The font to use for the textbox, by default GO.FFONT
         border : graphics.GUI.textboxify.borders._____, optional
             The border to use on the textbox, by default LIGHT
         indicator : str, optional
@@ -598,23 +592,21 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         
         Returns
         -------
-            GUI.TextBoxFrame: The created element
+            Element: The created element
         """
-        dialog_box = GUI.TextBoxFrame( # TODO: Make more integrated with the rest of the graphics
+        dialog_box = TextBoxAdv(
+            self,
+            position,
+            font,
             text=txt,
-            text_width=320,
             lines=2,
-            pos=(0, 0),
-            padding=(150, 100),
-            font_color=(92, 53, 102),
-            font_size=26,
-            bg_color=(173, 127, 168),
+            font_colour=(92, 53, 102),
+            bg_colour=(173, 127, 168),
             border=border,
         )
         
-        dialog_box.set_indicator(indicator)
-        dialog_box.set_portrait(portrait)
-        dialog_box.rect.topleft = position # TODO: Fix
+        #dialog_box.set_indicator(indicator)
+        #dialog_box.set_portrait(portrait)
         self.Stuff['TextBoxes'].append(dialog_box)
         self.pause = True
         if callback != None:
