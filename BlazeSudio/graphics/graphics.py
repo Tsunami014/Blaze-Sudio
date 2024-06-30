@@ -594,12 +594,12 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         -------
             Element: The created element
         """
+        # TODO: Add all the customisation from that textboxadv class here
         dialog_box = TextBoxAdv(
             self,
             position,
             font,
             text=txt,
-            lines=2,
             font_colour=(92, 53, 102),
             bg_colour=(173, 127, 168),
             border=border,
