@@ -1,32 +1,33 @@
 # Roadmap
-## Current version: Structure
+## Current version (2.1.0-beta)
+ - [ ] Finish the graphics stuff so it works
+## 2.2.0-beta
+ - [ ] Structure code to be how I want it so you can make a game! Somewhat! [See this](#new-idea)
+## 2.3.0-beta
  - [ ] Make all the demos work (add some, remove others)
+ - [ ] Figure out whether we even *need* `__main__.py` or the node editor
  - [ ] Make `__main__.py` work again!
  - [x] Make cross-platform
-## Next version: Speed
+## 2.4.0-beta
  - [ ] Make graphics run WAY faster and **efficient** (currently EXTREMLY SLOW)
  - [ ] Overhaul of `terrainGen.py` to remove most of the dependancies, making there less things to install and also load WAYYY faster.
  - [ ] Make `loading.py` MUCH faster (can rewrite it if you want, just need to also update `graphics.py`)
  - [ ] Make the graphics faster to make elements
  - [ ] Fix import system to make things load faster
  - [ ] Make progressbars load stuff in the background for faster launching of the app
-## Version after: GUI
+## 2.5.0-beta
  - [ ] Add more elements
  - [ ] Add some pretty <u>G</u>UI made by my lovelly pixelarting
-## NEXT MAJOR VERSION!
- - [ ] Make the buttons in the LDTK window do something
-## Version after that
+## 2.6.0-beta
  - [ ] Make multiple different terrain gens for some fast and some slow generation!
- - [ ] Remove all the need for different AIs and instead use my AIHub I also made to make it easier and in a different package
-## Every version following:
- - Add more stuff to the node editor and stuff!
-## When I get to next major version after that:
+## When I get to next major version after that: 3.0.0
  - When I can make a game that I feel like I can submit to a game jam or something
  - May take way longer than it should to make the game, that's for versions following to fix
  - May also not be the next Mario either
 
 # Important todos to do at some point
  - [ ] Add optional requirements ([example](https://github.com/xtekky/gpt4free/blob/main/setup.py))
+ - [ ] Remove all the AI stuff and instead use my AIHub I also made to make it easier and in a different package
  - [ ] Add type annotations
 
 # What I'm working on:
@@ -59,3 +60,36 @@ Testable things can be tested from the demos in `__main__.py` or from `demos.py`
 # ![Ideas](https://badgen.net/badge/%20/Ideas?color=pink&label=)
  - Hyperanalysis Drive (also known as Qibli Simulator); Track player's every move to feed into an algorithm for personalised gameplay
  - OFTEN (Old Fashioned Times Engineering Nuiances) (Acronym subject to change); Try to make a game with old fashioned hardware! Makes making a game much harder, the result much worse, but it just shows you how hard it was back then, and it'll be such a cool feat too!
+
+# new-idea
+Instead of a `__main__.py` and the node editor (maybe keep the node editor), have it so this acts fully and soley as a library
+
+Example idea:
+```py
+import BlazeSudio as BS
+Game = BS.Game()
+Game.load_map("./game.ldtk")
+
+NPCS = BS.Character("Generic NPC", specific=False) # Every NPC in the game not specified otherwise
+
+@NPCS.chat
+def chat(npc):
+    return "Hello! I am " + npc.name
+
+Wizard = BS.Character("Wizard", id="ID of this guy in LDTK") # This specific NPC
+@Wizard.chat
+def chat():
+    Game.run_action("unlock", "cave")
+    return "I'm a wizard. Have a nice day!"
+
+@Game.event("unlock")
+def unlocks(thing):
+    Game.dialog("You have unlocked " + thing)
+
+
+if __name__ == '__main__':
+    # Game.?????() # Launches Blaze Sudios and analyses the game and stuff and the LDTK file and shows you all the
+                # Objects, events, etc. in the game so you can easily define them and it will suggest you code or something (?)
+    # Game.debug() # Debugs the game
+    Game.play()
+```
