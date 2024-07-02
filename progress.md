@@ -1,7 +1,5 @@
 # Roadmap
-## Current version (2.1.0-beta)
- - [ ] Finish the graphics stuff so it works
-## 2.2.0-beta
+## Current version (2.2.0-beta)
  - [ ] Structure code to be how I want it so you can make a game! Somewhat! [See this](#new-idea)
 ## 2.3.0-beta
  - [ ] Make all the demos work (add some, remove others)
