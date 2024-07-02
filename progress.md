@@ -2,6 +2,7 @@
 ## Current version (2.2.0-beta)
  - [ ] Structure code to be how I want it so you can make a game! Somewhat! [See this](#new-idea)
 ## 2.3.0-beta
+ - [ ] Fix documentation
  - [ ] Make all the demos work (add some, remove others)
  - [ ] Figure out whether we even *need* `__main__.py` or the node editor
  - [ ] Make `__main__.py` work again!
