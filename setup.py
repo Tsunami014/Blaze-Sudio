@@ -9,11 +9,11 @@ with codecs.open(os.path.join(here, "readme.md"), encoding="utf-8") as fh:
 
 setup(
     name='Blaze-Sudio',
-    version='2.1.0',
+    version='2.2.0',
     license='Apache',
     description='This is the really cool studio to create games!',
     url='https://github.com/Tsunami014/Blaze-Sudio',
-    download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v2.1.0-beta.tar.gz',
+    download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v2.2.0-beta.tar.gz',
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),
@@ -39,6 +39,7 @@ setup(
         'Topic :: Software Development :: Build Tools',
         "Operating System :: Unix",
         "Operating System :: Microsoft :: Windows"
+        # ~~No one~~ **I don't** like~~s~~ Apple
     ]
 )
 
