@@ -320,15 +320,13 @@ class TextBoxAdv(TextBox):
             self._portrait.animate(pygame.time.get_ticks())
             self.G.WIN.blit(self._portrait.image, (x + self.portrait_padding[0], y + self.portrait_padding[1]))
 
-        # Draw box border.
-        # if self._border:
-        #     self._draw_border(
-        #         self.image,
-        #         self._border,
-        #         self._corner,
-        #         self._side,
-        #         self._bg_colour,
-        #     )
+        if self._border:
+            self._draw_border(
+                pygame.Rect(x, y, *self._adjust()),
+                self._border,
+                self._corner,
+                self._side,
+            )
         return ret
 
     def _adjust(self, pos=None):
@@ -340,39 +338,33 @@ class TextBoxAdv(TextBox):
         if pos is None:
             self.size = (self._text_wid + self.padding[0] * 2 + w, self.font.linesize * self._lines + self.padding[1] * 2)
             return self.size
-        return (pos[0] + w, pos[1])
+        return (pos[0] + w, pos[1] + (0 if self._border is None else self._border["size"][1]))
 
-        w = size[0] - size[0] % side.width
-        h = size[1] - size[1] % side.height
-
-        return (w, h)
-
-    def _blit_border(self, src, dest, blocks, type):
+    def _blit_border(self, src, size, bounds, blocks, type):
         """Draw the borders of the dialog box."""
-
         src_w, src_h = src.get_size()
-        dest_w, dest_h = dest.get_size()
+        dest_w, dest_h = bounds.width + size[0], bounds.height + size[1]
+        off_x, off_y = bounds.x - size[0]//2, bounds.y - size[1]//2
 
         if type == "CORNER":
-            dest.blit(blocks["TOP_LEFT"], (0, 0))
-            dest.blit(blocks["TOP_RIGHT"], (dest_w - src_w, 0))
-            dest.blit(blocks["BOTTOM_LEFT"], (0, dest_h - src_h))
-            dest.blit(blocks["BOTTOM_RIGHT"], (dest_w - src_w, dest_h - src_h))
+            self.G.WIN.blit(blocks["TOP_LEFT"], (off_x, off_y))
+            self.G.WIN.blit(blocks["TOP_RIGHT"], (dest_w - src_w + off_x, off_y))
+            self.G.WIN.blit(blocks["BOTTOM_LEFT"], (off_x, dest_h - src_h + off_y))
+            self.G.WIN.blit(blocks["BOTTOM_RIGHT"], (dest_w - src_w + off_x, dest_h - src_h + off_y))
 
         elif type == "SIDE":
             # Left & right side
-            for block in range(1, dest_h // src_h - 1):
-                dest.blit(blocks["LEFT"], (0, 0 + src_h * block))
-                dest.blit(blocks["RIGHT"], (dest_w - src_w, 0 + src_h * block))
+            for block in range(1, dest_h // src_h):
+                self.G.WIN.blit(blocks["LEFT"], (off_x, off_y + src_h * block))
+                self.G.WIN.blit(blocks["RIGHT"], (dest_w - src_w + off_x, off_y + src_h * block))
 
             # Top & bottom side
-            for block in range(1, dest_w // src_h - 1):
-                dest.blit(blocks["TOP"], (0 + src_w * block, 0))
-                dest.blit(blocks["BOTTOM"], (0 + src_w * block, dest_h - src_h))
+            for block in range(1, dest_w // src_h):
+                self.G.WIN.blit(blocks["TOP"], (off_x + src_w * block, off_y))
+                self.G.WIN.blit(blocks["BOTTOM"], (off_x + src_w * block, off_y + dest_h - src_h))
 
     def _draw_content(self, surface, text, portrait, padding):
         """Draw box text and portrait."""
-
         if portrait:
             portrait.animate(pygame.time.get_ticks())
             pos = (padding[0] - 10, padding[1])
@@ -383,34 +375,21 @@ class TextBoxAdv(TextBox):
         else:
             surface.blit(text.image, padding)
 
-    def _draw_border(self, surface, border, corner, side, bg_colour):
-        """Draws the border and then fixes the corners if needed."""
-
+    def _draw_border(self, bounds, border, corner, side):
+        """Draws the border"""
         blocks = self._rotate_border_blocks(corner, side)
 
         # Animation is turned on.
         if border["animate"]:
             corner.animate(pygame.time.get_ticks())
             side.animate(pygame.time.get_ticks())
-            self._blit_border(corner.image, surface, blocks, "CORNER")
-            self._blit_border(side.image, surface, blocks, "SIDE")
-
-        # Border is not going to have animation.
-        else:
-            self._blit_border(corner.image, surface, blocks, "CORNER")
-            self._blit_border(side.image, surface, blocks, "SIDE")
-
-        # Make pixels outside rounded corners transparent.
-        fix_corners(
-            surface=surface,
-            corner_size=corner.size,
-            bg_colour=bg_colour,
-            colorkey=border["colorkey"],
-        )
+        
+        # TODO: Handle overlap
+        self._blit_border(side.image, border["size"], bounds, blocks, "SIDE")
+        self._blit_border(corner.image, border["size"], bounds, blocks, "CORNER")
 
     def _rotate_border_blocks(self, corner, side):
         """Return dictionary with rotated border sprites."""
-
         blocks = {
             "TOP_LEFT": corner.image,
             "TOP_RIGHT": pygame.transform.rotate(corner.image, -90),
