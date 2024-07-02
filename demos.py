@@ -115,7 +115,7 @@ def GGraphicsDemo():
                     G.Container.txt.set(element.txt) # put name of button in middle
             elif element.type == GO.TTEXTBOX:
                 if G.Container.idx == 0:
-                    element.set ("Happy coding!")
+                    element.set("Happy coding!")
                     G.Container.idx = 1
                 else: 
                     element.remove()
