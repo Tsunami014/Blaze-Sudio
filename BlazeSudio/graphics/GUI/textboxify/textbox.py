@@ -57,9 +57,6 @@ class TextBox(Element):
         bg_colour=(0, 0, 0),
         transparent=False,
     ):
-        self.linesize = font.linesize
-        self.size = self._adjust((text_wid + padding[0] * 2, self.linesize * lines + padding[1] * 2), True)
-        super().__init__(G, pos.copy(), self.size)
 
         self.full = False
         self.forceFull = False
@@ -75,11 +72,13 @@ class TextBox(Element):
         self.font = font
         self.padding = padding
 
-        self.__dist = dist
-        self.__font_colour = font_colour
-        self.__text_wid = text_wid
-        self.__lines = lines
-        self.__bg_colour = (transparent, bg_colour)
+        self._dist = dist
+        self._font_colour = font_colour
+        self._text_wid = text_wid
+        self._lines = lines
+        self._bg_colour = (transparent, bg_colour)
+        
+        super().__init__(G, pos.copy(), self._adjust())
 
     def set(self, text):
         """Set new text message to print out.
@@ -94,11 +93,11 @@ class TextBox(Element):
         """Returns a tuple: (Entire text, Text printed so far)"""
         return self.words, self.printedWrds
     
-    def _adjust(self, position, typ):
+    def _adjust(self, position=None):
         """Function used when setting a size or position that can be filled in for a subclass (e.g. to include a border)
-        typ = False: is setting the position
-        typ = True: is setting the size"""
-        return position
+        If position is None: return this size (and if it changes frequently you can set it's size here too)
+        else: return the position specified with optional adjustments"""
+        return position or self.size
 
     def clear(self):
         """Clears the dialog box, ready for new text to be filled"""
@@ -110,8 +109,8 @@ class TextBox(Element):
 
     def update(self, mousePos, events):
         sur = pygame.Surface(self.size)
-        if self.__bg_colour[0]:
-            sur.fill(self.__bg_colour[1])
+        if self._bg_colour[0]:
+            sur.fill(self._bg_colour[1])
         else:
             sur.fill((255, 255, 255, 1))
         
@@ -129,8 +128,8 @@ class TextBox(Element):
                 if self.timer >= self.speeds[0]:
                     doNext = True
             if doNext or self.forceFull:
-                _, lines = self.font.render(self.printedWrds + self.words[len(self.printedWrds)], 0, allowed_width=self.__text_wid-(self.padding[0]//2), verbose=True)
-                if lines <= self.__lines:
+                _, lines = self.font.render(self.printedWrds + self.words[len(self.printedWrds)], 0, allowed_width=self._text_wid-(self.padding[0]//2), verbose=True)
+                if lines <= self._lines:
                     self.timer = 0
                     self.printedWrds += self.words[len(self.printedWrds)]
                     if len(self.printedWrds) >= len(self.words):
@@ -141,11 +140,11 @@ class TextBox(Element):
         if self.full:
             self.forceFull = False
         
-        outSur = self.font.render(self.printedWrds, self.__font_colour, allowed_width=self.__text_wid-self.padding[0])
+        outSur = self.font.render(self.printedWrds, self._font_colour, allowed_width=self._text_wid-self.padding[0])
         
         x, y = self.stackP()
-        pygame.draw.rect(self.G.WIN, self.__bg_colour[1], (*self._adjust((x, y), False), *self._adjust(self.size, True)))
-        self.G.WIN.blit(outSur, self._adjust((x + self.padding[0], y + self.__dist + self.padding[1]), False))
+        pygame.draw.rect(self.G.WIN, self._bg_colour[1], (x, y, *self._adjust()))
+        self.G.WIN.blit(outSur, self._adjust((x + self.padding[0], y + self._dist + self.padding[1])))
         
         for ev in events:
             if ev.type == pygame.MOUSEBUTTONDOWN or \
@@ -199,11 +198,17 @@ class TextBoxAdv(TextBox):
         lines=2,
         text=None,
         font_colour=(255, 255, 255),
-        text_wid=200,
+        text_wid=300,
         bg_colour=(0, 0, 0),
         border=None,
         transparent=False,
     ):
+        self.portrait_padding = portrait_padding
+
+        self._indicator = None
+        self._portrait = None
+        self._border = border
+        
         super().__init__(
             G,
             pos,
@@ -218,27 +223,22 @@ class TextBoxAdv(TextBox):
             bg_colour,
             transparent
         )
-        self.portrait_padding = portrait_padding
-
-        self.__indicator = None
-        self.__portrait = None
-        self.__border = border
 
         # Always check if border evaluate to true because corner and side
         # doesn't get created when there isn't any border to draw.
-        if self.__border:
+        if self._border:
             # Create topleft corner sprite.
-            self.__corner = CustomSprite(
-                self.__border["corner"],
-                self.__border["size"],
-                self.__border["colorkey"],
+            self._corner = CustomSprite(
+                self._border["corner"],
+                self._border["size"],
+                self._border["colorkey"],
             )
 
             # Create left side sprite.
-            self.__side = CustomSprite(
-                self.__border["side"],
-                self.__border["size"],
-                self.__border["colorkey"]
+            self._side = CustomSprite(
+                self._border["side"],
+                self._border["size"],
+                self._border["colorkey"]
             )
 
     def set_indicator(self, sprite=None, size=None, colorkey=None, scale=None):
@@ -256,9 +256,9 @@ class TextBoxAdv(TextBox):
         """
 
         if sprite:
-            self.__indicator = CustomSprite(sprite, size, colorkey, scale)
+            self._indicator = CustomSprite(sprite, size, colorkey, scale)
         else:
-            self.__indicator = CustomSprite(
+            self._indicator = CustomSprite(
                 settings.DEFAULT_INDICATOR["file"],
                 settings.DEFAULT_INDICATOR["size"],
                 (0, 0, 0),
@@ -279,25 +279,21 @@ class TextBoxAdv(TextBox):
             sprite (str): path to sprite file.
             size (tuple): width, height of sprite frame.
             colorkey (tuple): colour to remove from sprite, RGB value.
-            scale (tuple): new width, height to scale sprite to.
 
         """
+        if self._portrait is not None:
+            self._text_wid -= self._portrait.image.get_width() + self.portrait_padding[0] + self.portrait_padding[2]
 
         # Set portrait to have the same height as the text lines.
-        scale = [self.__textbox.linesize * self.__lines] * 2
+        scale = [self.font.linesize * self._lines] * 2
 
         # Set custom sprite for portrait.
         if sprite:
-
-            # Shut down if no size.
-            if not size:
-                raise SystemExit("Error: Need to give a size for the portrait sprite.")
-
-            self.__portrait = CustomSprite(sprite, size, colorkey, scale)
+            self._portrait = CustomSprite(sprite, size, colorkey, scale)
 
         # Use default portrait sprite.
         else:
-            self.__portrait = CustomSprite(
+            self._portrait = CustomSprite(
                 file=settings.DEFAULT_PORTRAIT["file"],
                 size=settings.DEFAULT_PORTRAIT["size"],
                 colorkey=(241, 0, 217),
@@ -305,16 +301,9 @@ class TextBoxAdv(TextBox):
             )
 
         # Adjust box text to the portrait.
-        w = self.__portrait.width + self.__text_width + self.__padding[0]
-        h = self.size[1]
-        size = (w, h)
+        self._text_wid += self._portrait.image.get_width() + self.portrait_padding[0] + self.portrait_padding[2]
 
-        # Update textbox data with portrait implemented.
-        pos = self.rect.topleft
-        self.size = self._adjust(size, self.__side) if self.__border else size
-        self.image = pygame.Surface(self.size).convert()
-        self.rect = self.image.get_rect()
-        self.rect.topleft = pos
+        self.size = self._adjust()
 
     def update(self, mousePos, events):
         # Update the text.
@@ -322,27 +311,36 @@ class TextBoxAdv(TextBox):
         
         x, y = self.stackP()
 
-        if self.full and self.__indicator:
-            self.__indicator.animate(pygame.time.get_ticks())
-            im = self.__indicator.image
+        if self.full and self._indicator:
+            self._indicator.animate(pygame.time.get_ticks())
+            im = self._indicator.image
             self.G.WIN.blit(im, (x + self.size[0] - (self.padding[0] // 2) - im.get_width(), y + self.size[1] - (self.padding[1] // 2) - im.get_height()))
         
-        # Draw portrait
+        if self._portrait is not None:
+            self._portrait.animate(pygame.time.get_ticks())
+            self.G.WIN.blit(self._portrait.image, (x + self.portrait_padding[0], y + self.portrait_padding[1]))
 
         # Draw box border.
-        # if self.__border:
+        # if self._border:
         #     self._draw_border(
         #         self.image,
-        #         self.__border,
-        #         self.__corner,
-        #         self.__side,
-        #         self.__bg_colour,
+        #         self._border,
+        #         self._corner,
+        #         self._side,
+        #         self._bg_colour,
         #     )
         return ret
 
-    def _adjust(self, size, typ):
+    def _adjust(self, pos=None):
         """Include the border size and portrait"""
-        return size
+        if self._portrait is None:
+            w = 0
+        else:
+            w = self._portrait.image.get_width() + self.portrait_padding[0] + self.portrait_padding[2]
+        if pos is None:
+            self.size = (self._text_wid + self.padding[0] * 2 + w, self.font.linesize * self._lines + self.padding[1] * 2)
+            return self.size
+        return (pos[0] + w, pos[1])
 
         w = size[0] - size[0] % side.width
         h = size[1] - size[1] % side.height

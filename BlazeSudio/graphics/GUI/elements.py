@@ -41,7 +41,7 @@ class Element:
     def __hash__(self):
         return hash(self.uid)
     
-    def __setattr__(self, name: str, value: Any) -> None:
+    def __setattr__(self, name: str, value: Any) -> None: # TODO: Use @size.setter
         super().__setattr__(name, value)
         if name == 'size' and 'stackP' in self.__dict__: # Safeguard against running this before initialisation of stackP
             self.stackP.setSize(self.size) # Automatically update stackP size whenever you set self.size
