@@ -1,22 +1,28 @@
+from BlazeSudio.graphics import Graphic
+from BlazeSudio.graphics import options as GO
 from BlazeSudio.utils import Player
 from BlazeSudio.worldGen import World
-import BlazeSudio.graphics as graphics
+
+G = Graphic()
 
 class Game:
     def __init__(self):
-        self.G = graphics.Graphic()
         self.world = None
     
     def load_map(self, fpath):
         self.world = World(fpath, make_new=False)
     
-    def play(self, debug=False): # Play the game
-        player = Player(self.G, self.world)
-        @self.G.Graphic
-        def game(event, element=None, aborted=False):
-            if event == graphics.options.EFIRST:
-                self.G.add_custom(player)
-        game()
+    @G.CGraphic
+    def play(self, event, element=None, aborted=False, debug=False): # Play the game
+        if event == GO.EFIRST:
+            player = Player(G, self.world)
+            self.G.add_custom(player)
     
-    def build(self): # Launch a screen to show all the things you've defined and what you haven't
-        pass
+    @G.CGraphic
+    def build(self, event, element=None, aborted=False): # Launch a screen to show all the things you've defined and what you haven't
+        if event == GO.ELOADUI:
+            G.Clear()
+            if self.world is None:
+                G.add_text("No world loaded!", GO.CBLACK, GO.PCCENTER)
+            else:
+                G.add_text("Loaded world '%s'!"%self.world.name, GO.CBLACK, GO.PCCENTER)
