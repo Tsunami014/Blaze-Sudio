@@ -3,26 +3,27 @@ import pygame
 import BlazeSudio.graphics.options as GO
 
 class Player:
-    def __init__(self, world, Loading, quitfunc):
+    def __init__(self, G, world):
+        self.G = G
         self.lvl = 0
         self.world = world
-        self.Loading = Loading
-        self.quitfunc = quitfunc
         self.load_sur()
         self.pos = [self.sur.get_width()/2, self.sur.get_height()/2]
     
     def load_sur(self):
         if len(self.world.ldtk.levels) <= self.lvl or self.lvl < 0:
             return False
-        @self.Loading
+        @self.G.Loading
         def LS(slf):
             self.sur = self.world.get_pygame(self.lvl)
             self.minimap = self.world.gen_minimap(highlights={self.lvl: (255, 50, 50)})
         fin, _ = LS()
-        if not fin: self.quitfunc()
+        if not fin:
+            self.G.Abort()
         return True
 
-    def execute(self, win):
+    def update(self, events, mPos):
+        win = self.G.WIN
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] ^ keys[pygame.K_DOWN]:
             if keys[pygame.K_UP]:

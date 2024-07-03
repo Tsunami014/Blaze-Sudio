@@ -8,6 +8,7 @@ BlazeSudio/bot/Unusedmodels/*
 !BlazeSudio/bot/preferencesDefault.json
 !BlazeSudio/data/defaultWorld/src/nodes/dat.json
 !BlazeSudio/data/nodes/types.json
+!test-files/dat.json
 *.elm
 BlazeSudio/data/worlds/*/*
 BlazeSudio/data/worlds/*/world/backups/*

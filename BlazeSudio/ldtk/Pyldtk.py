@@ -37,11 +37,8 @@ class LdtkJSON:
         
         self.tilesets = {}
         for i in self.defs['tilesets']:
-            try:
-                t = Tileset(fileloc, i)
-                self.tilesets[t.uid] = t
-            except:
-                pass
+            t = Tileset(fileloc, i)
+            self.tilesets[t.uid] = t
         
         self.levels = []
 
