@@ -21,14 +21,14 @@ def create_iid():
     return f'{"".join([r() for _ in range(8)])}-{"".join([r() for _ in range(4)])}-11ee-{"".join([r() for _ in range(4)])}-{"".join([r() for _ in range(12)])}'
 
 class World:
-    def __init__(self, filename, name='', idea='', size=None, size2=50, quality=None, seed=None, override=False, make_new=True, callback=lambda *args: None):
+    def __init__(self, path, name='', idea='', size=None, size2=50, quality=None, seed=None, override=False, make_new=True, callback=lambda *args: None):
         """
         A World!
 
         Parameters
         ----------
-        filename : str
-            The name of the path. Does not affect anything. Must be unique.
+        path : str
+            The path to the world folder
         name : str
             the name of the world. Can be anything.
         idea : str
@@ -50,16 +50,16 @@ class World:
         callback : function, optional
             When the progress on the generation gets further, cal this function with the info on it. Can put `print` here if you want to print out the progress.
         """
-        path = (folder+filename).replace('/', '\\')
-        if not path.endswith('\\'): path += '\\'
+        if not (path.endswith('\\') or path.endswith('/')): path += '/'
         self.path = path
         self.data = {}
-        if (files('BlazeSudio') / path).exists() and not override:
-            self.data = json.loads((files('BlazeSudio') / (path+'world.ldtk')).read_text())
-            dat = json.loads((files('BlazeSudio') / (path+'dat.json')).read_text())
+        if os.path.exists(path) and not override:
+            self.data = json.loads(open(path+'world.ldtk').read())
+            dat = json.loads(open(path+'dat.json').read())
             self.name = dat['name']
             self.idea = dat['idea']
         elif make_new:
+            # TODO: Fix pathings
             pth = files('BlazeSudio') / ('data/worlds/'+filename)
             if pth.exists():
                 pth.rmtree()

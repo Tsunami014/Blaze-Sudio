@@ -21,6 +21,14 @@
             "justMyCode": false
         },
         {
+            "name": "Run Test",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "test.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "Current File",
             "type": "debugpy",
             "request": "launch",
