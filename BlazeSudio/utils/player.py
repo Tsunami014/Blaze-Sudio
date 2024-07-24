@@ -3,8 +3,10 @@ import pygame
 import BlazeSudio.graphics.options as GO
 
 class Player:
-    def __init__(self, G, world):
+    def __init__(self, G, world, Game):
+        self.Game = Game
         self.G = G
+        self.settings = None
         self.lvl = 0
         self.world = world
         self.load_sur()
@@ -23,6 +25,7 @@ class Player:
         return True
 
     def update(self, events, mPos):
+        self.settings = self.Game.settings
         win = self.G.WIN
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] ^ keys[pygame.K_DOWN]:
@@ -35,9 +38,11 @@ class Player:
                 self.pos[0] += 10
             elif keys[pygame.K_LEFT]:
                 self.pos[0] -= 10
+        
+        sur = pygame.transform.scale(self.sur, (self.settings['scale'], self.settings['scale']))
 
         # TODO: replace the changing of the level to work with the ldtk neighbours thing and implement that in world.py
-        if self.pos[0] > self.sur.get_width():
+        if self.pos[0] > sur.get_width():
             self.lvl += 1
             if self.load_sur():
                 self.pos[0] = 10
@@ -46,17 +51,17 @@ class Player:
         elif self.pos[0] < 0:
             self.lvl -= 1
             if self.load_sur():
-                self.pos[0] = self.sur.get_width()-10
+                self.pos[0] = sur.get_width()-10
             else: # It failed
                 self.lvl += 1
         if self.pos[1] < 0:
             oldlvl = self.lvl
             self.lvl -= ceil(sqrt(len(self.world.ldtk.levels)))
             if self.load_sur():
-                self.pos[1] = self.sur.get_height()-10
+                self.pos[1] = sur.get_height()-10
             else: # It failed
                 self.lvl = oldlvl
-        elif self.pos[1] > self.sur.get_height():
+        elif self.pos[1] > sur.get_height():
             oldlvl = self.lvl
             self.lvl += ceil(sqrt(len(self.world.ldtk.levels)))
             if self.load_sur():
@@ -64,17 +69,20 @@ class Player:
             else: # It failed
                 self.lvl = oldlvl
         
+        sur = pygame.transform.scale(self.sur, (self.settings['scale'], self.settings['scale']))
+        
         # This stays here because if you cannot change levels you must be constraint to the current one
-        self.pos[0] = max(min(self.pos[0], self.sur.get_width()), 0)
-        self.pos[1] = max(min(self.pos[1], self.sur.get_height()), 0)
+        self.pos[0] = max(min(self.pos[0], sur.get_width()), 0)
+        self.pos[1] = max(min(self.pos[1], sur.get_height()), 0)
         mw, mh = win.get_width()/2, win.get_height()/2
         ZC = lambda x: (0 if x < 0 else x) # Zero Check
-        diff = ((ZC(mw-self.pos[0]) or -ZC(self.pos[0]-(self.sur.get_width()-mw))),
-                (ZC(mh-self.pos[1]) or -ZC(self.pos[1]-(self.sur.get_height()-mh))))
-        win.blit(self.sur, [
+        diff = ((ZC(mw-self.pos[0]) or -ZC(self.pos[0]-(sur.get_width()-mw))),
+                (ZC(mh-self.pos[1]) or -ZC(self.pos[1]-(sur.get_height()-mh))))
+        win.blit(sur, [
             -self.pos[0]+mw-diff[0],
             -self.pos[1]+mh-diff[1]
             ])
         win.blit(self.minimap, (0, 0))
         win.blit(GO.FNEW(None, 64).render(f'lvl: {self.lvl}', (0, 0, 0)), (self.minimap.get_width()+20, 0))
         pygame.draw.rect(win, (0, 0, 0), (mw-20-diff[0], mh-20-diff[1], 40, 40), border_radius=2)
+        pygame.draw.rect(win, (255, 255, 255), (mw-20-diff[0], mh-20-diff[1], 40, 40), width=5, border_radius=2)
