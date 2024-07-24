@@ -1,8 +1,9 @@
 from BlazeSudio.Game import Game
 
 G = Game()
-G.load_map("test-files")
+G.load_map("test-files/world.ldtk")
+G.SetSettings(scale=2000)
 
 if __name__ == '__main__':
-    G.build()
-    #G.play(True)
+    #G.build()
+    G.play(debug=True)
