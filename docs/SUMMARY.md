@@ -4,7 +4,6 @@
 
 ## Important stuff
 
-* [Stuff for devs](devs.md)
 * [Installing the app](Installing/README.md)
 
 ## Important utils
