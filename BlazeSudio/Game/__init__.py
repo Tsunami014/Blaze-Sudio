@@ -15,9 +15,11 @@ __all__ = [
 
 G = Graphic()
 
-_types = {
-    "scale": statics.Number,
-    "gravity": statics.Iterable
+
+_settings = {
+    # Name: (type, type explanation, default, explanation)
+    "scale": (statics.Number, "Number", 1, "the scale of the level"),
+    "gravity": (statics.Iterable, "list[int,int]", [0, -1], "the gravity of the player, x and y")
 }
 
 class Game:
@@ -25,8 +27,7 @@ class Game:
         self.world = None
         self.debug = None
         self.settings = {
-            "scale": 1,
-            "gravity": [0, -1]
+            i: i[2] for i in _settings
         }
         self._onticks = []
     
@@ -101,8 +102,9 @@ class Game:
                         newG2.add_text('Settings', GO.CBLACK, GO.PCTOP, GO.FTITLE)
                         def add_sett(txt):
                             newG2.add_text(txt, GO.CBLACK, GO.PCTOP, allowed_width=G.size[0]/3-10)
-                        add_sett('"scale" (number): the scale of the level')
-                        add_sett('"gravity" (tuple[int,int]): the gravity of the player, x and y')
+                        for i in _settings:
+                            it = _settings[i]
+                            add_sett(f'"{i}" ({it[1]}): {it[3]}, default: {it[2]}')
                 
                 @G.Graphic
                 def items(event, element=None, aborted=False):
@@ -128,10 +130,10 @@ class Game:
                             if args[1] in self.settings:
                                 try:
                                     out = eval(args[1])
-                                    assert isinstance(out, _types[args[1]])
+                                    assert isinstance(out, _settings[args[1]][0])
                                     self.settings[args[1]] = out
                                 except:
-                                    G.Toast(f'Expected argument 2 of "/set" to be a {str(_types[args[1]])}, but was not!')
+                                    G.Toast(f'Expected argument 2 of "/set" to be a {_settings[args[1]][1]}, but was not!')
                             else:
                                 G.Toast('Invalid setting to set!')
                     elif args[0] == '/get':
