@@ -4,6 +4,7 @@
  - what they did next
  - screenshots or hand drawn art of important scenes/locations
  - best quotes uttered in the makings of the game
+ - Amount of words in the planning sheetof the game
  - funny glitches found in development
  - early prototypes of the game
  - cryptic messages

@@ -5,7 +5,7 @@
  - [ ] Make the player have physics and stuff!
 ## 3.0.0
  - [ ] Make all the demos work or remove them?? (add some, remove others)
- - [ ] Figure out whether we even *need* `__main__.py` or the node editor or other things (and if they don't, remove them or put them somewhere else in the repo that has nothing to do with pip)
+ - [ ] Figure out whether we even *need* `__main__.py` or the node editor or other things (and if they don't, remove them or put them somewhere else in the repo that has nothing to do with pip) [SEE THIS](#idea-for-main)
 ## After that
  - Keep adding more features to the main editor, allthewhile doing the below: 
  - [ ] Make graphics run WAY faster and **efficient** (currently EXTREMLY SLOW)
@@ -51,6 +51,11 @@ Testable things can be tested from the demos in `__main__.py` or from `demos.py`
 # ![Ideas](https://badgen.net/badge/-/Ideas?color=pink&label=&scale=3)
  - Hyperanalysis Drive (also known as Qibli Simulator); Track player's every move to feed into an algorithm for personalised gameplay
  - OFTEN (Old Fashioned Times Engineering Nuiances) (Acronym subject to change); Try to make a game with old fashioned hardware! Makes making a game much harder, the result much worse, but it just shows you how hard it was back then, and it'll be such a cool feat too!
+
+# idea-for-main
+You can make a game using the python library, OR alternatively have a main file which opens an LDtk file and it does the same thing EXCEPT it *generates* the python file for you based off of some things you set
+
+Like, it's another way to open an LDtk file; you can either open it to edit or open it to make a game with.
 
 # new-idea
 Instead of a `__main__.py` and the node editor (maybe keep the node editor), have it so this acts fully and soley as a library
