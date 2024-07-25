@@ -1,40 +1,43 @@
 <!DOCTYPE html>
 <html>
-<!-- TODO: Make the bg different than the normal codeblocks -->
-<head>
-    <title>About Blaze Sudios! 🦊</title>
-    <meta name="description" content="This page is about Blaze Sudios!"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://tsunami014.github.io/bg/make_bg.js" type="module"></script>
-    <link rel="stylesheet" href="https://tsunami014.github.io/bg/bg.css">
-    <link rel="stylesheet" href="https://tsunami014.github.io/style.css">
-</head>
-<body>
-    <div id="inside">
-        <h1>Blaze Sudios</h1>
-        <div class="row">
-            <a href="https://tsunami014.github.io"><img src="https://badgen.net/badge/-/Go%20home?label=&icon=telegram&color=orange"></img></a>
-            <br>
-            <a href="https://github.com/Tsunami014/Blaze-Sudio/"><img src="https://badgen.net/badge/-/Go%20to%20github%20page?label=&icon=github"></img></a>
+    <!-- TODO: Make the bg different than the normal codeblocks -->
+    <head>
+        <title>About Blaze Sudios! 🦊</title>
+        <meta name="description" content="This page is about Blaze Sudios!"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://tsunami014.github.io/bg/make_bg.js" type="module"></script>
+        <link rel="stylesheet" href="https://tsunami014.github.io/bg/bg.css">
+        <link rel="stylesheet" href="https://tsunami014.github.io/style.css">
+        <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+        <style>
+#MarkdownGoesHere p {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+#MarkdownGoesHere p * {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+        </style>
+    </head>
+    <body>
+        <div id="inside" style="overflow-x: hidden">
+            <div class="row">
+                <a href="https://tsunami014.github.io"><img src="https://badgen.net/badge/-/Go%20home?label=&icon=telegram&color=orange"></img></a>
+                <br>
+                <a href="https://github.com/Tsunami014/Blaze-Sudio/"><img src="https://badgen.net/badge/-/Go%20to%20github%20page?label=&icon=github"></img></a>
+            </div>
+            <div id="MarkdownGoesHere"></div>
+            <script>
+                const md = markdownit();
+                fetch('README.md')
+                    .then(response => response.text())
+                    .then((data) => {
+                        const result = md.render(data);
+                        document.getElementById("MarkdownGoesHere").innerHTML = result;
+                })
+            </script>
         </div>
-        <h2> Blaze Sudio is an open source graphical game creation software.  </h2>
-        <img src="images/FoxIcon.png" style="padding: 10px;width: min(50vh, 50vw);border-radius: 10%;">
-        <p>  Next versions coming soon: <p>
-            <ul>
-                <li>v3.0.0 - 🌿`Kindle` - Able to make an actual game! Not just a world! Because you all know that to make a big fire you must first put in kindling</li>
-                <li>v4.0.0 - ♨️`Smolder` - Pretty cool so far and have ability to make an OK game that one could submit for a competition or something. (WINGS OF FIRE REFERENCE)</li>
-                <li>v5.0.0 - 🌋`Fire` - cos by then it'll be on fire :grin: - all functionality complete!</li> 
-                <li>v6.0.0 - ❤️‍🔥`Bonfire` - AI generate whole/parts of the game and integration with the editors!</li> 
-                <li>v7.0.0 - ☄️`Inferno` - Unity integration..?</li>
-                <li>v8.0.0 - 🍂`Firestorm`- Seamless intergration with Unity and maybe Unreal game engine?</li>
-            </ul>
-            <br> 
-        <p>Please join our Discord server for any information, queries, bugs, conversations, etc. that you may have! <p>
-        <div class="row">
-            <p>Join here:</p>
-            <br>
-            <a href="https://discord.gg/xr3phyEZtv"><img src="https://badgen.net/discord/members/xr3phyEZtv?icon=discord"></img></a>
-        </div>
-    </div>
-</body>
+    </body>
 </html>

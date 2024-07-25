@@ -27,7 +27,7 @@ Also known as:
 Also please note that this is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! PRs are welcome!
 
 Things to note:
-1. # **<u>Still in progress</u>**
+1. **Still in progress**
 2. This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix) (Actually I think I removed that one... must check.), [Pyldtk](https://github.com/LGgameLAB/pyLdtk) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). This is for a couple of reasons:
     1. (The main one) I can modify it myself
     2. It can't be installed with pip (last time I tried) (maybe it got taken down? I don't know, or maybe I'm just bad (says the person who made *this*))
