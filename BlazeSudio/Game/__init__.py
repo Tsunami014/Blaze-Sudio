@@ -129,7 +129,7 @@ class Game:
                         else:
                             if args[1] in self.settings:
                                 try:
-                                    out = eval(args[1])
+                                    out = eval(args[2])
                                     assert isinstance(out, _settings[args[1]][0])
                                     self.settings[args[1]] = out
                                 except:
