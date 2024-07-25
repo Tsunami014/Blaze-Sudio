@@ -119,7 +119,7 @@ class TerminalBar(GUI.Element):
                     self.pressed(event)
             elif event.type == pygame.MOUSEBUTTONDOWN and not self.G.pause:
                 if event.button == pygame.BUTTON_LEFT:
-                    self.toggleactive(not self.collides(*mousePos()))
+                    self.toggleactive(not self.collides(*mousePos))
         
         if self.active >= 0:
             self.active -= 1
