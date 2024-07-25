@@ -27,6 +27,7 @@ class Player:
     def update(self, events, mPos):
         self.settings = self.Game.settings
         win = self.G.WIN
+        sze = self.G.size
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] ^ keys[pygame.K_DOWN]:
             if keys[pygame.K_UP]:
@@ -74,7 +75,7 @@ class Player:
         # This stays here because if you cannot change levels you must be constraint to the current one
         self.pos[0] = max(min(self.pos[0], sur.get_width()), 0)
         self.pos[1] = max(min(self.pos[1], sur.get_height()), 0)
-        mw, mh = win.get_width()/2, win.get_height()/2
+        mw, mh = sze[0]/2, sze[1]/2
         ZC = lambda x: (0 if x < 0 else x) # Zero Check
         diff = ((ZC(mw-self.pos[0]) or -ZC(self.pos[0]-(sur.get_width()-mw))),
                 (ZC(mh-self.pos[1]) or -ZC(self.pos[1]-(sur.get_height()-mh))))

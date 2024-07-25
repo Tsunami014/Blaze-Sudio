@@ -32,8 +32,10 @@ class GScrollable(GUI.Scrollable):
         s = pygame.Surface(sizeOfScreen)
         self.newG = Graphic(win=s, TB=False, no_id=True)
         def func(event, *_, aborted=True, **__):
-            if event == GO.ETICK: return True
-            elif event == GO.EELEMENTCLICK: return
+            if event == GO.ETICK:
+                return True
+            elif event == GO.EELEMENTCLICK:
+                return
             return aborted
         self.GR = self.newG.Graphic(func, generator=True, update=False, events=self.getevents, mousepos=self.getmouse)()
     
@@ -68,37 +70,53 @@ class GScrollable(GUI.Scrollable):
         if np[0] > self.size[0] or p[1]-y > self.size[1]: return (float('-inf'), float('-inf'))
         return np
 
-class TerminalBar:
+class TerminalBar: # TODO: Make an element
     def __init__(self, win, spacing=5):
         self.win = win
         self.spacing = spacing
         self.active = -1
         self.txt = ''
+    
+    def onEnter(self, fullText):
+        pass # Implemented elsewheres
+    
     def pressed(self, event):
         if event.key == pygame.K_RETURN:
-            pass
+            txt = self.txt
+            self.txt = ""
+            self.onEnter(txt)
+            self.active = -1
         elif event.key == pygame.K_BACKSPACE:
             self.txt = self.txt[:-1]
         else:
             self.txt += event.unicode
+    
     def toggleactive(self, forceactive=None):
         if forceactive != None:
-            if forceactive: self.active = 60
-            else: self.active = -1
-        if self.active == -1: self.active = 60
-        else: self.active = -1
+            if forceactive:
+                self.active = 60
+            else:
+                self.active = -1
+        if self.active == -1:
+            self.active = 60
+        else:
+            self.active = -1
+    
     def update(self):
-        t = '>/'+self.txt
-        if self.active >= 30: t += '_'
+        t = '> '+self.txt
+        if self.active >= 30:
+            t += '_'
         if self.active >= 0:
             self.active -= 1
-            if self.active <= 0: self.active = 60
+            if self.active <= 0:
+                self.active = 60
         r = GO.FCODEFONT.render(t, GO.CWHITE)
         h = r.get_height()+self.spacing*2
         pygame.draw.rect(self.win, GO.CBLACK, pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h))
         self.win.blit(r, (self.spacing, self.win.get_height()-h+self.spacing))
+    
     def collides(self, x, y):
-        r = GO.FCODEFONT.render('>/', GO.CWHITE)
+        r = GO.FCODEFONT.render('> ', GO.CWHITE)
         h = r.get_height()+self.spacing*2
         return pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h).collidepoint(x, y)
 
@@ -300,6 +318,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             if self.id is None:
                 idx = None
             else:
+                self.Stuff.clear()
                 idx = GraphicInfo.GRAPHICSPROCESSES[self.id]
                 GraphicInfo.GRAPHICSPROCESSES[self.id] += 1
                 GraphicInfo.RUNNINGGRAPHIC = (self.id, idx)
@@ -319,7 +338,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             func(GO.EFIRST)
             self.run = True
             self.ab = False
-            self.rel = True
+            self.rel = False
             func(GO.ELOADUI)
             while self.run and not self.ab:
                 while IsLoading[0] or (self.id is not None and GraphicInfo.RUNNINGGRAPHIC != (self.id, idx)):
@@ -343,9 +362,10 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                                 yield [r]
                         elif ret == GUI.ReturnState.TBUTTON:
                             obj.update(mousepos(), evnts.copy(), True) # Redraw forcefully on top of everything else
-                #if self.Stuff.diff() or self.rel: # TODO: remove
-                #    self.rel = False
-                #    func(GO.ELOADUI)
+                if self.rel: # or self.Stuff.diff() # TODO: remove diff
+                    self.rel = False
+                    self.Stuff.clear()
+                    func(GO.ELOADUI)
                 self.TB.update()
                 if func(GO.ETICK) is False:
                     self.run = False
@@ -357,6 +377,10 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.run = False
+                        elif event.key == pygame.K_F5:
+                            self.TB.toggleactive()
+                            if self.TB.txt == "":
+                                self.TB.txt = "/"
                         elif self.TB.active != -1:
                             self.TB.pressed(event)
                             blocked = True
