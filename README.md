@@ -1,5 +1,5 @@
 # Welcome to Blaze Sudios!
-# CURRENT VERSION: v2.2.0-beta (💥 Flare)
+# CURRENT VERSION: v2.3.0-beta (💥 Flare)
 
 [![I've done a crap ton of commits](https://badgen.net/github/commits/Tsunami014/Blaze-Sudio?color=green&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/commits/)
 [![I've also done a ton of releases too](https://badgen.net/github/releases/Tsunami014/Blaze-Sudio?color=purple&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/releases)
