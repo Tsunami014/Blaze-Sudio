@@ -50,6 +50,8 @@ class Game:
             player = Player(G, self.world, self)
             G.add_custom(player)
             
+            tb = G.add_TerminalBar()
+            
             @G.Graphic
             def help(event, element=None, aborted=False):
                 """
@@ -84,6 +86,7 @@ class Game:
                     TOPRIGHT = GO.PNEW((0, 1), GO.PRTOP.func, 2, 0)
                     G.add_button('Copy :)', GO.CBLACK, TOPRIGHT, callback=lambda e: copy('TOP RIGHT'))
             
+            @tb.onEnter
             def tbEnter(txt):
                 txt = txt.lower().strip()
                 if not txt.startswith('/'):
@@ -111,4 +114,3 @@ class Game:
                     items()
                 else:
                     G.Toast('Invalid command! for help use /help')
-            G.TB.onEnter = tbEnter

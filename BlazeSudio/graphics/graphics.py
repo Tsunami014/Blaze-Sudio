@@ -30,7 +30,7 @@ class GScrollable(GUI.Scrollable):
         super().__init__(G, pos, goalrect, (0, sizeOfScreen[1]-goalrect[1]), outline, bar)
         self.events = []
         s = pygame.Surface(sizeOfScreen)
-        self.newG = Graphic(win=s, TB=False, no_id=True)
+        self.newG = Graphic(win=s, no_id=True)
         def func(event, *_, aborted=True, **__):
             if event == GO.ETICK:
                 return True
@@ -70,21 +70,27 @@ class GScrollable(GUI.Scrollable):
         if np[0] > self.size[0] or p[1]-y > self.size[1]: return (float('-inf'), float('-inf'))
         return np
 
-class TerminalBar: # TODO: Make an element
-    def __init__(self, win, spacing=5):
-        self.win = win
+class TerminalBar(GUI.Element):
+    def __init__(self, G, spacing=5):
+        self.G = G
         self.spacing = spacing
+        r = GO.FCODEFONT.render('> ', GO.CWHITE)
+        h = r.get_height()+self.spacing*2
+        super().__init__(G, (0, self.G.WIN.get_height()-h), (self.G.WIN.get_width(), h))
         self.active = -1
         self.txt = ''
+        self._onEnters = []
     
-    def onEnter(self, fullText):
-        pass # Implemented elsewheres
+    def onEnter(self, func):
+        self._onEnters.append(func)
+        return func
     
     def pressed(self, event):
         if event.key == pygame.K_RETURN:
             txt = self.txt
             self.txt = ""
-            self.onEnter(txt)
+            for f in self._onEnters:
+                f(txt)
             self.active = -1
         elif event.key == pygame.K_BACKSPACE:
             self.txt = self.txt[:-1]
@@ -102,23 +108,49 @@ class TerminalBar: # TODO: Make an element
         else:
             self.active = -1
     
-    def update(self):
-        t = '> '+self.txt
-        if self.active >= 30:
-            t += '_'
+    def update(self, mousePos, events):
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_F5:
+                    self.toggleactive()
+                    if self.txt == "" and self.active != -1:
+                        self.txt = "/"
+                elif self.active != -1:
+                    self.pressed(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN and not self.G.pause:
+                if event.button == pygame.BUTTON_LEFT:
+                    self.toggleactive(not self.collides(*mousePos()))
+        
         if self.active >= 0:
             self.active -= 1
             if self.active <= 0:
                 self.active = 60
-        r = GO.FCODEFONT.render(t, GO.CWHITE)
+        r = self.render()
         h = r.get_height()+self.spacing*2
-        pygame.draw.rect(self.win, GO.CBLACK, pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h))
-        self.win.blit(r, (self.spacing, self.win.get_height()-h+self.spacing))
+        pygame.draw.rect(self.G.WIN, GO.CBLACK, pygame.Rect(0, self.G.WIN.get_height()-h, self.G.WIN.get_width(), h))
+        self.G.WIN.blit(r, (self.spacing, self.G.WIN.get_height()-h+self.spacing))
+    
+    @property
+    def height(self):
+        return self.render().get_height()+self.spacing*2
+
+    def render(self):
+        t = '> '+self.txt
+        if self.active >= 30:
+            t += '_'
+        r = GO.FCODEFONT.render(t, GO.CWHITE)
+        return r
     
     def collides(self, x, y):
-        r = GO.FCODEFONT.render('> ', GO.CWHITE)
-        h = r.get_height()+self.spacing*2
-        return pygame.Rect(0, self.win.get_height()-h, self.win.get_width(), h).collidepoint(x, y)
+        h = self.height
+        return pygame.Rect(0, self.G.WIN.get_height()-h, self.G.WIN.get_width(), h).collidepoint(x, y)
+    
+
+    def get(self):
+        return self.txt
+    
+    def set(self, txt):
+        self.txt = txt
 
 class GraphicInfo:
     NUMGRAPHICSS = 0
@@ -132,15 +164,13 @@ class CustomGraphic: # This is if you don't want to use the actual graphics libr
         self.pause = False
 
 class Graphic:
-    def __init__(self, bgcol=GO.CWHITE, TB=True, win=None, no_id=False):
+    def __init__(self, bgcol=GO.CWHITE, win=None, no_id=False):
         """The class for making really cool graphic screens :)
 
         Parameters
         ----------
         bgcol : tuple[int, int, int]
             The colour of the button. For ease of use default colours are provided as GO.C___ (e.g. GO.CGREEN)
-        TB : bool, optional
-            Whether or not you want the little terminal bar at the bottom, by default True
         win : pygame.Surface, optional
             IF YOU DO NOT SPECIFY: If you have already made a pygame window it finds that and prints to that
             IF YOU SPECIFY A SURFACE: Instead of printing to the screen it prints to the surface
@@ -157,17 +187,6 @@ class Graphic:
                 self.WIN = pygame.display.set_mode()
                 pygame.display.toggle_fullscreen()
         else: self.WIN = win
-        if TB:
-            self.TB = TerminalBar(self.WIN)
-            self.size = (self.WIN.get_width(), self.WIN.get_height()-26)
-        else:
-            class FakeTB:
-                toggleactive = lambda *args: False
-                collides = lambda *args: False
-                update = lambda *args: None
-                active = -1
-            self.TB = FakeTB()
-            self.size = self.WIN.get_size()
         if no_id:
             self.id = None
         else:
@@ -189,6 +208,7 @@ class Graphic:
             'scrollsables',
             'cps', # ColourPickerS
             'Empties',
+            'TB'
         ))
         # Sprites are for things that may get deleted and nothing should happen because of it
         self.Stuff.sprites.add_many((
@@ -201,6 +221,11 @@ class Graphic:
         self.pause = False
         self.callbacks = {}
         self.Container = GS.Container()
+    
+    @property
+    def size(self):
+        return (self.WIN.get_width(), self.WIN.get_height()-sum(i.size[1] for i in self.Stuff['TB']))
+    
     def set_caption(self, caption=None, iconsur=None):
         """Sets the caption of the screen! Highly recommend to use at the start of your code.
         Also highly recommend that when you use this function you modify at least one thing as otherwise it is a waste of your time.
@@ -346,7 +371,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                 evnts = events()
                 self.WIN.fill(self.bgcol)
                 returns = self.Stuff.update(mousepos(), evnts.copy())
-                blocked = False
                 for obj in returns:
                     retValue = returns[obj]
                     if retValue is None:
@@ -366,27 +390,16 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                     self.rel = False
                     self.Stuff.clear()
                     func(GO.ELOADUI)
-                self.TB.update()
                 if func(GO.ETICK) is False:
                     self.run = False
                 for event in evnts.copy():
                     if event.type == pygame.QUIT:
                         self.run = False
-                    if not self.pause and not blocked:
+                    if not self.pause and all(i.active == -1 for i in self.Stuff['TB']):
                         func(GO.EEVENT, event)
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.run = False
-                        elif event.key == pygame.K_F5:
-                            self.TB.toggleactive()
-                            if self.TB.txt == "":
-                                self.TB.txt = "/"
-                        elif self.TB.active != -1:
-                            self.TB.pressed(event)
-                            blocked = True
-                    elif event.type == pygame.MOUSEBUTTONDOWN and not self.pause:
-                        if event.button == pygame.BUTTON_LEFT:
-                            self.TB.toggleactive(not self.TB.collides(*mousepos()))
                 yield None
                 if update:
                     pygame.display.flip()
@@ -480,6 +493,24 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         if d is False:
             self.run = False
         return d
+    
+    def add_TerminalBar(self, spacing=5):
+        """
+        Adds a Terminal Bar to the screen!
+
+        Parameters
+        ----------
+        spacing : int, optional
+            The spacing between the text and the edges, by default 5
+
+        Returns
+        -------
+        Element
+            The TerminalBar object
+        """
+        tb = TerminalBar(self, spacing)
+        self.Stuff['TB'].append(tb)
+        return tb
     
     def add_custom(self, sprite):
         """
