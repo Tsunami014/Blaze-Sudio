@@ -3,6 +3,8 @@ from BlazeSudio.graphics import options as GO
 from BlazeSudio.utils import Player
 from pyperclip import copy
 
+import pygame.transform
+
 import BlazeSudio.Game.world as world
 import BlazeSudio.Game.statics as statics
 
@@ -112,10 +114,30 @@ class Game:
                     List all the entities and other things in the game and their ids and stuff!
                     """
                     if event == GO.ELOADUI:
-                        TOPLEFT = GO.PNEW((0, 1), GO.PRTOP.func, 0, 0)
-                        G.add_button('Copy', GO.CBLACK, TOPLEFT, callback=lambda e: copy('TOP LEFT'))
+                        G.Clear()
+                        G.add_text("""
+Please note:
+1. If you used the internal icons it will appear blurry and without transparency. You're lucky I even provided you with THAT. PLEASE do not use them in your final game; the creator SPECIFICALLY said not to. I accept NO responsibility for you using this WHATSOEVER.
+2. The first image is the editor icon and the second is the actual image that will be in the game.
+""", GO.CBLACK, GO.PCTOP, allowed_width=500)
+                        TOPLEFT = GO.PNEW((0, 1), GO.PLTOP.func, 0, 0)
+                        G.add_text('All entities', GO.CBLACK, TOPLEFT, GO.FTITLE)
                         TOPRIGHT = GO.PNEW((0, 1), GO.PRTOP.func, 2, 0)
-                        G.add_button('Copy :)', GO.CBLACK, TOPRIGHT, callback=lambda e: copy('TOP RIGHT'))
+                        G.add_text('Entities in this level', GO.CBLACK, TOPRIGHT, GO.FTITLE)
+                        rainbow = GO.CRAINBOW()
+                        for e in self.world.ldtk.entities:
+                            idf = G.add_text(e.identifier, GO.CBLACK, TOPLEFT)
+                            doc = G.add_text(e.doc, GO.CBLACK, TOPLEFT, GO.FSMALL)
+                            size = 60
+                            scaleby = size / max(e.width, e.height)
+                            UITile = pygame.transform.scale(e.get_tile(True), (e.width * scaleby, e.height * scaleby))
+                            InGameTile = pygame.transform.scale(e.get_tile(False), (e.width * scaleby, e.height * scaleby))
+                            idfp = idf.stackP()
+                            ms = max(idf.size[0], doc.size[0]) + 10
+                            G.add_surface(UITile, GO.PSTATIC(idfp[0] + ms, idfp[1]))
+                            G.add_surface(InGameTile, GO.PSTATIC(idfp[0] + ms + size + 10, idfp[1]))
+                            G.add_button(f'Copy uid ({e.uid})', next(rainbow), TOPLEFT, font=GO.FSMALL, callback=copy(e.uid))
+                            G.add_empty_space(TOPLEFT, 0, 10)
                 
                 @tb.onEnter
                 def tbEnter(txt):
@@ -146,7 +168,7 @@ class Game:
                     elif args[0] == '/items':
                         items()
                     else:
-                        G.Toast('Invalid command! for help use /help')
+                        G.Toast('Invalid command! for help use /help') # TODO: Difflib get_close_matches
         elif event == GO.ETICK:
             for i in self._onticks:
                 i()

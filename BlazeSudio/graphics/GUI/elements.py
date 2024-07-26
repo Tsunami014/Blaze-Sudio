@@ -301,8 +301,8 @@ class Empty(Element):
 class Static(Element):
     type = GO.TSTATIC
     def __init__(self, G, pos, sur):
-        super().__init__(G, pos, self.sur.get_size())
         self.sur = sur
+        super().__init__(G, pos, self.sur.get_size())
     
     def get(self):
         """Get the surface"""
