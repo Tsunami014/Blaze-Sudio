@@ -2,6 +2,7 @@ import json
 from math import floor
 import pygame
 import os
+from importlib.resources import files
 
 def get_data(file):
     with open(file, "r") as data:
@@ -40,10 +41,10 @@ class LdtkJSON:
             t = Tileset(fileloc, i)
             self.tilesets[t.uid] = t
         
-        self.levels = []
-
-        for l in self.ldtkData['levels']:
-            self.levels.append(Ldtklevel(l, self.tilesets, self.defs))
+        self.levels = [Ldtklevel(l, self.tilesets, self.defs) for l in self.ldtkData['levels']]
+        
+        self.entities = [Entity(e, self.tilesets) for e in self.defs['entities']]
+            
 
 class Tileset:
     def __init__(self, fileloc, data):
@@ -52,15 +53,36 @@ class Tileset:
             if k.startswith('__'): 
                 k = k[1:]
             self.__dict__[k] = v
-        if self.relPath != None:
+        if self.embedAtlas == 'LdtkIcons' and self.relPath is None:
+            self.relPath = str(files('BlazeSudio') / 'ldtk/internal-icons.png')
+            self.tilesetPath = self.relPath
+            self.tileSet = pygame.image.load(self.relPath).convert_alpha()
+        elif self.relPath is not None:
             self.tilesetPath = self.relPath
             if self.tilesetPath.startswith('..'):
                 self.tilesetPath = os.path.abspath(os.path.join(fileloc,'../',self.tilesetPath))
             self.tileSet = pygame.image.load(os.path.abspath(os.path.join(fileloc,'../',self.tilesetPath))).convert_alpha()
     
+    def subsurface(self, x, y, w, h):
+        return self.tileSet.subsurface(pygame.Rect(x, y, w, h))
+    
     def getTile(self, tile, gridsize):
         end = pygame.transform.flip(self.tileSet.subsurface(pygame.Rect(tile.src.x, tile.src.y, self.tileGridSize, self.tileGridSize)), *tile.flip)
         return pygame.transform.scale(end, (gridsize, gridsize))
+
+class Entity:
+    def __init__(self, data, tilesets):
+        self.data = data
+        self.tilesets = tilesets
+        for k, v in self.data.items():
+            self.__dict__[k] = v
+    
+    def get_tile(self, ui=False):
+        tiler = self.tileRect if not ui else self.uiTileRect
+        return self.tilesets[tiler['tilesetUid']].subsurface(tiler['x'], 
+                                                             tiler['y'], 
+                                                             tiler['w'], 
+                                                             tiler['h'])
 
 class Ldtklevel:
     def __init__(self, data, tilesets, defs):

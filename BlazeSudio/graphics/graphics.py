@@ -546,7 +546,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             Element: The created element
         """
         func = lambda t: font.render(t, colour, allowed_width=allowed_width) # TODO: Remove this and implement it in the text class itself
-        obj = func(txt)
         t = GUI.Text(self, position, func, txt)
         self.Stuff['text'].append(t)
         return t
