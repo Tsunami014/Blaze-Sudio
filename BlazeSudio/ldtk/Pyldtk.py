@@ -96,7 +96,13 @@ class Ldtklevel:
         
         ids = [i['identifier'] for i in defs['layers']]
         
-        self.layers = [layer(l, self, defs['layers'][ids.index(l['__identifier'])]) for l in self.layerInstances]
+        self.entities = []
+        self.layers = []
+        for l in self.layerInstances:
+            if l['__type'] == 'Entities':
+                self.entities.extend([{**i, 'layerId': l['__identifier']} for i in l['entityInstances']])
+            else:
+                self.layers.append(layer(l, self, defs['layers'][ids.index(l['__identifier'])]))
         self.layers.reverse() 
 
         self.width, self.height = self.pxWid, self.pxHei   
