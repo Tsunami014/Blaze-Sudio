@@ -58,12 +58,14 @@ class World:
         pygame.draw.rect(sur, (0, 0, 0), sur.get_rect(), w, 4)
         return sur
 
+    def get_level(self, lvl):
+        return self.ldtk.levels[lvl]
+
     def get_pygame(self, lvl=0):
-        if self.data != {}:
-            level = self.ldtk.levels[lvl]
-            end = Surface((level.width, level.height))
-            end.fill(tuple(int(level._bgColor.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)))
-            end = end.convert_alpha()
-            for i in level.layers:
-                end.blit(i.getImg(), (0, 0))
-            return end
+        level = self.ldtk.levels[lvl]
+        end = Surface((level.width, level.height))
+        end.fill(tuple(int(level._bgColor.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)))
+        end = end.convert_alpha()
+        for i in level.layers:
+            end.blit(i.getImg(), (0, 0))
+        return end

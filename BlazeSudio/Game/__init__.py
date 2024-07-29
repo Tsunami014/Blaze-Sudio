@@ -26,12 +26,23 @@ _settings = {
 
 class Game:
     def __init__(self):
-        self.world = None
-        self.debug = None
+        self.world: world.World = None
+        self.debug: bool = None
+        self._player: statics.BasePlayer = None # The player character in the game
+        self._gameplayer: Player = None # The object which renders the game (like a video player)
+        self._scenes = []
+        self._defaultScene = 0
         self.settings = {
             i: i[2] for i in _settings
         }
         self._onticks = []
+    
+    def Scene(self, func, default=False):
+        pass
+    
+    def Player(self, cls):
+        self._player = cls()
+        return cls
     
     def load_map(self, fpath):
         self.world = world.World(fpath)
@@ -71,9 +82,15 @@ class Game:
             customisable scales to find the right one for your purposes, and more; all avaliable via the terminalbar.
         """
         self.debug = debug
-        if event == GO.ELOADUI:
-            player = Player(G, self.world, self)
-            G.add_custom(player)
+        if event == GO.EFIRST:
+            self._gameplayer = Player(G, self.world, self)
+            if self._player is not None and self._player.StartUID is not None:
+                for e in self.world.get_level(self._gameplayer.lvl).entities:
+                    if e['defUid'] == self._player.StartUID:
+                        self._gameplayer.pos = [e['px'][0] / e['width'], e['px'][1] / e['height']]
+                        break
+        elif event == GO.ELOADUI:
+            G.add_custom(self._gameplayer)
             
             if debug:
                 tb = G.add_TerminalBar()

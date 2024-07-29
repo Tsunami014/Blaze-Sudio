@@ -1,8 +1,13 @@
 from BlazeSudio.Game import Game
+import BlazeSudio.Game.statics as Ss
 
 G = Game()
 G.load_map("test-files/world.ldtk")
-G.SetSettings(scale=2000)
+G.SetSettings(scale=8)
+
+@G.Player
+class player(Ss.BasePlayer):
+    StartUID = 107
 
 if __name__ == '__main__':
     G.play(debug=True)
