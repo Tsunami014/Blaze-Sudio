@@ -1,7 +1,5 @@
-import json
-from math import floor
-import pygame
-import os
+import json, pygame, os
+from math import ceil, floor
 from importlib.resources import files
 
 def get_data(file):
@@ -105,7 +103,9 @@ class Ldtklevel:
                 self.layers.append(layer(l, self, defs['layers'][ids.index(l['__identifier'])]))
         self.layers.reverse() 
 
-        self.width, self.height = self.pxWid, self.pxHei   
+        self.width, self.height = self.pxWid, self.pxHei
+    
+    # TODO: Get layer by id
     
     def getTileLayers(self):
         return list(l for l in self.layers if l._type == "Tiles")
@@ -126,6 +126,7 @@ class layer:
                 self.__dict__[k[1:]] = v
             else:
                 self.__dict__[k] = v
+        self.intgrid = IntGridCSV(self.intGridCsv, self._cWid, self._cHei)
         
         if self._type == "Tiles":
             self.loadTileSheet()
@@ -143,14 +144,15 @@ class layer:
             # TODO: add support for non-tileset things for not just intgrid (i.e. is just colour, non-rendered)
             if self._type == 'IntGrid':
                 vals = [i['value'] for i in self.intGridValues]
-                for i in range(len(self.intGridCsv)):
-                    col = pygame.Surface((self.gridSize, self.gridSize)).convert_alpha()
-                    if self.intGridCsv[i] == 0 or self.intGridCsv[i] not in vals:
-                        col.fill((255, 255, 255, 1))
-                    else:
-                        h = self.intGridValues[vals.index(self.intGridCsv[i])]['color'].lstrip('#')
-                        col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
-                    end.blit(col, ((i%self._cWid)*self.gridSize, floor(i/self._cWid)*self.gridSize))
+                for y in range(len(self.intgrid)):
+                    for x in range(len(self.intgrid[y])):
+                        col = pygame.Surface((self.gridSize, self.gridSize)).convert_alpha()
+                        if self.intgrid[y, x] == 0 or self.intgrid[y, x] not in vals:
+                            col.fill((255, 255, 255, 1))
+                        else:
+                            h = self.intGridValues[vals.index(self.intGridCsv[y, x])]['color'].lstrip('#')
+                            col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
+                        end.blit(col, (x*self.gridSize, y*self.gridSize))
             else:
                 end.fill((255, 255, 255, 1))
             return end
@@ -160,6 +162,24 @@ class layer:
             i = self.tiles[j]
             end.blit(tset.getTile(i, self._gridSize), i.pos)
         return end
+
+class IntGridCSV:
+    def __init__(self, intgrid, cwid, chei=None):
+        self.rawintgrid = intgrid
+        self.cwid = cwid
+        self.chei = chei or ceil(len(intgrid) / self.cwid)
+        self.intgrid = [intgrid[cwid*i:cwid*(i+1)] for i in range(chei)]
+    
+    def __iter__(self):
+        return iter(self.intgrid)
+    
+    def __len__(self):
+        return len(self.intgrid)
+
+    def __getitem__(self, y, x=None):
+        if y is None:
+            return self.intgrid[y]
+        return self.intgrid[y][x]
 
 class tile:
     def __init__(self, data, layer):
