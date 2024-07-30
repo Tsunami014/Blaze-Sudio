@@ -5,6 +5,11 @@ G = Game()
 G.load_map("test-files/world.ldtk")
 G.SetSettings(scale=8, gravity=[0, 0.1])
 
+@G.Collision
+def CollisionCheck(pos, entity):
+    # if entity == "Player":
+    return False
+
 @G.Player
 class player(Ss.BasePlayer):
     StartUID = 107

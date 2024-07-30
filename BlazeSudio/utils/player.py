@@ -17,6 +17,10 @@ class Player:
         self.max_accel = [0.7, 0.7]
         self.gravity = [0, 0]
     
+    @property
+    def currentLvL(self):
+        return self.world.get_level(self.lvl)
+    
     def load_sur(self):
         if len(self.world.ldtk.levels) <= self.lvl or self.lvl < 0:
             return False
@@ -61,13 +65,20 @@ class Player:
                 self.accel[0] = 0
         
         self.accel = [round(min(max(self.accel[0]+self.gravity[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1]+self.gravity[1], -self.max_accel[1]), self.max_accel[1]), 3)]
-        self.pos = [self.pos[0] + self.accel[0], self.pos[1] + self.accel[1]]
+        if self.Game._collisionfunc([self.pos[0] + self.accel[0], self.pos[1]], "Player"):
+            self.accel[0] = 0
+        else:
+            self.pos = [self.pos[0] + self.accel[0], self.pos[1] + self.accel[1]]
+        if self.Game._collisionfunc([self.pos[0], self.pos[1] + self.accel[0]], "Player"):
+            self.accel[1] = 0
+        else:
+            self.pos = [self.pos[0], self.pos[1] + self.accel[1]]
         
         sur = pygame.transform.scale(self.sur, (self.sur.get_width()*self.settings['scale'], self.sur.get_height()*self.settings['scale']))
 
         # TODO: replace the changing of the level to work with the ldtk neighbours thing and implement that in world.py
-        realpos = ((self.pos[0] * self.world.get_level(self.lvl).layerInstances[0]['__gridSize']) * self.settings['scale'], 
-                   (self.pos[1] * self.world.get_level(self.lvl).layerInstances[0]['__gridSize']) * self.settings['scale'])
+        realpos = ((self.pos[0] * self.currentLvL.layerInstances[0]['__gridSize']) * self.settings['scale'], 
+                   (self.pos[1] * self.currentLvL.layerInstances[0]['__gridSize']) * self.settings['scale'])
         if realpos[0] > sur.get_width():
             self.lvl += 1
             if self.load_sur():
@@ -77,14 +88,14 @@ class Player:
         elif realpos[0] < 0:
             self.lvl -= 1
             if self.load_sur():
-                self.pos[0] = self.world.get_level(self.lvl).layerInstances[0]['__cWid']-0.1
+                self.pos[0] = self.currentLvL.layerInstances[0]['__cWid']-0.1
             else: # It failed
                 self.lvl += 1
         if realpos[1] < 0:
             oldlvl = self.lvl
             self.lvl -= ceil(sqrt(len(self.world.ldtk.levels)))
             if self.load_sur():
-                self.pos[1] = self.world.get_level(self.lvl).layerInstances[0]['__cHei']-0.1
+                self.pos[1] = self.currentLvL.layerInstances[0]['__cHei']-0.1
             else: # It failed
                 self.lvl = oldlvl
         elif realpos[1] > sur.get_height():
@@ -95,11 +106,11 @@ class Player:
             else: # It failed
                 self.lvl = oldlvl
         
-        self.pos[0] = max(min(self.pos[0], self.world.get_level(self.lvl).layerInstances[0]['__cWid']), 0)
-        self.pos[1] = max(min(self.pos[1], self.world.get_level(self.lvl).layerInstances[0]['__cHei']), 0)
+        self.pos[0] = max(min(self.pos[0], self.currentLvL.layerInstances[0]['__cWid']), 0)
+        self.pos[1] = max(min(self.pos[1], self.currentLvL.layerInstances[0]['__cHei']), 0)
         
-        realpos = ((self.pos[0] * self.world.get_level(self.lvl).layerInstances[0]['__gridSize']) * self.settings['scale'],
-                   (self.pos[1] * self.world.get_level(self.lvl).layerInstances[0]['__gridSize']) * self.settings['scale'])
+        realpos = ((self.pos[0] * self.currentLvL.layerInstances[0]['__gridSize']) * self.settings['scale'],
+                   (self.pos[1] * self.currentLvL.layerInstances[0]['__gridSize']) * self.settings['scale'])
         
         sur = pygame.transform.scale(self.sur, (self.sur.get_width()*self.settings['scale'], self.sur.get_height()*self.settings['scale']))
         

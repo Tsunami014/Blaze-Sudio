@@ -36,6 +36,15 @@ class Game:
             i: i[2] for i in _settings
         }
         self._onticks = []
+        self._collisionfunc = None
+    
+    @property
+    def currentLvL(self):
+        return self._gameplayer.currentLvL
+    
+    def Collision(self, func):
+        self._collisionfunc = func
+        return func
     
     def Scene(self, func, default=False):
         pass
