@@ -15,6 +15,7 @@ class Player:
         #                   Accel,      decel
         self.accel_amnt = [[0.2, 0.2], [0.25, 0.25]]
         self.max_accel = [0.7, 0.7]
+        self.gravity = [0, 0]
     
     def load_sur(self):
         if len(self.world.ldtk.levels) <= self.lvl or self.lvl < 0:
@@ -59,7 +60,7 @@ class Player:
             else:
                 self.accel[0] = 0
         
-        self.accel = [round(min(max(self.accel[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1], -self.max_accel[1]), self.max_accel[1]), 3)]
+        self.accel = [round(min(max(self.accel[0]+self.gravity[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1]+self.gravity[1], -self.max_accel[1]), self.max_accel[1]), 3)]
         self.pos = [self.pos[0] + self.accel[0], self.pos[1] + self.accel[1]]
         
         sur = pygame.transform.scale(self.sur, (self.sur.get_width()*self.settings['scale'], self.sur.get_height()*self.settings['scale']))
