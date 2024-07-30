@@ -11,6 +11,10 @@ class Player:
         self.world = world
         self.load_sur()
         self.pos = [0.1, 0.1]
+        self.accel = [0, 0]
+        #                   Accel,      decel
+        self.accel_amnt = [[0.2, 0.2], [0.25, 0.25]]
+        self.max_accel = [0.7, 0.7]
     
     def load_sur(self):
         if len(self.world.ldtk.levels) <= self.lvl or self.lvl < 0:
@@ -31,14 +35,32 @@ class Player:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] ^ keys[pygame.K_DOWN]:
             if keys[pygame.K_UP]:
-                self.pos[1] -= 0.5
+                self.accel[1] -= self.accel_amnt[0][1]
             elif keys[pygame.K_DOWN]:
-                self.pos[1] += 0.5
+                self.accel[1] += self.accel_amnt[0][1]
+        else:
+            if self.accel[1] < -self.accel_amnt[1][1]:
+                self.accel[1] += self.accel_amnt[1][1]
+            elif self.accel[1] > self.accel_amnt[1][1]:
+                self.accel[1] -= self.accel_amnt[1][1]
+            else:
+                self.accel[1] = 0
+        
         if keys[pygame.K_RIGHT] ^ keys[pygame.K_LEFT]:
             if keys[pygame.K_RIGHT]:
-                self.pos[0] += 0.5
+                self.accel[0] += self.accel_amnt[0][0]
             elif keys[pygame.K_LEFT]:
-                self.pos[0] -= 0.5
+                self.accel[0] -= self.accel_amnt[0][0]
+        else:
+            if self.accel[0] < -self.accel_amnt[1][0]:
+                self.accel[0] += self.accel_amnt[1][0]
+            elif self.accel[0] > self.accel_amnt[1][0]:
+                self.accel[0] -= self.accel_amnt[1][0]
+            else:
+                self.accel[0] = 0
+        
+        self.accel = [round(min(max(self.accel[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1], -self.max_accel[1]), self.max_accel[1]), 3)]
+        self.pos = [self.pos[0] + self.accel[0], self.pos[1] + self.accel[1]]
         
         sur = pygame.transform.scale(self.sur, (self.sur.get_width()*self.settings['scale'], self.sur.get_height()*self.settings['scale']))
 
