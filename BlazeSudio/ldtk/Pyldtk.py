@@ -170,13 +170,32 @@ class IntGridCSV:
         self.chei = chei or ceil(len(intgrid) / self.cwid)
         self.intgrid = [intgrid[cwid*i:cwid*(i+1)] for i in range(chei)]
     
+    def getAllHits(self, pos, sze):
+        #pos = [pos[0] + sze[0] / 2, pos[1] + sze[1] / 2]
+        points = [
+            [0,     0], # ^  <
+            [0.5,   0], # ^  ><
+            [1,     0], # ^  >
+            [1,   0.5], # ^v >
+            [1,     1], # v  >
+            [0.5,   1], # v  ><
+            [0,     1], # v  <
+            [0,   0.5], # ^v <
+            [0.5, 0.5]  # ^v >< 
+        ]
+        return [
+            self[round(pos[1]+sze[1]*y-1), round(pos[0]+sze[0]*x)-1]
+            for x, y in points
+        ]
+    
     def __iter__(self):
         return iter(self.intgrid)
     
     def __len__(self):
         return len(self.intgrid)
 
-    def __getitem__(self, y, x=None):
+    def __getitem__(self, args):
+        y, x = args[0], (None if len(args) < 2 else args[1])
         if y is None:
             return self.intgrid[y]
         return self.intgrid[y][x]

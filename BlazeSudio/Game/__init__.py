@@ -28,7 +28,7 @@ class Game:
     def __init__(self):
         self.world: world.World = None
         self.debug: bool = None
-        self._player: statics.BasePlayer = None # The player character in the game
+        self._player: statics.BasePlayer = statics.BasePlayer() # The player character in the game
         self._gameplayer: Player = None # The object which renders the game (like a video player)
         self._scenes = []
         self._defaultScene = 0
@@ -36,15 +36,15 @@ class Game:
             i: i[2] for i in _settings
         }
         self._onticks = []
-        self._collisionfunc = None
+        self._collisions: statics.BaseCollisions = statics.BaseCollisions()
     
     @property
     def currentLvL(self):
         return self._gameplayer.currentLvL
     
-    def Collision(self, func):
-        self._collisionfunc = func
-        return func
+    def Collision(self, cls):
+        self._collisions = cls()
+        return cls
     
     def Scene(self, func, default=False):
         pass
