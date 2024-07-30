@@ -21,7 +21,7 @@ G = Graphic()
 _settings = {
     # Name: (type, type explanation, default, explanation)
     "scale": (statics.Number, "Number", 1, "the scale of the level"),
-    "gravity": (statics.Iterable, "list[int,int]", [0, -1], "the gravity of the player, x and y")
+    "gravity": (statics.Iterable, "list[int,int]", [0, 0], "the gravity of the player, x and y")
 }
 
 class Game:
@@ -55,6 +55,8 @@ class Game:
         --------
         scale : int, default 1
             The scale of the map
+        gravity : list[int,int], default [0, 0]
+            The gravity of the player, in x, y
         """
         self.settings.update(kwargs)
     
@@ -187,5 +189,6 @@ Please note:
                     else:
                         G.Toast('Invalid command! for help use /help') # TODO: Difflib get_close_matches
         elif event == GO.ETICK:
+            self._gameplayer.gravity = self.settings['gravity']
             for i in self._onticks:
                 i()
