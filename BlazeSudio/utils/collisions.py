@@ -32,8 +32,8 @@ class Shapes:
         self.shapes.extend(list(shapes))
     
     def collides(self, shape: Shape) -> bool:
-        for shape in self.shapes:
-            if shape.collides(shape):
+        for s in self.shapes:
+            if s.collides(shape):
                 return True
         return False
 
