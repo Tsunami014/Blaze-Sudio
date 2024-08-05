@@ -548,6 +548,38 @@ def OLDtkAPPDemo():
         except:
             winopen = False
 
+def OCollisionsDemo():
+    import pygame
+    from BlazeSudio.utils import collisions
+    pygame.init()
+    win = pygame.display.set_mode()
+    run = True
+    type = 0
+    colliding = False
+    header_opts = ['point', 'line', 'circle', 'box']
+    objs = [collisions.Point, collisions.Line, collisions.Circle, collisions.Box]
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                break
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                run = False
+                break
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # Get the header_opts that got clicked, if any
+                if event.pos[1] < 50:
+                    type = event.pos[0]//(win.get_width()//len(header_opts))
+        win.fill((0, 0, 0) if not colliding else (250, 50, 50))
+        pygame.draw.rect(win, (255, 255, 255), (0, 0, win.get_width(), 50))
+        # Split it up into equal segments and put the text header_opts[i] in the middle of each segment
+        for i in range(len(header_opts)):
+            pygame.draw.line(win, (0, 0, 0), (i*win.get_width()//len(header_opts), 0), (i*win.get_width()//len(header_opts), 50))
+            font = pygame.font.Font(None, 36)
+            text = font.render(header_opts[i], True, (0, 0, 0))
+            win.blit(text, (i*win.get_width()//len(header_opts)+10, 10))
+        pygame.display.update()
+
 if __name__ == '__main__':
     import tkinter as Tk # Because everyone has tkinter
     from tkinter.scrolledtext import ScrolledText
@@ -642,6 +674,7 @@ if __name__ == '__main__':
         Tk.Label (root, text='Other stuff:').pack() # Other
         Tk.Button(root, text='Overlays Demo',           command=lambda: cmd(OOverlaysDemo),                      ).pack()
         Tk.Button(root, text='LDtk app Demo',           command=lambda: cmd(OLDtkAPPDemo),                       ).pack()
+        Tk.Button(root, text='Collisions Demo',         command=lambda: cmd(OCollisionsDemo),                    ).pack()
         Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(OConversationParserDemo), relief=Tk.SUNKEN ).pack()
         root.protocol("WM_DELETE_WINDOW", root.destroy)
     load()
