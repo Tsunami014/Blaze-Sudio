@@ -558,7 +558,7 @@ def OCollisionsDemo():
     typ = 0
     curObj = collisions.Point(0, 0)
     objs = collisions.Shapes()
-    dir = [50, 100]
+    dir = None
     
     def drawObj(obj, t, col):
         if t == 0:
@@ -600,10 +600,13 @@ def OCollisionsDemo():
                         curObj = collisions.Point(*event.pos)
                     elif typ == 1:
                         curObj = collisions.Line((0, 0), (10, 10))
+                        dir = [50, 100]
                     elif typ == 2:
                         curObj = collisions.Circle(*event.pos, 100)
+                        dir = 100
                     elif typ == 3:
                         curObj = collisions.Box(*event.pos, 100, 100)
+                        dir = [100, 100]
             
         win.fill((0, 0, 0) if not objs.collides(curObj) else (250, 50, 50))
         pygame.draw.rect(win, (255, 255, 255), (0, 0, win.get_width(), 50))
@@ -619,6 +622,10 @@ def OCollisionsDemo():
             curObj.p2 = (curObj.p1[0]+dir[0], curObj.p1[1]+dir[1])
         else:
             curObj.x, curObj.y = pygame.mouse.get_pos()
+            if typ == 2:
+                curObj.r = dir
+            elif typ == 3:
+                curObj.w, curObj.h = dir
         
         for i in objs:
             drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Box].index(type(i)), (10, 255, 50))
