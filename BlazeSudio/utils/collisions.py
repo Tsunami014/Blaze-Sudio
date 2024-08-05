@@ -95,13 +95,21 @@ class Line(Shape):
     # Some code yoinked off of https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/ modified for this use case
     
     @staticmethod
-    def _onSegment(p, q, r):
+    def _onSegment(p, a, b):
         """
-        Given three collinear points p, q, r, the function checks if point q lies on line segment 'pr'
+        Given three collinear points p, a, b, the function checks if point p lies on line segment 'ab'
         """
-        if ( (q[0] <= max(p[0], r[0])) and (q[0] >= min(p[0], r[0])) and
-            (q[1] <= max(p[1], r[1])) and (q[1] >= min(p[1], r[1]))):
+        # Calculate the cross product
+        cross_product = (p[1] - a[1]) * (b[0] - a[0]) - (p[0] - a[0]) * (b[1] - a[1])
+        
+        # If the cross product is not zero, the point is not on the line
+        if abs(cross_product) != 0:
+            return False
+        
+        # Check if the point is within the bounding box of the line segment
+        if min(a[0], b[0]) <= p[0] <= max(a[0], b[0]) and min(a[1], b[1]) <= p[1] <= max(a[1], b[1]):
             return True
+        
         return False
     
     @staticmethod
@@ -239,5 +247,6 @@ class Box(Shape):
             offtxt = f'on an offset of {self.offset}, realpos: {self.realPos}'
         return f'<Box @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h} {offtxt}>'
 
+# TODO: Fix box-line, line-line and point-line collisions
 # TODO: Box that isn't straight (Polygons)
 # TODO: Ovals and ovaloids (Ellipse)
