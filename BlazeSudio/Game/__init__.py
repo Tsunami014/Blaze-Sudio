@@ -1,6 +1,6 @@
 from BlazeSudio.graphics import Graphic
 from BlazeSudio.graphics import options as GO
-from BlazeSudio.utils import Player
+from BlazeSudio.Game.player import Player
 from pyperclip import copy
 
 import pygame.transform
