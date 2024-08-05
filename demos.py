@@ -554,10 +554,10 @@ def OCollisionsDemo():
     pygame.init()
     win = pygame.display.set_mode()
     run = True
-    type = 0
     colliding = False
     header_opts = ['point', 'line', 'circle', 'box']
-    objs = [collisions.Point, collisions.Line, collisions.Circle, collisions.Box]
+    type = 0
+    curObj = collisions.Point(0, 0)
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -570,6 +570,14 @@ def OCollisionsDemo():
                 # Get the header_opts that got clicked, if any
                 if event.pos[1] < 50:
                     type = event.pos[0]//(win.get_width()//len(header_opts))
+                    if type == 0:
+                        curObj = collisions.Point(*event.pos)
+                    elif type == 1:
+                        curObj = collisions.Line((0, 0), (10, 10))
+                    elif type == 2:
+                        curObj = collisions.Circle(*event.pos, 100)
+                    elif type == 3:
+                        curObj = collisions.Box(*event.pos, 100, 100)
         win.fill((0, 0, 0) if not colliding else (250, 50, 50))
         pygame.draw.rect(win, (255, 255, 255), (0, 0, win.get_width(), 50))
         # Split it up into equal segments and put the text header_opts[i] in the middle of each segment
@@ -578,6 +586,21 @@ def OCollisionsDemo():
             font = pygame.font.Font(None, 36)
             text = font.render(header_opts[i], True, (0, 0, 0))
             win.blit(text, (i*win.get_width()//len(header_opts)+10, 10))
+        
+        if type == 0:
+            curObj.x, curObj.y = pygame.mouse.get_pos()
+            pygame.draw.circle(win, (10, 50, 255), (curObj.x, curObj.y), 8)
+        elif type == 1:
+            curObj.p1 = pygame.mouse.get_pos()
+            curObj.p2 = (curObj.p1[0]+50, curObj.p1[1]+100)
+            pygame.draw.line(win, (10, 50, 255), curObj.p1, curObj.p2, 8)
+        elif type == 2:
+            curObj.x, curObj.y = pygame.mouse.get_pos()
+            pygame.draw.circle(win, (10, 50, 255), (curObj.x, curObj.y), curObj.r, 8)
+        elif type == 3:
+            curObj.x, curObj.y = pygame.mouse.get_pos()
+            pygame.draw.rect(win, (10, 50, 255), (curObj.x, curObj.y, curObj.w, curObj.h), 8)
+        
         pygame.display.update()
 
 if __name__ == '__main__':
