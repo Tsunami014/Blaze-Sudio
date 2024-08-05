@@ -105,7 +105,7 @@ class Line(Shape):
         return False
     
     @staticmethod
-    def orientation(p, q, r): 
+    def _orientation(p, q, r): 
         """
         Finds the orientation of an ordered triplet (p,q,r).
         The function returns the following values:
@@ -125,14 +125,14 @@ class Line(Shape):
     
     def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
-            return False # TODO
+            return self._onSegment(self.p1, [othershape.x, othershape.y], self.p2)
         if isinstance(othershape, Line):
             # Find the 4 orientations required for  
             # the general and special cases 
-            o1 = self.orientation(self.p1, othershape.p1, self.p2) 
-            o2 = self.orientation(self.p1, othershape.p1, othershape.p2) 
-            o3 = self.orientation(self.p2, othershape.p2, self.p1) 
-            o4 = self.orientation(self.p2, othershape.p2, othershape.p1) 
+            o1 = self._orientation(self.p1, othershape.p1, self.p2) 
+            o2 = self._orientation(self.p1, othershape.p1, othershape.p2) 
+            o3 = self._orientation(self.p2, othershape.p2, self.p1) 
+            o4 = self._orientation(self.p2, othershape.p2, othershape.p1) 
             
             # General case 
             if ((o1 != o2) and (o3 != o4)): 
@@ -170,7 +170,16 @@ class Circle(Shape):
         if isinstance(othershape, Point):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < self.r**2
         if isinstance(othershape, Line):
-            return False # TODO
+            # Calculate the distance from point to the line segment
+            line_mag = (othershape.p2[0] - othershape.p1[0]) ** 2 + (othershape.p2[1] - othershape.p1[1]) ** 2
+            if line_mag == 0:
+                return (self.x - othershape.p1[0]) ** 2 + (self.y - othershape.p1[1]) ** 2 <= self.r ** 2
+            
+            u = ((self.x - othershape.p1[0]) * (othershape.p2[0] - othershape.p1[0]) + (self.y - othershape.p1[1]) * (othershape.p2[1] - othershape.p1[1])) / line_mag
+            u = max(min(u, 1), 0)
+            ix = othershape.p1[0] + u * (othershape.p2[0] - othershape.p1[0])
+            iy = othershape.p1[1] + u * (othershape.p2[1] - othershape.p1[1])
+            return (self.x - ix) ** 2 + (self.y - iy) ** 2 <= self.r ** 2
         if isinstance(othershape, Circle):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < (self.r + othershape.r)**2
         return othershape.collides(self)
