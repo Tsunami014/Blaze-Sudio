@@ -1,15 +1,21 @@
+from typing import Union
+Number = Union[int, float]
+
 class Shape:
-    def handle_collisions(self, shapegroup, movement):
+    def handle_collisions(self, shapegroup: 'Shapes', movement: list[Number]) -> None:
         for s in shapegroup:
             self.handle_collision(s, movement)
     
     def __repr__(self): return str(self)
     
     # Replace these
-    def collides(self, othershape):
+    def collides(self, othershape: 'Shape') -> bool:
         return False
     
-    def handle_collision(self, othershape, movement):
+    def copy(self) -> 'Shape':
+        return Shape()
+    
+    def handle_collision(self, othershape: 'Shape', movement: list[Number]) -> None:
         pass
     
     def __str__(self):
@@ -19,27 +25,30 @@ class Shapes:
     def __init__(self, *shapes: list[Shape]):
         self.shapes = shapes
     
-    def add_shape(self, shape: Shape):
+    def add_shape(self, shape: Shape) -> None:
         self.shapes.append(shape)
     
-    def add_shapes(self, *shapes: list[Shape]):
+    def add_shapes(self, *shapes: list[Shape]) -> None:
         self.shapes.extend(shapes)
     
-    def collides(self, shape: Shape):
+    def collides(self, shape: Shape) -> bool:
         for shape in self.shapes:
             if shape.collides(shape):
                 return True
         return False
 
-    def collides_multiple(self, *shapes: list[Shape]):
+    def collides_multiple(self, *shapes: list[Shape]) -> bool:
         for s in shapes:
             if self.collides(s):
                 return True
         return False
     
-    def handle_collisions(self, shape: Shape, movement: list[int]):
+    def handle_collisions(self, shape: Shape, movement: list[Number]) -> None:
         for s in self.shapes:
             shape.handle_collision(s, movement)
+    
+    def copy_all(self) -> 'Shapes':
+        return Shapes([s.copy() for s in self.shapes])
     
     def __iter__(self):
         return iter(self.shapes)
@@ -57,36 +66,42 @@ class Shapes:
 # Also each is in order of complexity.
 
 class Point(Shape):
-    def __init__(self, x, y):
+    def __init__(self, x: Number, y: Number):
         self.x, self.y = x, y
     
-    def collides(self, othershape):
+    def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return self.x == othershape.x and self.y == othershape.y
         return othershape.collides(self)
+
+    def copy(self) -> 'Point':
+        return Point(self.x, self.y)
     
     def __str__(self):
         return f'<Point @ ({self.x}, {self.y})>'
 
 class Line(Shape):
-    def __init__(self, p1, p2):
+    def __init__(self, p1: list[Number], p2: list[Number]):
         self.p1, self.p2 = p1, p2
     
-    def collides(self, othershape):
+    def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return False # TODO
         if isinstance(othershape, Line):
             return False # TODO
         return othershape.collides(self)
     
+    def copy(self) -> 'Line':
+        return Line(self.p1, self.p2)
+    
     def __str__(self):
         return f'<Line from {self.p1} to {self.p2}>'
 
 class Circle(Shape):
-    def __init__(self, x, y, r):
+    def __init__(self, x: Number, y: Number, r: Number):
         self.x, self.y, self.r = x, y, r
     
-    def collides(self, othershape):
+    def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < self.r**2
         if isinstance(othershape, Line):
@@ -94,20 +109,23 @@ class Circle(Shape):
         if isinstance(othershape, Circle):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < (self.r + othershape.r)**2
         return othershape.collides(self)
+    
+    def copy(self) -> 'Circle':
+        return Circle(self.x, self.y, self.r)
 
     def __str__(self):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
 
 class Box(Shape):
-    def __init__(self, x, y, w, h, offset=[0,0]):
+    def __init__(self, x: Number, y: Number, w: Number, h: Number, offset: list[Number] = [0,0]):
         self.offset = offset
         self.x, self.y, self.w, self.h = x+self.offset[0], y+self.offset[1], w, h
     
     @property
-    def realPos(self):
+    def realPos(self) -> tuple[int]:
         return self.x - self.offset[0], self.y - self.offset[1]
     
-    def collides(self, othershape):
+    def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return self.x < othershape.x and self.x + self.w > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y
         if isinstance(othershape, Line):
@@ -117,7 +135,7 @@ class Box(Shape):
         if isinstance(othershape, Box):
             return self.x < othershape.x + othershape.w and self.x + self.w > othershape.x and self.y < othershape.y + othershape.h and self.y + self.h > othershape.y
     
-    def handle_collision(self, othershape, movement):
+    def handle_collision(self, othershape: Shape, movement: list[int]) -> None:
         if isinstance(othershape, Box):
             if self.collides(othershape):
                 if movement[0] > 0: # Moving right; Hit the left side of the wall
@@ -131,6 +149,9 @@ class Box(Shape):
         # else:
             # raise NotImplementedError("Cannot handle collision between Box and {}".format(type(othershape)))
     
+    def copy(self) -> 'Box':
+        return Box(self.x, self.y, self.w, self.h, self.offset)
+    
     def __str__(self):
         if self.offset != [0,0]:
             offtxt = 'without an offset'
@@ -140,4 +161,3 @@ class Box(Shape):
 
 # TODO: Box that isn't straight
 # TODO: Cross collisions (box-circle)
-# TODO: .copy method
