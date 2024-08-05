@@ -191,7 +191,7 @@ class Circle(Shape):
     def __str__(self):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
 
-class Box(Shape): # TODO: Rename box to rect
+class Rect(Shape):
     def __init__(self, x: Number, y: Number, w: Number, h: Number, offset: pointLike = [0,0]):
         self.offset = offset
         self.x, self.y, self.w, self.h = x+self.offset[0], y+self.offset[1], w, h
@@ -225,11 +225,11 @@ class Box(Shape): # TODO: Rename box to rect
                    (((self.x + self.w) - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2)
             )
             
-        if isinstance(othershape, Box):
+        if isinstance(othershape, Rect):
             return self.x < othershape.x + othershape.w and self.x + self.w > othershape.x and self.y < othershape.y + othershape.h and self.y + self.h > othershape.y
     
     def handle_collision(self, othershape: Shape, movement: list[Number]) -> None:
-        if isinstance(othershape, Box):
+        if isinstance(othershape, Rect):
             if self.collides(othershape):
                 if movement[0] > 0: # Moving right; Hit the left side of the wall
                     self.x = othershape.x - self.w
@@ -242,15 +242,15 @@ class Box(Shape): # TODO: Rename box to rect
         # else:
             # raise NotImplementedError("Cannot handle collision between Box and {}".format(type(othershape)))
     
-    def copy(self) -> 'Box':
-        return Box(self.x, self.y, self.w, self.h, self.offset)
+    def copy(self) -> 'Rect':
+        return Rect(self.x, self.y, self.w, self.h, self.offset)
     
     def __str__(self):
         if self.offset != [0,0]:
             offtxt = 'without an offset'
         else:
             offtxt = f'on an offset of {self.offset}, realpos: {self.realPos}'
-        return f'<Box @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h} {offtxt}>'
+        return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h} {offtxt}>'
 
 # TODO: Box that isn't straight (Polygons)
 # TODO: Ovals and ovaloids (Ellipse)

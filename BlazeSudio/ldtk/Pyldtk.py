@@ -178,7 +178,7 @@ class IntGridCSV:
         for y in range(len(self.intgrid)):
             for x in range(len(self.intgrid[y])):
                 if self.intgrid[y][x] in matches:
-                    rs.append(colls.Box(x*size, y*size, size, size))
+                    rs.append(colls.Rect(x*size, y*size, size, size))
         return rs
     
     def __iter__(self):
