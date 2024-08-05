@@ -76,19 +76,84 @@ class Point(Shape):
 
     def copy(self) -> 'Point':
         return Point(self.x, self.y)
+
+    def __getitem__(self, item: int) -> int|None:
+        if item == 0:
+            return self.x
+        elif item == 1:
+            return self.y
     
     def __str__(self):
         return f'<Point @ ({self.x}, {self.y})>'
 
+pointLike = Union[Point, list[Number]]
+
 class Line(Shape):
-    def __init__(self, p1: list[Number], p2: list[Number]):
+    def __init__(self, p1: pointLike, p2: pointLike):
         self.p1, self.p2 = p1, p2
+    
+    # Some code yoinked off of https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/ modified for this use case
+    
+    @staticmethod
+    def _onSegment(p, q, r):
+        """
+        Given three collinear points p, q, r, the function checks if point q lies on line segment 'pr'
+        """
+        if ( (q[0] <= max(p[0], r[0])) and (q[0] >= min(p[0], r[0])) and
+            (q[1] <= max(p[1], r[1])) and (q[1] >= min(p[1], r[1]))):
+            return True
+        return False
+    
+    @staticmethod
+    def orientation(p, q, r): 
+        """
+        Finds the orientation of an ordered triplet (p,q,r).
+        The function returns the following values:
+        0 : Collinear points
+        1 : Clockwise points
+        2 : Counterclockwise
+        
+        See https://www.geeksforgeeks.org/orientation-3-ordered-points/amp/ for details of below formula.
+        """
+        val = (float(q[1] - p[1]) * (r[0] - q[0])) - (float(q[0] - p[0]) * (r[1] - q[1])) 
+        if (val > 0): # Clockwise orientation
+            return 1
+        elif (val < 0): # Counterclockwise orientation
+            return 2
+        else: # Collinear orientation
+            return 0
     
     def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return False # TODO
         if isinstance(othershape, Line):
-            return False # TODO
+            # Find the 4 orientations required for  
+            # the general and special cases 
+            o1 = self.orientation(self.p1, othershape.p1, self.p2) 
+            o2 = self.orientation(self.p1, othershape.p1, othershape.p2) 
+            o3 = self.orientation(self.p2, othershape.p2, self.p1) 
+            o4 = self.orientation(self.p2, othershape.p2, othershape.p1) 
+            
+            # General case 
+            if ((o1 != o2) and (o3 != o4)): 
+                return True
+
+            # Special Cases 
+            # p1 , q1 and p2 are collinear and p2 lies on segment p1q1 
+            if ((o1 == 0) and self.onSegment(self.p1, self.p2, othershape.p1)): 
+                return True
+            # p1 , q1 and q2 are collinear and q2 lies on segment p1q1 
+            if ((o2 == 0) and self.onSegment(self.p1, othershape.p2, othershape.p1)): 
+                return True
+            # p2 , q2 and p1 are collinear and p1 lies on segment p2q2 
+            if ((o3 == 0) and self.onSegment(self.p2, self.p1, othershape.p2)): 
+                return True
+            # p2 , q2 and q1 are collinear and q1 lies on segment p2q2 
+            if ((o4 == 0) and self.onSegment(self.p2, othershape.p1, othershape.p2)): 
+                return True
+
+            # If none of the cases 
+            return False
         return othershape.collides(self)
     
     def copy(self) -> 'Line':
@@ -117,12 +182,12 @@ class Circle(Shape):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
 
 class Box(Shape):
-    def __init__(self, x: Number, y: Number, w: Number, h: Number, offset: list[Number] = [0,0]):
+    def __init__(self, x: Number, y: Number, w: Number, h: Number, offset: pointLike = [0,0]):
         self.offset = offset
         self.x, self.y, self.w, self.h = x+self.offset[0], y+self.offset[1], w, h
     
     @property
-    def realPos(self) -> tuple[int]:
+    def realPos(self) -> tuple[Number]:
         return self.x - self.offset[0], self.y - self.offset[1]
     
     def collides(self, othershape: Shape) -> bool:
@@ -135,7 +200,7 @@ class Box(Shape):
         if isinstance(othershape, Box):
             return self.x < othershape.x + othershape.w and self.x + self.w > othershape.x and self.y < othershape.y + othershape.h and self.y + self.h > othershape.y
     
-    def handle_collision(self, othershape: Shape, movement: list[int]) -> None:
+    def handle_collision(self, othershape: Shape, movement: list[Number]) -> None:
         if isinstance(othershape, Box):
             if self.collides(othershape):
                 if movement[0] > 0: # Moving right; Hit the left side of the wall
@@ -161,3 +226,5 @@ class Box(Shape):
 
 # TODO: Box that isn't straight
 # TODO: Cross collisions (box-circle)
+
+pass
