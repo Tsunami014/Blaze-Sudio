@@ -554,31 +554,49 @@ def OCollisionsDemo():
     pygame.init()
     win = pygame.display.set_mode()
     run = True
-    colliding = False
     header_opts = ['point', 'line', 'circle', 'box']
-    type = 0
+    typ = 0
     curObj = collisions.Point(0, 0)
+    objs = collisions.Shapes()
+    
+    def drawObj(obj, t, col):
+        if t == 0:
+            pygame.draw.circle(win, col, (obj.x, obj.y), 8)
+        elif t == 1:
+            pygame.draw.line(win, col, obj.p1, obj.p2, 8)
+        elif t == 2:
+            pygame.draw.circle(win, col, (obj.x, obj.y), obj.r, 8)
+        elif t == 3:
+            pygame.draw.rect(win, col, (obj.x, obj.y, obj.w, obj.h), 8)
+    
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 break
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                run = False
-                break
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+                    break
+                elif event.key == pygame.K_SPACE:
+                    objs.add_shape(curObj)
+                    curObj = curObj.copy()
+                elif event.key == pygame.K_r:
+                    objs = collisions.Shapes()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Get the header_opts that got clicked, if any
                 if event.pos[1] < 50:
-                    type = event.pos[0]//(win.get_width()//len(header_opts))
-                    if type == 0:
+                    typ = event.pos[0]//(win.get_width()//len(header_opts))
+                    if typ == 0:
                         curObj = collisions.Point(*event.pos)
-                    elif type == 1:
+                    elif typ == 1:
                         curObj = collisions.Line((0, 0), (10, 10))
-                    elif type == 2:
+                    elif typ == 2:
                         curObj = collisions.Circle(*event.pos, 100)
-                    elif type == 3:
+                    elif typ == 3:
                         curObj = collisions.Box(*event.pos, 100, 100)
-        win.fill((0, 0, 0) if not colliding else (250, 50, 50))
+            
+        win.fill((0, 0, 0) if not objs.collides(curObj) else (250, 50, 50))
         pygame.draw.rect(win, (255, 255, 255), (0, 0, win.get_width(), 50))
         # Split it up into equal segments and put the text header_opts[i] in the middle of each segment
         for i in range(len(header_opts)):
@@ -587,19 +605,15 @@ def OCollisionsDemo():
             text = font.render(header_opts[i], True, (0, 0, 0))
             win.blit(text, (i*win.get_width()//len(header_opts)+10, 10))
         
-        if type == 0:
-            curObj.x, curObj.y = pygame.mouse.get_pos()
-            pygame.draw.circle(win, (10, 50, 255), (curObj.x, curObj.y), 8)
-        elif type == 1:
+        if typ == 1:
             curObj.p1 = pygame.mouse.get_pos()
             curObj.p2 = (curObj.p1[0]+50, curObj.p1[1]+100)
-            pygame.draw.line(win, (10, 50, 255), curObj.p1, curObj.p2, 8)
-        elif type == 2:
+        else:
             curObj.x, curObj.y = pygame.mouse.get_pos()
-            pygame.draw.circle(win, (10, 50, 255), (curObj.x, curObj.y), curObj.r, 8)
-        elif type == 3:
-            curObj.x, curObj.y = pygame.mouse.get_pos()
-            pygame.draw.rect(win, (10, 50, 255), (curObj.x, curObj.y, curObj.w, curObj.h), 8)
+        
+        for i in objs:
+            drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Box].index(type(i)), (10, 255, 50))
+        drawObj(curObj, typ, (10, 50, 255))
         
         pygame.display.update()
 

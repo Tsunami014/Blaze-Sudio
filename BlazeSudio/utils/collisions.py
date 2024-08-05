@@ -23,13 +23,13 @@ class Shape:
 
 class Shapes:
     def __init__(self, *shapes: list[Shape]):
-        self.shapes = shapes
+        self.shapes = list(shapes)
     
     def add_shape(self, shape: Shape) -> None:
         self.shapes.append(shape)
     
     def add_shapes(self, *shapes: list[Shape]) -> None:
-        self.shapes.extend(shapes)
+        self.shapes.extend(list(shapes))
     
     def collides(self, shape: Shape) -> bool:
         for shape in self.shapes:
@@ -48,7 +48,7 @@ class Shapes:
             shape.handle_collision(s, movement)
     
     def copy_all(self) -> 'Shapes':
-        return Shapes([s.copy() for s in self.shapes])
+        return Shapes(s.copy() for s in self.shapes)
     
     def __iter__(self):
         return iter(self.shapes)
@@ -140,16 +140,16 @@ class Line(Shape):
 
             # Special Cases 
             # p1 , q1 and p2 are collinear and p2 lies on segment p1q1 
-            if ((o1 == 0) and self.onSegment(self.p1, self.p2, othershape.p1)): 
+            if ((o1 == 0) and self._onSegment(self.p1, self.p2, othershape.p1)): 
                 return True
             # p1 , q1 and q2 are collinear and q2 lies on segment p1q1 
-            if ((o2 == 0) and self.onSegment(self.p1, othershape.p2, othershape.p1)): 
+            if ((o2 == 0) and self._onSegment(self.p1, othershape.p2, othershape.p1)): 
                 return True
             # p2 , q2 and p1 are collinear and p1 lies on segment p2q2 
-            if ((o3 == 0) and self.onSegment(self.p2, self.p1, othershape.p2)): 
+            if ((o3 == 0) and self._onSegment(self.p2, self.p1, othershape.p2)): 
                 return True
             # p2 , q2 and q1 are collinear and q1 lies on segment p2q2 
-            if ((o4 == 0) and self.onSegment(self.p2, othershape.p1, othershape.p2)): 
+            if ((o4 == 0) and self._onSegment(self.p2, othershape.p1, othershape.p2)): 
                 return True
 
             # If none of the cases 
