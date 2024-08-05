@@ -2,15 +2,23 @@ from typing import Union
 Number = Union[int, float]
 
 class Shape:
+    # This class always collides; so *can* be used as an infinite plane, but why?
     def handle_collisions(self, shapegroup: 'Shapes', movement: list[Number]) -> None:
         for s in shapegroup:
             self.handle_collision(s, movement)
+    
+    def check_rects(self, othershape: 'Shape'):
+        thisr, otherr = self.rect(), othershape.rect()
+        return thisr[0] < otherr[2] and thisr[2] > otherr[0] and thisr[1] < otherr[3] and thisr[3] > otherr[1]
     
     def __repr__(self): return str(self)
     
     # Replace these
     def collides(self, othershape: 'Shape') -> bool:
-        return False
+        return True
+    
+    def rect(self) -> list[Number]:
+        return -float('inf'), -float('inf'), float('inf'), float('inf')
     
     def copy(self) -> 'Shape':
         return Shape()
@@ -69,6 +77,9 @@ class Point(Shape):
     def __init__(self, x: Number, y: Number):
         self.x, self.y = x, y
     
+    def rect(self) -> list[Number]:
+        return self.x, self.y, self.x, self.y
+    
     def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return self.x == othershape.x and self.y == othershape.y
@@ -109,10 +120,16 @@ class Line(Shape):
         # Check if the point is within the bounding box of the line segment
         return min(a[0], b[0]) <= p[0] <= max(a[0], b[0]) and min(a[1], b[1]) <= p[1] <= max(a[1], b[1])
     
+    def rect(self) -> list[Number]:
+        return min(self.p1[0], self.p2[0]), min(self.p1[1], self.p2[1]), max(self.p1[0], self.p2[0]), max(self.p1[1], self.p2[1])
+    
     def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
-            return self._onSegment([othershape.x, othershape.y], self.p1, self.p2)
+            return self.check_rects(othershape) and self._onSegment([othershape.x, othershape.y], self.p1, self.p2)
         if isinstance(othershape, Line):
+            if not self.check_rects(othershape):
+                return False
+            # TODO: Remove the need for so many extra variables
             x1, y1, x2, y2, x3, y3, x4, y4 = self.p1[0], self.p1[1], self.p2[0], self.p2[1], othershape.p1[0], othershape.p1[1], othershape.p2[0], othershape.p2[1]
             # Calculate the direction of the lines
             def direction(xi, yi, xj, yj, xk, yk):
@@ -145,10 +162,15 @@ class Circle(Shape):
     def __init__(self, x: Number, y: Number, r: Number):
         self.x, self.y, self.r = x, y, r
     
+    def rect(self) -> list[Number]:
+        return self.x - self.r, self.y - self.r, self.x + self.r, self.y + self.r
+    
     def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < self.r**2
         if isinstance(othershape, Line):
+            if not self.check_rects(othershape):
+                return False
             # Calculate the distance from point to the line segment
             line_mag = (othershape.p2[0] - othershape.p1[0]) ** 2 + (othershape.p2[1] - othershape.p1[1]) ** 2
             if line_mag == 0:
@@ -169,7 +191,7 @@ class Circle(Shape):
     def __str__(self):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
 
-class Box(Shape):
+class Box(Shape): # TODO: Rename box to rect
     def __init__(self, x: Number, y: Number, w: Number, h: Number, offset: pointLike = [0,0]):
         self.offset = offset
         self.x, self.y, self.w, self.h = x+self.offset[0], y+self.offset[1], w, h
@@ -178,23 +200,30 @@ class Box(Shape):
     def realPos(self) -> tuple[Number]:
         return self.x - self.offset[0], self.y - self.offset[1]
     
+    def rect(self) -> list[Number]:
+        return self.x, self.y, self.x + self.w, self.y + self.h
+    
     def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return self.x < othershape.x and self.x + self.w > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y
         if isinstance(othershape, Line):
-            return (self.x < othershape.p1[0] and self.x + self.w > othershape.p1[0] and self.y < othershape.p1[1] and self.y + self.h > othershape.p1[1]) or \
+            return self.check_rects(othershape) and (
+                   (self.x < othershape.p1[0] and self.x + self.w > othershape.p1[0] and self.y < othershape.p1[1] and self.y + self.h > othershape.p1[1]) or \
                    (self.x < othershape.p2[0] and self.x + self.w > othershape.p2[0] and self.y < othershape.p2[1] and self.y + self.h > othershape.p2[1]) or \
                    (Line((self.x, self.y), (self.x + self.w, self.y)).collides(othershape)) or \
                    (Line((self.x + self.w, self.y), (self.x + self.w, self.y + self.h)).collides(othershape)) or \
                    (Line((self.x + self.w, self.y + self.h), (self.x, self.y + self.h)).collides(othershape)) or \
                    (Line((self.x, self.y + self.h), (self.x, self.y)).collides(othershape))
+            )
         if isinstance(othershape, Circle):
-            return (self.x - othershape.r < othershape.x and self.x + self.w + othershape.r > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y) or \
+            return self.check_rects(othershape) and (
+                   (self.x - othershape.r < othershape.x and self.x + self.w + othershape.r > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y) or \
                    (self.x < othershape.x and self.x + self.w > othershape.x and self.y - othershape.r < othershape.y and self.y + self.h + othershape.r > othershape.y) or \
                    ((self.x - othershape.x)**2 + (self.y - othershape.y)**2 < othershape.r**2) or \
                    (((self.x + self.w) - othershape.x)**2 + (self.y - othershape.y)**2 < othershape.r**2) or \
                    ((self.x - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2) or \
                    (((self.x + self.w) - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2)
+            )
             
         if isinstance(othershape, Box):
             return self.x < othershape.x + othershape.w and self.x + self.w > othershape.x and self.y < othershape.y + othershape.h and self.y + self.h > othershape.y
