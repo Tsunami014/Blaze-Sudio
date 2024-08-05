@@ -52,6 +52,52 @@ class Shapes:
     def __str__(self):
         return f'<Shapes with {len(self.shapes)} shapes>'
 
+# The below are in order of collision:
+# Each defines how it collides if it hits anything below it, and calls the other object for collisions above.
+# Also each is in order of complexity.
+
+class Point(Shape):
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    
+    def collides(self, othershape):
+        if isinstance(othershape, Point):
+            return self.x == othershape.x and self.y == othershape.y
+        return othershape.collides(self)
+    
+    def __str__(self):
+        return f'<Point @ ({self.x}, {self.y})>'
+
+class Line(Shape):
+    def __init__(self, p1, p2):
+        self.p1, self.p2 = p1, p2
+    
+    def collides(self, othershape):
+        if isinstance(othershape, Point):
+            return False # TODO
+        if isinstance(othershape, Line):
+            return False # TODO
+        return othershape.collides(self)
+    
+    def __str__(self):
+        return f'<Line from {self.p1} to {self.p2}>'
+
+class Circle(Shape):
+    def __init__(self, x, y, r):
+        self.x, self.y, self.r = x, y, r
+    
+    def collides(self, othershape):
+        if isinstance(othershape, Point):
+            return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < self.r**2
+        if isinstance(othershape, Line):
+            return False # TODO
+        if isinstance(othershape, Circle):
+            return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < (self.r + othershape.r)**2
+        return othershape.collides(self)
+
+    def __str__(self):
+        return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
+
 class Box(Shape):
     def __init__(self, x, y, w, h, offset=[0,0]):
         self.offset = offset
@@ -62,10 +108,14 @@ class Box(Shape):
         return self.x - self.offset[0], self.y - self.offset[1]
     
     def collides(self, othershape):
+        if isinstance(othershape, Point):
+            return self.x < othershape.x and self.x + self.w > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y
+        if isinstance(othershape, Line):
+            return False # TODO
+        if isinstance(othershape, Circle):
+            return False # TODO
         if isinstance(othershape, Box):
             return self.x < othershape.x + othershape.w and self.x + self.w > othershape.x and self.y < othershape.y + othershape.h and self.y + self.h > othershape.y
-        # raise NotImplementedError("Cannot check collision between Box and {}".format(type(othershape)))
-        return False
     
     def handle_collision(self, othershape, movement):
         if isinstance(othershape, Box):
@@ -90,16 +140,4 @@ class Box(Shape):
 
 # TODO: Box that isn't straight
 # TODO: Cross collisions (box-circle)
-
-class Circle(Shape):
-    def __init__(self, x, y, r):
-        self.x, self.y, self.r = x, y, r
-    
-    def collides(self, othershape):
-        if isinstance(othershape, Circle):
-            return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < (self.r + othershape.r)**2
-        # raise NotImplementedError("Cannot check collision between Circle and {}".format(type(othershape)))
-        return False
-
-    def __str__(self):
-        return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
+# TODO: .copy method

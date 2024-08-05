@@ -21,7 +21,8 @@
         "characters",
         "sound gen",
         "other",
-        "nodes"
+        "nodes",
+        "physics"
     ],
     "python.REPL.enableREPLSmartSend": false
 }

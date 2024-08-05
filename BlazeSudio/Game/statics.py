@@ -11,8 +11,11 @@ class BasePlayer:
 
 class BaseCollisions:
     # STUFF YOU CAN SET
-    def __call__(self, rect: Shape, movement: list[int], typ: str) -> bool:
+    def __call__(self, rect: Shape, movement: list[int], typ: str) -> list[int]:
         return rect.x, rect.y # The new position of the entity
+    
+    def movementOptions(self, rect: Shape, entity: str) -> list[bool]:
+        return True, True # Should you move [left-right,up-down]?
 
 class SceneEvent(Enum):
     INIT = 0
