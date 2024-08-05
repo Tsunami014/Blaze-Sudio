@@ -92,7 +92,7 @@ class Line(Shape):
     def __init__(self, p1: pointLike, p2: pointLike):
         self.p1, self.p2 = p1, p2
     
-    # Some code yoinked off of https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/ modified for this use case
+    # Some code yoinked off of https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/ modified for this use case and debugged
     
     @staticmethod
     def _onSegment(p, a, b):
@@ -182,7 +182,12 @@ class Box(Shape):
         if isinstance(othershape, Point):
             return self.x < othershape.x and self.x + self.w > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y
         if isinstance(othershape, Line):
-            return False # TODO
+            return (self.x < othershape.p1[0] and self.x + self.w > othershape.p1[0] and self.y < othershape.p1[1] and self.y + self.h > othershape.p1[1]) or \
+                   (self.x < othershape.p2[0] and self.x + self.w > othershape.p2[0] and self.y < othershape.p2[1] and self.y + self.h > othershape.p2[1]) or \
+                   (Line((self.x, self.y), (self.x + self.w, self.y)).collides(othershape)) or \
+                   (Line((self.x + self.w, self.y), (self.x + self.w, self.y + self.h)).collides(othershape)) or \
+                   (Line((self.x + self.w, self.y + self.h), (self.x, self.y + self.h)).collides(othershape)) or \
+                   (Line((self.x, self.y + self.h), (self.x, self.y)).collides(othershape))
         if isinstance(othershape, Circle):
             return (self.x - othershape.r < othershape.x and self.x + self.w + othershape.r > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y) or \
                    (self.x < othershape.x and self.x + self.w > othershape.x and self.y - othershape.r < othershape.y and self.y + self.h + othershape.r > othershape.y) or \
