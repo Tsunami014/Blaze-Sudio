@@ -558,6 +558,7 @@ def OCollisionsDemo():
     typ = 0
     curObj = collisions.Point(0, 0)
     objs = collisions.Shapes()
+    dir = [50, 100]
     
     def drawObj(obj, t, col):
         if t == 0:
@@ -583,6 +584,14 @@ def OCollisionsDemo():
                     curObj = curObj.copy()
                 elif event.key == pygame.K_r:
                     objs = collisions.Shapes()
+                elif event.key == pygame.K_UP:
+                    dir[1] -= 10
+                elif event.key == pygame.K_DOWN:
+                    dir[1] += 10
+                elif event.key == pygame.K_LEFT:
+                    dir[0] -= 10
+                elif event.key == pygame.K_RIGHT:
+                    dir[0] += 10
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Get the header_opts that got clicked, if any
                 if event.pos[1] < 50:
@@ -607,7 +616,7 @@ def OCollisionsDemo():
         
         if typ == 1:
             curObj.p1 = pygame.mouse.get_pos()
-            curObj.p2 = (curObj.p1[0]+50, curObj.p1[1]+100)
+            curObj.p2 = (curObj.p1[0]+dir[0], curObj.p1[1]+dir[1])
         else:
             curObj.x, curObj.y = pygame.mouse.get_pos()
         
