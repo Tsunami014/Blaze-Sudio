@@ -107,61 +107,32 @@ class Line(Shape):
             return False
         
         # Check if the point is within the bounding box of the line segment
-        if min(a[0], b[0]) <= p[0] <= max(a[0], b[0]) and min(a[1], b[1]) <= p[1] <= max(a[1], b[1]):
-            return True
-        
-        return False
-    
-    @staticmethod
-    def _orientation(p, q, r): 
-        """
-        Finds the orientation of an ordered triplet (p,q,r).
-        The function returns the following values:
-        0 : Collinear points
-        1 : Clockwise points
-        2 : Counterclockwise
-        
-        See https://www.geeksforgeeks.org/orientation-3-ordered-points/amp/ for details of below formula.
-        """
-        val = (float(q[1] - p[1]) * (r[0] - q[0])) - (float(q[0] - p[0]) * (r[1] - q[1])) 
-        if (val > 0): # Clockwise orientation
-            return 1
-        elif (val < 0): # Counterclockwise orientation
-            return 2
-        else: # Collinear orientation
-            return 0
+        return min(a[0], b[0]) <= p[0] <= max(a[0], b[0]) and min(a[1], b[1]) <= p[1] <= max(a[1], b[1])
     
     def collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
-            return self._onSegment(self.p1, [othershape.x, othershape.y], self.p2)
+            return self._onSegment([othershape.x, othershape.y], self.p1, self.p2)
         if isinstance(othershape, Line):
-            # Find the 4 orientations required for  
-            # the general and special cases 
-            o1 = self._orientation(self.p1, othershape.p1, self.p2) 
-            o2 = self._orientation(self.p1, othershape.p1, othershape.p2) 
-            o3 = self._orientation(self.p2, othershape.p2, self.p1) 
-            o4 = self._orientation(self.p2, othershape.p2, othershape.p1) 
+            x1, y1, x2, y2, x3, y3, x4, y4 = self.p1[0], self.p1[1], self.p2[0], self.p2[1], othershape.p1[0], othershape.p1[1], othershape.p2[0], othershape.p2[1]
+            # Calculate the direction of the lines
+            def direction(xi, yi, xj, yj, xk, yk):
+                return (xk - xi) * (yj - yi) - (yk - yi) * (xj - xi)
             
-            # General case 
-            if ((o1 != o2) and (o3 != o4)): 
+            d1 = direction(x3, y3, x4, y4, x1, y1)
+            d2 = direction(x3, y3, x4, y4, x2, y2)
+            d3 = direction(x1, y1, x2, y2, x3, y3)
+            d4 = direction(x1, y1, x2, y2, x4, y4)
+            
+            # Check if the line segments straddle each other
+            if d1 * d2 < 0 and d3 * d4 < 0:
                 return True
-
-            # Special Cases 
-            # p1 , q1 and p2 are collinear and p2 lies on segment p1q1 
-            if ((o1 == 0) and self._onSegment(self.p1, self.p2, othershape.p1)): 
-                return True
-            # p1 , q1 and q2 are collinear and q2 lies on segment p1q1 
-            if ((o2 == 0) and self._onSegment(self.p1, othershape.p2, othershape.p1)): 
-                return True
-            # p2 , q2 and p1 are collinear and p1 lies on segment p2q2 
-            if ((o3 == 0) and self._onSegment(self.p2, self.p1, othershape.p2)): 
-                return True
-            # p2 , q2 and q1 are collinear and q1 lies on segment p2q2 
-            if ((o4 == 0) and self._onSegment(self.p2, othershape.p1, othershape.p2)): 
-                return True
-
-            # If none of the cases 
-            return False
+            
+            # Check if the points are collinear and on the segments
+            return (d1 == 0 and self._onSegment((x1, y1), (x3, y3), (x4, y4))) or \
+                   (d2 == 0 and self._onSegment((x2, y2), (x3, y3), (x4, y4))) or \
+                   (d3 == 0 and self._onSegment((x3, y3), (x1, y1), (x2, y2))) or \
+                   (d4 == 0 and self._onSegment((x4, y4), (x1, y1), (x2, y2)))
+        
         return othershape.collides(self)
     
     def copy(self) -> 'Line':
@@ -247,6 +218,5 @@ class Box(Shape):
             offtxt = f'on an offset of {self.offset}, realpos: {self.realPos}'
         return f'<Box @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h} {offtxt}>'
 
-# TODO: Fix box-line, line-line and point-line collisions
 # TODO: Box that isn't straight (Polygons)
 # TODO: Ovals and ovaloids (Ellipse)
