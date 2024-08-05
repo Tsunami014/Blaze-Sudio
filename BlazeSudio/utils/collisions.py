@@ -196,7 +196,13 @@ class Box(Shape):
         if isinstance(othershape, Line):
             return False # TODO
         if isinstance(othershape, Circle):
-            return False # TODO
+            return (self.x - othershape.r < othershape.x and self.x + self.w + othershape.r > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y) or \
+                   (self.x < othershape.x and self.x + self.w > othershape.x and self.y - othershape.r < othershape.y and self.y + self.h + othershape.r > othershape.y) or \
+                   ((self.x - othershape.x)**2 + (self.y - othershape.y)**2 < othershape.r**2) or \
+                   (((self.x + self.w) - othershape.x)**2 + (self.y - othershape.y)**2 < othershape.r**2) or \
+                   ((self.x - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2) or \
+                   (((self.x + self.w) - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2)
+            
         if isinstance(othershape, Box):
             return self.x < othershape.x + othershape.w and self.x + self.w > othershape.x and self.y < othershape.y + othershape.h and self.y + self.h > othershape.y
     
@@ -226,5 +232,3 @@ class Box(Shape):
 
 # TODO: Box that isn't straight
 # TODO: Cross collisions (box-circle)
-
-pass
