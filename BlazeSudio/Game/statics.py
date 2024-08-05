@@ -11,8 +11,8 @@ class BasePlayer:
 
 class BaseCollisions:
     # STUFF YOU CAN SET
-    def __call__(self, pos: list[int], movement: list[int], rect: Shape, typ: str) -> bool:
-        return pos # The new position of the entity
+    def __call__(self, rect: Shape, movement: list[int], typ: str) -> bool:
+        return rect.x, rect.y # The new position of the entity
 
 class SceneEvent(Enum):
     INIT = 0

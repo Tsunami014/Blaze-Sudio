@@ -7,7 +7,7 @@ G.SetSettings(scale=8, gravity=[0, 0.1])
 
 @G.Collision
 class Collisions(Ss.BaseCollisions):
-    def __call__(self, pos, movement, rect, entity):
+    def __call__(self, rect, movement, entity):
         rect.handle_collisions(G.currentLvL.layers[1].intgrid.getRects(1), movement)
         return rect.realPos
 
