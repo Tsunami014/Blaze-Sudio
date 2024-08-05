@@ -239,5 +239,5 @@ class Box(Shape):
             offtxt = f'on an offset of {self.offset}, realpos: {self.realPos}'
         return f'<Box @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h} {offtxt}>'
 
-# TODO: Box that isn't straight
-# TODO: Cross collisions (box-circle)
+# TODO: Box that isn't straight (Polygons)
+# TODO: Ovals and ovaloids (Ellipse)
