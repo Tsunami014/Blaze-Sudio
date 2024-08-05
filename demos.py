@@ -605,7 +605,7 @@ def OCollisionsDemo():
                         curObj = collisions.Circle(*event.pos, 100)
                         dir = [0, 100]
                     elif typ == 3:
-                        curObj = collisions.Box(*event.pos, 100, 100)
+                        curObj = collisions.Rect(*event.pos, 100, 100)
                         dir = [100, 100]
             
         win.fill((0, 0, 0) if not objs.collides(curObj) else (250, 50, 50))
@@ -628,7 +628,7 @@ def OCollisionsDemo():
                 curObj.w, curObj.h = dir
         
         for i in objs:
-            drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Box].index(type(i)), (10, 255, 50))
+            drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect].index(type(i)), (10, 255, 50))
         drawObj(curObj, typ, (10, 50, 255))
         
         pygame.display.update()

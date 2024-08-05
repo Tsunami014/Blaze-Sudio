@@ -69,8 +69,8 @@ class Player:
         self.accel = [round(min(max(self.accel[0]+self.gravity[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1]+self.gravity[1], -self.max_accel[1]), self.max_accel[1]), 3)]
         
         newpos = self.pos.copy()
-        newpos = list(self.Game._collisions(colls.Box(newpos[0] + self.accel[0], newpos[1], 1, 1, [-0.5,-0.5]), [self.accel[0], 0], "Player"))
-        newpos = list(self.Game._collisions(colls.Box(newpos[0], newpos[1] + self.accel[1], 1, 1, [-0.5,-0.5]), [0, self.accel[1]], "Player"))
+        newpos = list(self.Game._collisions(colls.Rect(newpos[0] + self.accel[0], newpos[1], 1, 1, [-0.5,-0.5]), [self.accel[0], 0], "Player"))
+        newpos = list(self.Game._collisions(colls.Rect(newpos[0], newpos[1] + self.accel[1], 1, 1, [-0.5,-0.5]), [0, self.accel[1]], "Player"))
         #movements = self.Game._collisions.movementOptions("Player")
         self.pos = newpos
         
