@@ -1,4 +1,5 @@
 from math import sqrt, ceil
+import BlazeSudio.utils.collisions as colls
 import pygame
 import BlazeSudio.graphics.options as GO
 import BlazeSudio.Game.statics as statics
@@ -67,29 +68,8 @@ class Player:
         
         self.accel = [round(min(max(self.accel[0]+self.gravity[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1]+self.gravity[1], -self.max_accel[1]), self.max_accel[1]), 3)]
         
-        if not self.Game._collisions([self.pos[0] + self.accel[0], self.pos[1]], "Player"):
-            self.pos = [self.pos[0] + self.accel[0], self.pos[1]]
-        else:
-            tries = self.Game._collisions.num_checks(self.pos[0] + self.accel[0], "Player")
-            if tries > 1:
-                for i in range(tries-1, -1, -1):
-                    if not self.Game._collisions([self.pos[0] + self.accel[0]*(i/tries), self.pos[1]], "Player"):
-                        self.pos = [self.pos[0] + self.accel[0]*(i/tries), self.pos[1]]
-                        break
-            self.accel[0] = 0
-            #self.pos, self.accel[0] = self.Game._collisions.fine_check(self.pos, self.accel[0], True, "Player")
-        
-        if not self.Game._collisions([self.pos[0], self.pos[1] + self.accel[1]], "Player"):
-            self.pos = [self.pos[0], self.pos[1] + self.accel[1]]
-        else:
-            tries = self.Game._collisions.num_checks(self.pos[1] + self.accel[1], "Player")
-            if tries > 1:
-                for i in range(tries-1, -1, -1):
-                    if not self.Game._collisions([self.pos[0], self.pos[1] + self.accel[1]*(i/tries)], "Player"):
-                        self.pos = [self.pos[0], self.pos[1] + self.accel[1]*(i/tries)]
-                        break
-            self.accel[0] = 0
-            #self.pos, self.accel[1] = self.Game._collisions.fine_check(self.pos, self.accel[1], False, "Player")
+        self.pos = list(self.Game._collisions([self.pos[0] + self.accel[0], self.pos[1]], [self.accel[0], 0], colls.Box(self.pos[0] + self.accel[0], self.pos[1], 1, 1, [-0.5,-0.5]), "Player"))
+        self.pos = list(self.Game._collisions([self.pos[0], self.pos[1] + self.accel[1]], [0, self.accel[1]], colls.Box(self.pos[0], self.pos[1] + self.accel[1], 1, 1, [-0.5,-0.5]), "Player"))
         
         sur = pygame.transform.scale(self.sur, (self.sur.get_width()*self.settings['scale'], self.sur.get_height()*self.settings['scale']))
 

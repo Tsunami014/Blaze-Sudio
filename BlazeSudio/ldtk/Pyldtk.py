@@ -1,4 +1,5 @@
 import json, pygame, os
+import BlazeSudio.utils.collisions as colls
 from math import ceil, floor
 from importlib.resources import files
 
@@ -170,23 +171,15 @@ class IntGridCSV:
         self.chei = chei or ceil(len(intgrid) / self.cwid)
         self.intgrid = [intgrid[cwid*i:cwid*(i+1)] for i in range(chei)]
     
-    def getAllHits(self, pos, sze):
-        #pos = [pos[0] + sze[0] / 2, pos[1] + sze[1] / 2]
-        points = [
-            [0,     0], # ^  <
-            [0.5,   0], # ^  ><
-            [1,     0], # ^  >
-            [1,   0.5], # ^v >
-            [1,     1], # v  >
-            [0.5,   1], # v  ><
-            [0,     1], # v  <
-            [0,   0.5], # ^v <
-            [0.5, 0.5]  # ^v >< 
-        ]
-        return [
-            self[round(pos[1]+sze[1]*y-1), round(pos[0]+sze[0]*x)-1]
-            for x, y in points
-        ]
+    def getRects(self, matches, size=1):
+        if isinstance(matches, int):
+            matches = [matches]
+        rs = []
+        for y in range(len(self.intgrid)):
+            for x in range(len(self.intgrid[y])):
+                if self.intgrid[y][x] in matches:
+                    rs.append(colls.Box(x*size, y*size, size, size))
+        return rs
     
     def __iter__(self):
         return iter(self.intgrid)
