@@ -27,3 +27,9 @@ cd Blaze-Sudio
 pip install -r requirements.txt
 pip install .
 ```
+
+# Cannot import `tkinter`
+This may be because you turned off tkinter or it didn't install. It isn't installed by default on Linux, so you must run:
+```bash
+sudo apt-get install python3-tk
+```
