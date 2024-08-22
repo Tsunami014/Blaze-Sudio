@@ -630,6 +630,9 @@ def OCollisionsDemo():
         for i in objs:
             drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect].index(type(i)), (10, 255, 50))
         drawObj(curObj, typ, (10, 50, 255))
+
+        for i in objs.whereCollides(curObj):
+            pygame.draw.circle(win, (175, 155, 155), i, 8)
         
         pygame.display.update()
 
