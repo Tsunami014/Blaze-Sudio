@@ -144,26 +144,24 @@ class Line(Shape):
         if isinstance(othershape, Line):
             if not self.check_rects(othershape):
                 return False
-            # TODO: Remove the need for so many extra variables
-            x1, y1, x2, y2, x3, y3, x4, y4 = self.p1[0], self.p1[1], self.p2[0], self.p2[1], othershape.p1[0], othershape.p1[1], othershape.p2[0], othershape.p2[1]
             # Calculate the direction of the lines
             def direction(xi, yi, xj, yj, xk, yk):
                 return (xk - xi) * (yj - yi) - (yk - yi) * (xj - xi)
             
-            d1 = direction(x3, y3, x4, y4, x1, y1)
-            d2 = direction(x3, y3, x4, y4, x2, y2)
-            d3 = direction(x1, y1, x2, y2, x3, y3)
-            d4 = direction(x1, y1, x2, y2, x4, y4)
+            d1 = direction(othershape.p1[0], othershape.p1[1], othershape.p2[0], othershape.p2[1], self.p1[0], self.p1[1])
+            d2 = direction(othershape.p1[0], othershape.p1[1], othershape.p2[0], othershape.p2[1], self.p2[0], self.p2[1])
+            d3 = direction(self.p1[0], self.p1[1], self.p2[0], self.p2[1], othershape.p1[0], othershape.p1[1])
+            d4 = direction(self.p1[0], self.p1[1], self.p2[0], self.p2[1], othershape.p2[0], othershape.p2[1])
             
             # Check if the line segments straddle each other
             if d1 * d2 < 0 and d3 * d4 < 0:
                 return True
             
             # Check if the points are collinear and on the segments
-            return (d1 == 0 and self._onSegment((x1, y1), (x3, y3), (x4, y4))) or \
-                   (d2 == 0 and self._onSegment((x2, y2), (x3, y3), (x4, y4))) or \
-                   (d3 == 0 and self._onSegment((x3, y3), (x1, y1), (x2, y2))) or \
-                   (d4 == 0 and self._onSegment((x4, y4), (x1, y1), (x2, y2)))
+            return (d1 == 0 and self._onSegment((self.p1[0], self.p1[1]), (othershape.p1[0], othershape.p1[1]), (othershape.p2[0], othershape.p2[1]))) or \
+                   (d2 == 0 and self._onSegment((self.p2[0], self.p2[1]), (othershape.p1[0], othershape.p1[1]), (othershape.p2[0], othershape.p2[1]))) or \
+                   (d3 == 0 and self._onSegment((othershape.p1[0], othershape.p1[1]), (self.p1[0], self.p1[1]), (self.p2[0], self.p2[1]))) or \
+                   (d4 == 0 and self._onSegment((othershape.p2[0], othershape.p2[1]), (self.p1[0], self.p1[1]), (self.p2[0], self.p2[1])))
         
         return othershape._collides(self)
     
