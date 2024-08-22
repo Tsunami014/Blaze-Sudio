@@ -4,7 +4,7 @@ Number = Union[int, float]
 class Shape:
     # This class always collides; so *can* be used as an infinite plane, but why?
     
-    def collides(self, othershape: 'Shape'|'Shapes'|list['Shape']):
+    def collides(self, othershape: Union['Shape','Shapes',list['Shape']]):
         if isinstance(othershape, Shape):
             return self._collides(othershape)
         for s in othershape:
@@ -12,7 +12,7 @@ class Shape:
                 return True
         return False
     
-    def whereCollides(self, othershape: 'Shape'|'Shapes'|list['Shape']) -> list[list[int]]:
+    def whereCollides(self, othershape: Union['Shape','Shapes',list['Shape']]) -> list[list[int]]:
         if isinstance(othershape, Shape):
             return self._where(othershape)
         points = []
@@ -52,18 +52,16 @@ class Shapes:
     def add_shapes(self, *shapes: list[Shape]) -> None:
         self.shapes.extend(list(shapes))
     
-    def collides(self, shapes: Shape|'Shapes'|list[Shape]) -> bool:
+    def collides(self, shapes: Union[Shape,'Shapes',list[Shape]]) -> bool:
         for s in self.shapes:
             if s.collides(shapes):
                 return True
         return False
 
-    def whereCollides(self, othershape: 'Shape'|'Shapes'|list['Shape']) -> list[list[int]]:
-        if isinstance(othershape, Shape):
-            return self._where(othershape)
+    def whereCollides(self, shapes: Union[Shape,'Shapes',list[Shape]]) -> list[list[int]]:
         points = []
-        for s in othershape:
-            points.extend(s._where(self))
+        for s in self.shapes:
+            points.extend(s.whereCollides(shapes))
         return points
     
     def copy(self) -> 'Shapes':
@@ -95,6 +93,11 @@ class Point(Shape):
         if isinstance(othershape, Point):
             return self.x == othershape.x and self.y == othershape.y
         return othershape._collides(self)
+    
+    def _where(self, othershape: Shape) -> list[list[int]]:
+        if isinstance(othershape, Point):
+            return [[self.x, self.y]] if (self.x == othershape.x and self.y == othershape.y) else []
+        return othershape._where(self)
 
     def copy(self) -> 'Point':
         return Point(self.x, self.y)
@@ -163,6 +166,13 @@ class Line(Shape):
         
         return othershape._collides(self)
     
+    def _where(self, othershape: Shape) -> list[list[int]]:
+        if isinstance(othershape, Point):
+            return [[othershape.x, othershape.y]] if self._collides(othershape) else []
+        if isinstance(othershape, Line):
+            return [] # TODO
+        return othershape._where(self)
+    
     def copy(self) -> 'Line':
         return Line(self.p1, self.p2)
     
@@ -195,6 +205,15 @@ class Circle(Shape):
         if isinstance(othershape, Circle):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < (self.r + othershape.r)**2
         return othershape._collides(self)
+    
+    def _where(self, othershape: Shape) -> list[list[int]]:
+        if isinstance(othershape, Point):
+            return [] # TODO
+        if isinstance(othershape, Line):
+            return [] # TODO
+        if isinstance(othershape, Circle):
+            return [] # TODO
+        return othershape._where(self)
     
     def copy(self) -> 'Circle':
         return Circle(self.x, self.y, self.r)
@@ -238,6 +257,16 @@ class Rect(Shape):
             
         if isinstance(othershape, Rect):
             return self.x < othershape.x + othershape.w and self.x + self.w > othershape.x and self.y < othershape.y + othershape.h and self.y + self.h > othershape.y
+    
+    def _where(self, othershape: Shape) -> list[list[int]]:
+        if isinstance(othershape, Point):
+            return [] # TODO
+        if isinstance(othershape, Line):
+            return [] # TODO
+        if isinstance(othershape, Circle):
+            return [] # TODO
+        if isinstance(othershape, Rect):
+            return [] # TODO
     
     def handle_collision(self, othershape: Shape, movement: list[Number]) -> None:
         if isinstance(othershape, Rect):
