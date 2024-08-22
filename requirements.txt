@@ -1,8 +1,6 @@
 requests
 connect-markdown-renderer
 pygame
-gpt4all
-languagemodels
 nPerlinNoise
 scikit-image
 matplotlib
