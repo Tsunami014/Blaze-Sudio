@@ -224,7 +224,7 @@ class Circle(Shape):
     
     def _where(self, othershape: Shape) -> list[list[int]]:
         if isinstance(othershape, Point):
-            return [[othershape.x, othershape.y]] if self._collides(othershape) else []
+            return [[othershape.x, othershape.y]] if ((self.x - othershape.x)**2 + (self.y - othershape.y)**2 == self.r**2) else []
         if isinstance(othershape, Line):
             def sign(x):
                 return -1 if x < 0 else 1
@@ -326,7 +326,10 @@ class Rect(Shape):
     
     def _where(self, othershape: Shape) -> list[list[int]]:
         if isinstance(othershape, Point):
-            return [[othershape.x, othershape.y]] if self._collides(othershape) else []
+            for i in self.toLines():
+                if i._collides(othershape):
+                    return [[othershape.x, othershape.y]]
+            return []
         else:
             points = []
             for i in self.toLines():
