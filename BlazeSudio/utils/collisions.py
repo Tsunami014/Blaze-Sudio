@@ -1,3 +1,4 @@
+import math
 from typing import Union
 Number = Union[int, float]
 
@@ -170,7 +171,24 @@ class Line(Shape):
         if isinstance(othershape, Point):
             return [[othershape.x, othershape.y]] if self._collides(othershape) else []
         if isinstance(othershape, Line):
-            return [] # TODO
+            if not self._collides(othershape):
+                return []
+            # This finds where the lines are colliding if they are infinite, which is why we check if they collide first
+            def line(p1, p2):
+                A = (p1[1] - p2[1])
+                B = (p2[0] - p1[0])
+                C = (p1[0]*p2[1] - p2[0]*p1[1])
+                return A, B, -C
+            L1, L2 = line(self.p1, self.p2), line(othershape.p1, othershape.p2)
+            D  = L1[0] * L2[1] - L1[1] * L2[0]
+            Dx = L1[2] * L2[1] - L1[1] * L2[2]
+            Dy = L1[0] * L2[2] - L1[2] * L2[0]
+            if D != 0:
+                x = Dx / D
+                y = Dy / D
+                return [[x,y]]
+            else:
+                return []
         return othershape._where(self)
     
     def copy(self) -> 'Line':
@@ -208,9 +226,37 @@ class Circle(Shape):
     
     def _where(self, othershape: Shape) -> list[list[int]]:
         if isinstance(othershape, Point):
-            return [] # TODO
+            return [[othershape.x, othershape.y]] if self._collides(othershape) else []
         if isinstance(othershape, Line):
-            return [] # TODO
+            def sign(x):
+                return -1 if x < 0 else 1
+            x1 = othershape.p1[0] - self.x
+            y1 = othershape.p1[1] - self.y
+            x2 = othershape.p2[0] - self.x
+            y2 = othershape.p2[1] - self.y
+            dx = x2 - x1
+            dy = y2 - y1
+            dr = math.sqrt(dx*dx + dy*dy)
+            D = x1 * y2 - x2 * y1
+            discriminant = self.r*self.r*dr*dr - D*D
+            if discriminant < 0:
+                return []
+            if discriminant == 0:
+                xa = (D * dy ) /  (dr * dr)
+                ya = (-D * dx ) /  (dr * dr)
+                ta = (xa-x1)*dx/dr + (ya-y1)*dy/dr
+                return [(xa + self.x, ya + self.y)] if 0 < ta < dr else []
+            
+            xa = (D * dy + sign(dy) * dx * math.sqrt(discriminant)) / (dr * dr)
+            ya = (-D * dx + abs(dy) * math.sqrt(discriminant)) / (dr * dr)
+            ta = (xa-x1)*dx/dr + (ya-y1)*dy/dr
+            xpt = [(xa + self.x, ya + self.y)] if 0 < ta < dr else []
+            
+            xb = (D * dy - sign(dy) * dx * math.sqrt(discriminant)) / (dr * dr) 
+            yb = (-D * dx - abs(dy) * math.sqrt(discriminant)) / (dr * dr)
+            tb = (xb-x1)*dx/dr + (yb-y1)*dy/dr
+            xpt += [(xb + self.x, yb + self.y)] if 0 < tb < dr else []
+            return xpt
         if isinstance(othershape, Circle):
             return [] # TODO
         return othershape._where(self)
@@ -240,10 +286,7 @@ class Rect(Shape):
             return self.check_rects(othershape) and (
                    (self.x < othershape.p1[0] and self.x + self.w > othershape.p1[0] and self.y < othershape.p1[1] and self.y + self.h > othershape.p1[1]) or \
                    (self.x < othershape.p2[0] and self.x + self.w > othershape.p2[0] and self.y < othershape.p2[1] and self.y + self.h > othershape.p2[1]) or \
-                   (Line((self.x, self.y), (self.x + self.w, self.y)).collides(othershape)) or \
-                   (Line((self.x + self.w, self.y), (self.x + self.w, self.y + self.h)).collides(othershape)) or \
-                   (Line((self.x + self.w, self.y + self.h), (self.x, self.y + self.h)).collides(othershape)) or \
-                   (Line((self.x, self.y + self.h), (self.x, self.y)).collides(othershape))
+                   any([i._collides(othershape) for i in self.toLines()])
             )
         if isinstance(othershape, Circle):
             return self.check_rects(othershape) and (
@@ -260,13 +303,20 @@ class Rect(Shape):
     
     def _where(self, othershape: Shape) -> list[list[int]]:
         if isinstance(othershape, Point):
-            return [] # TODO
-        if isinstance(othershape, Line):
-            return [] # TODO
-        if isinstance(othershape, Circle):
-            return [] # TODO
-        if isinstance(othershape, Rect):
-            return [] # TODO
+            return [[othershape.x, othershape.y]] if self._collides(othershape) else []
+        else:
+            points = []
+            for i in self.toLines():
+                points.extend(i._where(othershape))
+            return points
+    
+    def toLines(self):
+        return [
+            Line((self.x, self.y), (self.x + self.w, self.y)),
+            Line((self.x + self.w, self.y), (self.x + self.w, self.y + self.h)),
+            Line((self.x + self.w, self.y + self.h), (self.x, self.y + self.h)),
+            Line((self.x, self.y + self.h), (self.x, self.y))
+        ]
     
     def handle_collision(self, othershape: Shape, movement: list[Number]) -> None:
         if isinstance(othershape, Rect):
