@@ -3,9 +3,22 @@ Number = Union[int, float]
 
 class Shape:
     # This class always collides; so *can* be used as an infinite plane, but why?
-    def handle_collisions(self, shapegroup: 'Shapes', movement: list[Number]) -> None:
-        for s in shapegroup:
-            self.handle_collision(s, movement)
+    
+    def collides(self, othershape: 'Shape'|'Shapes'|list['Shape']):
+        if isinstance(othershape, Shape):
+            return self._collides(othershape)
+        for s in othershape:
+            if s._collides(self):
+                return True
+        return False
+    
+    def whereCollides(self, othershape: 'Shape'|'Shapes'|list['Shape']) -> list[list[int]]:
+        if isinstance(othershape, Shape):
+            return self._where(othershape)
+        points = []
+        for s in othershape:
+            points.extend(s._where(self))
+        return points
     
     def check_rects(self, othershape: 'Shape'):
         thisr, otherr = self.rect(), othershape.rect()
@@ -14,17 +27,17 @@ class Shape:
     def __repr__(self): return str(self)
     
     # Replace these
-    def collides(self, othershape: 'Shape') -> bool:
+    def _collides(self, othershape: 'Shape') -> bool:
         return True
+    
+    def _where(self, othershape: 'Shape') -> list[list[int]]:
+        return []
     
     def rect(self) -> list[Number]:
         return -float('inf'), -float('inf'), float('inf'), float('inf')
     
     def copy(self) -> 'Shape':
         return Shape()
-    
-    def handle_collision(self, othershape: 'Shape', movement: list[Number]) -> None:
-        pass
     
     def __str__(self):
         return '<Shape>'
@@ -39,23 +52,21 @@ class Shapes:
     def add_shapes(self, *shapes: list[Shape]) -> None:
         self.shapes.extend(list(shapes))
     
-    def collides(self, shape: Shape) -> bool:
+    def collides(self, shapes: Shape|'Shapes'|list[Shape]) -> bool:
         for s in self.shapes:
-            if s.collides(shape):
+            if s.collides(shapes):
                 return True
         return False
 
-    def collides_multiple(self, *shapes: list[Shape]) -> bool:
-        for s in shapes:
-            if self.collides(s):
-                return True
-        return False
+    def whereCollides(self, othershape: 'Shape'|'Shapes'|list['Shape']) -> list[list[int]]:
+        if isinstance(othershape, Shape):
+            return self._where(othershape)
+        points = []
+        for s in othershape:
+            points.extend(s._where(self))
+        return points
     
-    def handle_collisions(self, shape: Shape, movement: list[Number]) -> None:
-        for s in self.shapes:
-            shape.handle_collision(s, movement)
-    
-    def copy_all(self) -> 'Shapes':
+    def copy(self) -> 'Shapes':
         return Shapes(s.copy() for s in self.shapes)
     
     def __iter__(self):
@@ -80,10 +91,10 @@ class Point(Shape):
     def rect(self) -> list[Number]:
         return self.x, self.y, self.x, self.y
     
-    def collides(self, othershape: Shape) -> bool:
+    def _collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return self.x == othershape.x and self.y == othershape.y
-        return othershape.collides(self)
+        return othershape._collides(self)
 
     def copy(self) -> 'Point':
         return Point(self.x, self.y)
@@ -123,7 +134,7 @@ class Line(Shape):
     def rect(self) -> list[Number]:
         return min(self.p1[0], self.p2[0]), min(self.p1[1], self.p2[1]), max(self.p1[0], self.p2[0]), max(self.p1[1], self.p2[1])
     
-    def collides(self, othershape: Shape) -> bool:
+    def _collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return self.check_rects(othershape) and self._onSegment([othershape.x, othershape.y], self.p1, self.p2)
         if isinstance(othershape, Line):
@@ -150,7 +161,7 @@ class Line(Shape):
                    (d3 == 0 and self._onSegment((x3, y3), (x1, y1), (x2, y2))) or \
                    (d4 == 0 and self._onSegment((x4, y4), (x1, y1), (x2, y2)))
         
-        return othershape.collides(self)
+        return othershape._collides(self)
     
     def copy(self) -> 'Line':
         return Line(self.p1, self.p2)
@@ -165,7 +176,7 @@ class Circle(Shape):
     def rect(self) -> list[Number]:
         return self.x - self.r, self.y - self.r, self.x + self.r, self.y + self.r
     
-    def collides(self, othershape: Shape) -> bool:
+    def _collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < self.r**2
         if isinstance(othershape, Line):
@@ -183,7 +194,7 @@ class Circle(Shape):
             return (self.x - ix) ** 2 + (self.y - iy) ** 2 <= self.r ** 2
         if isinstance(othershape, Circle):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < (self.r + othershape.r)**2
-        return othershape.collides(self)
+        return othershape._collides(self)
     
     def copy(self) -> 'Circle':
         return Circle(self.x, self.y, self.r)
@@ -203,7 +214,7 @@ class Rect(Shape):
     def rect(self) -> list[Number]:
         return self.x, self.y, self.x + self.w, self.y + self.h
     
-    def collides(self, othershape: Shape) -> bool:
+    def _collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
             return self.x < othershape.x and self.x + self.w > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y
         if isinstance(othershape, Line):
