@@ -258,7 +258,32 @@ class Circle(Shape):
             xpt += [(xb + self.x, yb + self.y)] if 0 < tb < dr else []
             return xpt
         if isinstance(othershape, Circle):
-            return [] # TODO
+            # circle 1: (x0, y0), radius r0
+            # circle 2: (x1, y1), radius r1
+
+            d=math.sqrt((othershape.x-self.x)**2 + (othershape.y-self.y)**2)
+            
+            # non intersecting
+            if d > self.r + othershape.r :
+                return []
+            # One circle within other
+            if d < abs(self.r-othershape.r):
+                return []
+            # coincident circles
+            if d == 0 and self.r == othershape.r:
+                return []
+            else:
+                a=(self.r**2-othershape.r**2+d**2)/(2*d)
+                h=math.sqrt(self.r**2-a**2)
+                x2=self.x+a*(othershape.x-self.x)/d   
+                y2=self.y+a*(othershape.y-self.y)/d   
+                x3=x2+h*(othershape.y-self.y)/d     
+                y3=y2-h*(othershape.x-self.x)/d 
+
+                x4=x2-h*(othershape.y-self.y)/d
+                y4=y2+h*(othershape.x-self.x)/d
+                
+                return [[x3, y3], [x4, y4]]
         return othershape._where(self)
     
     def copy(self) -> 'Circle':
