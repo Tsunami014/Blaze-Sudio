@@ -678,20 +678,28 @@ def OCollisionsDemo():
                 points = []
                 for o in objs:
                     cs = o.whereCollides(mvement)
-                    cs.append(o.closestPointTo(newpos))
+                    # cs.append(o.closestPointTo(pos))
                     points.extend(list(zip(cs, [o for _ in range(len(cs))])))
-                points.sort(key=lambda x: abs(x[0][0]-pos[0])**2+abs(x[0][1]-pos[1])**2)
-                closestP = points[0][0]
-                closestObj = points[0][1]
-                if closestObj.collides(collisions.Point(*closestP)):
-                    normal = closestObj.tangent(closestP)-90
-                    dist_left = math.sqrt(abs(newpos[0]-closestP[0])**2+abs(newpos[1]-closestP[1])**2)
-                    x, y = newpos[0] - closestP[0], newpos[1] - closestP[1]
-                    phi = math.degrees(math.atan2(y, x)) % 360
-                    pos = rotate(closestP, [closestP[0], closestP[1]-dist_left], phi+2*(normal-phi))
-                    accel = list(rotate([0, 0], accel, phi+2*(normal-phi)))
-                    #pygame.draw.line(win, (255, 50, 50), closestP, rotate(closestP, [closestP[0], closestP[1]-50], ), 8) # tangent -90 = normal
-                    #pygame.draw.circle(win, (175, 155, 155), closestP, 8)
+                if points != []:
+                    points.sort(key=lambda x: abs(x[0][0]-pos[0])**2+abs(x[0][1]-pos[1])**2)
+                    closestP = points[0][0]
+                    closestObj = points[0][1]
+                    t = closestObj.tangent(closestP)
+                    if t is not None:
+                        normal = t-90
+                        dist_left = math.sqrt(abs(newpos[0]-closestP[0])**2+abs(newpos[1]-closestP[1])**2)
+                        x, y = newpos[0] - closestP[0], newpos[1] - closestP[1]
+                        phi = (math.degrees(math.atan2(y, x))-90) % 360
+                        diff = (phi-normal) % 360
+                        if diff > 180:
+                            diff = diff - 360
+                        pos = rotate(closestP, [closestP[0], closestP[1]-dist_left], (normal-diff)%360)
+                        accel = list(rotate([0, 0], accel, diff*2))
+                        #nphi = (math.degrees(math.atan2(pos[0] - closestP[0], pos[1] - closestP[1]))-90) % 360
+                        #acceld = math.sqrt(accel[0]**2+accel[1]**2)
+                        #accel = list(rotate([0, 0], [0, -acceld], nphi))
+                        #pygame.draw.line(win, (255, 50, 50), closestP, rotate(closestP, [closestP[0], closestP[1]-50], ), 8) # tangent -90 = normal
+                        #pygame.draw.circle(win, (175, 155, 155), closestP, 8)
         else:
             pos = pygame.mouse.get_pos()
             accel = [0, 0]
