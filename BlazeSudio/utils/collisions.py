@@ -34,6 +34,9 @@ class Shape:
     def _where(self, othershape: 'Shape') -> list[list[Number]]:
         return []
     
+    def closestPointTo(self, point: list[Number]) -> list[Number]:
+        return point
+    
     def tangent(self, point: list[Number]) -> Number:
         return 0
     
@@ -66,6 +69,12 @@ class Shapes:
         points = []
         for s in self.shapes:
             points.extend(s.whereCollides(shapes))
+        return points
+    
+    def closestPointTo(self, point: list[Number]) -> list[list[Number]]:
+        points = []
+        for s in self.shapes:
+            points.append(s.closestPointTo(point))
         return points
     
     def tangent(self, point: list[Number]) -> list[Number]:
@@ -108,6 +117,9 @@ class Point(Shape):
         if isinstance(othershape, Point):
             return [[self.x, self.y]] if (self.x == othershape.x and self.y == othershape.y) else []
         return othershape._where(self)
+    
+    def closestPointTo(self, point: list[Number]) -> list[Number]:
+        return (self.x, self.y)
 
     def copy(self) -> 'Point':
         return Point(self.x, self.y)
@@ -178,7 +190,7 @@ class Line(Shape):
         if isinstance(othershape, Point):
             return [[othershape.x, othershape.y]] if self._collides(othershape) else []
         if isinstance(othershape, Line):
-            if not self._collides(othershape):
+            if not self.collides(othershape):
                 return []
             # This finds where the lines are colliding if they are infinite, which is why we check if they collide first
             def line(p1, p2):
@@ -197,6 +209,13 @@ class Line(Shape):
             else:
                 return []
         return othershape._where(self)
+    
+    def closestPointTo(self, point: list[Number]) -> list[Number]:
+        dx, dy = self.p2[0]-self.p1[0], self.p2[1]-self.p1[1]
+        det = dx*dx + dy*dy
+        a = (dy*(point[1]-self.p1[1])+dx*(point[0]-self.p1[0]))/det
+        a = min(1, max(0, a))
+        return self.p1[0]+a*dx, self.p1[1]+a*dy
     
     def tangent(self, point: list[Number]) -> Number:
         x, y = self.p2[0] - self.p1[0], self.p2[1] - self.p1[1]
@@ -299,6 +318,17 @@ class Circle(Shape):
                 
                 return [[x3, y3], [x4, y4]]
         return othershape._where(self)
+    
+    def closestPointTo(self, point: list[Number]) -> list[Number]:
+        if (self.x - point[0])**2 + (self.y - point[1])**2 < self.r**2:
+            return point
+        x, y = point[0] - self.x, point[1] - self.y
+        phi = (math.degrees(math.atan2(y, x)) - 90) % 360
+        angle = math.radians(phi)
+        
+        qx = self.x - math.sin(angle) * self.r
+        qy = self.y + math.cos(angle) * self.r
+        return qx, qy
 
     def tangent(self, point: list[Number]) -> Number:
         if self.x == point[0]:
@@ -330,7 +360,7 @@ class Rect(Shape):
             return self.check_rects(othershape) and (
                    (self.x < othershape.p1[0] and self.x + self.w > othershape.p1[0] and self.y < othershape.p1[1] and self.y + self.h > othershape.p1[1]) or \
                    (self.x < othershape.p2[0] and self.x + self.w > othershape.p2[0] and self.y < othershape.p2[1] and self.y + self.h > othershape.p2[1]) or \
-                   any([i._collides(othershape) for i in self.toLines()])
+                   any([i.collides(othershape) for i in self.toLines()])
             )
         if isinstance(othershape, Circle):
             return self.check_rects(othershape) and (
@@ -348,7 +378,7 @@ class Rect(Shape):
     def _where(self, othershape: Shape) -> list[list[Number]]:
         if isinstance(othershape, Point):
             for i in self.toLines():
-                if i._collides(othershape):
+                if i.collides(othershape):
                     return [[othershape.x, othershape.y]]
             return []
         else:
@@ -356,6 +386,11 @@ class Rect(Shape):
             for i in self.toLines():
                 points.extend(i._where(othershape))
             return points
+    
+    def closestPointTo(self, point: list[Number]) -> list[Number]:
+        ps = [i.closestPointTo(point) for i in self.toLines()]
+        ps.sort(key=lambda x: abs(x[0]-point[0])**2+abs(x[1]-point[1])**2)
+        return ps[0]
     
     def tangent(self, point: list[Number]) -> Number:
         p = Point(*point)

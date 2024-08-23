@@ -662,15 +662,36 @@ def OCollisionsDemo():
         if playMode:
             accellLimits = [10, 10]
             accel = [min(max(accel[0], -accellLimits[0]), accellLimits[0]), min(max(accel[1], -accellLimits[1]), accellLimits[1])]
+            gravity = [0.02, 0.02]
+            def grav_eff(x, grav):
+                if x < -grav:
+                    return x + grav
+                if x > grav:
+                    return x - grav
+                return 0
+            accel = [grav_eff(accel[0], gravity[0]), grav_eff(accel[1], gravity[1])]
             newpos = [pos[0]+accel[0], pos[1]+accel[1]]
             mvement = collisions.Line(pos, newpos)
             if not mvement.collides(objs):
                 pos = newpos
             else:
-                points = mvement.whereCollides(objs)
-                points.sort(key=lambda x: abs(x[0]-pos[0])**2+abs(x[1]-pos[1])**2)
-                closestP = points[0]
-                pygame.draw.circle(win, (175, 155, 155), closestP, 8)
+                points = []
+                for o in objs:
+                    cs = o.whereCollides(mvement)
+                    cs.append(o.closestPointTo(newpos))
+                    points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+                points.sort(key=lambda x: abs(x[0][0]-pos[0])**2+abs(x[0][1]-pos[1])**2)
+                closestP = points[0][0]
+                closestObj = points[0][1]
+                if closestObj.collides(collisions.Point(*closestP)):
+                    normal = closestObj.tangent(closestP)-90
+                    dist_left = math.sqrt(abs(newpos[0]-closestP[0])**2+abs(newpos[1]-closestP[1])**2)
+                    x, y = newpos[0] - closestP[0], newpos[1] - closestP[1]
+                    phi = math.degrees(math.atan2(y, x)) % 360
+                    pos = rotate(closestP, [closestP[0], closestP[1]-dist_left], phi+2*(normal-phi))
+                    accel = list(rotate([0, 0], accel, phi+2*(normal-phi)))
+                    #pygame.draw.line(win, (255, 50, 50), closestP, rotate(closestP, [closestP[0], closestP[1]-50], ), 8) # tangent -90 = normal
+                    #pygame.draw.circle(win, (175, 155, 155), closestP, 8)
         else:
             pos = pygame.mouse.get_pos()
             accel = [0, 0]
