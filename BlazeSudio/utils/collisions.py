@@ -301,7 +301,9 @@ class Circle(Shape):
         return othershape._where(self)
 
     def tangent(self, point: list[Number]) -> Number:
-        return 0
+        if self.x == point[0]:
+            return 90
+        return math.degrees(math.atan((point[1]-self.y)/(point[0]-self.x))) + (0 if self.x>point[0] else 180)
     
     def copy(self) -> 'Circle':
         return Circle(self.x, self.y, self.r)
@@ -358,13 +360,13 @@ class Rect(Shape):
     def tangent(self, point: list[Number]) -> Number:
         p = Point(*point)
         if Line((self.x, self.y), (self.x + self.w, self.y)).collides(p):
-            return 0
-        elif Line((self.x + self.w, self.y), (self.x + self.w, self.y + self.h)).collides(p):
             return 90
-        elif Line((self.x + self.w, self.y + self.h), (self.x, self.y + self.h)).collides(p):
+        elif Line((self.x + self.w, self.y), (self.x + self.w, self.y + self.h)).collides(p):
             return 180
-        elif Line((self.x, self.y + self.h), (self.x, self.y)).collides(p):
+        elif Line((self.x + self.w, self.y + self.h), (self.x, self.y + self.h)).collides(p):
             return -90
+        elif Line((self.x, self.y + self.h), (self.x, self.y)).collides(p):
+            return 0
     
     def toLines(self):
         return [
