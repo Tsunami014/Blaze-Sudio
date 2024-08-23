@@ -549,6 +549,23 @@ def OLDtkAPPDemo():
             winopen = False
 
 def OCollisionsDemo():
+    import math
+    def rotate(origin, point, angle):
+        """
+        Rotate a point clockwise by a given angle around a given origin.
+        The angle should be given in degrees.
+        """
+        angle = math.radians(angle)
+        ox, oy = origin
+        px, py = point
+        cos = math.cos(angle)
+        sin = math.sin(angle)
+        ydiff = (py - oy)
+        xdiff = (px - ox)
+        
+        qx = ox + cos * xdiff - sin * ydiff
+        qy = oy + sin * xdiff + cos * ydiff
+        return qx, qy
     import pygame
     from BlazeSudio.utils import collisions
     pygame.init()
@@ -633,6 +650,12 @@ def OCollisionsDemo():
 
         for i in objs.whereCollides(curObj):
             pygame.draw.circle(win, (175, 155, 155), i, 8)
+        
+        if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+            for o in objs:
+                cs = o.whereCollides(curObj)
+                for i in cs:
+                    pygame.draw.line(win, (0, 0, 0), i, rotate(i, [i[0], i[1]-50], o.tangent(i)), 8)
         
         pygame.display.update()
 
