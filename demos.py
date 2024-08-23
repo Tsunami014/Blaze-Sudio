@@ -550,6 +550,8 @@ def OLDtkAPPDemo():
 
 def OCollisionsDemo():
     import math
+    import pygame
+    from BlazeSudio.utils import collisions
     def rotate(origin, point, angle):
         """
         Rotate a point clockwise by a given angle around a given origin.
@@ -566,8 +568,6 @@ def OCollisionsDemo():
         qx = ox + cos * xdiff - sin * ydiff
         qy = oy + sin * xdiff + cos * ydiff
         return qx, qy
-    import pygame
-    from BlazeSudio.utils import collisions
     pygame.init()
     win = pygame.display.set_mode()
     run = True
@@ -576,6 +576,8 @@ def OCollisionsDemo():
     curObj = collisions.Point(0, 0)
     objs = collisions.Shapes()
     dir = [0, 0]
+    pos = [0, 0]
+    accel = [0, 0]
     
     def drawObj(obj, t, col):
         if t == 0:
@@ -587,6 +589,19 @@ def OCollisionsDemo():
         elif t == 3:
             pygame.draw.rect(win, col, (obj.x, obj.y, obj.w, obj.h), 8)
     
+    def moveCurObj(curObj):
+        if typ == 1:
+            curObj.p1 = pos
+            curObj.p2 = (curObj.p1[0]+dir[0], curObj.p1[1]+dir[1])
+        else:
+            curObj.x, curObj.y = pos
+            if typ == 2:
+                curObj.r = dir[1]
+            elif typ == 3:
+                curObj.w, curObj.h = dir
+        return curObj
+    
+    clock = pygame.time.Clock()
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -609,6 +624,15 @@ def OCollisionsDemo():
                     dir[0] -= 10
                 elif event.key == pygame.K_RIGHT:
                     dir[0] += 10
+                
+                elif event.key == pygame.K_w:
+                    accel[1] -= 1
+                elif event.key == pygame.K_s:
+                    accel[1] += 1
+                elif event.key == pygame.K_a:
+                    accel[0] -= 1
+                elif event.key == pygame.K_d:
+                    accel[0] += 1
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Get the header_opts that got clicked, if any
                 if event.pos[1] < 50:
@@ -634,15 +658,15 @@ def OCollisionsDemo():
             text = font.render(header_opts[i], True, (0, 0, 0))
             win.blit(text, (i*win.get_width()//len(header_opts)+10, 10))
         
-        if typ == 1:
-            curObj.p1 = pygame.mouse.get_pos()
-            curObj.p2 = (curObj.p1[0]+dir[0], curObj.p1[1]+dir[1])
-        else:
-            curObj.x, curObj.y = pygame.mouse.get_pos()
-            if typ == 2:
-                curObj.r = dir[1]
-            elif typ == 3:
-                curObj.w, curObj.h = dir
+        if not (pygame.key.get_mods() & pygame.KMOD_ALT):
+            pos = pygame.mouse.get_pos()
+            accel = [0, 0]
+        
+        accellLimits = [10, 10]
+        accel = [min(max(accel[0], -accellLimits[0]), accellLimits[0]), min(max(accel[1], -accellLimits[1]), accellLimits[1])]
+        pos = [pos[0]+accel[0], pos[1]+accel[1]]
+        
+        curObj = moveCurObj(curObj)
         
         for i in objs:
             drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect].index(type(i)), (10, 255, 50))
@@ -655,9 +679,10 @@ def OCollisionsDemo():
             for o in objs:
                 cs = o.whereCollides(curObj)
                 for i in cs:
-                    pygame.draw.line(win, (0, 0, 0), i, rotate(i, [i[0], i[1]-50], o.tangent(i)), 8)
+                    pygame.draw.line(win, (0, 0, 0), i, rotate(i, [i[0], i[1]-50], o.tangent(i)-90), 8) # tangent -90 = normal
         
         pygame.display.update()
+        clock.tick(60)
 
 if __name__ == '__main__':
     import tkinter as Tk # Because everyone has tkinter
