@@ -663,8 +663,14 @@ def OCollisionsDemo():
             accellLimits = [10, 10]
             accel = [min(max(accel[0], -accellLimits[0]), accellLimits[0]), min(max(accel[1], -accellLimits[1]), accellLimits[1])]
             newpos = [pos[0]+accel[0], pos[1]+accel[1]]
-            if not collisions.Line(pos, newpos).collides(objs):
+            mvement = collisions.Line(pos, newpos)
+            if not mvement.collides(objs):
                 pos = newpos
+            else:
+                points = mvement.whereCollides(objs)
+                points.sort(key=lambda x: abs(x[0]-pos[0])**2+abs(x[1]-pos[1])**2)
+                closestP = points[0]
+                pygame.draw.circle(win, (175, 155, 155), closestP, 8)
         else:
             pos = pygame.mouse.get_pos()
             accel = [0, 0]
