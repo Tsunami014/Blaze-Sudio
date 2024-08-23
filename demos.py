@@ -603,6 +603,7 @@ def OCollisionsDemo():
     
     clock = pygame.time.Clock()
     while run:
+        playMode = pygame.key.get_mods() & pygame.KMOD_ALT
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -649,7 +650,7 @@ def OCollisionsDemo():
                         curObj = collisions.Rect(*event.pos, 100, 100)
                         dir = [100, 100]
             
-        win.fill((0, 0, 0) if not objs.collides(curObj) else (250, 50, 50))
+        win.fill((0, 0, 0) if (not objs.collides(curObj)) or playMode else (250, 50, 50))
         pygame.draw.rect(win, (255, 255, 255), (0, 0, win.get_width(), 50))
         # Split it up into equal segments and put the text header_opts[i] in the middle of each segment
         for i in range(len(header_opts)):
@@ -658,13 +659,15 @@ def OCollisionsDemo():
             text = font.render(header_opts[i], True, (0, 0, 0))
             win.blit(text, (i*win.get_width()//len(header_opts)+10, 10))
         
-        if not (pygame.key.get_mods() & pygame.KMOD_ALT):
+        if playMode:
+            accellLimits = [10, 10]
+            accel = [min(max(accel[0], -accellLimits[0]), accellLimits[0]), min(max(accel[1], -accellLimits[1]), accellLimits[1])]
+            newpos = [pos[0]+accel[0], pos[1]+accel[1]]
+            if not collisions.Line(pos, newpos).collides(objs):
+                pos = newpos
+        else:
             pos = pygame.mouse.get_pos()
             accel = [0, 0]
-        
-        accellLimits = [10, 10]
-        accel = [min(max(accel[0], -accellLimits[0]), accellLimits[0]), min(max(accel[1], -accellLimits[1]), accellLimits[1])]
-        pos = [pos[0]+accel[0], pos[1]+accel[1]]
         
         curObj = moveCurObj(curObj)
         
@@ -672,14 +675,15 @@ def OCollisionsDemo():
             drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect].index(type(i)), (10, 255, 50))
         drawObj(curObj, typ, (10, 50, 255))
 
-        for i in objs.whereCollides(curObj):
-            pygame.draw.circle(win, (175, 155, 155), i, 8)
-        
-        if pygame.key.get_mods() & pygame.KMOD_SHIFT:
-            for o in objs:
-                cs = o.whereCollides(curObj)
-                for i in cs:
-                    pygame.draw.line(win, (0, 0, 0), i, rotate(i, [i[0], i[1]-50], o.tangent(i)-90), 8) # tangent -90 = normal
+        if not playMode:
+            for i in objs.whereCollides(curObj):
+                pygame.draw.circle(win, (175, 155, 155), i, 8)
+            
+            if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                for o in objs:
+                    cs = o.whereCollides(curObj)
+                    for i in cs:
+                        pygame.draw.line(win, (0, 0, 0), i, rotate(i, [i[0], i[1]-50], o.tangent(i)-90), 8) # tangent -90 = normal
         
         pygame.display.update()
         clock.tick(60)
