@@ -68,10 +68,11 @@ class Shapes:
             points.extend(s.whereCollides(shapes))
         return points
     
-    def tangent(self, point: list[Number]):
-        raise ValueError(
-            'This is a <Shapes> object, which has multiple objects. Cannot find the tangent for multiple objects!' # TODO
-        )
+    def tangent(self, point: list[Number]) -> list[Number]:
+        points = []
+        for s in self.shapes:
+            points.append(s.tangent(point))
+        return points
     
     def copy(self) -> 'Shapes':
         return Shapes(s.copy() for s in self.shapes)
@@ -107,11 +108,6 @@ class Point(Shape):
         if isinstance(othershape, Point):
             return [[self.x, self.y]] if (self.x == othershape.x and self.y == othershape.y) else []
         return othershape._where(self)
-
-    def tangent(self, point: list[Number]):
-        raise ValueError(
-            'Cannot find tangent of Point!' # TODO
-        )
 
     def copy(self) -> 'Point':
         return Point(self.x, self.y)
@@ -203,7 +199,9 @@ class Line(Shape):
         return othershape._where(self)
     
     def tangent(self, point: list[Number]) -> Number:
-        return 0 # TODO
+        x, y = self.p2[0] - self.p1[0], self.p2[1] - self.p1[1]
+        phi = (math.degrees(math.atan2(y, x))-90) % 360
+        return phi
     
     def copy(self) -> 'Line':
         return Line(self.p1, self.p2)
