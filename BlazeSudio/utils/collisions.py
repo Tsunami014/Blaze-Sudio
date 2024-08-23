@@ -13,7 +13,7 @@ class Shape:
                 return True
         return False
     
-    def whereCollides(self, othershape: Union['Shape','Shapes',list['Shape']]) -> list[list[int]]:
+    def whereCollides(self, othershape: Union['Shape','Shapes',list['Shape']]) -> list[list[Number]]:
         if isinstance(othershape, Shape):
             return self._where(othershape)
         points = []
@@ -23,7 +23,7 @@ class Shape:
     
     def check_rects(self, othershape: 'Shape'):
         thisr, otherr = self.rect(), othershape.rect()
-        return thisr[0] < otherr[2] and thisr[2] > otherr[0] and thisr[1] < otherr[3] and thisr[3] > otherr[1]
+        return thisr[0] <= otherr[2] and thisr[2] >= otherr[0] and thisr[1] <= otherr[3] and thisr[3] >= otherr[1]
     
     def __repr__(self): return str(self)
     
@@ -31,8 +31,11 @@ class Shape:
     def _collides(self, othershape: 'Shape') -> bool:
         return True
     
-    def _where(self, othershape: 'Shape') -> list[list[int]]:
+    def _where(self, othershape: 'Shape') -> list[list[Number]]:
         return []
+    
+    def tangent(self, point: list[Number]) -> Number:
+        return 0
     
     def rect(self) -> list[Number]:
         return -float('inf'), -float('inf'), float('inf'), float('inf')
@@ -59,11 +62,16 @@ class Shapes:
                 return True
         return False
 
-    def whereCollides(self, shapes: Union[Shape,'Shapes',list[Shape]]) -> list[list[int]]:
+    def whereCollides(self, shapes: Union[Shape,'Shapes',list[Shape]]) -> list[list[Number]]:
         points = []
         for s in self.shapes:
             points.extend(s.whereCollides(shapes))
         return points
+    
+    def tangent(self, point: list[Number]):
+        raise ValueError(
+            'This is a <Shapes> object, which has multiple objects. Cannot find the tangent for multiple objects!' # TODO
+        )
     
     def copy(self) -> 'Shapes':
         return Shapes(s.copy() for s in self.shapes)
@@ -95,15 +103,20 @@ class Point(Shape):
             return self.x == othershape.x and self.y == othershape.y
         return othershape._collides(self)
     
-    def _where(self, othershape: Shape) -> list[list[int]]:
+    def _where(self, othershape: Shape) -> list[list[Number]]:
         if isinstance(othershape, Point):
             return [[self.x, self.y]] if (self.x == othershape.x and self.y == othershape.y) else []
         return othershape._where(self)
 
+    def tangent(self, point: list[Number]):
+        raise ValueError(
+            'Cannot find tangent of Point!' # TODO
+        )
+
     def copy(self) -> 'Point':
         return Point(self.x, self.y)
 
-    def __getitem__(self, item: int) -> int|None:
+    def __getitem__(self, item: Number) -> Number|None:
         if item == 0:
             return self.x
         elif item == 1:
@@ -165,7 +178,7 @@ class Line(Shape):
         
         return othershape._collides(self)
     
-    def _where(self, othershape: Shape) -> list[list[int]]:
+    def _where(self, othershape: Shape) -> list[list[Number]]:
         if isinstance(othershape, Point):
             return [[othershape.x, othershape.y]] if self._collides(othershape) else []
         if isinstance(othershape, Line):
@@ -188,6 +201,9 @@ class Line(Shape):
             else:
                 return []
         return othershape._where(self)
+    
+    def tangent(self, point: list[Number]) -> Number:
+        return 0 # TODO
     
     def copy(self) -> 'Line':
         return Line(self.p1, self.p2)
@@ -222,7 +238,7 @@ class Circle(Shape):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < (self.r + othershape.r)**2
         return othershape._collides(self)
     
-    def _where(self, othershape: Shape) -> list[list[int]]:
+    def _where(self, othershape: Shape) -> list[list[Number]]:
         if isinstance(othershape, Point):
             return [[othershape.x, othershape.y]] if ((self.x - othershape.x)**2 + (self.y - othershape.y)**2 == self.r**2) else []
         if isinstance(othershape, Line):
@@ -283,6 +299,9 @@ class Circle(Shape):
                 
                 return [[x3, y3], [x4, y4]]
         return othershape._where(self)
+
+    def tangent(self, point: list[Number]) -> Number:
+        return 0
     
     def copy(self) -> 'Circle':
         return Circle(self.x, self.y, self.r)
@@ -304,7 +323,7 @@ class Rect(Shape):
     
     def _collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
-            return self.x < othershape.x and self.x + self.w > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y
+            return self.x <= othershape.x and self.x + self.w >= othershape.x and self.y <= othershape.y and self.y + self.h >= othershape.y
         if isinstance(othershape, Line):
             return self.check_rects(othershape) and (
                    (self.x < othershape.p1[0] and self.x + self.w > othershape.p1[0] and self.y < othershape.p1[1] and self.y + self.h > othershape.p1[1]) or \
@@ -322,9 +341,9 @@ class Rect(Shape):
             )
             
         if isinstance(othershape, Rect):
-            return self.x < othershape.x + othershape.w and self.x + self.w > othershape.x and self.y < othershape.y + othershape.h and self.y + self.h > othershape.y
+            return self.x <= othershape.x + othershape.w and self.x + self.w >= othershape.x and self.y <= othershape.y + othershape.h and self.y + self.h >= othershape.y
     
-    def _where(self, othershape: Shape) -> list[list[int]]:
+    def _where(self, othershape: Shape) -> list[list[Number]]:
         if isinstance(othershape, Point):
             for i in self.toLines():
                 if i._collides(othershape):
@@ -335,6 +354,17 @@ class Rect(Shape):
             for i in self.toLines():
                 points.extend(i._where(othershape))
             return points
+    
+    def tangent(self, point: list[Number]) -> Number:
+        p = Point(*point)
+        if Line((self.x, self.y), (self.x + self.w, self.y)).collides(p):
+            return 0
+        elif Line((self.x + self.w, self.y), (self.x + self.w, self.y + self.h)).collides(p):
+            return 90
+        elif Line((self.x + self.w, self.y + self.h), (self.x, self.y + self.h)).collides(p):
+            return 180
+        elif Line((self.x, self.y + self.h), (self.x, self.y)).collides(p):
+            return -90
     
     def toLines(self):
         return [
