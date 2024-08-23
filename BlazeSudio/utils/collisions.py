@@ -249,6 +249,8 @@ class Circle(Shape):
             dx = x2 - x1
             dy = y2 - y1
             dr = math.sqrt(dx*dx + dy*dy)
+            if dr == 0:
+                return self._where(Point(*othershape.p1))
             D = x1 * y2 - x2 * y1
             discriminant = self.r*self.r*dr*dr - D*D
             if discriminant < 0:
