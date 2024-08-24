@@ -466,16 +466,16 @@ def handleCollisions(pos: list[Number], accel: list[Number], objs: Shapes|list[S
         closestP = points[0][0]
         closestObj = points[0][1]
         t = closestObj.tangent(closestP)
-        if t is not None:
-            normal = t-90
-            dist_left = math.sqrt(abs(newpos[0]-closestP[0])**2+abs(newpos[1]-closestP[1])**2)
-            x, y = newpos[0] - closestP[0], newpos[1] - closestP[1]
-            phi = (math.degrees(math.atan2(y, x))-90) % 360
-            diff = (phi-normal) % 360
-            if diff > 180:
-                diff = diff - 360
-            pos = rotate(closestP, [closestP[0], closestP[1]-dist_left], (normal-diff)%360)
-            accel = list(rotate([0, 0], accel, diff*2))
+        normal = t-90
+        dist_left = math.sqrt(abs(newpos[0]-closestP[0])**2+abs(newpos[1]-closestP[1])**2)
+        x, y = newpos[0] - closestP[0], newpos[1] - closestP[1]
+        phi = (math.degrees(math.atan2(y, x))-90) % 360
+        diff = (phi-normal) % 360
+        if diff > 180:
+            diff = diff - 360
+        diff = 180 - diff
+        pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], (normal-diff)%360)
+        accel = list(rotate([0, 0], accel, (normal-diff)%360))
     return pos, accel
 
 # TODO: Box that isn't straight (Polygons)
