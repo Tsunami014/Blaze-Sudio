@@ -587,7 +587,7 @@ def OCollisionsDemo():
                 curObj.w, curObj.h = dir[0], dir[1]
             elif typ == 4:
                 curObj.w, curObj.h = dir[0], dir[1]
-                curObj.angle = dir[2]
+                curObj.rot = dir[2]
         return curObj
     
     clock = pygame.time.Clock()
