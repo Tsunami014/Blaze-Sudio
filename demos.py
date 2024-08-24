@@ -657,7 +657,7 @@ def OCollisionsDemo():
                     return x - grav
                 return 0
             accel = [grav_eff(accel[0], gravity[0]), grav_eff(accel[1], gravity[1])]
-            pos, accel = collisions.handleCollisions(pos, accel, objs)
+            pos, accel = collisions.handleCollisionsAccel(pos, accel, objs)
         else:
             pos = pygame.mouse.get_pos()
             accel = [0, 0]
