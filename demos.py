@@ -549,25 +549,8 @@ def OLDtkAPPDemo():
             winopen = False
 
 def OCollisionsDemo():
-    import math
-    import pygame
     from BlazeSudio.utils import collisions
-    def rotate(origin, point, angle):
-        """
-        Rotate a point clockwise by a given angle around a given origin.
-        The angle should be given in degrees.
-        """
-        angle = math.radians(angle)
-        ox, oy = origin
-        px, py = point
-        cos = math.cos(angle)
-        sin = math.sin(angle)
-        ydiff = (py - oy)
-        xdiff = (px - ox)
-        
-        qx = ox + cos * xdiff - sin * ydiff
-        qy = oy + sin * xdiff + cos * ydiff
-        return qx, qy
+    import pygame
     pygame.init()
     win = pygame.display.set_mode()
     run = True
@@ -670,36 +653,7 @@ def OCollisionsDemo():
                     return x - grav
                 return 0
             accel = [grav_eff(accel[0], gravity[0]), grav_eff(accel[1], gravity[1])]
-            newpos = [pos[0]+accel[0], pos[1]+accel[1]]
-            mvement = collisions.Line(pos, newpos)
-            if not mvement.collides(objs):
-                pos = newpos
-            else:
-                points = []
-                for o in objs:
-                    cs = o.whereCollides(mvement)
-                    # cs.append(o.closestPointTo(pos))
-                    points.extend(list(zip(cs, [o for _ in range(len(cs))])))
-                if points != []:
-                    points.sort(key=lambda x: abs(x[0][0]-pos[0])**2+abs(x[0][1]-pos[1])**2)
-                    closestP = points[0][0]
-                    closestObj = points[0][1]
-                    t = closestObj.tangent(closestP)
-                    if t is not None:
-                        normal = t-90
-                        dist_left = math.sqrt(abs(newpos[0]-closestP[0])**2+abs(newpos[1]-closestP[1])**2)
-                        x, y = newpos[0] - closestP[0], newpos[1] - closestP[1]
-                        phi = (math.degrees(math.atan2(y, x))-90) % 360
-                        diff = (phi-normal) % 360
-                        if diff > 180:
-                            diff = diff - 360
-                        pos = rotate(closestP, [closestP[0], closestP[1]-dist_left], (normal-diff)%360)
-                        accel = list(rotate([0, 0], accel, diff*2))
-                        #nphi = (math.degrees(math.atan2(pos[0] - closestP[0], pos[1] - closestP[1]))-90) % 360
-                        #acceld = math.sqrt(accel[0]**2+accel[1]**2)
-                        #accel = list(rotate([0, 0], [0, -acceld], nphi))
-                        #pygame.draw.line(win, (255, 50, 50), closestP, rotate(closestP, [closestP[0], closestP[1]-50], ), 8) # tangent -90 = normal
-                        #pygame.draw.circle(win, (175, 155, 155), closestP, 8)
+            pos, accel = collisions.handleCollisions(pos, accel, objs)
         else:
             pos = pygame.mouse.get_pos()
             accel = [0, 0]
@@ -718,7 +672,7 @@ def OCollisionsDemo():
                 for o in objs:
                     cs = o.whereCollides(curObj)
                     for i in cs:
-                        pygame.draw.line(win, (0, 0, 0), i, rotate(i, [i[0], i[1]-50], o.tangent(i)-90), 8) # tangent -90 = normal
+                        pygame.draw.line(win, (0, 0, 0), i, collisions.rotate(i, [i[0], i[1]-50], o.tangent(i)-90), 8) # tangent -90 = normal
         
         pygame.display.update()
         clock.tick(60)
