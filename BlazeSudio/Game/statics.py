@@ -1,6 +1,5 @@
 from enum import Enum
 from typing import Any, Union, Iterable
-from BlazeSudio.utils.collisions import Shape
 
 Number = Union[int, float]
 
@@ -11,11 +10,8 @@ class BasePlayer:
 
 class BaseCollisions:
     # STUFF YOU CAN SET
-    def __call__(self, rect: Shape, movement: list[int], typ: str) -> list[int]:
-        return rect.x, rect.y # The new position of the entity
-    
-    def movementOptions(self, rect: Shape, entity: str) -> list[bool]:
-        return True, True # Should you move [left-right,up-down]?
+    def __call__(self, pos: list[Number], accel: list[Number], entity: str) -> tuple[list[Number], list[Number]]:
+        return [pos[0]+accel[0], pos[1]+accel[1]], accel # Your new position and movement
 
 class SceneEvent(Enum):
     INIT = 0

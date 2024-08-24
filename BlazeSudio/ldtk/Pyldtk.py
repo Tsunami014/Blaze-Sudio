@@ -170,16 +170,27 @@ class IntGridCSV:
         self.cwid = cwid
         self.chei = chei or ceil(len(intgrid) / self.cwid)
         self.intgrid = [intgrid[cwid*i:cwid*(i+1)] for i in range(chei)]
+        self.rects = None
     
     def getRects(self, matches, size=1):
         if isinstance(matches, int):
             matches = [matches]
-        rs = []
+        if self.rects is not None:
+            li = []
+            for i in self.rects:
+                if i in matches:
+                    li.extend(self.rects[i])
+            return li
+        rs = {}
         for y in range(len(self.intgrid)):
             for x in range(len(self.intgrid[y])):
-                if self.intgrid[y][x] in matches:
-                    rs.append(colls.Rect(x*size, y*size, size, size))
-        return rs
+                typ = self.intgrid[y][x]
+                if typ in rs:
+                    rs[typ].append(colls.Rect(x*size, y*size, size, size))
+                else:
+                    rs[typ] = [colls.Rect(x*size, y*size, size, size)]
+        self.rects = rs
+        return self.getRects(matches, size)
     
     def __iter__(self):
         return iter(self.intgrid)
