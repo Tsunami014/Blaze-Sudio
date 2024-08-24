@@ -554,7 +554,7 @@ def OCollisionsDemo():
     pygame.init()
     win = pygame.display.set_mode()
     run = True
-    header_opts = ['point', 'line', 'circle', 'rect', 'rotated rect']
+    header_opts = ['point', 'line', 'circle', 'rect', 'rotated rect', 'eraser']
     typ = 0
     curObj = collisions.Point(0, 0)
     objs = collisions.Shapes()
@@ -563,8 +563,8 @@ def OCollisionsDemo():
     accel = [0, 0]
     
     def drawObj(obj, t, col):
-        if t == 0:
-            pygame.draw.circle(win, col, (obj.x, obj.y), 8)
+        if t == 0 or t == 5:
+            pygame.draw.circle(win, ((255, 255, 255) if t == 5 else col), (obj.x, obj.y), 8)
         elif t == 1:
             pygame.draw.line(win, col, obj.p1, obj.p2, 8)
         elif t == 2:
@@ -602,8 +602,13 @@ def OCollisionsDemo():
                     run = False
                     break
                 elif event.key == pygame.K_SPACE:
-                    objs.add_shape(curObj)
-                    curObj = curObj.copy()
+                    if typ == 5:
+                        for i in objs.copy_leave_shapes():
+                            if i.collides(curObj):
+                                objs.remove_shape(i)
+                    else:
+                        objs.add_shape(curObj)
+                        curObj = curObj.copy()
                 elif event.key == pygame.K_r:
                     objs = collisions.Shapes()
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -624,6 +629,8 @@ def OCollisionsDemo():
                     elif typ == 4:
                         curObj = collisions.RotatedRect(*event.pos, 100, 100, 45)
                         dir = [100, 100, 45]
+                    elif typ == 5:
+                        curObj = collisions.Point(*event.pos)
         
         btns = pygame.key.get_pressed()
         if btns[pygame.K_UP]:
