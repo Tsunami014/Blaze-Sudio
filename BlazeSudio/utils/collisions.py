@@ -458,30 +458,36 @@ def rotate(origin, point, angle):
     qy = oy + sin * xdiff + cos * ydiff
     return qx, qy
 
-def handleCollisions(pos: list[Number], accel: list[Number], objs: Shapes|list[Shape]) -> tuple[list[Number], list[Number]]:
-    newpos = [pos[0]+accel[0], pos[1]+accel[1]]
-    mvement = Line(pos, newpos)
+AVERYLARGENUMBER = 100000
+
+def handleCollisionsPos(oldPos: list[Number], newPos: list[Number], objs: Shapes|list[Shape], accel: list[Number] = [0,0]) -> tuple[list[Number], list[Number]]:
+    mvement = Line(oldPos, newPos)
     if not mvement.collides(objs):
-        pos = newpos
-    else:
-        points = []
-        for o in objs:
-            cs = o.whereCollides(mvement)
-            points.extend(list(zip(cs, [o for _ in range(len(cs))])))
-        points.sort(key=lambda x: abs(x[0][0]-pos[0])**2+abs(x[0][1]-pos[1])**2)
-        closestP = points[0][0]
-        closestObj = points[0][1]
-        t = closestObj.tangent(closestP)
-        normal = t-90
-        dist_left = math.sqrt(abs(newpos[0]-closestP[0])**2+abs(newpos[1]-closestP[1])**2)
-        x, y = newpos[0] - closestP[0], newpos[1] - closestP[1]
-        phi = math.degrees(math.atan2(y, x))-90
-        diff = (phi-normal) % 360
-        if diff > 180:
-            diff = diff - 360
-        pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2)
-        accel = list(rotate([0, 0], accel, 180-diff*2))
-    return pos, accel
+        return newPos, accel
+    points = []
+    for o in objs:
+        cs = o.whereCollides(mvement)
+        points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+    points.sort(key=lambda x: abs(x[0][0]-oldPos[0])**2+abs(x[0][1]-oldPos[1])**2)
+    closestP = points[0][0]
+    closestObj = points[0][1]
+    t = closestObj.tangent(closestP)
+    normal = t-90
+    dist_left = math.sqrt(abs(newPos[0]-closestP[0])**2+abs(newPos[1]-closestP[1])**2)
+    x, y = newPos[0] - closestP[0], newPos[1] - closestP[1]
+    phi = math.degrees(math.atan2(y, x))-90
+    diff = (phi-normal) % 360
+    if diff > 180:
+        diff = diff - 360
+    pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2)
+    accel = list(rotate([0, 0], accel, 180-diff*2))
+    # HACK
+    smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
+    return handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel)
+
+def handleCollisionsAccel(pos: list[Number], accel: list[Number], objs: Shapes|list[Shape]) -> tuple[list[Number], list[Number]]:
+    newpos = [pos[0]+accel[0], pos[1]+accel[1]]
+    return handleCollisionsPos(pos, newpos, objs, accel)
 
 # TODO: Box that isn't straight (Polygons)
 # TODO: Ovals and ovaloids (Ellipse)
