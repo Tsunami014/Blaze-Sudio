@@ -445,15 +445,34 @@ class RotatedRect(Shape):
     
     def _collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
-            return False # TODO
+            ps = self.toPoints()
+            c = False
+            j = len(ps) - 1
+            for i in range(len(ps)):
+                if ((ps[i][1] > othershape.y) != (ps[j][1] > othershape.y)) and \
+                (othershape.x < (ps[j][0] - ps[i][0]) * (othershape.y - ps[i][1]) / (ps[j][1] - ps[i][1]) + ps[i][0]):
+                    c = not c
+                j = i
+            return c
         if isinstance(othershape, Line):
-            return False # TODO
+            for li in self.toLines():
+                if li.collides(othershape):
+                    return True
+            if self._collides(Point(*othershape.p1)) or self._collides(Point(*othershape.p2)):
+                return True
+            return False
         if isinstance(othershape, Circle):
-            return False # TODO
-        if isinstance(othershape, Rect):
-            return False # TODO
-        if isinstance(othershape, RotatedRect):
-            return False # TODO
+            if self._collides(Point(othershape.x, othershape.y)):
+                return True
+            for li in self.toLines():
+                if li.collides(othershape):
+                    return True
+            return False
+        if isinstance(othershape, Rect) or isinstance(othershape, RotatedRect):
+            for li in self.toLines():
+                if li.collides(othershape):
+                    return True
+            return False
         return othershape._collides(self)
 
     def _where(self, othershape: Shape) -> list[list[Number]]:
@@ -485,6 +504,16 @@ class RotatedRect(Shape):
         elif ls[3].collides(p):
             return 0+self.rot
     
+    def toPoints(self):
+        def rot(x, y):
+            return rotate([self.x, self.y], [x, y], self.rot)
+        return [
+            rot(self.x, self.y),
+            rot(self.x + self.w, self.y),
+            rot(self.x + self.w, self.y + self.h),
+            rot(self.x, self.y + self.h)
+        ]
+
     def toLines(self):
         def rot(x, y):
             return rotate([self.x, self.y], [x, y], self.rot)
