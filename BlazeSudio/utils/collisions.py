@@ -6,6 +6,23 @@ Number = Union[int, float]
 def Dec(num: Number) -> Decimal:
     return Decimal(str(num))
 
+def rotate(origin, point, angle):
+    """
+    Rotate a point clockwise by a given angle around a given origin.
+    The angle should be given in degrees.
+    """
+    angle = math.radians(angle)
+    ox, oy = origin
+    px, py = point
+    cos = math.cos(angle)
+    sin = math.sin(angle)
+    ydiff = (py - oy)
+    xdiff = (px - ox)
+    
+    qx = ox + cos * xdiff - sin * ydiff
+    qy = oy + sin * xdiff + cos * ydiff
+    return qx, qy
+
 class Shape:
     # This class always collides; so *can* be used as an infinite plane, but why?
     
@@ -372,10 +389,10 @@ class Rect(Shape):
                    ((self.x - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2) or \
                    (((self.x + self.w) - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2)
             )
-            
         if isinstance(othershape, Rect):
             return self.x <= othershape.x + othershape.w and self.x + self.w >= othershape.x and self.y <= othershape.y + othershape.h and self.y + self.h >= othershape.y
-    
+        return othershape._collides(self)
+
     def _where(self, othershape: Shape) -> list[list[Number]]:
         if isinstance(othershape, Point):
             for i in self.toLines():
@@ -412,42 +429,78 @@ class Rect(Shape):
             Line((self.x, self.y + self.h), (self.x, self.y))
         ]
     
-    def handle_collision(self, othershape: Shape, movement: list[Number]) -> None:
-        if isinstance(othershape, Rect):
-            if self.collides(othershape):
-                if movement[0] > 0: # Moving right; Hit the left side of the wall
-                    self.x = othershape.x - self.w
-                elif movement[0] < 0: # Moving left; Hit the right side of the wall
-                    self.x = othershape.x + othershape.w
-                if movement[1] > 0: # Moving down; Hit the top side of the wall
-                    self.y = othershape.y - self.h
-                elif movement[1] < 0: # Moving up; Hit the bottom side of the wall
-                    self.y = othershape.y + othershape.h
-        # else:
-            # raise NotImplementedError("Cannot handle collision between Box and {}".format(type(othershape)))
-    
     def copy(self) -> 'Rect':
         return Rect(self.x, self.y, self.w, self.h)
     
     def __str__(self):
         return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h}>'
 
-def rotate(origin, point, angle):
-    """
-    Rotate a point clockwise by a given angle around a given origin.
-    The angle should be given in degrees.
-    """
-    angle = math.radians(angle)
-    ox, oy = origin
-    px, py = point
-    cos = math.cos(angle)
-    sin = math.sin(angle)
-    ydiff = (py - oy)
-    xdiff = (px - ox)
+class RotatedRect(Shape):
+    def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number):
+        self.x, self.y, self.w, self.h, self.rot = x, y, w, h, rotation
     
-    qx = ox + cos * xdiff - sin * ydiff
-    qy = oy + sin * xdiff + cos * ydiff
-    return qx, qy
+    def rect(self) -> list[Number]:
+        ls = self.toLines()
+        return min([i[0] for i in ls]), min([i[1] for i in ls]), max([i[0] for i in ls]), max([i[1] for i in ls])
+    
+    def _collides(self, othershape: Shape) -> bool:
+        if isinstance(othershape, Point):
+            return False # TODO
+        if isinstance(othershape, Line):
+            return False # TODO
+        if isinstance(othershape, Circle):
+            return False # TODO
+        if isinstance(othershape, Rect):
+            return False # TODO
+        if isinstance(othershape, RotatedRect):
+            return False # TODO
+        return othershape._collides(self)
+
+    def _where(self, othershape: Shape) -> list[list[Number]]:
+        if isinstance(othershape, Point):
+            for i in self.toLines():
+                if i.collides(othershape):
+                    return [[othershape.x, othershape.y]]
+            return []
+        else:
+            points = []
+            for i in self.toLines():
+                points.extend(i._where(othershape))
+            return points
+    
+    def closestPointTo(self, point: list[Number]) -> list[Number]:
+        ps = [i.closestPointTo(point) for i in self.toLines()]
+        ps.sort(key=lambda x: abs(x[0]-point[0])**2+abs(x[1]-point[1])**2)
+        return ps[0]
+    
+    def tangent(self, point: list[Number]) -> Number:
+        ls = self.toLines()
+        p = Point(*point)
+        if ls[0].collides(p):
+            return 90+self.rot
+        elif ls[1].collides(p):
+            return 180+self.rot
+        elif ls[2].collides(p):
+            return -90+self.rot
+        elif ls[3].collides(p):
+            return 0+self.rot
+    
+    def toLines(self):
+        def rot(x, y):
+            return rotate([self.x, self.y], [x, y], self.rot)
+        return [
+            Line((self.x, self.y), rot(self.x + self.w, self.y)),
+            Line(rot(self.x + self.w, self.y), rot(self.x + self.w, self.y + self.h)),
+            Line(rot(self.x + self.w, self.y + self.h), rot(self.x, self.y + self.h)),
+            Line(rot(self.x, self.y + self.h), (self.x, self.y))
+        ]
+    
+    def copy(self) -> 'RotatedRect':
+        return RotatedRect(self.x, self.y, self.w, self.h, self.rot)
+    
+    def __str__(self):
+        ls = self.toLines()
+        return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {ls}>'
 
 AVERYLARGENUMBER = 100000
 
