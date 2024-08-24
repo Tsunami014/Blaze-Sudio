@@ -600,23 +600,6 @@ def OCollisionsDemo():
                     curObj = curObj.copy()
                 elif event.key == pygame.K_r:
                     objs = collisions.Shapes()
-                elif event.key == pygame.K_UP:
-                    dir[1] -= 10
-                elif event.key == pygame.K_DOWN:
-                    dir[1] += 10
-                elif event.key == pygame.K_LEFT:
-                    dir[0] -= 10
-                elif event.key == pygame.K_RIGHT:
-                    dir[0] += 10
-                
-                elif event.key == pygame.K_w:
-                    accel[1] -= 1
-                elif event.key == pygame.K_s:
-                    accel[1] += 1
-                elif event.key == pygame.K_a:
-                    accel[0] -= 1
-                elif event.key == pygame.K_d:
-                    accel[0] += 1
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Get the header_opts that got clicked, if any
                 if event.pos[1] < 50:
@@ -632,6 +615,25 @@ def OCollisionsDemo():
                     elif typ == 3:
                         curObj = collisions.Rect(*event.pos, 100, 100)
                         dir = [100, 100]
+        
+        btns = pygame.key.get_pressed()
+        if btns[pygame.K_UP]:
+            dir[1] -= 5
+        if btns[pygame.K_DOWN]:
+            dir[1] += 5
+        if btns[pygame.K_LEFT]:
+            dir[0] -= 5
+        if btns[pygame.K_RIGHT]:
+            dir[0] += 5
+        
+        if btns[pygame.K_w]:
+            accel[1] -= 1
+        if btns[pygame.K_s]:
+            accel[1] += 1
+        if btns[pygame.K_a]:
+            accel[0] -= 1
+        if btns[pygame.K_d]:
+            accel[0] += 1
             
         win.fill((0, 0, 0) if (not objs.collides(curObj)) or playMode else (250, 50, 50))
         pygame.draw.rect(win, (255, 255, 255), (0, 0, win.get_width(), 50))
@@ -643,6 +645,8 @@ def OCollisionsDemo():
             win.blit(text, (i*win.get_width()//len(header_opts)+10, 10))
         
         if playMode:
+            if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                accel[1] += 0.2
             accellLimits = [10, 10]
             accel = [min(max(accel[0], -accellLimits[0]), accellLimits[0]), min(max(accel[1], -accellLimits[1]), accellLimits[1])]
             gravity = [0.02, 0.02]
