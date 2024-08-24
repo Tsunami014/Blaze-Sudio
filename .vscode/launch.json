@@ -35,6 +35,14 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": false
+        },
+        {
+            "name": "Run unittest",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "unittest.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }
