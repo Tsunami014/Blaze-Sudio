@@ -1,6 +1,10 @@
 import math
+from decimal import Decimal # For use whenever we need really precise numbers
 from typing import Union
 Number = Union[int, float]
+
+def Dec(num: Number) -> Decimal:
+    return Decimal(str(num))
 
 class Shape:
     # This class always collides; so *can* be used as an infinite plane, but why?
@@ -193,19 +197,21 @@ class Line(Shape):
             if not self.collides(othershape):
                 return []
             # This finds where the lines are colliding if they are infinite, which is why we check if they collide first
+            def toDec(li):
+                return [Dec(li[0]), Dec(li[1])]
             def line(p1, p2):
                 A = (p1[1] - p2[1])
                 B = (p2[0] - p1[0])
                 C = (p1[0]*p2[1] - p2[0]*p1[1])
                 return A, B, -C
-            L1, L2 = line(self.p1, self.p2), line(othershape.p1, othershape.p2)
+            L1, L2 = line(toDec(self.p1), toDec(self.p2)), line(toDec(othershape.p1), toDec(othershape.p2))
             D  = L1[0] * L2[1] - L1[1] * L2[0]
             Dx = L1[2] * L2[1] - L1[1] * L2[2]
             Dy = L1[0] * L2[2] - L1[2] * L2[0]
             if D != 0:
                 x = Dx / D
                 y = Dy / D
-                return [[x,y]]
+                return [[float(x),float(y)]]
             else:
                 return []
         return othershape._where(self)
@@ -461,6 +467,10 @@ def handleCollisions(pos: list[Number], accel: list[Number], objs: Shapes|list[S
         points = []
         for o in objs:
             cs = o.whereCollides(mvement)
+            for i in cs:
+                if o.tangent(i):
+                    o.whereCollides(mvement)
+                    o.tangent(i)
             points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         points.sort(key=lambda x: abs(x[0][0]-pos[0])**2+abs(x[0][1]-pos[1])**2)
         closestP = points[0][0]
