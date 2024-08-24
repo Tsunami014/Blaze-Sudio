@@ -348,13 +348,8 @@ class Circle(Shape):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
 
 class Rect(Shape):
-    def __init__(self, x: Number, y: Number, w: Number, h: Number, offset: pointLike = [0,0]):
-        self.offset = offset
-        self.x, self.y, self.w, self.h = x+self.offset[0], y+self.offset[1], w, h
-    
-    @property
-    def realPos(self) -> tuple[Number]:
-        return self.x - self.offset[0], self.y - self.offset[1]
+    def __init__(self, x: Number, y: Number, w: Number, h: Number):
+        self.x, self.y, self.w, self.h = x, y, w, h
     
     def rect(self) -> list[Number]:
         return self.x, self.y, self.x + self.w, self.y + self.h
@@ -432,14 +427,10 @@ class Rect(Shape):
             # raise NotImplementedError("Cannot handle collision between Box and {}".format(type(othershape)))
     
     def copy(self) -> 'Rect':
-        return Rect(self.x, self.y, self.w, self.h, self.offset)
+        return Rect(self.x, self.y, self.w, self.h)
     
     def __str__(self):
-        if self.offset != [0,0]:
-            offtxt = 'without an offset'
-        else:
-            offtxt = f'on an offset of {self.offset}, realpos: {self.realPos}'
-        return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h} {offtxt}>'
+        return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h}>'
 
 def rotate(origin, point, angle):
     """
