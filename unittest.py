@@ -22,6 +22,15 @@ def testCollisions():
     # |  |
     #.|N |
     # +--+
+    outpos, outaccel = collisions.handleCollisions([0, 0], [2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
+    assert roundTuple(outpos) == (2, 0) # It rebounded like a v shape
+    assert roundTuple(outaccel) == (2, -2)
+    # . = current pos, N = new pos
+    #.
+    #+--+
+    #| N|
+    #|  |
+    #+--+
     print('IT ALL WORKS YAY')
 
 if __name__ == "__main__":
