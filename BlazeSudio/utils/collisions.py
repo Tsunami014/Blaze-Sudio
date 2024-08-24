@@ -80,6 +80,13 @@ class Shapes:
     def add_shapes(self, *shapes: list[Shape]) -> None:
         self.shapes.extend(list(shapes))
     
+    def remove_shape(self, shape: Shape) -> None:
+        self.shapes.remove(shape)
+    
+    def remove_shapes(self, *shapes: list[Shape]) -> None:
+        for s in shapes:
+            self.shapes.remove(s)
+    
     def collides(self, shapes: Union[Shape,'Shapes',list[Shape]]) -> bool:
         for s in self.shapes:
             if s.collides(shapes):
@@ -106,6 +113,9 @@ class Shapes:
     
     def copy(self) -> 'Shapes':
         return Shapes(s.copy() for s in self.shapes)
+    
+    def copy_leave_shapes(self) -> 'Shapes':
+        return Shapes(*self.shapes)
     
     def __iter__(self):
         return iter(self.shapes)
