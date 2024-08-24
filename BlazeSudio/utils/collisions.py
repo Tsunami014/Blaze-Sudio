@@ -467,10 +467,6 @@ def handleCollisions(pos: list[Number], accel: list[Number], objs: Shapes|list[S
         points = []
         for o in objs:
             cs = o.whereCollides(mvement)
-            for i in cs:
-                if o.tangent(i):
-                    o.whereCollides(mvement)
-                    o.tangent(i)
             points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         points.sort(key=lambda x: abs(x[0][0]-pos[0])**2+abs(x[0][1]-pos[1])**2)
         closestP = points[0][0]
