@@ -435,5 +435,48 @@ class Rect(Shape):
             offtxt = f'on an offset of {self.offset}, realpos: {self.realPos}'
         return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h} {offtxt}>'
 
+def rotate(origin, point, angle):
+    """
+    Rotate a point clockwise by a given angle around a given origin.
+    The angle should be given in degrees.
+    """
+    angle = math.radians(angle)
+    ox, oy = origin
+    px, py = point
+    cos = math.cos(angle)
+    sin = math.sin(angle)
+    ydiff = (py - oy)
+    xdiff = (px - ox)
+    
+    qx = ox + cos * xdiff - sin * ydiff
+    qy = oy + sin * xdiff + cos * ydiff
+    return qx, qy
+
+def handleCollisions(pos: list[Number], accel: list[Number], objs: Shapes|list[Shape]) -> tuple[list[Number], list[Number]]:
+    newpos = [pos[0]+accel[0], pos[1]+accel[1]]
+    mvement = Line(pos, newpos)
+    if not mvement.collides(objs):
+        pos = newpos
+    else:
+        points = []
+        for o in objs:
+            cs = o.whereCollides(mvement)
+            points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+        points.sort(key=lambda x: abs(x[0][0]-pos[0])**2+abs(x[0][1]-pos[1])**2)
+        closestP = points[0][0]
+        closestObj = points[0][1]
+        t = closestObj.tangent(closestP)
+        if t is not None:
+            normal = t-90
+            dist_left = math.sqrt(abs(newpos[0]-closestP[0])**2+abs(newpos[1]-closestP[1])**2)
+            x, y = newpos[0] - closestP[0], newpos[1] - closestP[1]
+            phi = (math.degrees(math.atan2(y, x))-90) % 360
+            diff = (phi-normal) % 360
+            if diff > 180:
+                diff = diff - 360
+            pos = rotate(closestP, [closestP[0], closestP[1]-dist_left], (normal-diff)%360)
+            accel = list(rotate([0, 0], accel, diff*2))
+    return pos, accel
+
 # TODO: Box that isn't straight (Polygons)
 # TODO: Ovals and ovaloids (Ellipse)
