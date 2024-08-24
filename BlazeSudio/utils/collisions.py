@@ -475,7 +475,7 @@ def handleCollisions(pos: list[Number], accel: list[Number], objs: Shapes|list[S
             diff = diff - 360
         diff = 180 - diff
         pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], (normal-diff)%360)
-        accel = list(rotate([0, 0], accel, (normal-diff)%360))
+        accel = list(rotate([0, 0], accel, diff))
     return pos, accel
 
 # TODO: Box that isn't straight (Polygons)

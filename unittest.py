@@ -14,6 +14,15 @@ def testCollisions():
     #| N|
     #|  |
     #+--+
+    outpos, outaccel = collisions.handleCollisions([0, 2], [2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4)))
+    assert roundTuple(outpos) == (0, 2) # It rebounded perfectly and now is exactly where it started
+    assert roundTuple(outaccel) == (-2, 0) # It is now going the opposite direction
+    # . = current pos, N = new pos
+    # +--+
+    # |  |
+    #.|N |
+    # +--+
+    print('IT ALL WORKS YAY')
 
 if __name__ == "__main__":
     testCollisions()
