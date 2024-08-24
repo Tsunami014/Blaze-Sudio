@@ -468,6 +468,9 @@ def handleCollisionsPos(oldPos: list[Number], newPos: list[Number], objs: Shapes
     for o in objs:
         cs = o.whereCollides(mvement)
         points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+    # Don't let you move when you're in a wall
+    if points == []:
+        return oldPos, [0, 0]
     points.sort(key=lambda x: abs(x[0][0]-oldPos[0])**2+abs(x[0][1]-oldPos[1])**2)
     closestP = points[0][0]
     closestObj = points[0][1]
