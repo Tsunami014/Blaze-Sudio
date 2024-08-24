@@ -234,11 +234,11 @@ class Line(Shape):
         return othershape._where(self)
     
     def closestPointTo(self, point: list[Number]) -> list[Number]:
-        dx, dy = self.p2[0]-self.p1[0], self.p2[1]-self.p1[1]
-        det = dx*dx + dy*dy
-        a = (dy*(point[1]-self.p1[1])+dx*(point[0]-self.p1[0]))/det
-        a = min(1, max(0, a))
-        return self.p1[0]+a*dx, self.p1[1]+a*dy
+        dx, dy = Dec(self.p2[0]) - Dec(self.p1[0]), Dec(self.p2[1]) - Dec(self.p1[1])
+        det = dx * dx + dy * dy
+        a = (dy * (Dec(point[1]) - Dec(self.p1[1])) + dx * (Dec(point[0]) - Dec(self.p1[0]))) / det
+        a = min(Dec(1), max(Dec(0), a))
+        return float(Dec(self.p1[0]) + a * dx), float(Dec(self.p1[1]) + a * dy)
     
     def tangent(self, point: list[Number]) -> Number:
         x, y = self.p2[0] - self.p1[0], self.p2[1] - self.p1[1]
@@ -503,6 +503,10 @@ class RotatedRect(Shape):
             return -90+self.rot
         elif ls[3].collides(p):
             return 0+self.rot
+        origps = [[(90*(i+1))%360+self.rot, ls[i].closestPointTo(point)] for i in range(len(ls))]
+        ps = origps.copy()
+        ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
+        return ps[0][0]
     
     def toPoints(self):
         def rot(x, y):
@@ -528,7 +532,7 @@ class RotatedRect(Shape):
         return RotatedRect(self.x, self.y, self.w, self.h, self.rot)
     
     def __str__(self):
-        ls = self.toLines()
+        ls = self.toPoints()
         return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {ls}>'
 
 AVERYLARGENUMBER = 100000
