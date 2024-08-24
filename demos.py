@@ -554,11 +554,11 @@ def OCollisionsDemo():
     pygame.init()
     win = pygame.display.set_mode()
     run = True
-    header_opts = ['point', 'line', 'circle', 'box']
+    header_opts = ['point', 'line', 'circle', 'rect', 'rotated rect']
     typ = 0
     curObj = collisions.Point(0, 0)
     objs = collisions.Shapes()
-    dir = [0, 0]
+    dir = [0, 0, 0]
     pos = [0, 0]
     accel = [0, 0]
     
@@ -571,6 +571,9 @@ def OCollisionsDemo():
             pygame.draw.circle(win, col, (obj.x, obj.y), obj.r, 8)
         elif t == 3:
             pygame.draw.rect(win, col, (obj.x, obj.y, obj.w, obj.h), 8)
+        elif t == 4:
+            for line in obj.toLines():
+                pygame.draw.line(win, col, line.p1, line.p2, 8)
     
     def moveCurObj(curObj):
         if typ == 1:
@@ -581,7 +584,10 @@ def OCollisionsDemo():
             if typ == 2:
                 curObj.r = dir[1]
             elif typ == 3:
-                curObj.w, curObj.h = dir
+                curObj.w, curObj.h = dir[0], dir[1]
+            elif typ == 4:
+                curObj.w, curObj.h = dir[0], dir[1]
+                curObj.angle = dir[2]
         return curObj
     
     clock = pygame.time.Clock()
@@ -608,13 +614,16 @@ def OCollisionsDemo():
                         curObj = collisions.Point(*event.pos)
                     elif typ == 1:
                         curObj = collisions.Line((0, 0), (10, 10))
-                        dir = [50, 100]
+                        dir = [50, 100, 0]
                     elif typ == 2:
                         curObj = collisions.Circle(*event.pos, 100)
-                        dir = [0, 100]
+                        dir = [0, 100, 0]
                     elif typ == 3:
                         curObj = collisions.Rect(*event.pos, 100, 100)
-                        dir = [100, 100]
+                        dir = [100, 100, 0]
+                    elif typ == 4:
+                        curObj = collisions.RotatedRect(*event.pos, 100, 100, 45)
+                        dir = [100, 100, 45]
         
         btns = pygame.key.get_pressed()
         if btns[pygame.K_UP]:
@@ -625,6 +634,10 @@ def OCollisionsDemo():
             dir[0] -= 5
         if btns[pygame.K_RIGHT]:
             dir[0] += 5
+        if btns[pygame.K_COMMA]:
+            dir[2] -= 5
+        if btns[pygame.K_PERIOD]:
+            dir[2] += 5
         
         if btns[pygame.K_w]:
             accel[1] -= 1
@@ -665,7 +678,7 @@ def OCollisionsDemo():
         curObj = moveCurObj(curObj)
         
         for i in objs:
-            drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect].index(type(i)), (10, 255, 50))
+            drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect, collisions.RotatedRect].index(type(i)), (10, 255, 50))
         drawObj(curObj, typ, (10, 50, 255))
 
         if not playMode:
