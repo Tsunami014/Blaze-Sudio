@@ -677,12 +677,12 @@ def OCollisionsDemo():
                     return x - grav
                 return 0
             accel = [grav_eff(accel[0], gravity[0]), grav_eff(accel[1], gravity[1])]
-            pos, accel = collisions.handleCollisionsAccel(pos, accel, objs)
+            _, accel = curObj.handleCollisionsAccel(accel, objs)
+
         else:
             pos = pygame.mouse.get_pos()
             accel = [0, 0]
-        
-        curObj = moveCurObj(curObj)
+            curObj = moveCurObj(curObj)
         
         for i in objs:
             drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect, collisions.RotatedRect].index(type(i)), (10, 255, 50))
