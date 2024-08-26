@@ -2,6 +2,7 @@ import math
 from decimal import Decimal # For use whenever we need really precise numbers
 from typing import Union
 Number = Union[int, float]
+AVERYLARGENUMBER = 100000
 
 def Dec(num: Number) -> Decimal:
     return Decimal(str(num))
@@ -64,6 +65,12 @@ class Shape:
     def rect(self) -> list[Number]:
         return -float('inf'), -float('inf'), float('inf'), float('inf')
     
+    def handleCollisionsPos(self, oldP: 'Shape', newP: 'Shape', objs: Union['Shapes',list['Shape']], accel: list[Number] = [0,0]) -> tuple['Shape', list[Number]]:
+        return newP, accel
+    
+    def handleCollisionsAccel(self, accel: list[Number], objs: Union['Shapes',list['Shape']]) -> tuple['Shape', list[Number]]:
+        return self, accel
+    
     def copy(self) -> 'Shape':
         return Shape()
     
@@ -111,6 +118,8 @@ class Shapes:
             points.append(s.tangent(point))
         return points
     
+    # TODO: handleCollisions
+    
     def copy(self) -> 'Shapes':
         return Shapes(s.copy() for s in self.shapes)
     
@@ -151,6 +160,47 @@ class Point(Shape):
     
     def closestPointTo(self, point: list[Number]) -> list[Number]:
         return (self.x, self.y)
+    
+    def getTuple(self) -> list[Number]:
+        return (self.x, self.y)
+    
+    # TODO: Allow inputs of Points OR Tuples for removal of needless conversion
+    def handleCollisionsPos(self, oldP: 'Point', newP: 'Point', objs: Union[Shapes,list[Shape]], accel: list[Number] = [0,0], replaceSelf: bool = True) -> tuple['Point', list[Number]]:
+        mvement = Line(oldP.getTuple(), newP.getTuple())
+        if not mvement.collides(objs):
+            return newP, accel
+        points = []
+        for o in objs:
+            cs = o.whereCollides(mvement)
+            points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+        # Don't let you move when you're in a wall
+        if points == []:
+            return oldP, [0, 0]
+        points.sort(key=lambda x: abs(x[0][0]-oldP.x)**2+abs(x[0][1]-oldP.y)**2)
+        closestP = points[0][0]
+        closestObj = points[0][1]
+        t = closestObj.tangent(closestP)
+        normal = t-90
+        dist_left = math.sqrt(abs(newP.x-closestP[0])**2+abs(newP.y-closestP[1])**2)
+        x, y = newP.x - closestP[0], newP.y - closestP[1]
+        phi = math.degrees(math.atan2(y, x))-90
+        diff = (phi-normal) % 360
+        if diff > 180:
+            diff = diff - 360
+        pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2)
+        accel = list(rotate([0, 0], accel, 180-diff*2))
+        # HACK
+        smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
+        out, outaccel = self.handleCollisionsPos(Point(closestP[0]+smallness[0], closestP[1]+smallness[1]), Point(*pos), objs, accel)
+        if replaceSelf:
+            self.x, self.y = out.x, out.y
+        return out, outaccel
+
+    def handleCollisionsAccel(self, accel: list[Number], objs: Union[Shapes,list[Shape]], replaceSelf: bool = True) -> tuple['Point', list[Number]]:
+        out, outaccel = self.handleCollisionsPos(self, Point(self.x+accel[0], self.y+accel[1]), objs, accel, False)
+        if replaceSelf:
+            self.x, self.y = out.x, out.y
+        return out, outaccel
 
     def copy(self) -> 'Point':
         return Point(self.x, self.y)
@@ -544,40 +594,6 @@ class RotatedRect(Shape):
     def __str__(self):
         ls = self.toPoints()
         return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {ls}>'
-
-AVERYLARGENUMBER = 100000
-
-def handleCollisionsPos(oldPos: list[Number], newPos: list[Number], objs: Shapes|list[Shape], accel: list[Number] = [0,0]) -> tuple[list[Number], list[Number]]:
-    mvement = Line(oldPos, newPos)
-    if not mvement.collides(objs):
-        return newPos, accel
-    points = []
-    for o in objs:
-        cs = o.whereCollides(mvement)
-        points.extend(list(zip(cs, [o for _ in range(len(cs))])))
-    # Don't let you move when you're in a wall
-    if points == []:
-        return oldPos, [0, 0]
-    points.sort(key=lambda x: abs(x[0][0]-oldPos[0])**2+abs(x[0][1]-oldPos[1])**2)
-    closestP = points[0][0]
-    closestObj = points[0][1]
-    t = closestObj.tangent(closestP)
-    normal = t-90
-    dist_left = math.sqrt(abs(newPos[0]-closestP[0])**2+abs(newPos[1]-closestP[1])**2)
-    x, y = newPos[0] - closestP[0], newPos[1] - closestP[1]
-    phi = math.degrees(math.atan2(y, x))-90
-    diff = (phi-normal) % 360
-    if diff > 180:
-        diff = diff - 360
-    pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2)
-    accel = list(rotate([0, 0], accel, 180-diff*2))
-    # HACK
-    smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
-    return handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel)
-
-def handleCollisionsAccel(pos: list[Number], accel: list[Number], objs: Shapes|list[Shape]) -> tuple[list[Number], list[Number]]:
-    newpos = [pos[0]+accel[0], pos[1]+accel[1]]
-    return handleCollisionsPos(pos, newpos, objs, accel)
 
 # TODO: Box that isn't straight (Polygons)
 # TODO: Ovals and ovaloids (Ellipse)
