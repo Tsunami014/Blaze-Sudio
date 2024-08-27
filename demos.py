@@ -550,12 +550,12 @@ def OLDtkAPPDemo():
 
 def OCollisionsDemo():
     from BlazeSudio.utils import collisions
-    from BlazeSudio.graphics.options import CRAINBOWCOLOURS
+    from BlazeSudio.graphics.options import CRAINBOWCOLOURS, FFONT
     import pygame
     pygame.init()
     win = pygame.display.set_mode()
     run = True
-    header_opts = ['point', 'line', 'circle', 'rect', 'rotated rect', 'polygon', 'eraser'] # TODO: Help screen
+    header_opts = ['point', 'line', 'circle', 'rect', 'rotated rect', 'polygon', 'eraser', 'help']
     typ = 0
     curObj = collisions.Point(0, 0)
     objs = collisions.Shapes()
@@ -640,6 +640,7 @@ def OCollisionsDemo():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Get the header_opts that got clicked, if any
                 if event.pos[1] < 50:
+                    oldtyp = typ
                     typ = event.pos[0]//(win.get_width()//len(header_opts))
                     if typ == 0:
                         curObj = collisions.Point(*event.pos)
@@ -659,6 +660,24 @@ def OCollisionsDemo():
                         curObj = collisions.Point(*event.pos)
                     elif typ == 6:
                         curObj = collisions.Point(*event.pos)
+                    else: # Last item in list - help menu
+                        pygame.draw.rect(win, (155, 155, 155), (win.get_width()//4, win.get_height()//4, win.get_width()//2, win.get_height()//2), border_radius=8)
+                        win.blit(FFONT.render("""How to use:
+Click on one of the options at the top to change your tool. Pressing space adds it to the board. The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too.
+Holding shift in this mode shows some normals!
+And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity!
+And pressing 'r' will reset everything to nothing without warning.
+ 
+ 
+Press any key/mouse to close this window""",0,allowed_width=win.get_width()//2-4), (win.get_width()//4+2, win.get_height()//4+2))
+                        run2 = True
+                        pygame.display.update()
+                        while run2:
+                            for ev in pygame.event.get():
+                                if ev.type == pygame.QUIT or ev.type == pygame.MOUSEBUTTONDOWN or ev.type == pygame.KEYDOWN:
+                                    run2 = False
+                            clock.tick(60)
+                        typ = oldtyp
         
         btns = pygame.key.get_pressed()
         if btns[pygame.K_UP]:
