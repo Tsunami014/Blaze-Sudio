@@ -505,7 +505,7 @@ class Rect(Shape):
     
     def __str__(self):
         return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h}>'
-# TODO: Rect-rotatedrect-polygon does not detect inside shape
+
 class RotatedRect(Shape):
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number):
         self.x, self.y, self.w, self.h, self.rot = x, y, w, h, rotation
@@ -543,7 +543,7 @@ class RotatedRect(Shape):
             for li in self.toLines():
                 if li.collides(othershape):
                     return True
-            return False
+            return othershape.collides(Point(self.x, self.y)) or self.collides(Point(othershape.x, othershape.y))
         return othershape._collides(self)
 
     def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
@@ -646,7 +646,7 @@ class ConvexPolygon(Shape): # TODO: Is this the right name? This is the one that
             for li in self.toLines():
                 if li.collides(othershape):
                     return True
-            return False
+            return othershape.collides(Point(self.points[0][0], self.points[0][1])) or self.collides(Point(othershape.x, othershape.y))
         return othershape._collides(self)
 
     def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
