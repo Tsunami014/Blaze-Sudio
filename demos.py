@@ -550,11 +550,12 @@ def OLDtkAPPDemo():
 
 def OCollisionsDemo():
     from BlazeSudio.utils import collisions
+    from BlazeSudio.graphics.options import CRAINBOWCOLOURS
     import pygame
     pygame.init()
     win = pygame.display.set_mode()
     run = True
-    header_opts = ['point', 'line', 'circle', 'rect', 'rotated rect', 'eraser']
+    header_opts = ['point', 'line', 'circle', 'rect', 'rotated rect', 'polygon', 'eraser'] # TODO: Help screen
     typ = 0
     curObj = collisions.Point(0, 0)
     objs = collisions.Shapes()
@@ -563,8 +564,16 @@ def OCollisionsDemo():
     accel = [0, 0]
     
     def drawObj(obj, t, col):
-        if t == 0 or t == 5:
-            pygame.draw.circle(win, ((255, 255, 255) if t == 5 else col), (obj.x, obj.y), 8)
+        if t == 5:
+            if isinstance(obj, collisions.Point):
+                pygame.draw.circle(win, col, (obj.x, obj.y), 8)
+            elif isinstance(obj, collisions.Line):
+                pygame.draw.line(win, col, obj.p1, obj.p2, 8)
+            else:
+                for line in obj.toLines():
+                    pygame.draw.line(win, col, line.p1, line.p2, 8)
+        if t == 0 or t == 6:
+            pygame.draw.circle(win, ((255, 255, 255) if t == 6 else col), (obj.x, obj.y), 8)
         elif t == 1:
             pygame.draw.line(win, col, obj.p1, obj.p2, 8)
         elif t == 2:
@@ -579,6 +588,13 @@ def OCollisionsDemo():
         if typ == 1:
             curObj.p1 = pos
             curObj.p2 = (curObj.p1[0]+dir[0], curObj.p1[1]+dir[1])
+        elif typ == 5:
+            if isinstance(curObj, collisions.Point):
+                curObj.x, curObj.y = pos
+            elif isinstance(curObj, collisions.Line):
+                curObj.p2 = pos
+            else:
+                curObj.points[-1] = pos
         else:
             curObj.x, curObj.y = pos
             if typ == 2:
@@ -602,13 +618,23 @@ def OCollisionsDemo():
                     run = False
                     break
                 elif event.key == pygame.K_SPACE:
-                    if typ == 5:
+                    if typ == 6:
                         for i in objs.copy_leave_shapes():
                             if i.collides(curObj):
                                 objs.remove_shape(i)
                     else:
                         objs.add_shape(curObj)
-                        curObj = curObj.copy()
+                        if typ == 5:
+                            curObj = curObj = collisions.Point(*pygame.mouse.get_pos())
+                        else:
+                            curObj = curObj.copy()
+                elif event.key == pygame.K_COMMA and typ == 5:
+                    if isinstance(curObj, collisions.Point):
+                        curObj = collisions.Line(curObj.getTuple(), pygame.mouse.get_pos())
+                    elif isinstance(curObj, collisions.Line):
+                        curObj = collisions.ConvexPolygon(curObj.p1, curObj.p2, pygame.mouse.get_pos())
+                    else:
+                        curObj.points += [pygame.mouse.get_pos()]
                 elif event.key == pygame.K_r:
                     objs = collisions.Shapes()
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -630,6 +656,8 @@ def OCollisionsDemo():
                         curObj = collisions.RotatedRect(*event.pos, 100, 100, 45)
                         dir = [100, 100, 45]
                     elif typ == 5:
+                        curObj = collisions.Point(*event.pos)
+                    elif typ == 6:
                         curObj = collisions.Point(*event.pos)
         
         btns = pygame.key.get_pressed()
@@ -685,8 +713,8 @@ def OCollisionsDemo():
             curObj = moveCurObj(curObj)
         
         for i in objs:
-            drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect, collisions.RotatedRect].index(type(i)), (10, 255, 50))
-        drawObj(curObj, typ, (10, 50, 255))
+            drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.ConvexPolygon].index(type(i)), (10, 255, 50))
+        drawObj(curObj, typ, CRAINBOWCOLOURS[typ])
 
         if not playMode:
             for i in objs.whereCollides(curObj):
