@@ -505,14 +505,14 @@ class Rect(Shape):
     
     def __str__(self):
         return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h}>'
-
+# TODO: Rect-rotatedrect-polygon does not detect inside shape
 class RotatedRect(Shape):
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number):
         self.x, self.y, self.w, self.h, self.rot = x, y, w, h, rotation
     
     def rect(self) -> Iterable[Number]:
-        ls = self.toLines()
-        return min([i[0] for i in ls]), min([i[1] for i in ls]), max([i[0] for i in ls]), max([i[1] for i in ls])
+        ps = self.toPoints()
+        return min([i[0] for i in ps]), min([i[1] for i in ps]), max([i[0] for i in ps]), max([i[1] for i in ps])
     
     def _collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
@@ -606,5 +606,92 @@ class RotatedRect(Shape):
         ls = self.toPoints()
         return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {ls}>'
 
-# TODO: Box that isn't straight (Polygons)
-# TODO: Ovals and ovaloids (Ellipse)
+class ConvexPolygon(Shape): # TODO: Is this the right name? This is the one that regular shapes are made of
+    def __init__(self, *points: list[Number]):
+        if len(points) < 3:
+            raise ValueError(
+                f'Cannot have a Polygon with less than 3 points! Found: {len(points)} points!'
+            )
+        self.points = list(points)
+    
+    def rect(self) -> Iterable[Number]:
+        return min([i[0] for i in self.points]), min([i[1] for i in self.points]), max([i[0] for i in self.points]), max([i[1] for i in self.points])
+    
+    def _collides(self, othershape: Shape) -> bool:
+        if isinstance(othershape, Point):
+            ps = self.points
+            c = False
+            j = len(ps) - 1
+            for i in range(len(ps)):
+                if ((ps[i][1] > othershape.y) != (ps[j][1] > othershape.y)) and \
+                (othershape.x < (ps[j][0] - ps[i][0]) * (othershape.y - ps[i][1]) / (ps[j][1] - ps[i][1]) + ps[i][0]):
+                    c = not c
+                j = i
+            return c
+        if isinstance(othershape, Line):
+            for li in self.toLines():
+                if li.collides(othershape):
+                    return True
+            if self._collides(Point(*othershape.p1)) or self._collides(Point(*othershape.p2)):
+                return True
+            return False
+        if isinstance(othershape, Circle):
+            if self._collides(Point(othershape.x, othershape.y)):
+                return True
+            for li in self.toLines():
+                if li.collides(othershape):
+                    return True
+            return False
+        if isinstance(othershape, Rect) or isinstance(othershape, RotatedRect) or isinstance(othershape, ConvexPolygon):
+            for li in self.toLines():
+                if li.collides(othershape):
+                    return True
+            return False
+        return othershape._collides(self)
+
+    def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
+        if isinstance(othershape, Point):
+            for i in self.toLines():
+                if i.collides(othershape):
+                    return [[othershape.x, othershape.y]]
+            return []
+        else:
+            points = []
+            for i in self.toLines():
+                points.extend(i._where(othershape))
+            return points
+    
+    def closestPointTo(self, point: Iterable[Number]) -> Iterable[Number]:
+        ps = [i.closestPointTo(point) for i in self.toLines()]
+        ps.sort(key=lambda x: abs(x[0]-point[0])**2+abs(x[1]-point[1])**2)
+        return ps[0]
+    
+    def tangent(self, point: Iterable[Number]) -> Number:
+        ls = self.toLines()
+        p = Point(*point)
+        if ls[0].collides(p):
+            return 90+self.rot
+        elif ls[1].collides(p):
+            return 180+self.rot
+        elif ls[2].collides(p):
+            return -90+self.rot
+        elif ls[3].collides(p):
+            return 0+self.rot
+        origps = [[(90*(i+1))%360+self.rot, ls[i].closestPointTo(point)] for i in range(len(ls))]
+        ps = origps.copy()
+        ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
+        return ps[0][0]
+
+    def toLines(self):
+        return [
+            Line(self.points[i], self.points[i+1])
+            for i in range(len(self.points)-1)
+        ] + [Line(self.points[len(self.points)-1], self.points[0])]
+    
+    def copy(self) -> 'ConvexPolygon':
+        return ConvexPolygon(*self.points)
+    
+    def __str__(self):
+        return f'<Convex Polygon with points {self.points}>'
+
+# TODO: Ovals and ovaloids (Ellipse & capsule)
