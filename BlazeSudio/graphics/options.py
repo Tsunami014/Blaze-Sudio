@@ -37,20 +37,22 @@ def CNEW(name):
 CINACTIVE = CNEW('lightskyblue3')
 CACTIVE = CNEW('dodgerblue2')
 
+CRAINBOWCOLOURS = [
+    CRED,
+    CNEW('orange'),
+    CYELLOW,
+    CGREEN,
+    CBLUE,
+    CNEW('magenta'),
+    CNEW('purple'),
+    CGREY,
+    CACTIVE
+]
+
 def CRAINBOW():
-    l = [
-        CRED,
-        CNEW('orange'),
-        CYELLOW,
-        CGREEN,
-        CBLUE,
-        CNEW('pink'),
-        CNEW('purple'),
-        CGREY,
-        CACTIVE
-    ]
     while True:
-        for i in l: yield i
+        for i in CRAINBOWCOLOURS:
+            yield i
 
 # font Sides
 # Weighting
