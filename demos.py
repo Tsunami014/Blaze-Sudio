@@ -740,10 +740,11 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//2-4
                 pygame.draw.circle(win, (175, 155, 155), i, 8)
             
             if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                mpos = pygame.mouse.get_pos()
                 for o in objs:
                     cs = o.whereCollides(curObj)
                     for i in cs:
-                        pygame.draw.line(win, (0, 0, 0), i, collisions.rotate(i, [i[0], i[1]-50], o.tangent(i)-90), 8) # tangent -90 = normal
+                        pygame.draw.line(win, (0, 0, 0), i, collisions.rotate(i, [i[0], i[1]-50], o.tangent(i, [i[0]-mpos[0], i[1]-mpos[1]])-90), 8) # tangent -90 = normal
         
         pygame.display.update()
         clock.tick(60)
