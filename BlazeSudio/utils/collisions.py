@@ -314,7 +314,7 @@ class Line(Shape):
         elif isinstance(othershape, Line):
             pass # TODO
         elif isinstance(othershape, Circle):
-            pass # TODO
+            return self.closestPointTo(Point(othershape.x, othershape.y))
         else: # Rects, Rotated rects and polygons
             pass # TODO
         return [0, 0]
@@ -480,8 +480,8 @@ class Circle(Shape):
     def closestPointTo(self, othershape: Shape) -> Iterable[Number]:
         if isinstance(othershape, Point):
             x, y = othershape.x - self.x, othershape.y - self.y
-            if abs(x)**2 + abs(y)**2 < self.r**2:
-                return othershape
+            #if abs(x)**2 + abs(y)**2 < self.r**2:
+            #    return othershape
             phi = (math.degrees(math.atan2(y, x)) - 90) % 360
             angle = math.radians(phi)
             
@@ -489,11 +489,15 @@ class Circle(Shape):
             qy = self.y + math.cos(angle) * self.r
             return qx, qy
         elif isinstance(othershape, Line):
-            pass # TODO
+            return self.closestPointTo(Point(*othershape.closestPointTo(Point(self.x, self.y))))
         elif isinstance(othershape, Circle):
-            pass # TODO
+            return self.closestPointTo(Point(othershape.x, othershape.y))
         else:
-            pass # TODO
+            ps = []
+            for ln in othershape.toLines():
+                ps.append(ln.closestPointTo(self))
+            ps.sort(key=lambda x: (x[0]-self.x)**2+(x[1]-self.y)**2)
+            return self.closestPointTo(Point(*ps[0]))
         return [0, 0]
 
     def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
@@ -843,4 +847,6 @@ class Polygon(Shape):
 
 # TODO: Ovals and ovaloids (Ellipse & capsule)
 # TODO: Bounciness factor for each object
+# TODO: Remove constant turning things into Point objects and have the functions able to use tuples instead
+# OR EVEN BETTER Have the tuples have a __getitem__ for getting [0] and [1]!!! <--- Genius
 # TODO: normals for lines change based off which direction they are coming from
