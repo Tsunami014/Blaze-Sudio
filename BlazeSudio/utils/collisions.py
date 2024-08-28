@@ -669,15 +669,10 @@ class ConvexPolygon(Shape): # TODO: Is this the right name? This is the one that
     def tangent(self, point: Iterable[Number]) -> Number:
         ls = self.toLines()
         p = Point(*point)
-        if ls[0].collides(p):
-            return 90+self.rot
-        elif ls[1].collides(p):
-            return 180+self.rot
-        elif ls[2].collides(p):
-            return -90+self.rot
-        elif ls[3].collides(p):
-            return 0+self.rot
-        origps = [[(90*(i+1))%360+self.rot, ls[i].closestPointTo(point)] for i in range(len(ls))]
+        for ln in ls:
+            if ln.collides(p):
+                return ln.tangent(p)
+        origps = [[ln.tangent(ln.closestPointTo(point)), ln.closestPointTo(point)] for ln in ls]
         ps = origps.copy()
         ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
         return ps[0][0]
@@ -695,3 +690,4 @@ class ConvexPolygon(Shape): # TODO: Is this the right name? This is the one that
         return f'<Convex Polygon with points {self.points}>'
 
 # TODO: Ovals and ovaloids (Ellipse & capsule)
+# TODO: Bounciness factor for each object
