@@ -59,8 +59,8 @@ class Shape:
     def closestPointTo(self, point: Iterable[Number]) -> Iterable[Number]:
         return point
     
-    def tangent(self, point: Iterable[Number]) -> Number:
-        return 0
+    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
+        return (math.degrees(math.atan2(accel[1], accel[0]))-180) % 360
     
     def rect(self) -> Iterable[Number]:
         return -float('inf'), -float('inf'), float('inf'), float('inf')
@@ -112,10 +112,10 @@ class Shapes:
             points.append(s.closestPointTo(point))
         return points
     
-    def tangent(self, point: Iterable[Number]) -> Iterable[Number]:
+    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Iterable[Number]:
         points = []
         for s in self.shapes:
-            points.append(s.tangent(point))
+            points.append(s.tangent(point, accel))
         return points
     
     # TODO: handleCollisions
@@ -190,7 +190,7 @@ class Point(Shape):
         points.sort(key=lambda x: abs(x[0][0]-oldP[0])**2+abs(x[0][1]-oldP[1])**2)
         closestP = points[0][0]
         closestObj = points[0][1]
-        t = closestObj.tangent(closestP)
+        t = closestObj.tangent(closestP, accel)
         normal = t-90
         dist_left = math.sqrt(abs(newP[0]-closestP[0])**2+abs(newP[1]-closestP[1])**2)
         x, y = newP[0] - closestP[0], newP[1] - closestP[1]
@@ -311,11 +311,19 @@ class Line(Shape):
         a = min(Dec(1), max(Dec(0), a))
         return float(Dec(self.p1[0]) + a * dx), float(Dec(self.p1[1]) + a * dy)
     
-    def tangent(self, point: Iterable[Number]) -> Number:
+    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
+        def fixangle(angle):
+            angle = angle % 360
+            if angle > 180:
+                angle = angle - 360
+            return abs(angle) # Because we don't need to use this for anything else
+        toDeg = (math.degrees(math.atan2(accel[1], accel[0]))-180) % 360
         x, y = self.p2[0] - self.p1[0], self.p2[1] - self.p1[1]
-        phi = (math.degrees(math.atan2(y, x))-90) % 360
-        return phi
+        phi = (math.degrees(math.atan2(y, x))-90)
+        tries = [fixangle(phi-toDeg), fixangle(phi-toDeg-180)]
+        return [(phi-180)%360, phi % 360][tries.index(min(tries))]
     
+    # TODO: FIX
     def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: Iterable[Number] = [0,0], replaceSelf: bool = True) -> tuple['Line', Iterable[Number]]:
         mvement = Polygon(oldLine.p1, oldLine.p2, newLine.p2, newLine.p1)
         oldMidPoint = ((oldLine.p2[0]-oldLine.p1[0])/2+oldLine.p1[0], (oldLine.p2[1]-oldLine.p1[1])/2+oldLine.p1[1])
@@ -335,7 +343,7 @@ class Line(Shape):
         closestP = points[0][0]
         cPoint = oldLine.closestPointTo(closestP)
         closestObj = points[0][1]
-        t = closestObj.tangent(closestP)
+        t = closestObj.tangent(closestP, accel)
         normal = t-90
         dist_left = math.sqrt(abs(cPoint[0]-closestP[0])**2+abs(cPoint[1]-closestP[1])**2)
         x, y = cPoint[0] - closestP[0], cPoint[1] - closestP[1]
@@ -472,11 +480,12 @@ class Circle(Shape):
         qy = self.y + math.cos(angle) * self.r
         return qx, qy
 
-    def tangent(self, point: Iterable[Number]) -> Number:
+    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         if self.x == point[0]:
             return 90
         return math.degrees(math.atan((point[1]-self.y)/(point[0]-self.x))) + (0 if self.x>point[0] else 180)
 
+    # TODO: FIX
     def handleCollisionsPos(self, oldCir: Union['Circle',Iterable[Number]], newCir: Union['Circle',Iterable[Number]], objs: Union[Shapes,Iterable[Shape]], accel: Iterable[Number] = [0,0], replaceSelf: bool = True) -> tuple['Circle', Iterable[Number]]:
         if isinstance(oldCir, Circle):
             oldC = (oldCir.x, oldCir.y, oldCir.r)
@@ -504,7 +513,7 @@ class Circle(Shape):
         points.sort(key=lambda x: abs(x[0][0]-oldC[0])**2+abs(x[0][1]-oldC[1])**2)
         closestP = points[0][0]
         closestObj = points[0][1]
-        t = closestObj.tangent(closestP)
+        t = closestObj.tangent(closestP, accel)
         normal = t-90
         x, y = newC.x - closestP[0], newC.y - closestP[1]
         dist_left = math.sqrt(abs(x)**2+abs(y)**2)
@@ -579,7 +588,7 @@ class Rect(Shape):
         ps.sort(key=lambda x: abs(x[0]-point[0])**2+abs(x[1]-point[1])**2)
         return ps[0]
     
-    def tangent(self, point: Iterable[Number]) -> Number:
+    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         p = Point(*point)
         if Line((self.x, self.y), (self.x + self.w, self.y)).collides(p):
             return 90
@@ -661,7 +670,7 @@ class RotatedRect(Shape):
         ps.sort(key=lambda x: abs(x[0]-point[0])**2+abs(x[1]-point[1])**2)
         return ps[0]
     
-    def tangent(self, point: Iterable[Number]) -> Number:
+    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         ls = self.toLines()
         p = Point(*point)
         if ls[0].collides(p):
@@ -769,13 +778,13 @@ class Polygon(Shape):
         ps.sort(key=lambda x: abs(x[0]-point[0])**2+abs(x[1]-point[1])**2)
         return ps[0]
     
-    def tangent(self, point: Iterable[Number]) -> Number:
+    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         ls = self.toLines()
         p = Point(*point)
         for ln in ls:
             if ln.collides(p):
-                return ln.tangent(p)
-        origps = [[ln.tangent(ln.closestPointTo(point)), ln.closestPointTo(point)] for ln in ls]
+                return ln.tangent(p, accel)
+        origps = [[ln.tangent(ln.closestPointTo(point), accel), ln.closestPointTo(point)] for ln in ls]
         ps = origps.copy()
         ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
         return ps[0][0]
