@@ -476,6 +476,56 @@ class Circle(Shape):
         if self.x == point[0]:
             return 90
         return math.degrees(math.atan((point[1]-self.y)/(point[0]-self.x))) + (0 if self.x>point[0] else 180)
+
+    def handleCollisionsPos(self, oldCir: Union['Circle',Iterable[Number]], newCir: Union['Circle',Iterable[Number]], objs: Union[Shapes,Iterable[Shape]], accel: Iterable[Number] = [0,0], replaceSelf: bool = True) -> tuple['Circle', Iterable[Number]]:
+        if isinstance(oldCir, Circle):
+            oldC = (oldCir.x, oldCir.y, oldCir.r)
+        else:
+            oldC = oldCir
+        if isinstance(newCir, Circle):
+            newC = newCir
+        else:
+            newC = Circle(*newCir)
+        x, y = abs(accel[0]-accel[0]), abs(accel[1]-accel[1])
+        mvement = Shapes(
+            RotatedRect(oldC[0], oldC[1], oldC[2], math.sqrt(x**2+y**2), math.degrees(math.atan2(y, x))-90), newC
+        )
+        if not mvement.collides(objs):
+            return newC, accel
+        points = []
+        for o in objs:
+            cs = o.whereCollides(mvement)
+            points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+        # Don't let you move when you're in a wall
+        if points == []:
+            if isinstance(oldCir, Circle):
+                return oldCir, [0, 0]
+            return Circle(*oldCir), [0, 0]
+        points.sort(key=lambda x: abs(x[0][0]-oldC[0])**2+abs(x[0][1]-oldC[1])**2)
+        closestP = points[0][0]
+        closestObj = points[0][1]
+        t = closestObj.tangent(closestP)
+        normal = t-90
+        x, y = newC.x - closestP[0], newC.y - closestP[1]
+        dist_left = math.sqrt(abs(x)**2+abs(y)**2)
+        phi = math.degrees(math.atan2(y, x))-90
+        diff = (phi-normal) % 360
+        if diff > 180:
+            diff = diff - 360
+        pos = list(rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2))
+        accel = list(rotate([0, 0], accel, 180-diff*2))
+        # HACK
+        smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
+        out, outaccel = Circle(*pos,newC.r), accel#self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1], newC.r), pos+[newC.r], objs, accel)
+        if replaceSelf:
+            self.x, self.y = out.x, out.y
+        return out, outaccel
+
+    def handleCollisionsAccel(self, accel: Iterable[Number], objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Circle', Iterable[Number]]:
+        out, outaccel = self.handleCollisionsPos(self, (self.x+accel[0], self.y+accel[1], self.r), objs, accel, False)
+        if replaceSelf:
+            self.x, self.y = out.x, out.y
+        return out, outaccel
     
     def copy(self) -> 'Circle':
         return Circle(self.x, self.y, self.r)
