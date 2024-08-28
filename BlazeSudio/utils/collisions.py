@@ -316,6 +316,54 @@ class Line(Shape):
         phi = (math.degrees(math.atan2(y, x))-90) % 360
         return phi
     
+    def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: Iterable[Number] = [0,0], replaceSelf: bool = True) -> tuple['Line', Iterable[Number]]:
+        mvement = Polygon(oldLine.p1, oldLine.p2, newLine.p2, newLine.p1)
+        oldMidPoint = ((oldLine.p2[0]-oldLine.p1[0])/2+oldLine.p1[0], (oldLine.p2[1]-oldLine.p1[1])/2+oldLine.p1[1])
+        if not mvement.collides(objs):
+            return newLine, accel
+        points = []
+        for o in objs:
+            cs = o.whereCollides(mvement)
+            points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+        # Don't let you move when you're in a wall
+        if points == []:
+            return oldLine, [0, 0]
+        def sortF(x):
+            cPoint = oldLine.closestPointTo(x[0])
+            return abs(x[0][0]-cPoint[0])**2+abs(x[0][1]-cPoint[1])**2
+        points.sort(key=sortF)
+        closestP = points[0][0]
+        cPoint = oldLine.closestPointTo(closestP)
+        closestObj = points[0][1]
+        t = closestObj.tangent(closestP)
+        normal = t-90
+        dist_left = math.sqrt(abs(cPoint[0]-closestP[0])**2+abs(cPoint[1]-closestP[1])**2)
+        x, y = cPoint[0] - closestP[0], cPoint[1] - closestP[1]
+        phi = math.degrees(math.atan2(y, x))-90
+        diff = (phi-normal) % 360
+        if diff > 180:
+            diff = diff - 360
+        pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2)
+        accel = list(rotate([0, 0], accel, 180-diff*2))
+        diff2Point = (cPoint[0]-closestP[0], cPoint[1]-closestP[0])
+        odiff = (cPoint[0]-pos[0], cPoint[1]-pos[1])
+        # HACK
+        smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
+        newp1, newp2 = (oldLine.p1[0]+odiff[0], oldLine.p1[1]+odiff[1]), (oldLine.p2[0]+odiff[0], oldLine.p2[1]+odiff[1])
+        out, outaccel = self.handleCollisionsPos(
+            Line((oldLine.p1[0]+diff2Point[0]+smallness[0], oldLine.p1[1]+diff2Point[1]+smallness[1]), 
+                 (oldLine.p2[0]+diff2Point[0]+smallness[0], oldLine.p2[1]+diff2Point[1]+smallness[1])), 
+            Line(newp1, newp2), objs, accel)
+        if replaceSelf:
+            self.p1, self.p2 = out.p1, out.p2
+        return out, outaccel
+
+    def handleCollisionsAccel(self, accel: Iterable[Number], objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Line', Iterable[Number]]:
+        out, outaccel = self.handleCollisionsPos(self, Line((self.p1[0]+accel[0], self.p1[1]+accel[1]), (self.p2[0]+accel[0], self.p2[1]+accel[1])), objs, accel, False)
+        if replaceSelf:
+            self.p1, self.p2 = out.p1, out.p2
+        return out, outaccel
+    
     def copy(self) -> 'Line':
         return Line(self.p1, self.p2)
     
@@ -606,7 +654,7 @@ class RotatedRect(Shape):
         ls = self.toPoints()
         return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {ls}>'
 
-class ConvexPolygon(Shape): # TODO: Is this the right name? This is the one that regular shapes are made of
+class Polygon(Shape):
     def __init__(self, *points: list[Number]):
         if len(points) < 3:
             raise ValueError(
@@ -642,11 +690,16 @@ class ConvexPolygon(Shape): # TODO: Is this the right name? This is the one that
                 if li.collides(othershape):
                     return True
             return False
-        if isinstance(othershape, Rect) or isinstance(othershape, RotatedRect) or isinstance(othershape, ConvexPolygon):
+        if isinstance(othershape, Rect) or isinstance(othershape, RotatedRect):
             for li in self.toLines():
                 if li.collides(othershape):
                     return True
             return othershape.collides(Point(self.points[0][0], self.points[0][1])) or self.collides(Point(othershape.x, othershape.y))
+        if isinstance(othershape, Polygon):
+            for li in self.toLines():
+                if li.collides(othershape):
+                    return True
+            return othershape.collides(Point(self.points[0][0], self.points[0][1])) or self.collides(Point(othershape.points[0][0], othershape.points[0][1]))
         return othershape._collides(self)
 
     def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
@@ -683,11 +736,12 @@ class ConvexPolygon(Shape): # TODO: Is this the right name? This is the one that
             for i in range(len(self.points)-1)
         ] + [Line(self.points[len(self.points)-1], self.points[0])]
     
-    def copy(self) -> 'ConvexPolygon':
-        return ConvexPolygon(*self.points)
+    def copy(self) -> 'Polygon':
+        return Polygon(*self.points)
     
     def __str__(self):
         return f'<Convex Polygon with points {self.points}>'
 
 # TODO: Ovals and ovaloids (Ellipse & capsule)
 # TODO: Bounciness factor for each object
+# TODO: normals for lines change based off which direction they are coming from

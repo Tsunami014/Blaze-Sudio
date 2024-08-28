@@ -632,7 +632,7 @@ def OCollisionsDemo():
                     if isinstance(curObj, collisions.Point):
                         curObj = collisions.Line(curObj.getTuple(), pygame.mouse.get_pos())
                     elif isinstance(curObj, collisions.Line):
-                        curObj = collisions.ConvexPolygon(curObj.p1, curObj.p2, pygame.mouse.get_pos())
+                        curObj = collisions.Polygon(curObj.p1, curObj.p2, pygame.mouse.get_pos())
                     else:
                         curObj.points += [pygame.mouse.get_pos()]
                 elif event.key == pygame.K_r:
@@ -732,7 +732,7 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//2-4
             curObj = moveCurObj(curObj)
         
         for i in objs:
-            drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.ConvexPolygon].index(type(i)), (10, 255, 50))
+            drawObj(i, [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.Polygon].index(type(i)), (10, 255, 50))
         drawObj(curObj, typ, CRAINBOWCOLOURS[typ])
 
         if not playMode:
