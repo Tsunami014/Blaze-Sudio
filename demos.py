@@ -579,7 +579,7 @@ def OCollisionsDemo():
         elif t == 2:
             pygame.draw.circle(win, col, (obj.x, obj.y), obj.r, 8)
         elif t == 3:
-            pygame.draw.rect(win, col, (obj.x, obj.y, obj.w, obj.h), 8)
+            pygame.draw.rect(win, col, (obj.x, obj.y, obj.w, obj.h), 8) # TODO: Rects with negative width and hei
         elif t == 4:
             for line in obj.toLines():
                 pygame.draw.line(win, col, line.p1, line.p2, 8)
