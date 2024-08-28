@@ -664,7 +664,7 @@ def OCollisionsDemo():
                         pygame.draw.rect(win, (155, 155, 155), (win.get_width()//4, win.get_height()//4, win.get_width()//2, win.get_height()//2), border_radius=8)
                         win.blit(FFONT.render("""How to use:
 Click on one of the options at the top to change your tool. Pressing space adds it to the board. The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too.
-Holding shift in this mode shows some normals!
+Holding shift in this mode shows the normals, and holding control shows the closest points to the object!
 And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity!
 And pressing 'r' will reset everything to nothing without warning.
  
@@ -745,7 +745,10 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//2-4
                     cs = o.whereCollides(curObj)
                     for i in cs:
                         pygame.draw.line(win, (0, 0, 0), i, collisions.rotate(i, [i[0], i[1]-50], o.tangent(i, [i[0]-mpos[0], i[1]-mpos[1]])-90), 8) # tangent -90 = normal
-        
+            if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                ps = objs.closestPointTo(curObj)
+                for p in ps:
+                    pygame.draw.circle(win, (230, 250, 50), (p[0], p[1]), 8)
         pygame.display.update()
         clock.tick(60)
 
