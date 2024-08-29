@@ -74,6 +74,12 @@ class Shape:
     def copy(self) -> 'Shape':
         return Shape()
     
+    def __getitem__(self) -> None:
+        pass
+
+    def __setitem__(self) -> None:
+        pass
+    
     def __str__(self):
         return '<Shape>'
 
@@ -129,8 +135,11 @@ class Shapes:
     def __iter__(self):
         return iter(self.shapes)
     
-    def __getitem__(self, index):
+    def __getitem__(self, index: Number) -> Union[Shape,'Shapes']:
         return self.shapes[index]
+    
+    def __setitem__(self, index: Number, new: Union[Shape,'Shapes']) -> None:
+        self.shapes[index] = new
     
     def __repr__(self): return str(self)
     
@@ -216,11 +225,25 @@ class Point(Shape):
     def copy(self) -> 'Point':
         return Point(self.x, self.y)
 
-    def __getitem__(self, item: Number) -> Number|None:
+    def __getitem__(self, item: Number) -> Number:
         if item == 0:
             return self.x
         elif item == 1:
             return self.y
+        else:
+            raise IndexError(
+                'List index out of range! Must be 0-1, found: '+str(item)
+            )
+    
+    def __setitem__(self, item: Number, new: Number) -> None:
+        if item == 0:
+            self.x = new
+        elif item == 1:
+            self.y = new
+        else:
+            raise IndexError(
+                'List index out of range! Must be 0-1, found: '+str(item)
+            )
     
     def __str__(self):
         return f'<Point @ ({self.x}, {self.y})>'
@@ -415,6 +438,26 @@ class Line(Shape):
     def copy(self) -> 'Line':
         return Line(self.p1, self.p2)
     
+    def __getitem__(self, item: Number) -> pointLike:
+        if item == 0:
+            return self.p1
+        elif item == 1:
+            return self.p2
+        else:
+            raise IndexError(
+                'List index out of range! Must be 0-1, found: '+str(item)
+            )
+    
+    def __setitem__(self, item: Number, new: pointLike) -> None:
+        if item == 0:
+            self.p1 = new
+        elif item == 1:
+            self.p2 = new
+        else:
+            raise IndexError(
+                'List index out of range! Must be 0-1, found: '+str(item)
+            )
+    
     def __str__(self):
         return f'<Line from {self.p1} to {self.p2}>'
 
@@ -589,6 +632,30 @@ class Circle(Shape):
     
     def copy(self) -> 'Circle':
         return Circle(self.x, self.y, self.r)
+    
+    def __getitem__(self, item: Number) -> Number:
+        if item == 0:
+            return self.x
+        elif item == 1:
+            return self.y
+        elif item == 2:
+            return self.r
+        else:
+            raise IndexError(
+                'List index out of range! Must be 0-2, found: '+str(item)
+            )
+    
+    def __setitem__(self, item: Number, new: Number) -> None:
+        if item == 0:
+            self.x = new
+        elif item == 1:
+            self.y = new
+        elif item == 2:
+            self.r = new
+        else:
+            raise IndexError(
+                'List index out of range! Must be 0-2, found: '+str(item)
+            )
 
     def __str__(self):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
@@ -661,6 +728,9 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
     
     def toPoints(self):
         return []
+    
+    def __getitem__(self, item: Number) -> pointLike:
+        return self.toPoints()[item]
 
     def __str__(self):
         return '<Closed Shape>'
@@ -723,6 +793,20 @@ class Rect(ClosedShape):
     
     def copy(self) -> 'Rect':
         return Rect(self.x, self.y, self.w, self.h)
+    
+    def __setitem__(self, item: Number, new: pointLike) -> None:
+        if item == 0:
+            self.x, self.y = new[0], new[1]
+        elif item == 1:
+            self.x, self.y = new[0]-self.w, new[1]
+        elif item == 2:
+            self.x, self.y = new[0]-self.w, new[1]-self.h
+        elif item == 3:
+            self.x, self.y = new[0], new[1]-self.h
+        else:
+            raise IndexError(
+                'List index out of range! Must be 0-3, found: '+str(item)
+            )
     
     def __str__(self):
         return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h}>'
@@ -806,6 +890,26 @@ class RotatedRect(ClosedShape):
     def copy(self) -> 'RotatedRect':
         return RotatedRect(self.x, self.y, self.w, self.h, self.rot)
     
+    def __setitem__(self, item: Number, new: pointLike) -> None:
+        def rot(x, y):
+            return rotate([self.x, self.y], [x, y], self.rot)
+        if item == 0:
+            self.x, self.y = rot(new[0], new[1])
+        elif item == 1:
+            self.x, self.y = rot(new[0], new[1])
+            self.x -= self.w
+        elif item == 2:
+            self.x, self.y = rot(new[0], new[1])
+            self.x -= self.w
+            self.y -= self.h
+        elif item == 3:
+            self.x, self.y = rot(new[0], new[1])
+            self.y -= self.h
+        else:
+            raise IndexError(
+                'List index out of range! Must be 0-3, found: '+str(item)
+            )
+    
     def __str__(self):
         return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {self.toPoints()}>'
 
@@ -879,6 +983,9 @@ class Polygon(ClosedShape):
     
     def copy(self) -> 'Polygon':
         return Polygon(*self.points)
+    
+    def __setitem__(self, item: Number, new: pointLike) -> None:
+        self.points[item] = new
     
     def __str__(self):
         return f'<Polygon with points {self.points}>'
