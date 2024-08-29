@@ -593,35 +593,7 @@ class Circle(Shape):
     def __str__(self):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
 
-class Rect(Shape):
-    def __init__(self, x: Number, y: Number, w: Number, h: Number):
-        self.x, self.y, self.w, self.h = x, y, w, h
-    
-    def rect(self) -> Iterable[Number]:
-        return self.x, self.y, self.x + self.w, self.y + self.h
-    
-    def _collides(self, othershape: Shape) -> bool:
-        if isinstance(othershape, Point):
-            return self.x <= othershape.x and self.x + self.w >= othershape.x and self.y <= othershape.y and self.y + self.h >= othershape.y
-        if isinstance(othershape, Line):
-            return self.check_rects(othershape) and (
-                   (self.x < othershape.p1[0] and self.x + self.w > othershape.p1[0] and self.y < othershape.p1[1] and self.y + self.h > othershape.p1[1]) or \
-                   (self.x < othershape.p2[0] and self.x + self.w > othershape.p2[0] and self.y < othershape.p2[1] and self.y + self.h > othershape.p2[1]) or \
-                   any([i.collides(othershape) for i in self.toLines()])
-            )
-        if isinstance(othershape, Circle):
-            return self.check_rects(othershape) and (
-                   (self.x - othershape.r < othershape.x and self.x + self.w + othershape.r > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y) or \
-                   (self.x < othershape.x and self.x + self.w > othershape.x and self.y - othershape.r < othershape.y and self.y + self.h + othershape.r > othershape.y) or \
-                   ((self.x - othershape.x)**2 + (self.y - othershape.y)**2 < othershape.r**2) or \
-                   (((self.x + self.w) - othershape.x)**2 + (self.y - othershape.y)**2 < othershape.r**2) or \
-                   ((self.x - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2) or \
-                   (((self.x + self.w) - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2)
-            )
-        if isinstance(othershape, Rect):
-            return self.x <= othershape.x + othershape.w and self.x + self.w >= othershape.x and self.y <= othershape.y + othershape.h and self.y + self.h >= othershape.y
-        return othershape._collides(self)
-
+class ClosedShape(Shape): # I.e. rect, polygon, etc.
     def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
         if isinstance(othershape, Point):
             for i in self.toLines():
@@ -684,6 +656,44 @@ class Rect(Shape):
             tries.sort(key=lambda x: x[1])
             return tries[0][0]
     
+    def toLines(self):
+        return []
+    
+    def toPoints(self):
+        return []
+
+    def __str__(self):
+        return '<Closed Shape>'
+
+class Rect(ClosedShape):
+    def __init__(self, x: Number, y: Number, w: Number, h: Number):
+        self.x, self.y, self.w, self.h = x, y, w, h
+    
+    def rect(self) -> Iterable[Number]:
+        return self.x, self.y, self.x + self.w, self.y + self.h
+    
+    def _collides(self, othershape: Shape) -> bool:
+        if isinstance(othershape, Point):
+            return self.x <= othershape.x and self.x + self.w >= othershape.x and self.y <= othershape.y and self.y + self.h >= othershape.y
+        if isinstance(othershape, Line):
+            return self.check_rects(othershape) and (
+                   (self.x < othershape.p1[0] and self.x + self.w > othershape.p1[0] and self.y < othershape.p1[1] and self.y + self.h > othershape.p1[1]) or \
+                   (self.x < othershape.p2[0] and self.x + self.w > othershape.p2[0] and self.y < othershape.p2[1] and self.y + self.h > othershape.p2[1]) or \
+                   any([i.collides(othershape) for i in self.toLines()])
+            )
+        if isinstance(othershape, Circle):
+            return self.check_rects(othershape) and (
+                   (self.x - othershape.r < othershape.x and self.x + self.w + othershape.r > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y) or \
+                   (self.x < othershape.x and self.x + self.w > othershape.x and self.y - othershape.r < othershape.y and self.y + self.h + othershape.r > othershape.y) or \
+                   ((self.x - othershape.x)**2 + (self.y - othershape.y)**2 < othershape.r**2) or \
+                   (((self.x + self.w) - othershape.x)**2 + (self.y - othershape.y)**2 < othershape.r**2) or \
+                   ((self.x - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2) or \
+                   (((self.x + self.w) - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2)
+            )
+        if isinstance(othershape, Rect):
+            return self.x <= othershape.x + othershape.w and self.x + self.w >= othershape.x and self.y <= othershape.y + othershape.h and self.y + self.h >= othershape.y
+        return othershape._collides(self)
+    
     def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         p = Point(*point)
         if Line((self.x, self.y), (self.x + self.w, self.y)).collides(p):
@@ -717,7 +727,7 @@ class Rect(Shape):
     def __str__(self):
         return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h}>'
 
-class RotatedRect(Shape):
+class RotatedRect(ClosedShape):
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number):
         self.x, self.y, self.w, self.h, self.rot = x, y, w, h, rotation
     
@@ -757,68 +767,6 @@ class RotatedRect(Shape):
             return othershape.collides(Point(self.x, self.y)) or self.collides(Point(othershape.x, othershape.y))
         return othershape._collides(self)
 
-    def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
-        if isinstance(othershape, Point):
-            for i in self.toLines():
-                if i.collides(othershape):
-                    return [[othershape.x, othershape.y]]
-            return []
-        else:
-            points = []
-            for i in self.toLines():
-                points.extend(i._where(othershape))
-            return points
-    
-    def closestPointTo(self, othershape: Shape) -> Iterable[Number]:
-        if isinstance(othershape, Point):
-            ps = [i.closestPointTo(othershape) for i in self.toLines()]
-            ps.sort(key=lambda x: abs(x[0]-othershape[0])**2+abs(x[1]-othershape[1])**2)
-            return ps[0]
-        elif isinstance(othershape, Line):
-            colls = self.whereCollides(othershape)
-            if colls != []:
-                return colls[0]
-            def calculate(ln, point, recalculate):
-                p2 = ln.closestPointTo(Point(*point))
-                olineP = point
-                if recalculate:
-                    olineP = p2
-                    p2 = self.closestPointTo(Point(*p2))
-                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
-            tries = [
-                calculate(othershape, p, True) for p in self.toPoints()
-            ] + [
-                calculate(ln, othershape.p1, False) for ln in self.toLines()
-            ] + [
-                calculate(ln, othershape.p2, False) for ln in self.toLines()
-            ]
-            tries.sort(key=lambda x: x[1])
-            return tries[0][0]
-        elif isinstance(othershape, Circle):
-            return self.closestPointTo(Point(othershape.x, othershape.y))
-        else:
-            colls = self.whereCollides(othershape)
-            if colls != []:
-                return colls[0]
-            def calculate(ln, point, recalculate):
-                p2 = ln.closestPointTo(Point(*point))
-                olineP = point
-                if recalculate:
-                    olineP = p2
-                    p2 = self.closestPointTo(Point(*p2))
-                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
-            tries = []
-            olns = othershape.toLines()
-            slns = self.toLines()
-            for ln in slns:
-                tries.extend([calculate(ln, oln.p1, False) for oln in olns])
-                tries.extend([calculate(ln, oln.p2, False) for oln in olns])
-            for oln in olns:
-                tries.extend([calculate(oln, ln.p1, True) for ln in slns])
-                tries.extend([calculate(oln, ln.p2, True) for ln in slns])
-            tries.sort(key=lambda x: x[1])
-            return tries[0][0]
-    
     def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         ls = self.toLines()
         p = Point(*point)
@@ -859,10 +807,9 @@ class RotatedRect(Shape):
         return RotatedRect(self.x, self.y, self.w, self.h, self.rot)
     
     def __str__(self):
-        ls = self.toPoints()
-        return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {ls}>'
+        return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {self.toPoints()}>'
 
-class Polygon(Shape):
+class Polygon(ClosedShape):
     def __init__(self, *points: list[Number]):
         if len(points) < 3:
             raise ValueError(
@@ -909,68 +856,6 @@ class Polygon(Shape):
                     return True
             return othershape.collides(Point(self.points[0][0], self.points[0][1])) or self.collides(Point(othershape.points[0][0], othershape.points[0][1]))
         return othershape._collides(self)
-
-    def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
-        if isinstance(othershape, Point):
-            for i in self.toLines():
-                if i.collides(othershape):
-                    return [[othershape.x, othershape.y]]
-            return []
-        else:
-            points = []
-            for i in self.toLines():
-                points.extend(i._where(othershape))
-            return points
-    
-    def closestPointTo(self, othershape: Shape) -> Iterable[Number]:
-        if isinstance(othershape, Point):
-            ps = [i.closestPointTo(othershape) for i in self.toLines()]
-            ps.sort(key=lambda x: abs(x[0]-othershape[0])**2+abs(x[1]-othershape[1])**2)
-            return ps[0]
-        elif isinstance(othershape, Line):
-            colls = self.whereCollides(othershape)
-            if colls != []:
-                return colls[0]
-            def calculate(ln, point, recalculate):
-                p2 = ln.closestPointTo(Point(*point))
-                olineP = point
-                if recalculate:
-                    olineP = p2
-                    p2 = self.closestPointTo(Point(*p2))
-                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
-            tries = [
-                calculate(othershape, p, True) for p in self.toPoints()
-            ] + [
-                calculate(ln, othershape.p1, False) for ln in self.toLines()
-            ] + [
-                calculate(ln, othershape.p2, False) for ln in self.toLines()
-            ]
-            tries.sort(key=lambda x: x[1])
-            return tries[0][0]
-        elif isinstance(othershape, Circle):
-            return self.closestPointTo(Point(othershape.x, othershape.y))
-        else:
-            colls = self.whereCollides(othershape)
-            if colls != []:
-                return colls[0]
-            def calculate(ln, point, recalculate):
-                p2 = ln.closestPointTo(Point(*point))
-                olineP = point
-                if recalculate:
-                    olineP = p2
-                    p2 = self.closestPointTo(Point(*p2))
-                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
-            tries = []
-            olns = othershape.toLines()
-            slns = self.toLines()
-            for ln in slns:
-                tries.extend([calculate(ln, oln.p1, False) for oln in olns])
-                tries.extend([calculate(ln, oln.p2, False) for oln in olns])
-            for oln in olns:
-                tries.extend([calculate(oln, ln.p1, True) for ln in slns])
-                tries.extend([calculate(oln, ln.p2, True) for ln in slns])
-            tries.sort(key=lambda x: x[1])
-            return tries[0][0]
     
     def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         ls = self.toLines()
@@ -1002,5 +887,4 @@ class Polygon(Shape):
 # TODO: Bounciness factor for each object
 # TODO: Remove constant turning things into Point objects and have the functions able to use tuples instead
 # OR EVEN BETTER Have the tuples have a __getitem__ for getting [0] and [1]!!! <--- Genius
-# TODO: LineLike and RectLike (maybe class inheritance??)
 # TODO: normals for lines change based off which direction they are coming from
