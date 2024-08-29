@@ -2,6 +2,7 @@ import math
 from decimal import Decimal # For use whenever we need really precise numbers
 from typing import Union, Iterable
 Number = Union[int, float]
+pointLike = Union['Point', Iterable[Number]]
 AVERYLARGENUMBER = 100000
 
 def Dec(num: Number) -> Decimal:
@@ -35,7 +36,7 @@ class Shape:
                 return True
         return False
     
-    def whereCollides(self, othershape: Union['Shape','Shapes',Iterable['Shape']]) -> Iterable[Iterable[Number]]:
+    def whereCollides(self, othershape: Union['Shape','Shapes',Iterable['Shape']]) -> Iterable[pointLike]:
         if isinstance(othershape, Shape):
             return self._where(othershape)
         points = []
@@ -59,16 +60,16 @@ class Shape:
     def closestPointTo(self, othershape: 'Shape') -> Iterable[Number]:
         return [0, 0]
     
-    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
+    def tangent(self, point: pointLike, accel: pointLike) -> Number:
         return (math.degrees(math.atan2(accel[1], accel[0]))-180) % 360
     
     def rect(self) -> Iterable[Number]:
         return -float('inf'), -float('inf'), float('inf'), float('inf')
     
-    def handleCollisionsPos(self, oldP: 'Shape', newP: 'Shape', objs: Union['Shapes',Iterable['Shape']], accel: Iterable[Number] = [0,0]) -> tuple['Shape', Iterable[Number]]:
+    def handleCollisionsPos(self, oldP: 'Shape', newP: 'Shape', objs: Union['Shapes',Iterable['Shape']], accel: pointLike = [0,0]) -> tuple['Shape', pointLike]:
         return newP, accel
     
-    def handleCollisionsAccel(self, accel: Iterable[Number], objs: Union['Shapes',Iterable['Shape']]) -> tuple['Shape', Iterable[Number]]:
+    def handleCollisionsAccel(self, accel: pointLike, objs: Union['Shapes',Iterable['Shape']]) -> tuple['Shape', pointLike]:
         return self, accel
     
     def copy(self) -> 'Shape':
@@ -84,7 +85,7 @@ class Shape:
         return '<Shape>'
 
 class Shapes:
-    def __init__(self, *shapes: Iterable[Shape]):
+    def __init__(self, *shapes: Shape):
         self.shapes = list(shapes)
     
     def add_shape(self, shape: Shape) -> None:
@@ -106,19 +107,19 @@ class Shapes:
                 return True
         return False
 
-    def whereCollides(self, shapes: Union[Shape,'Shapes',Iterable[Shape]]) -> Iterable[Iterable[Number]]:
+    def whereCollides(self, shapes: Union[Shape,'Shapes',Iterable[Shape]]) -> Iterable[pointLike]:
         points = []
         for s in self.shapes:
             points.extend(s.whereCollides(shapes))
         return points
     
-    def closestPointTo(self, othershape: Shape) -> Iterable[Iterable[Number]]:
+    def closestPointTo(self, othershape: Shape) -> Iterable[pointLike]:
         points = []
         for s in self.shapes:
             points.append(s.closestPointTo(othershape))
         return points
     
-    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Iterable[Number]:
+    def tangent(self, point: pointLike, accel: pointLike) -> pointLike:
         points = []
         for s in self.shapes:
             points.append(s.tangent(point, accel))
@@ -162,18 +163,18 @@ class Point(Shape):
             return self.x == othershape.x and self.y == othershape.y
         return othershape._collides(self)
     
-    def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
+    def _where(self, othershape: Shape) -> Iterable[pointLike]:
         if isinstance(othershape, Point):
             return [[self.x, self.y]] if (self.x == othershape.x and self.y == othershape.y) else []
         return othershape._where(self)
     
-    def closestPointTo(self, othershape: Shape) -> Iterable[Number]:
+    def closestPointTo(self, othershape: Shape) -> pointLike:
         return (self.x, self.y)
     
-    def getTuple(self) -> Iterable[Number]:
+    def getTuple(self) -> tuple[Number]:
         return (self.x, self.y)
     
-    def handleCollisionsPos(self, oldPoint: Union['Point',Iterable[Number]], newPoint: Union['Point',Iterable[Number]], objs: Union[Shapes,Iterable[Shape]], accel: Iterable[Number] = [0,0], replaceSelf: bool = True) -> tuple['Point', Iterable[Number]]:
+    def handleCollisionsPos(self, oldPoint: Union['Point',pointLike], newPoint: Union['Point',pointLike], objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True) -> tuple['Point', pointLike]:
         if isinstance(oldPoint, Point):
             oldP = oldPoint.getTuple()
         else:
@@ -216,7 +217,7 @@ class Point(Shape):
             self.x, self.y = out.x, out.y
         return out, outaccel
 
-    def handleCollisionsAccel(self, accel: Iterable[Number], objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Point', Iterable[Number]]:
+    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Point', pointLike]:
         out, outaccel = self.handleCollisionsPos(self, (self.x+accel[0], self.y+accel[1]), objs, accel, False)
         if replaceSelf:
             self.x, self.y = out.x, out.y
@@ -247,8 +248,6 @@ class Point(Shape):
     
     def __str__(self):
         return f'<Point @ ({self.x}, {self.y})>'
-
-pointLike = Union[Point, Iterable[Number]] # TODO: Use more
 
 class Line(Shape):
     def __init__(self, p1: pointLike, p2: pointLike):
@@ -301,7 +300,7 @@ class Line(Shape):
         
         return othershape._collides(self)
     
-    def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
+    def _where(self, othershape: Shape) -> Iterable[pointLike]:
         if isinstance(othershape, Point):
             return [[othershape.x, othershape.y]] if self.collides(othershape) else []
         if isinstance(othershape, Line):
@@ -327,7 +326,7 @@ class Line(Shape):
                 return []
         return othershape._where(self)
     
-    def closestPointTo(self, othershape: Shape) -> Iterable[Number]:
+    def closestPointTo(self, othershape: Shape) -> pointLike:
         if isinstance(othershape, Point):
             dx, dy = Dec(self.p2[0]) - Dec(self.p1[0]), Dec(self.p2[1]) - Dec(self.p1[1])
             det = dx * dx + dy * dy
@@ -374,7 +373,7 @@ class Line(Shape):
             tries.sort(key=lambda x: x[1])
             return tries[0][0]
     
-    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
+    def tangent(self, point: pointLike, accel: pointLike) -> Number:
         def fixangle(angle):
             angle = angle % 360
             if angle > 180:
@@ -387,7 +386,7 @@ class Line(Shape):
         return [(phi-180)%360, phi % 360][tries.index(min(tries))]
     
     # TODO: FIX
-    def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: Iterable[Number] = [0,0], replaceSelf: bool = True) -> tuple['Line', Iterable[Number]]:
+    def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True) -> tuple['Line', pointLike]:
         mvement = Polygon(oldLine.p1, oldLine.p2, newLine.p2, newLine.p1)
         oldMidPoint = ((oldLine.p2[0]-oldLine.p1[0])/2+oldLine.p1[0], (oldLine.p2[1]-oldLine.p1[1])/2+oldLine.p1[1])
         if not mvement.collides(objs):
@@ -429,7 +428,7 @@ class Line(Shape):
             self.p1, self.p2 = out.p1, out.p2
         return out, outaccel
 
-    def handleCollisionsAccel(self, accel: Iterable[Number], objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Line', Iterable[Number]]:
+    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Line', pointLike]:
         out, outaccel = self.handleCollisionsPos(self, Line((self.p1[0]+accel[0], self.p1[1]+accel[1]), (self.p2[0]+accel[0], self.p2[1]+accel[1])), objs, accel, False)
         if replaceSelf:
             self.p1, self.p2 = out.p1, out.p2
@@ -488,7 +487,7 @@ class Circle(Shape):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < (self.r + othershape.r)**2
         return othershape._collides(self)
     
-    def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
+    def _where(self, othershape: Shape) -> Iterable[pointLike]:
         if isinstance(othershape, Point):
             return [[othershape.x, othershape.y]] if ((self.x - othershape.x)**2 + (self.y - othershape.y)**2 == self.r**2) else []
         if isinstance(othershape, Line):
@@ -552,7 +551,7 @@ class Circle(Shape):
                 return [[x3, y3], [x4, y4]]
         return othershape._where(self)
     
-    def closestPointTo(self, othershape: Shape) -> Iterable[Number]:
+    def closestPointTo(self, othershape: Shape) -> pointLike:
         if isinstance(othershape, Point):
             x, y = othershape.x - self.x, othershape.y - self.y
             #if abs(x)**2 + abs(y)**2 < self.r**2:
@@ -574,13 +573,13 @@ class Circle(Shape):
             ps.sort(key=lambda x: (x[0]-self.x)**2+(x[1]-self.y)**2)
             return self.closestPointTo(Point(*ps[0]))
 
-    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
+    def tangent(self, point: pointLike, accel: pointLike) -> Number:
         if self.x == point[0]:
             return 90
         return math.degrees(math.atan((point[1]-self.y)/(point[0]-self.x))) + (0 if self.x>point[0] else 180)
 
     # TODO: FIX
-    def handleCollisionsPos(self, oldCir: Union['Circle',Iterable[Number]], newCir: Union['Circle',Iterable[Number]], objs: Union[Shapes,Iterable[Shape]], accel: Iterable[Number] = [0,0], replaceSelf: bool = True) -> tuple['Circle', Iterable[Number]]:
+    def handleCollisionsPos(self, oldCir: Union['Circle',Iterable[Number]], newCir: Union['Circle',Iterable[Number]], objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True) -> tuple['Circle', pointLike]:
         if isinstance(oldCir, Circle):
             oldC = (oldCir.x, oldCir.y, oldCir.r)
         else:
@@ -624,7 +623,7 @@ class Circle(Shape):
             self.x, self.y = out.x, out.y
         return out, outaccel
 
-    def handleCollisionsAccel(self, accel: Iterable[Number], objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Circle', Iterable[Number]]:
+    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Circle', pointLike]:
         out, outaccel = self.handleCollisionsPos(self, (self.x+accel[0], self.y+accel[1], self.r), objs, accel, False)
         if replaceSelf:
             self.x, self.y = out.x, out.y
@@ -661,7 +660,7 @@ class Circle(Shape):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
 
 class ClosedShape(Shape): # I.e. rect, polygon, etc.
-    def _where(self, othershape: Shape) -> Iterable[Iterable[Number]]:
+    def _where(self, othershape: Shape) -> Iterable[pointLike]:
         if isinstance(othershape, Point):
             for i in self.toLines():
                 if i.collides(othershape):
@@ -673,7 +672,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                 points.extend(i._where(othershape))
             return points
     
-    def closestPointTo(self, othershape: Shape) -> Iterable[Number]:
+    def closestPointTo(self, othershape: Shape) -> pointLike:
         if isinstance(othershape, Point):
             ps = [i.closestPointTo(othershape) for i in self.toLines()]
             ps.sort(key=lambda x: abs(x[0]-othershape[0])**2+abs(x[1]-othershape[1])**2)
@@ -726,7 +725,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
     def toLines(self):
         return []
     
-    def toPoints(self):
+    def toPoints(self) -> Iterable[pointLike]:
         return []
     
     def __getitem__(self, item: Number) -> pointLike:
@@ -764,7 +763,7 @@ class Rect(ClosedShape):
             return self.x <= othershape.x + othershape.w and self.x + self.w >= othershape.x and self.y <= othershape.y + othershape.h and self.y + self.h >= othershape.y
         return othershape._collides(self)
     
-    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
+    def tangent(self, point: pointLike, accel: pointLike) -> Number:
         p = Point(*point)
         if Line((self.x, self.y), (self.x + self.w, self.y)).collides(p):
             return 90
@@ -775,7 +774,7 @@ class Rect(ClosedShape):
         elif Line((self.x, self.y + self.h), (self.x, self.y)).collides(p):
             return 0
     
-    def toLines(self):
+    def toLines(self) -> Iterable[Line]:
         return [
             Line((self.x, self.y), (self.x + self.w, self.y)),
             Line((self.x + self.w, self.y), (self.x + self.w, self.y + self.h)),
@@ -783,7 +782,7 @@ class Rect(ClosedShape):
             Line((self.x, self.y + self.h), (self.x, self.y))
         ]
     
-    def toPoints(self):
+    def toPoints(self) -> Iterable[pointLike]:
         return [
             (self.x, self.y),
             (self.x + self.w, self.y),
@@ -851,7 +850,7 @@ class RotatedRect(ClosedShape):
             return othershape.collides(Point(self.x, self.y)) or self.collides(Point(othershape.x, othershape.y))
         return othershape._collides(self)
 
-    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
+    def tangent(self, point: pointLike, accel: pointLike) -> Number:
         ls = self.toLines()
         p = Point(*point)
         if ls[0].collides(p):
@@ -867,7 +866,7 @@ class RotatedRect(ClosedShape):
         ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
         return ps[0][0]
     
-    def toPoints(self):
+    def toPoints(self) -> Iterable[pointLike]:
         def rot(x, y):
             return rotate([self.x, self.y], [x, y], self.rot)
         return [
@@ -877,7 +876,7 @@ class RotatedRect(ClosedShape):
             rot(self.x, self.y + self.h)
         ]
 
-    def toLines(self):
+    def toLines(self) -> Iterable[Line]:
         def rot(x, y):
             return rotate([self.x, self.y], [x, y], self.rot)
         return [
@@ -914,7 +913,7 @@ class RotatedRect(ClosedShape):
         return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {self.toPoints()}>'
 
 class Polygon(ClosedShape):
-    def __init__(self, *points: list[Number]):
+    def __init__(self, *points: pointLike):
         if len(points) < 3:
             raise ValueError(
                 f'Cannot have a Polygon with less than 3 points! Found: {len(points)} points!'
@@ -961,7 +960,7 @@ class Polygon(ClosedShape):
             return othershape.collides(Point(self.points[0][0], self.points[0][1])) or self.collides(Point(othershape.points[0][0], othershape.points[0][1]))
         return othershape._collides(self)
     
-    def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
+    def tangent(self, point: pointLike, accel: pointLike) -> Number:
         ls = self.toLines()
         p = Point(*point)
         for ln in ls:
@@ -972,13 +971,13 @@ class Polygon(ClosedShape):
         ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
         return ps[0][0]
 
-    def toLines(self):
+    def toLines(self) -> Iterable[Line]:
         return [
             Line(self.points[i], self.points[i+1])
             for i in range(len(self.points)-1)
         ] + [Line(self.points[len(self.points)-1], self.points[0])]
     
-    def toPoints(self):
+    def toPoints(self) -> Iterable[pointLike]:
         return self.points
     
     def copy(self) -> 'Polygon':
