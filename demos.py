@@ -589,12 +589,18 @@ def OCollisionsDemo():
             curObj.p1 = pos
             curObj.p2 = (curObj.p1[0]+dir[0], curObj.p1[1]+dir[1])
         elif typ == 5:
+            moveAll = pygame.key.get_pressed()[pygame.K_PERIOD]
             if isinstance(curObj, collisions.Point):
                 curObj.x, curObj.y = pos
             elif isinstance(curObj, collisions.Line):
+                if moveAll:
+                    curObj.p1 = [curObj.p1[0]-curObj.p2[0]+pos[0], curObj.p1[1]-curObj.p2[1]+pos[1]]
                 curObj.p2 = pos
             else:
-                curObj.points[-1] = pos
+                if moveAll:
+                    curObj.points = [(p[0]-curObj.points[-1][0]+pos[0], p[1]-curObj.points[-1][1]+pos[1]) for p in curObj.points[:-1]] + [pos]
+                else:
+                    curObj.points[-1] = pos
         else:
             curObj.x, curObj.y = pos
             if typ == 2:
