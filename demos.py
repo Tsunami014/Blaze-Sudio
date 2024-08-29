@@ -666,8 +666,7 @@ def OCollisionsDemo():
 Click on one of the options at the top to change your tool. Pressing space adds it to the board. The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too.
 Holding shift in this mode shows the normals, and holding control shows the closest points to the object!
 And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity!
-And pressing 'r' will reset everything to nothing without warning.
- 
+And pressing 'r' will reset everything without warning.
  
 Press any key/mouse to close this window""",0,allowed_width=win.get_width()//2-4), (win.get_width()//4+2, win.get_height()//4+2))
                         run2 = True
@@ -742,9 +741,12 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//2-4
             if pygame.key.get_mods() & pygame.KMOD_SHIFT:
                 mpos = pygame.mouse.get_pos()
                 for o in objs:
-                    cs = o.whereCollides(curObj)
+                    if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                        cs = [o.closestPointTo(curObj)]
+                    else:
+                        cs = o.whereCollides(curObj)
                     for i in cs:
-                        pygame.draw.line(win, (0, 0, 0), i, collisions.rotate(i, [i[0], i[1]-50], o.tangent(i, [i[0]-mpos[0], i[1]-mpos[1]])-90), 8) # tangent -90 = normal
+                        pygame.draw.line(win, (5, 20, 50), i, collisions.rotate(i, [i[0], i[1]-50], o.tangent(i, [i[0]-mpos[0], i[1]-mpos[1]])-90), 8) # tangent -90 = normal
             if pygame.key.get_mods() & pygame.KMOD_CTRL:
                 ps = objs.closestPointTo(curObj)
                 for p in ps:
