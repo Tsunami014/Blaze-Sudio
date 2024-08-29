@@ -331,8 +331,25 @@ class Line(Shape):
         elif isinstance(othershape, Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y))
         else: # Rects, Rotated rects and polygons
-            pass # TODO
-        return [0, 0]
+            colls = self.whereCollides(othershape)
+            if colls != []:
+                return colls[0]
+            def calculate(ln, point, recalculate):
+                p2 = ln.closestPointTo(Point(*point))
+                olineP = point
+                if recalculate:
+                    olineP = p2
+                    p2 = self.closestPointTo(Point(*p2))
+                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
+            tries = [
+                calculate(self, p, False) for p in othershape.toPoints()
+            ] + [
+                calculate(ln, self.p1, True) for ln in othershape.toLines()
+            ] + [
+                calculate(ln, self.p2, True) for ln in othershape.toLines()
+            ]
+            tries.sort(key=lambda x: x[1])
+            return tries[0][0]
     
     def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         def fixangle(angle):
@@ -513,7 +530,6 @@ class Circle(Shape):
                 ps.append(ln.closestPointTo(self))
             ps.sort(key=lambda x: (x[0]-self.x)**2+(x[1]-self.y)**2)
             return self.closestPointTo(Point(*ps[0]))
-        return [0, 0]
 
     def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         if self.x == point[0]:
@@ -624,7 +640,25 @@ class Rect(Shape):
             ps.sort(key=lambda x: abs(x[0]-othershape[0])**2+abs(x[1]-othershape[1])**2)
             return ps[0]
         elif isinstance(othershape, Line):
-            pass # TODO
+            colls = self.whereCollides(othershape)
+            if colls != []:
+                return colls[0]
+            def calculate(ln, point, recalculate):
+                p2 = ln.closestPointTo(Point(*point))
+                olineP = point
+                if recalculate:
+                    olineP = p2
+                    p2 = self.closestPointTo(Point(*p2))
+                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
+            tries = [
+                calculate(othershape, p, True) for p in self.toPoints()
+            ] + [
+                calculate(ln, othershape.p1, False) for ln in self.toLines()
+            ] + [
+                calculate(ln, othershape.p2, False) for ln in self.toLines()
+            ]
+            tries.sort(key=lambda x: x[1])
+            return tries[0][0]
         elif isinstance(othershape, Circle):
             pass # TODO
         else:
@@ -648,6 +682,14 @@ class Rect(Shape):
             Line((self.x + self.w, self.y), (self.x + self.w, self.y + self.h)),
             Line((self.x + self.w, self.y + self.h), (self.x, self.y + self.h)),
             Line((self.x, self.y + self.h), (self.x, self.y))
+        ]
+    
+    def toPoints(self):
+        return [
+            (self.x, self.y),
+            (self.x + self.w, self.y),
+            (self.x + self.w, self.y + self.h),
+            (self.x, self.y + self.h)
         ]
     
     def copy(self) -> 'Rect':
@@ -864,4 +906,5 @@ class Polygon(Shape):
 # TODO: Bounciness factor for each object
 # TODO: Remove constant turning things into Point objects and have the functions able to use tuples instead
 # OR EVEN BETTER Have the tuples have a __getitem__ for getting [0] and [1]!!! <--- Genius
+# TODO: LineLike and RectLike (maybe class inheritance??)
 # TODO: normals for lines change based off which direction they are coming from
