@@ -312,7 +312,22 @@ class Line(Shape):
             a = min(Dec(1), max(Dec(0), a))
             return float(Dec(self.p1[0]) + a * dx), float(Dec(self.p1[1]) + a * dy)
         elif isinstance(othershape, Line):
-            pass # TODO
+            colls = self.whereCollides(othershape)
+            if colls != []:
+                return colls[0]
+            def calculate(ln, point, recalculate):
+                p2 = ln.closestPointTo(Point(*point))
+                if recalculate:
+                    p2 = self.closestPointTo(Point(*p2))
+                return p2, abs(p2[0]-point[0])**2+abs(p2[1]-point[1])**2
+            tries = [
+                calculate(self, othershape.p1, False),
+                calculate(self, othershape.p2, False),
+                calculate(othershape, self.p1, True),
+                calculate(othershape, self.p2, True),
+            ]
+            tries.sort(key=lambda x: x[1])
+            return tries[0][0]
         elif isinstance(othershape, Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y))
         else: # Rects, Rotated rects and polygons
@@ -828,7 +843,7 @@ class Polygon(Shape):
         for ln in ls:
             if ln.collides(p):
                 return ln.tangent(p, accel)
-        origps = [[ln.tangent(ln.closestPointTo(Point(*point)), accel), ln.closestPointTo(Point(point))] for ln in ls]
+        origps = [[ln.tangent(ln.closestPointTo(Point(*point)), accel), ln.closestPointTo(Point(*point))] for ln in ls]
         ps = origps.copy()
         ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
         return ps[0][0]
