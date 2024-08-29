@@ -660,10 +660,29 @@ class Rect(Shape):
             tries.sort(key=lambda x: x[1])
             return tries[0][0]
         elif isinstance(othershape, Circle):
-            pass # TODO
+            return self.closestPointTo(Point(othershape.x, othershape.y))
         else:
-            pass # TODO
-        return [0, 0]
+            colls = self.whereCollides(othershape)
+            if colls != []:
+                return colls[0]
+            def calculate(ln, point, recalculate):
+                p2 = ln.closestPointTo(Point(*point))
+                olineP = point
+                if recalculate:
+                    olineP = p2
+                    p2 = self.closestPointTo(Point(*p2))
+                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
+            tries = []
+            olns = othershape.toLines()
+            slns = self.toLines()
+            for ln in slns:
+                tries.extend([calculate(ln, oln.p1, False) for oln in olns])
+                tries.extend([calculate(ln, oln.p2, False) for oln in olns])
+            for oln in olns:
+                tries.extend([calculate(oln, ln.p1, True) for ln in slns])
+                tries.extend([calculate(oln, ln.p2, True) for ln in slns])
+            tries.sort(key=lambda x: x[1])
+            return tries[0][0]
     
     def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         p = Point(*point)
@@ -756,12 +775,49 @@ class RotatedRect(Shape):
             ps.sort(key=lambda x: abs(x[0]-othershape[0])**2+abs(x[1]-othershape[1])**2)
             return ps[0]
         elif isinstance(othershape, Line):
-            pass # TODO
+            colls = self.whereCollides(othershape)
+            if colls != []:
+                return colls[0]
+            def calculate(ln, point, recalculate):
+                p2 = ln.closestPointTo(Point(*point))
+                olineP = point
+                if recalculate:
+                    olineP = p2
+                    p2 = self.closestPointTo(Point(*p2))
+                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
+            tries = [
+                calculate(othershape, p, True) for p in self.toPoints()
+            ] + [
+                calculate(ln, othershape.p1, False) for ln in self.toLines()
+            ] + [
+                calculate(ln, othershape.p2, False) for ln in self.toLines()
+            ]
+            tries.sort(key=lambda x: x[1])
+            return tries[0][0]
         elif isinstance(othershape, Circle):
-            pass # TODO
+            return self.closestPointTo(Point(othershape.x, othershape.y))
         else:
-            pass # TODO
-        return [0, 0]
+            colls = self.whereCollides(othershape)
+            if colls != []:
+                return colls[0]
+            def calculate(ln, point, recalculate):
+                p2 = ln.closestPointTo(Point(*point))
+                olineP = point
+                if recalculate:
+                    olineP = p2
+                    p2 = self.closestPointTo(Point(*p2))
+                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
+            tries = []
+            olns = othershape.toLines()
+            slns = self.toLines()
+            for ln in slns:
+                tries.extend([calculate(ln, oln.p1, False) for oln in olns])
+                tries.extend([calculate(ln, oln.p2, False) for oln in olns])
+            for oln in olns:
+                tries.extend([calculate(oln, ln.p1, True) for ln in slns])
+                tries.extend([calculate(oln, ln.p2, True) for ln in slns])
+            tries.sort(key=lambda x: x[1])
+            return tries[0][0]
     
     def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         ls = self.toLines()
@@ -872,12 +928,49 @@ class Polygon(Shape):
             ps.sort(key=lambda x: abs(x[0]-othershape[0])**2+abs(x[1]-othershape[1])**2)
             return ps[0]
         elif isinstance(othershape, Line):
-            pass # TODO
+            colls = self.whereCollides(othershape)
+            if colls != []:
+                return colls[0]
+            def calculate(ln, point, recalculate):
+                p2 = ln.closestPointTo(Point(*point))
+                olineP = point
+                if recalculate:
+                    olineP = p2
+                    p2 = self.closestPointTo(Point(*p2))
+                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
+            tries = [
+                calculate(othershape, p, True) for p in self.toPoints()
+            ] + [
+                calculate(ln, othershape.p1, False) for ln in self.toLines()
+            ] + [
+                calculate(ln, othershape.p2, False) for ln in self.toLines()
+            ]
+            tries.sort(key=lambda x: x[1])
+            return tries[0][0]
         elif isinstance(othershape, Circle):
-            pass # TODO
+            return self.closestPointTo(Point(othershape.x, othershape.y))
         else:
-            pass # TODO
-        return [0, 0]
+            colls = self.whereCollides(othershape)
+            if colls != []:
+                return colls[0]
+            def calculate(ln, point, recalculate):
+                p2 = ln.closestPointTo(Point(*point))
+                olineP = point
+                if recalculate:
+                    olineP = p2
+                    p2 = self.closestPointTo(Point(*p2))
+                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
+            tries = []
+            olns = othershape.toLines()
+            slns = self.toLines()
+            for ln in slns:
+                tries.extend([calculate(ln, oln.p1, False) for oln in olns])
+                tries.extend([calculate(ln, oln.p2, False) for oln in olns])
+            for oln in olns:
+                tries.extend([calculate(oln, ln.p1, True) for ln in slns])
+                tries.extend([calculate(oln, ln.p2, True) for ln in slns])
+            tries.sort(key=lambda x: x[1])
+            return tries[0][0]
     
     def tangent(self, point: Iterable[Number], accel: Iterable[Number]) -> Number:
         ls = self.toLines()
@@ -896,11 +989,14 @@ class Polygon(Shape):
             for i in range(len(self.points)-1)
         ] + [Line(self.points[len(self.points)-1], self.points[0])]
     
+    def toPoints(self):
+        return self.points
+    
     def copy(self) -> 'Polygon':
         return Polygon(*self.points)
     
     def __str__(self):
-        return f'<Convex Polygon with points {self.points}>'
+        return f'<Polygon with points {self.points}>'
 
 # TODO: Ovals and ovaloids (Ellipse & capsule)
 # TODO: Bounciness factor for each object
