@@ -752,7 +752,7 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//2-4
                     else:
                         cs = o.whereCollides(curObj)
                     for i in cs:
-                        pygame.draw.line(win, (5, 20, 50), i, collisions.rotate(i, [i[0], i[1]-50], o.tangent(i, [i[0]-mpos[0], i[1]-mpos[1]])-90), 8) # tangent -90 = normal
+                        pygame.draw.line(win, (55, 70, 100), i, collisions.rotate(i, [i[0], i[1]-50], o.tangent(i, [i[0]-mpos[0], i[1]-mpos[1]])-90), 8) # tangent -90 = normal
             if pygame.key.get_mods() & pygame.KMOD_CTRL:
                 ps = objs.closestPointTo(curObj)
                 for p in ps:
