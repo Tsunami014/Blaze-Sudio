@@ -664,6 +664,21 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         origps = [[pt[1].tangent(pt[0], accel), pt[0]] for pt in ps]
         ps = origps.copy()
         ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
+        if ps[0][1] == ps[1][1]:
+            def degrees_to_vector(angle):
+                # Convert an angle to a unit vector
+                radians = math.radians(angle)
+                return math.cos(radians), math.sin(radians)
+
+            # Convert both angles to vectors
+            x1, y1 = degrees_to_vector(ps[0][0])
+            x2, y2 = degrees_to_vector(ps[1][0])
+            
+            # Average the x and y components
+            avg_x = (x1 + x2) / 2
+            avg_y = (y1 + y2) / 2
+            return math.degrees(math.atan2(avg_y, avg_x)) % 360
+        
         return ps[0][0]
     
     def closestPointTo(self, othershape: Shape) -> pointLike:
