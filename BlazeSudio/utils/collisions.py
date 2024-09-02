@@ -10,15 +10,13 @@ def rotate(origin, point, angle):
     The angle should be given in degrees.
     """
     angle = math.radians(angle)
-    ox, oy = origin
-    px, py = point
     cos = math.cos(angle)
     sin = math.sin(angle)
-    ydiff = (py - oy)
-    xdiff = (px - ox)
+    ydiff = (point[1] - origin[1])
+    xdiff = (point[0] - origin[0])
     
-    qx = ox + cos * xdiff - sin * ydiff
-    qy = oy + sin * xdiff + cos * ydiff
+    qx = origin[0] + cos * xdiff - sin * ydiff
+    qy = origin[1] + sin * xdiff + cos * ydiff
     return qx, qy
 
 class Shape:
@@ -325,9 +323,11 @@ class Line(Shape):
                 return colls[0]
             def calculate(ln, point, recalculate):
                 p2 = ln.closestPointTo(Point(*point))
+                olineP = point
                 if recalculate:
+                    olineP = p2
                     p2 = self.closestPointTo(Point(*p2))
-                return p2, abs(p2[0]-point[0])**2+abs(p2[1]-point[1])**2
+                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
             tries = [
                 calculate(self, othershape.p1, False),
                 calculate(self, othershape.p2, False),
@@ -690,19 +690,18 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
             colls = self.whereCollides(othershape)
             if colls != []:
                 return colls[0]
-            def calculate(ln, point, recalculate):
-                p2 = ln.closestPointTo(Point(*point))
-                olineP = point
+            def calculate(ln, oln, recalculate):
+                p2 = oln.closestPointTo(ln)
+                p = ln.closestPointTo(Point(*p2))
                 if recalculate:
-                    olineP = p2
-                    p2 = self.closestPointTo(Point(*p2))
-                return p2, abs(p2[0]-olineP[0])**2+abs(p2[1]-olineP[1])**2
+                    p3 = oln.closestPointTo(Point(*p))
+                    p2 = p
+                    p = p3
+                return p2, abs(p[0]-p2[0])**2+abs(p[1]-p2[1])**2
             tries = [
-                calculate(othershape, p, True) for p in self.toPoints()
+                calculate(othershape, p, True) for p in self.toLines()
             ] + [
-                calculate(ln, othershape.p1, False) for ln in self.toLines()
-            ] + [
-                calculate(ln, othershape.p2, False) for ln in self.toLines()
+                calculate(ln, othershape, False) for ln in self.toLines()
             ]
             tries.sort(key=lambda x: x[1])
             return tries[0][0]
@@ -960,7 +959,8 @@ class Polygon(ClosedShape):
     def __str__(self):
         return f'<Polygon with points {self.points}>'
 
-# TODO: Ovals and ovaloids (Ellipse & capsule)
+# TODO: Ovals, ovaloids and arcs (Ellipse & capsule)
+# TODO: Can also input pointlike, linelike (2 points) and polygon-like iterables into all functions to reduce conversion
 # TODO: Bounciness factor for each object
 # TODO: Remove constant turning things into Point objects and have the functions able to use tuples instead
 # OR EVEN BETTER Have the tuples have a __getitem__ for getting [0] and [1]!!! <--- Genius
