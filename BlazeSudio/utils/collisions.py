@@ -1,12 +1,8 @@
 import math
-from decimal import Decimal # For use whenever we need really precise numbers
 from typing import Union, Iterable
 Number = Union[int, float]
 pointLike = Union['Point', Iterable[Number]]
 AVERYLARGENUMBER = 100000
-
-def Dec(num: Number) -> Decimal:
-    return Decimal(str(num))
 
 def rotate(origin, point, angle):
     """
@@ -175,19 +171,11 @@ class Point(Shape):
         return (self.x, self.y)
     
     def handleCollisionsPos(self, oldPoint: Union['Point',pointLike], newPoint: Union['Point',pointLike], objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True) -> tuple['Point', pointLike]:
-        if isinstance(oldPoint, Point):
-            oldP = oldPoint.getTuple()
-        else:
-            oldP = oldPoint
-        if isinstance(newPoint, Point):
-            newP = newPoint.getTuple()
-        else:
-            newP = newPoint
-        mvement = Line(oldP, newP)
+        mvement = Line(oldPoint, newPoint)
         if not mvement.collides(objs):
             if isinstance(newPoint, Point):
                 return newPoint, accel
-            return Point(*newP), accel
+            return newPoint, accel
         points = []
         for o in objs:
             cs = o.whereCollides(mvement)
@@ -197,13 +185,13 @@ class Point(Shape):
             if isinstance(oldPoint, Point):
                 return oldPoint, [0, 0]
             return Point(*oldPoint), [0, 0]
-        points.sort(key=lambda x: abs(x[0][0]-oldP[0])**2+abs(x[0][1]-oldP[1])**2)
+        points.sort(key=lambda x: abs(x[0][0]-oldPoint[0])**2+abs(x[0][1]-oldPoint[1])**2)
         closestP = points[0][0]
         closestObj = points[0][1]
         t = closestObj.tangent(closestP, accel)
         normal = t-90
-        dist_left = math.sqrt(abs(newP[0]-closestP[0])**2+abs(newP[1]-closestP[1])**2)
-        x, y = newP[0] - closestP[0], newP[1] - closestP[1]
+        dist_left = math.sqrt(abs(newPoint[0]-closestP[0])**2+abs(newPoint[1]-closestP[1])**2)
+        x, y = newPoint[0] - closestP[0], newPoint[1] - closestP[1]
         phi = math.degrees(math.atan2(y, x))-90
         diff = (phi-normal) % 360
         if diff > 180:
@@ -214,13 +202,13 @@ class Point(Shape):
         smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
         out, outaccel = self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel)
         if replaceSelf:
-            self.x, self.y = out.x, out.y
+            self.x, self.y = out[0], out[1]
         return out, outaccel
 
     def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Point', pointLike]:
         out, outaccel = self.handleCollisionsPos(self, (self.x+accel[0], self.y+accel[1]), objs, accel, False)
         if replaceSelf:
-            self.x, self.y = out.x, out.y
+            self.x, self.y = out[0], out[1]
         return out, outaccel
 
     def copy(self) -> 'Point':
@@ -307,14 +295,12 @@ class Line(Shape):
             if not self.collides(othershape):
                 return []
             # This finds where the lines are colliding if they are infinite, which is why we check if they collide first
-            def toDec(li):
-                return [Dec(li[0]), Dec(li[1])]
             def line(p1, p2):
                 A = (p1[1] - p2[1])
                 B = (p2[0] - p1[0])
                 C = (p1[0]*p2[1] - p2[0]*p1[1])
                 return A, B, -C
-            L1, L2 = line(toDec(self.p1), toDec(self.p2)), line(toDec(othershape.p1), toDec(othershape.p2))
+            L1, L2 = line(self.p1, self.p2), line(othershape.p1, othershape.p2)
             D  = L1[0] * L2[1] - L1[1] * L2[0]
             Dx = L1[2] * L2[1] - L1[1] * L2[2]
             Dy = L1[0] * L2[2] - L1[2] * L2[0]
@@ -328,11 +314,11 @@ class Line(Shape):
     
     def closestPointTo(self, othershape: Shape) -> pointLike:
         if isinstance(othershape, Point):
-            dx, dy = Dec(self.p2[0]) - Dec(self.p1[0]), Dec(self.p2[1]) - Dec(self.p1[1])
+            dx, dy = self.p2[0] - self.p1[0], self.p2[1] - self.p1[1]
             det = dx * dx + dy * dy
-            a = (dy * (Dec(othershape.y) - Dec(self.p1[1])) + dx * (Dec(othershape.x) - Dec(self.p1[0]))) / det
-            a = min(Dec(1), max(Dec(0), a))
-            return float(Dec(self.p1[0]) + a * dx), float(Dec(self.p1[1]) + a * dy)
+            a = (dy * (othershape[1] - self.p1[1]) + dx * (othershape[0] - self.p1[0])) / det
+            a = min(1, max(0, a))
+            return self.p1[0] + a * dx, self.p1[1] + a * dy
         elif isinstance(othershape, Line):
             colls = self.whereCollides(othershape)
             if colls != []:
@@ -672,6 +658,14 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                 points.extend(i._where(othershape))
             return points
     
+    def tangent(self, point: pointLike, accel: pointLike) -> Number:
+        p = Point(*point)
+        ps = [[i.closestPointTo(p), i] for i in self.toLines()]
+        origps = [[pt[1].tangent(pt[0], accel), pt[0]] for pt in ps]
+        ps = origps.copy()
+        ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
+        return ps[0][0]
+    
     def closestPointTo(self, othershape: Shape) -> pointLike:
         if isinstance(othershape, Point):
             ps = [i.closestPointTo(othershape) for i in self.toLines()]
@@ -763,17 +757,6 @@ class Rect(ClosedShape):
             return self.x <= othershape.x + othershape.w and self.x + self.w >= othershape.x and self.y <= othershape.y + othershape.h and self.y + self.h >= othershape.y
         return othershape._collides(self)
     
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
-        p = Point(*point)
-        if Line((self.x, self.y), (self.x + self.w, self.y)).collides(p):
-            return 90
-        elif Line((self.x + self.w, self.y), (self.x + self.w, self.y + self.h)).collides(p):
-            return 180
-        elif Line((self.x + self.w, self.y + self.h), (self.x, self.y + self.h)).collides(p):
-            return -90
-        elif Line((self.x, self.y + self.h), (self.x, self.y)).collides(p):
-            return 0
-    
     def toLines(self) -> Iterable[Line]:
         return [
             Line((self.x, self.y), (self.x + self.w, self.y)),
@@ -849,22 +832,6 @@ class RotatedRect(ClosedShape):
                     return True
             return othershape.collides(Point(self.x, self.y)) or self.collides(Point(othershape.x, othershape.y))
         return othershape._collides(self)
-
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
-        ls = self.toLines()
-        p = Point(*point)
-        if ls[0].collides(p):
-            return 90+self.rot
-        elif ls[1].collides(p):
-            return 180+self.rot
-        elif ls[2].collides(p):
-            return -90+self.rot
-        elif ls[3].collides(p):
-            return 0+self.rot
-        origps = [[(90*(i+1))%360+self.rot, ls[i].closestPointTo(Point(*point))] for i in range(len(ls))]
-        ps = origps.copy()
-        ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
-        return ps[0][0]
     
     def toPoints(self) -> Iterable[pointLike]:
         def rot(x, y):
@@ -959,17 +926,6 @@ class Polygon(ClosedShape):
                     return True
             return othershape.collides(Point(self.points[0][0], self.points[0][1])) or self.collides(Point(othershape.points[0][0], othershape.points[0][1]))
         return othershape._collides(self)
-    
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
-        ls = self.toLines()
-        p = Point(*point)
-        for ln in ls:
-            if ln.collides(p):
-                return ln.tangent(p, accel)
-        origps = [[ln.tangent(ln.closestPointTo(Point(*point)), accel), ln.closestPointTo(Point(*point))] for ln in ls]
-        ps = origps.copy()
-        ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
-        return ps[0][0]
 
     def toLines(self) -> Iterable[Line]:
         return [
