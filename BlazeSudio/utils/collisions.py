@@ -198,7 +198,7 @@ class Point(Shape):
         accel = list(rotate([0, 0], accel, 180-diff*2))
         # HACK
         smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
-        out, outaccel = self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel)
+        out, outaccel = self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel, False)
         if replaceSelf:
             self.x, self.y = out[0], out[1]
         return out, outaccel
@@ -393,19 +393,19 @@ class Line(Shape):
         # The total movement - the distance between the closest point on the other object and the corresponding point on this one
         dist_left = math.sqrt((closestP[0]-cPoint[0])**2 + (closestP[1]-cPoint[1])**2)
         x, y = cPoint[0] - closestP[0], cPoint[1] - closestP[1]
-        phi = math.degrees(math.atan2(y, x))
-        diff = (phi - normal + 180) % 360 - 180
+        phi = math.degrees(math.atan2(y, x))-90 # The angle of incidence
+        diff = (phi - normal + 180) % 360 - 180 # The difference between the angle of incidence and the normal
         pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], normal - diff)
         accel = list(rotate([0, 0], accel, 180-diff*2))
-        diff2Point = (cPoint[0]-closestP[0], cPoint[1]-closestP[0])
-        odiff = (cPoint[0]-pos[0], cPoint[1]-pos[1])
+        diff2Point = (cPoint[0]-closestP[0], cPoint[1]-closestP[1])
+        odiff = (pos[0]-cPoint[0], pos[1]-cPoint[1])
         # HACK
         smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
         newp1, newp2 = (oldLine.p1[0]+odiff[0], oldLine.p1[1]+odiff[1]), (oldLine.p2[0]+odiff[0], oldLine.p2[1]+odiff[1])
         out, outaccel = self.handleCollisionsPos(
             Line((oldLine.p1[0]+diff2Point[0]+smallness[0], oldLine.p1[1]+diff2Point[1]+smallness[1]), 
                  (oldLine.p2[0]+diff2Point[0]+smallness[0], oldLine.p2[1]+diff2Point[1]+smallness[1])), 
-            Line(newp1, newp2), objs, accel)
+            Line(newp1, newp2), objs, accel, False)
         if replaceSelf:
             self.p1, self.p2 = out.p1, out.p2
         return out, outaccel
@@ -650,9 +650,9 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                     p = p3
                 return p2, abs(p[0]-p2[0])**2+abs(p[1]-p2[1])**2
             tries = [
-                calculate(othershape, p, True) for p in self.toLines()
+                calculate(othershape, p, False) for p in self.toLines()
             ] + [
-                calculate(ln, othershape, False) for ln in self.toLines()
+                calculate(ln, othershape, True) for ln in self.toLines()
             ]
             tries.sort(key=lambda x: x[1])
             return tries[0][0]
