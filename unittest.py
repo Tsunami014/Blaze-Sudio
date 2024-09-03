@@ -38,7 +38,7 @@ def testCollisions():
     assert roundTuple(outaccel) == (0, -2)
     # /
     #+--+
-    #|/ |
+    #|  |
     #|  |
     #+--+
 

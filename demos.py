@@ -754,9 +754,9 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//2-4
                     for i in cs:
                         pygame.draw.line(win, (55, 70, 100), i, collisions.rotate(i, [i[0], i[1]-50], o.tangent(i, [i[0]-mpos[0], i[1]-mpos[1]])-90), 8) # tangent -90 = normal
             if pygame.key.get_mods() & pygame.KMOD_CTRL:
-                ps = objs.closestPointTo(curObj)
-                for p in ps:
-                    pygame.draw.circle(win, (230, 250, 50), (p[0], p[1]), 8)
+                for o in objs:
+                    p = o.closestPointTo(curObj)
+                    pygame.draw.circle(win, ((230, 50, 250) if o.isCorner(p) else (230, 250, 50)), (p[0], p[1]), 8)
         pygame.display.update()
         clock.tick(60)
 
