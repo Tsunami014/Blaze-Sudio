@@ -4,8 +4,8 @@
 def testCollisions():
     from BlazeSudio.utils import collisions
     def roundTuple(t):
-        return tuple(round(x) for x in t) # TODO: More precise rounding for better testing
-    outpos, outaccel = collisions.handleCollisions([2, 0], [0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
+        return tuple(round(x, 2) for x in t)
+    outpos, outaccel = collisions.Point(2, 0).handleCollisionsAccel([0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
     assert roundTuple(outpos) == (2, 0) # It rebounded perfectly and now is exactly where it started
     assert roundTuple(outaccel) == (0, -2) # It is now going the opposite direction
     # . = current pos, N = new pos
@@ -14,7 +14,7 @@ def testCollisions():
     #| N|
     #|  |
     #+--+
-    outpos, outaccel = collisions.handleCollisions([0, 2], [2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4)))
+    outpos, outaccel = collisions.Point(0, 2).handleCollisionsAccel([2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4)))
     assert roundTuple(outpos) == (0, 2) # It rebounded perfectly and now is exactly where it started
     assert roundTuple(outaccel) == (-2, 0) # It is now going the opposite direction
     # . = current pos, N = new pos
@@ -22,7 +22,7 @@ def testCollisions():
     # |  |
     #.|N |
     # +--+
-    outpos, outaccel = collisions.handleCollisions([0, 0], [2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
+    outpos, outaccel = collisions.Point(0, 0).handleCollisionsAccel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
     assert roundTuple(outpos) == (2, 0) # It rebounded like a v shape
     assert roundTuple(outaccel) == (2, -2)
     # . = current pos, N = new pos
@@ -31,6 +31,17 @@ def testCollisions():
     #| N|
     #|  |
     #+--+
+
+    outLine, outaccel = collisions.Line((1, 0), (2, -1)).handleCollisionsAccel([0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
+    assert roundTuple(outLine.p1) == (1, -1)
+    assert roundTuple(outLine.p2) == (2, -2)
+    assert roundTuple(outaccel) == (0, -2)
+    # /
+    #+--+
+    #|/ |
+    #|  |
+    #+--+
+
     print('IT ALL WORKS YAY')
 
 if __name__ == "__main__":

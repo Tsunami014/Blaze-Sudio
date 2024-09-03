@@ -371,35 +371,31 @@ class Line(Shape):
         tries = [fixangle(phi-toDeg), fixangle(phi-toDeg-180)]
         return [(phi-180)%360, phi % 360][tries.index(min(tries))]
     
-    # TODO: FIX
     def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True) -> tuple['Line', pointLike]:
         mvement = Polygon(oldLine.p1, oldLine.p2, newLine.p2, newLine.p1)
-        oldMidPoint = ((oldLine.p2[0]-oldLine.p1[0])/2+oldLine.p1[0], (oldLine.p2[1]-oldLine.p1[1])/2+oldLine.p1[1])
         if not mvement.collides(objs):
             return newLine, accel
         points = []
         for o in objs:
-            cs = o.whereCollides(mvement)
-            points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+            p = o.closestPointTo(oldLine)
+            cPoint = oldLine.closestPointTo(Point(*p))
+            points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2])
+            #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         # Don't let you move when you're in a wall
         if points == []:
             return oldLine, [0, 0]
-        def sortF(x):
-            cPoint = oldLine.closestPointTo(Point(*x[0]))
-            return abs(x[0][0]-cPoint[0])**2+abs(x[0][1]-cPoint[1])**2
-        points.sort(key=sortF)
-        closestP = points[0][0]
-        cPoint = oldLine.closestPointTo(Point(*closestP))
+        points.sort(key=lambda x: x[3])
+        closestP = points[0][0] # Closest point on the OTHER object
+        cPoint = points[0][2] # Closest point on THIS line
         closestObj = points[0][1]
         t = closestObj.tangent(closestP, accel)
         normal = t-90
-        dist_left = math.sqrt(abs(cPoint[0]-closestP[0])**2+abs(cPoint[1]-closestP[1])**2)
+        # The total movement - the distance between the closest point on the other object and the corresponding point on this one
+        dist_left = math.sqrt((closestP[0]-cPoint[0])**2 + (closestP[1]-cPoint[1])**2)
         x, y = cPoint[0] - closestP[0], cPoint[1] - closestP[1]
-        phi = math.degrees(math.atan2(y, x))-90
-        diff = (phi-normal) % 360
-        if diff > 180:
-            diff = diff - 360
-        pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2)
+        phi = math.degrees(math.atan2(y, x))
+        diff = (phi - normal + 180) % 360 - 180
+        pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], normal - diff)
         accel = list(rotate([0, 0], accel, 180-diff*2))
         diff2Point = (cPoint[0]-closestP[0], cPoint[1]-closestP[0])
         odiff = (cPoint[0]-pos[0], cPoint[1]-pos[1])
@@ -563,51 +559,6 @@ class Circle(Shape):
         if self.x == point[0]:
             return 90
         return math.degrees(math.atan((point[1]-self.y)/(point[0]-self.x))) + (0 if self.x>point[0] else 180)
-
-    # TODO: FIX
-    def handleCollisionsPos(self, oldCir: Union['Circle',Iterable[Number]], newCir: Union['Circle',Iterable[Number]], objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True) -> tuple['Circle', pointLike]:
-        if isinstance(oldCir, Circle):
-            oldC = (oldCir.x, oldCir.y, oldCir.r)
-        else:
-            oldC = oldCir
-        if isinstance(newCir, Circle):
-            newC = newCir
-        else:
-            newC = Circle(*newCir)
-        x, y = abs(accel[0]-accel[0]), abs(accel[1]-accel[1])
-        mvement = Shapes(
-            RotatedRect(oldC[0], oldC[1], oldC[2], math.sqrt(x**2+y**2), math.degrees(math.atan2(y, x))-90), newC
-        )
-        if not mvement.collides(objs):
-            return newC, accel
-        points = []
-        for o in objs:
-            cs = o.whereCollides(mvement)
-            points.extend(list(zip(cs, [o for _ in range(len(cs))])))
-        # Don't let you move when you're in a wall
-        if points == []:
-            if isinstance(oldCir, Circle):
-                return oldCir, [0, 0]
-            return Circle(*oldCir), [0, 0]
-        points.sort(key=lambda x: abs(x[0][0]-oldC[0])**2+abs(x[0][1]-oldC[1])**2)
-        closestP = points[0][0]
-        closestObj = points[0][1]
-        t = closestObj.tangent(closestP, accel)
-        normal = t-90
-        x, y = newC.x - closestP[0], newC.y - closestP[1]
-        dist_left = math.sqrt(abs(x)**2+abs(y)**2)
-        phi = math.degrees(math.atan2(y, x))-90
-        diff = (phi-normal) % 360
-        if diff > 180:
-            diff = diff - 360
-        pos = list(rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2))
-        accel = list(rotate([0, 0], accel, 180-diff*2))
-        # HACK
-        smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
-        out, outaccel = Circle(*pos,newC.r), accel#self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1], newC.r), pos+[newC.r], objs, accel)
-        if replaceSelf:
-            self.x, self.y = out.x, out.y
-        return out, outaccel
 
     def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Circle', pointLike]:
         out, outaccel = self.handleCollisionsPos(self, (self.x+accel[0], self.y+accel[1], self.r), objs, accel, False)
