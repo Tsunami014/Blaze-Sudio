@@ -385,14 +385,17 @@ class Line(Shape):
         return point == self.p1 or point == self.p2
     
     def tangent(self, point: pointLike, accel: pointLike) -> Number:
+        if point == self.p1:
+            return math.degrees(math.atan2(self.p2[1] - self.p1[1], self.p2[0] - self.p1[0]))
+        elif point == self.p2:
+            return math.degrees(math.atan2(self.p1[1] - self.p2[1], self.p1[0] - self.p2[0]))
         def fixangle(angle):
             angle = angle % 360
             if angle > 180:
                 angle = angle - 360
             return abs(angle) # Because we don't need to use this for anything else
         toDeg = (math.degrees(math.atan2(accel[1], accel[0]))-180) % 360
-        x, y = self.p2[0] - self.p1[0], self.p2[1] - self.p1[1]
-        phi = (math.degrees(math.atan2(y, x))-90)
+        phi = (math.degrees(math.atan2(self.p2[1] - self.p1[1], self.p2[0] - self.p1[0]))-90)
         tries = [fixangle(phi-toDeg), fixangle(phi-toDeg-180)]
         return [(phi-180)%360, phi % 360][tries.index(min(tries))]
     
