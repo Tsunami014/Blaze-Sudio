@@ -411,26 +411,9 @@ class Line(Shape):
                 for p in ps:
                     if not mvement.collides(Point(*p)):
                         continue
-                    idx = ps.index(p)
                     cPoint = oldLine.closestPointTo(Point(*p)) # Closest point on THIS line
-                    # TODO: both are False if the objects are both lines and they are paralel
-                    # TODO: Maybe don't calculate this for *every* point because you won't even use most of them anyways
-                    thisIsOnP = cPoint == oldLine.p1 or cPoint == oldLine.p2
-                    otherIsOnP = isinstance(o, Point) or \
-                        (isinstance(o, Line) and (p == o.p1 or p == o.p2)) or \
-                        (idx != len(ps)-1 and ps[idx+1] == p)
-                        # Point on other line is on a corner (or Point)
-                    if thisIsOnP and otherIsOnP: # Point off point collision
-                        refTyp = -1 # Reflect off the same way as you came in (as if you can land an infintesimally small point on another infintesimally small point anyway)
-                    elif thisIsOnP and (not otherIsOnP): # Point off line
-                        refTyp = 0 # Reflect off the object's tangent to the point
-                    elif (not thisIsOnP) and otherIsOnP: # Line off point
-                        refTyp = 1 # Reflect off the line's tangent
-                    else: # elif (not thisIsOnP) and (not otherIsOnP): # Line off line
-                        refTyp = 0 # Reflect off the object's tangent to the point (but really could be either 0 or 1; the tangents should be the same)
-
                     all(ln.collides(o) for ln in edgeLns)
-                    points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2, refTyp])
+                    points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2])
                     #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
                     break
         if not hit:
@@ -442,7 +425,19 @@ class Line(Shape):
         closestP = points[0][0] # Closest point on the OTHER object
         cPoint = points[0][2] # Closest point on THIS line
         closestObj = points[0][1]
-        typ = points[0][4]
+
+        # TODO: both are False if the objects are both lines and they are paralel
+        thisIsOnP = oldLine.isCorner(cPoint)
+        otherIsOnP = o.isCorner(p)
+        if thisIsOnP and otherIsOnP: # Point off point collision
+            typ = -1 # Reflect off the same way as you came in (as if you can land an infintesimally small point on another infintesimally small point anyway)
+        elif thisIsOnP and (not otherIsOnP): # Point off line
+            typ = 0 # Reflect off the object's tangent to the point
+        elif (not thisIsOnP) and otherIsOnP: # Line off point
+            typ = 1 # Reflect off the line's tangent
+        else: # elif (not thisIsOnP) and (not otherIsOnP): # Line off line
+            typ = 0 # Reflect off the object's tangent to the point (but really could be either 0 or 1; the tangents should be the same)
+        
         if typ == -1: # Reflect back the way you came
             normal = math.degrees(math.atan2(accel[1], accel[0]))+90
         elif typ == 0: # Reflect off other object's tangent
@@ -673,6 +668,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
             return points
     
     def tangent(self, point: pointLike, accel: pointLike) -> Number:
+        # TODO: Make it so the line normals go in the direction facing away from the centre instead of away from the velocity vector 
         p = Point(*point)
         ps = [[i.closestPointTo(p), i] for i in self.toLines()]
         origps = [[pt[1].tangent(pt[0], accel), pt[0]] for pt in ps]
