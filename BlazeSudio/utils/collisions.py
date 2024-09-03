@@ -761,6 +761,25 @@ class Rect(ClosedShape):
 class RotatedRect(ClosedShape):
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number):
         self.x, self.y, self.w, self.h, self.rot = x, y, w, h, rotation
+        self.cachedPoints = []
+        self.cacheRequirements = []
+    
+    def getCache(self) -> Iterable[pointLike]:
+        check = [self.w, self.h, self.rot]
+        if check != self.cacheRequirements:
+            self.cacheRequirements = check
+            angle = math.radians(self.rot)
+            cos = math.cos(angle)
+            sin = math.sin(angle)
+            def rot(x, y):
+                return cos * x - sin * y, sin * x + cos * y
+            self.cache = [
+                (0, 0),
+                rot(self.w, 0),
+                rot(self.w, self.h),
+                rot(0, self.h)
+            ]
+        return [[i[0]+self.x, i[1]+self.y] for i in self.cache]
     
     def rect(self) -> Iterable[Number]:
         ps = self.toPoints()
@@ -799,24 +818,14 @@ class RotatedRect(ClosedShape):
         return othershape._collides(self)
     
     def toPoints(self) -> Iterable[pointLike]:
-        def rot(x, y):
-            return rotate([self.x, self.y], [x, y], self.rot)
-        return [
-            rot(self.x, self.y),
-            rot(self.x + self.w, self.y),
-            rot(self.x + self.w, self.y + self.h),
-            rot(self.x, self.y + self.h)
-        ]
+        return self.getCache()
 
     def toLines(self) -> Iterable[Line]:
-        def rot(x, y):
-            return rotate([self.x, self.y], [x, y], self.rot)
+        ps = self.getCache()
         return [
-            Line((self.x, self.y), rot(self.x + self.w, self.y)),
-            Line(rot(self.x + self.w, self.y), rot(self.x + self.w, self.y + self.h)),
-            Line(rot(self.x + self.w, self.y + self.h), rot(self.x, self.y + self.h)),
-            Line(rot(self.x, self.y + self.h), (self.x, self.y))
-        ]
+            Line(ps[i], ps[i+1])
+            for i in range(len(ps)-1)
+        ] + [Line(ps[len(ps)-1], ps[0])]
     
     def copy(self) -> 'RotatedRect':
         return RotatedRect(self.x, self.y, self.w, self.h, self.rot)
