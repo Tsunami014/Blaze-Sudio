@@ -394,7 +394,9 @@ class Line(Shape):
         dist_left = math.sqrt((closestP[0]-cPoint[0])**2 + (closestP[1]-cPoint[1])**2)
         x, y = cPoint[0] - closestP[0], cPoint[1] - closestP[1]
         phi = math.degrees(math.atan2(y, x))-90 # The angle of incidence
-        diff = (phi - normal + 180) % 360 - 180 # The difference between the angle of incidence and the normal
+        diff = (phi - normal) % 360 # The difference between the angle of incidence and the normal
+        if diff > 180:
+            diff -= 360
         pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], normal - diff)
         accel = list(rotate([0, 0], accel, 180-diff*2))
         diff2Point = (cPoint[0]-closestP[0], cPoint[1]-closestP[1])
