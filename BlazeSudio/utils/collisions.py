@@ -2,7 +2,7 @@ import math
 from typing import Union, Iterable
 Number = Union[int, float]
 pointLike = Union['Point', Iterable[Number]]
-AVERYLARGENUMBER = 100000
+AVERYSMALLNUMBER = 1e-6
 
 def rotate(origin, point, angle):
     """
@@ -17,6 +17,18 @@ def rotate(origin, point, angle):
     
     qx = origin[0] + cos * xdiff - sin * ydiff
     qy = origin[1] + sin * xdiff + cos * ydiff
+    return qx, qy
+
+def rotateBy0(point, angle):
+    """
+    Rotate a point clockwise by a given angle around the origin.
+    The angle should be given in degrees.
+    """
+    angle = math.radians(angle)
+    cos = math.cos(angle)
+    sin = math.sin(angle)
+    qx = cos * point[0] - sin * point[1]
+    qy = sin * point[0] + cos * point[1]
     return qx, qy
 
 class Shape:
@@ -210,9 +222,9 @@ class Point(Shape):
         if diff > 180:
             diff = diff - 360
         pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2)
-        accel = list(rotate([0, 0], accel, 180-diff*2))
+        accel = list(rotateBy0(accel, 180-diff*2))
         # HACK
-        smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
+        smallness = rotateBy0([0,AVERYSMALLNUMBER], phi-180-diff*2)
         out, outaccel = self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel, False)
         if replaceSelf:
             self.x, self.y = out[0], out[1]
@@ -418,7 +430,7 @@ class Line(Shape):
                     if not mvement.collides(Point(*p)):
                         continue
                     # The rotation is making sure the line crosses the oldLine
-                    cPoint = oldLine.closestPointTo(Line(p, rotate(p, [p[0], p[1]+abs(accel[0])+abs(accel[1])], 360-thisT)))
+                    cPoint = oldLine.closestPointTo(Line(p, (p[0]-accel[0],p[1]-accel[1])))
                     points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2])
                     #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
                     break
@@ -436,34 +448,32 @@ class Line(Shape):
         thisIsOnP = oldLine.isCorner(cPoint)
         otherIsOnP = o.isCorner(p)
         if thisIsOnP and otherIsOnP: # Point off point collision
-            typ = -1 # Reflect off the same way as you came in (as if you can land an infintesimally small point on another infintesimally small point anyway)
-        elif thisIsOnP and (not otherIsOnP): # Point off line
-            typ = 0 # Reflect off the object's tangent to the point
-        elif (not thisIsOnP) and otherIsOnP: # Line off point
-            typ = 1 # Reflect off the line's tangent
-        else: # elif (not thisIsOnP) and (not otherIsOnP): # Line off line
-            typ = 0 # Reflect off the object's tangent to the point (but really could be either 0 or 1; the tangents should be the same)
-        
-        if typ == -1: # Reflect back the way you came
+            # Reflect off the same way as you came in (as if you can land an infintesimally small point on another infintesimally small point anyway)
             normal = math.degrees(math.atan2(accel[1], accel[0]))+90
-        elif typ == 0: # Reflect off other object's tangent
+        elif thisIsOnP and (not otherIsOnP): # Point off line
+            # Reflect off the other object's tangent to the point
             normal = closestObj.tangent(closestP, accel)-90
-        else: # elf typ == 1: # Reflect off this line's tangent
+        elif (not thisIsOnP) and otherIsOnP: # Line off point
+            # Reflect off the line's tangent
             normal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))+90 # The angle of the line
+        else: # elif (not thisIsOnP) and (not otherIsOnP): # Line off line
+            # Reflect off the object's tangent to the point (but really could be either 0 or 1; the tangents should be the same)
+            # TODO
+            normal = 0
+
         # The total movement - the distance between the closest point on the other object and the corresponding point on this one
-        newPoint = newLine.closestPointTo(Line(closestP, rotate(closestP, [closestP[0], closestP[1]-abs(accel[0])-abs(accel[1])], 360-thisT)))
+        newPoint = newLine.closestPointTo(Line(closestP, (closestP[0]+accel[0],closestP[1]+accel[1])))
         dist_left = math.sqrt((newPoint[0]-closestP[0])**2 + (newPoint[1]-closestP[1])**2)
-        x, y = newPoint[0] - closestP[0], newPoint[1] - closestP[1] # TOSIMPLIFY
-        phi = math.degrees(math.atan2(y, x))-90 # The angle of incidence
+        phi = math.degrees(math.atan2(newPoint[1] - closestP[1], newPoint[0] - closestP[0]))-90 # The angle of incidence
         diff = (phi - normal) % 360 # The difference between the angle of incidence and the normal
         if diff > 180:
             diff -= 360
         pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], phi-180-diff*2)
-        accel = list(rotate([0, 0], accel, 180-diff*2))
+        accel = list(rotateBy0(accel, 180-diff*2))
         diff2Point = (closestP[0]-cPoint[0], closestP[1]-cPoint[1])
         odiff = (pos[0]-cPoint[0], pos[1]-cPoint[1])
         # HACK
-        smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
+        smallness = rotateBy0([0, AVERYSMALLNUMBER], phi-180-diff*2)
         newp1, newp2 = (oldLine.p1[0]+odiff[0], oldLine.p1[1]+odiff[1]), (oldLine.p2[0]+odiff[0], oldLine.p2[1]+odiff[1])
         out, outaccel = self.handleCollisionsPos(
             Line((oldLine.p1[0]+diff2Point[0]+smallness[0], oldLine.p1[1]+diff2Point[1]+smallness[1]), 
@@ -608,7 +618,7 @@ class Circle(Shape):
             qy = self.y + math.cos(angle) * self.r
             if returnAll:
                 return [[qx, qy]]
-            return qx, qy
+            return 
         elif isinstance(othershape, Line):
             return self.closestPointTo(Point(*othershape.closestPointTo(Point(self.x, self.y))), returnAll)
         elif isinstance(othershape, Circle):
