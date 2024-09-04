@@ -400,11 +400,10 @@ class Line(Shape):
         return [(phi-180)%360, phi % 360][tries.index(min(tries))]
     
     def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True) -> tuple['Line', pointLike]:
+        oldLine = Line(*sorted([oldLine.p1, oldLine.p2], key=lambda x: x[0]))
+        newLine = Line(*sorted([newLine.p1, newLine.p2], key=lambda x: x[0]))
         mvement = Polygon(oldLine.p1, oldLine.p2, newLine.p2, newLine.p1)
-        k = lambda x: x[0]
-        oldLnSorted = Line(*sorted([oldLine.p1, oldLine.p2], key=k))
-        newLnSorted = Line(*sorted([newLine.p1, newLine.p2], key=k))
-        edgeLns = Shapes(Line(oldLnSorted.p1, newLnSorted.p1), Line(oldLnSorted.p2, newLnSorted.p2))
+        thisT = math.degrees(math.atan2(accel[1], accel[0]))+90
         points = []
         hit = False
         for o in objs:
@@ -414,8 +413,8 @@ class Line(Shape):
                 for p in ps:
                     if not mvement.collides(Point(*p)):
                         continue
-                    cPoint = oldLine.closestPointTo(Point(*p)) # Closest point on THIS line
-                    all(ln.collides(o) for ln in edgeLns)
+                    # The rotation is making sure the line crosses the oldLine
+                    cPoint = oldLine.closestPointTo(Line(p, rotate(p, [p[0], p[1]+abs(accel[0])+abs(accel[1])], 360-thisT)))
                     points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2])
                     #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
                     break
@@ -444,20 +443,20 @@ class Line(Shape):
         if typ == -1: # Reflect back the way you came
             normal = math.degrees(math.atan2(accel[1], accel[0]))+90
         elif typ == 0: # Reflect off other object's tangent
-            t = closestObj.tangent(closestP, accel)
-            normal = t-90
+            normal = closestObj.tangent(closestP, accel)-90
         else: # elf typ == 1: # Reflect off this line's tangent
             normal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))+90 # The angle of the line
         # The total movement - the distance between the closest point on the other object and the corresponding point on this one
-        dist_left = math.sqrt((closestP[0]-cPoint[0])**2 + (closestP[1]-cPoint[1])**2)
-        x, y = cPoint[0] - closestP[0], cPoint[1] - closestP[1]
+        newPoint = newLine.closestPointTo(Line(closestP, rotate(closestP, [closestP[0], closestP[1]-abs(accel[0])-abs(accel[1])], 360-thisT)))
+        dist_left = math.sqrt((newPoint[0]-closestP[0])**2 + (newPoint[1]-closestP[1])**2)
+        x, y = newPoint[0] - closestP[0], newPoint[1] - closestP[1] # TOSIMPLIFY
         phi = math.degrees(math.atan2(y, x))-90 # The angle of incidence
         diff = (phi - normal) % 360 # The difference between the angle of incidence and the normal
         if diff > 180:
             diff -= 360
-        pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], normal - diff)
+        pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], phi-180-diff*2)
         accel = list(rotate([0, 0], accel, 180-diff*2))
-        diff2Point = (cPoint[0]-closestP[0], cPoint[1]-closestP[1])
+        diff2Point = (closestP[0]-cPoint[0], closestP[1]-cPoint[1])
         odiff = (pos[0]-cPoint[0], pos[1]-cPoint[1])
         # HACK
         smallness = rotate([0,0], [0,dist_left/AVERYLARGENUMBER], phi-180-diff*2)
@@ -699,12 +698,12 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
             ps = [i.closestPointTo(othershape) for i in self.toLines()]
             ps.sort(key=lambda x: abs(x[0]-othershape[0])**2+abs(x[1]-othershape[1])**2)
             if returnAll:
-                return ps
+                return [ps]
             return ps[0]
         elif isinstance(othershape, Line):
             colls = self.whereCollides(othershape)
             if colls != []:
-                return colls[0]
+                return colls
             def calculate(ln, oln, recalculate):
                 p2 = oln.closestPointTo(ln)
                 p = ln.closestPointTo(Point(*p2))

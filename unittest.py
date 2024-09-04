@@ -35,12 +35,33 @@ def testCollisions():
     outLine, outaccel = collisions.Line((1, 0), (2, -1)).handleCollisionsAccel([0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
     assert roundTuple(outLine.p1) == (1, -1)
     assert roundTuple(outLine.p2) == (2, -2)
-    assert roundTuple(outaccel) == (0, -2)
+    assert roundTuple(outaccel) == (0, -3)
     # /
     #+--+
     #|  |
     #|  |
     #+--+
+
+    outLine, outaccel = collisions.Line((2, -1), (1, 0)).handleCollisionsAccel([0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
+    assert roundTuple(outLine.p1) == (1, -1)
+    assert roundTuple(outLine.p2) == (2, -2)
+    assert roundTuple(outaccel) == (0, -3)
+    # /
+    #+--+
+    #|  |
+    #|  |
+    #+--+
+
+    outLine, outaccel = collisions.Line((0, 0), (2, -2)).handleCollisionsAccel([0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
+    assert roundTuple(outLine.p1) == (1, -1)
+    assert roundTuple(outLine.p2) == (2, -2)
+    assert roundTuple(outaccel) == (0, -3)
+    # /
+    #/
+    # +--+
+    # |  |
+    # |  |
+    # +--+
 
     print('IT ALL WORKS YAY')
 
