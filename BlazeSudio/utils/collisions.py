@@ -338,6 +338,8 @@ class Line(Shape):
         elif isinstance(othershape, Line):
             colls = self.whereCollides(othershape)
             if colls != []:
+                if returnAll:
+                    return colls
                 return colls[0]
             def calculate(ln, point, recalculate):
                 p2 = ln.closestPointTo(Point(*point))
@@ -361,6 +363,8 @@ class Line(Shape):
         else: # Rects, Rotated rects and polygons
             colls = self.whereCollides(othershape)
             if colls != []:
+                if returnAll:
+                    return colls
                 return colls[0]
             def calculate(ln, point, recalculate):
                 p2 = ln.closestPointTo(Point(*point))
@@ -409,7 +413,7 @@ class Line(Shape):
         for o in objs:
             if o.collides(mvement):
                 hit = True
-                ps = o.closestPointTo(oldLine, True)
+                ps = o.whereCollides(mvement) # o.closestPointTo(oldLine, True)
                 for p in ps:
                     if not mvement.collides(Point(*p)):
                         continue
@@ -703,7 +707,9 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         elif isinstance(othershape, Line):
             colls = self.whereCollides(othershape)
             if colls != []:
-                return colls
+                if returnAll:
+                    return colls
+                return colls[0]
             def calculate(ln, oln, recalculate):
                 p2 = oln.closestPointTo(ln)
                 p = ln.closestPointTo(Point(*p2))
@@ -726,6 +732,8 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         else:
             colls = self.whereCollides(othershape)
             if colls != []:
+                if returnAll:
+                    return colls
                 return colls[0]
             def calculate(ln, point, recalculate):
                 p2 = ln.closestPointTo(Point(*point))

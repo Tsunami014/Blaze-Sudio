@@ -5,6 +5,7 @@ def testCollisions():
     from BlazeSudio.utils import collisions
     def roundTuple(t):
         return tuple(round(x, 2) for x in t)
+    
     outpos, outaccel = collisions.Point(2, 0).handleCollisionsAccel([0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
     assert roundTuple(outpos) == (2, 0) # It rebounded perfectly and now is exactly where it started
     assert roundTuple(outaccel) == (0, -2) # It is now going the opposite direction
@@ -47,6 +48,16 @@ def testCollisions():
     assert roundTuple(outLine.p2) == (2, -2)
     assert roundTuple(outaccel) == (0, -3)
     # /
+    #+--+
+    #|  |
+    #|  |
+    #+--+
+
+    outLine, outaccel = collisions.Line((0, 0), (1, -1)).handleCollisionsAccel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
+    assert roundTuple(outLine.p1) == (2, 0)
+    assert roundTuple(outLine.p2) == (3, -1)
+    assert roundTuple(outaccel) == (2, -2)
+    # /-/
     #+--+
     #|  |
     #|  |
