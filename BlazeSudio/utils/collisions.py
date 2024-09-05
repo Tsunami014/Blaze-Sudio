@@ -1012,6 +1012,29 @@ class Polygon(ClosedShape):
     def __str__(self):
         return f'<Polygon with points {self.points}>'
 
+class ShapeCombiner:
+    @classmethod
+    def to_rects(cls, *shapes: Rect, encapsulate: bool = False) -> Shapes:
+        if encapsulate:
+            rs = [s.rect() for s in shapes]
+            mins, maxs = [
+                min(i[0] for i in rs),
+                min(i[1] for i in rs)
+            ], [
+                max(i[2] for i in rs),
+                max(i[3] for i in rs)
+            ]
+            return Shapes(Rect(
+                *mins,
+                maxs[0]-mins[0],
+                maxs[1]-mins[1]
+            ))
+        return Shapes() # TODO
+
+    @classmethod
+    def to_polygons(cls, *shapes: Shape) -> Shapes:
+        return Shapes() # TODO
+
 # TODO: colliding VELOCITY, not accel
 # TODO: Ovals, ovaloids and arcs (Ellipse & capsule)
 # TODO: Can also input pointlike, linelike (2 points) and polygon-like iterables into all functions to reduce conversion
