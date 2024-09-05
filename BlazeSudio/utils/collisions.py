@@ -433,7 +433,7 @@ class Line(Shape):
         for o in objs:
             if o.collides(mvement):
                 hit = True
-                ps = o.whereCollides(mvement) # o.closestPointTo(oldLine, True)
+                ps = o.whereCollides(mvement) + [i for i in o.closestPointTo(oldLine, True) if mvement.collides(Point(*i))]
                 for p in ps:
                     # The rotation is making sure the line crosses the oldLine
                     cPoint = oldLine.closestPointTo(Line(p, (p[0]-accel[0],p[1]-accel[1])))
@@ -454,28 +454,49 @@ class Line(Shape):
         closestObj = points[0][1]
         newPoint = newLine.closestPointTo(Line(closestP, (closestP[0]+accel[0],closestP[1]+accel[1]))) # closestP projected onto the newLine
 
-        # TODO: both are False if the objects are both lines and they are paralel
-        thisIsOnP = oldLine.isCorner(cPoint, precision)
-        otherIsOnP = closestObj.isCorner(p, precision)
-        if thisIsOnP and otherIsOnP: # Point off point collision
-            collTyp = 0
-            # Reflect off the same way as you came in (as if you can land an infintesimally small point on another infintesimally small point anyway)
-            normal, phi = 0, 0
-        elif thisIsOnP and (not otherIsOnP): # Point off line
-            collTyp = 1
-            # Reflect off the other object's normal to the point
-            normal = closestObj.tangent(closestP, accel)-90
-            phi = math.degrees(math.atan2(newPoint[1] - closestP[1], newPoint[0] - closestP[0]))-90 # The angle of incidence
-        elif (not thisIsOnP) and otherIsOnP: # Line off point
-            collTyp = 2
-            # Reflect off this line's normal
-            normal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))-180 # The normal off the line
-            phi = math.degrees(math.atan2(closestP[1] - newPoint[1], closestP[0] - newPoint[0]))-90 # The angle of incidence
-        else: # elif (not thisIsOnP) and (not otherIsOnP): # Line off line
+        thisNormal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))
+        paralell = False
+        cLine = None
+        if isinstance(closestObj, Line):
+            cLine = closestObj
+        elif isinstance(closestObj, ClosedShape):
+            colllidingLns = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
+            if colllidingLns != []:
+                cLine = colllidingLns[0]
+        if cLine is not None:
+            sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
+            otherLnNormal = math.degrees(math.atan2(sortedOtherLn[0][1]-sortedOtherLn[1][1], sortedOtherLn[0][0]-sortedOtherLn[1][0]))
+            paralell = otherLnNormal % 360 == thisNormal % 360 or (otherLnNormal - 180) % 360 == thisNormal % 360
+        accelDiff = 180
+        if paralell: # Line off line
             collTyp = 3
             # Reflect off the object's normal to the point (but really could be either point; the tangents *should* be the same)
-            normal = 0 # TODO
-            phi = 0 # TODO
+            normal = thisNormal
+            phi = math.degrees(math.atan2(newPoint[1] - closestP[1], newPoint[0] - closestP[0]))-90
+        else:
+            thisIsOnP = oldLine.isCorner(cPoint, precision)
+            otherIsOnP = closestObj.isCorner(closestP, precision)
+            if thisIsOnP and otherIsOnP: # Point off point collision
+                collTyp = 0
+                # Reflect off the same way as you came in (as if you can land an infintesimally small point on another infintesimally small point anyway)
+                normal, phi = 0, 0
+            elif thisIsOnP and (not otherIsOnP): # Point off line
+                collTyp = 1
+                # Reflect off the other object's normal to the point
+                normal = closestObj.tangent(closestP, accel)-90
+                phi = math.degrees(math.atan2(newPoint[1] - closestP[1], newPoint[0] - closestP[0]))-90 # The angle of incidence
+            elif (not thisIsOnP) and otherIsOnP: # Line off point
+                collTyp = 2
+                # Reflect off this line's normal
+                normal = thisNormal-90 # The normal off the line
+                phi = math.degrees(math.atan2(closestP[1] - newPoint[1], closestP[0] - newPoint[0]))-90 # The angle of incidence
+                accelDiff = 0
+            else:
+                raise TypeError(
+                    'Cannot have a line reflecting off of another line when they aren\'t paralell; something bad must have occured!'
+                )
+                collTyp = None
+                normal, phi = 0, 0
 
         # the distance between the closest point on the other object and the corresponding point on the newLine
         dist_left = math.sqrt((newPoint[0]-closestP[0])**2 + (newPoint[1]-closestP[1])**2)
@@ -483,7 +504,7 @@ class Line(Shape):
         if diff > 180: # Do we even need this?
             diff -= 360
         pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], phi-180-diff*2)
-        accel = list(rotateBy0(accel, 180-diff*2))
+        accel = list(rotateBy0(accel, accelDiff-diff*2))
         diff2Point = (closestP[0]-cPoint[0], closestP[1]-cPoint[1])
         odiff = (pos[0]-cPoint[0], pos[1]-cPoint[1])
         # HACK
