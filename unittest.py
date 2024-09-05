@@ -1,6 +1,29 @@
 # Contrary to the fact that this is unittest.py, we will not use the unittest library.
 # This is intended for development, not practical use.
 
+def debug(ins, outs, expecteds, formatter, offsets, highlights=None):
+    sins = [str(i) for i in ins]
+    souts = [str(i) for i in outs]
+    sxpecteds = [str(i) for i in expecteds]
+    
+    max_lens = [max(len(sins[i]), len(souts[i]), len(sxpecteds[i])) for i in range(len(sins))]
+    ins, outs, expecteds = ([f'{i[j]:<{max_lens[j]}}' for j in range(len(i))] for i in [sins, souts, sxpecteds])
+    
+    print('In:       '+formatter(ins))
+    print('Out:      '+formatter(outs))
+    print('Expected: '+formatter(expecteds))
+    
+    if highlights is not None:
+        # Calculate the position of the highlight
+        highlight_positions = [sum(max_lens[:i]) + 2 * i + 1 for i in range(len(ins))]
+        highlight_line = ' ' * 11  # Initial spaces for alignment
+        prevlns = 0
+        for h in highlights:
+            new = ' ' * (highlight_positions[h]+offsets[h]-prevlns) + '^' * max_lens[h]
+            highlight_line += new
+            prevlns += len(new)
+        print(highlight_line)
+
 def testCollisions():
     from BlazeSudio.utils import collisions
     def roundTuple(t):
@@ -36,36 +59,8 @@ def testCollisions():
     #|  |
     #+--+
 
-    def testLine(line, accel, shapes, expectedp1, expectedp2, expectedaccel):
-        outLine, outaccel = collisions.Line(*line).handleCollisionsAccel(accel, collisions.Shapes(*shapes))
-        
-        def debug(highlights=None):
-            ins = [str(i) for i in [line[0][0], line[0][1], line[1][0], line[1][1], accel[0], accel[1]]]
-            outs = [str(i) for i in [outLine[0][0], outLine[0][1], outLine[1][0], outLine[1][1], outaccel[0], outaccel[1]]]
-            expecteds = [str(i) for i in [expectedp1[0], expectedp1[1], expectedp2[0], expectedp2[1], expectedaccel[0], expectedaccel[1]]]
-            
-            max_lens = [max(len(ins[i]), len(outs[i]), len(expecteds[i])) for i in range(len(ins))]
-            ins, outs, expecteds = ([f'{i[j]:<{max_lens[j]}}' for j in range(len(i))] for i in [ins, outs, expecteds])
-            def formatLi(li):
-                return f'[({li[0]}, {li[1]}), ({li[2]}, {li[3]})], ({li[4]}, {li[5]})'
-            
-            print('In:       '+formatLi(ins))
-            print('Out:      '+formatLi(outs))
-            print('Expected: '+formatLi(expecteds))
-            
-            if highlights is not None:
-                # Calculate the position of the highlight
-                highlight_positions = [sum(max_lens[:i]) + 2 * i + 1 for i in range(len(ins))]
-                offsets = [0, 0, 2, 2, 5, 5]
-                highlight_line = ' ' * 11  # Initial spaces for alignment
-                prevlns = 0
-                for h in highlights:
-                    new = ' ' * (highlight_positions[h]+offsets[h]-prevlns) + '^' * max_lens[h]
-                    highlight_line += new
-                    prevlns += len(new)
-                print(highlight_line)
-        
-        # debug()
+    def testLine(testName, line, accel, shapes, expectedp1, expectedp2, expectedaccel, expectedtype):
+        outLine, outaccel, v = collisions.Line(*line).handleCollisionsAccel(accel, collisions.Shapes(*shapes), verbose=True)
         errors = []
         errortxts = []
         if roundTuple(outLine[0]) != expectedp1:
@@ -77,54 +72,77 @@ def testCollisions():
         if roundTuple(outaccel) != expectedaccel:
             errors.extend([4, 5])
             errortxts.append(f'In accel: Expected {expectedaccel}, got {outaccel}')
+        if v[0] != expectedtype:
+            errors.append(6)
+            errortxts.append(f'In type: Expected a collision type of {expectedtype}, got {v[0]}')
         if errors != []:
-            debug(errors)
+            print(f'TEST {testName} FAILED:')
+            debug(
+                [*line[0], *line[1], *accel, 'N/A'],
+                [*outLine[0], *outLine[1], *outaccel, v[0]],
+                [*expectedp1, *expectedp2, *expectedaccel, expectedtype],
+                lambda li: f'[({li[0]}, {li[1]}), ({li[2]}, {li[3]})], ({li[4]}, {li[5]}), {li[6]}',
+                [0, 0, 2, 2, 5, 5, 6],
+                errors
+            )
             raise AssertionError(
                 ' &\n'.join(errortxts)
             )
     
-    testLine(((1, 0), (2, -1)), [0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
-             (1, -1), (2, -2), (0, -3))
+    # Types of collisions:
+    # 0: Point off point collision
+    # 1: Point off line collision
+    # 2: Line off point collision
+    # 3: Line off line collision
+    
+    testLine('Basic point off line',
+             ((1, 0), (2, -1)), [0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             (1, -1), (2, -2), (0, -3), 1)
     # /
     #+--+
     #|  |
     #|  |
     #+--+
 
-    testLine(((2, -1), (1, 0)), [0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
-             (1, -1), (2, -2), (0, -3))
+    testLine('Basic point off line 2: points reversed',
+             ((2, -1), (1, 0)), [0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             (1, -1), (2, -2), (0, -3), 1)
     # /
     #+--+
     #|  |
     #|  |
     #+--+
 
-    testLine(((1, 0.9), (2, 0)), [0, 0.3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
-             (1, 0.8), (2, -0.1), (0, -0.3))
+    testLine('Basic point off line 3: closer to rect',
+             ((1, 0.9), (2, 0)), [0, 0.3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             (1, 0.8), (2, -0.1), (0, -0.3), 1)
     # /
     #+--+
     #|  |
     #|  |
     #+--+
 
-    testLine(((2, -3), (4, -4)), [0, 6], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
-             (2, -1), (4, -2), (0, -6))
+    testLine('Basic point off line 4: further from rect',
+             ((2, -3), (4, -4)), [0, 6], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             (2, -1), (4, -2), (0, -6), 1)
     # /
     #+--+
     #|  |
     #|  |
     #+--+
 
-    testLine(((0, 0), (1, -1)), [2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
-             (2, 0), (3, -1), (2, -2))
+    testLine('V shape bounce point off line',
+             ((0, 0), (1, -1)), [2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             (2, 0), (3, -1), (2, -2), 1)
     #/v/
     #+--+
     #|  |
     #|  |
     #+--+
 
-    testLine(((0, 1), (1, 0)), [1, 1], collisions.Shapes(collisions.Rect(0.5, 0.5, 4, 4)),
-             (0, 1), (1, 0), (-1, -1))
+    testLine('Line bounce off rect corner',
+             ((0, 1), (1, 0)), [1, 1], collisions.Shapes(collisions.Rect(0.5, 0.5, 4, 4)),
+             (0, 1), (1, 0), (-1, -1), 2)
     #/+--+
     # |  |
     # |  |

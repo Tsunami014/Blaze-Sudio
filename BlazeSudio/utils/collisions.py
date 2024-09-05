@@ -1,6 +1,7 @@
 import math
-from typing import Union, Iterable
+from typing import Union, Iterable, Any
 Number = Union[int, float]
+verboseOutput = Union[Iterable[Any], None]
 pointLike = Union['Point', Iterable[Number]]
 AVERYSMALLNUMBER = 1e-6
 
@@ -417,7 +418,10 @@ class Line(Shape):
         tries = [fixangle(phi-toDeg), fixangle(phi-toDeg-180)]
         return [(phi-180)%360, phi % 360][tries.index(min(tries))]
     
-    def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True) -> tuple['Line', pointLike]:
+    def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True, verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
+        # This function's verbose output: [
+        # CollisionType?: list[int, ...], ; This is the type of collision that happened, and it includes each type of collision for each sub-collision
+        # ]
         oldLine = Line(*sorted([oldLine.p1, oldLine.p2], key=lambda x: x[0]))
         newLine = Line(*sorted([newLine.p1, newLine.p2], key=lambda x: x[0]))
         mvement = Polygon(oldLine.p1, oldLine.p2, newLine.p2, newLine.p1)
@@ -436,9 +440,13 @@ class Line(Shape):
                     #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
                     break
         if not hit:
+            if verbose:
+                return newLine, accel, []
             return newLine, accel
         # Don't let you move when you're in a wall
         if points == []:
+            if verbose:
+                return oldLine, [0, 0], []
             return oldLine, [0, 0]
         points.sort(key=lambda x: x[3])
         closestP = points[0][0] # Closest point on the OTHER object
@@ -450,17 +458,21 @@ class Line(Shape):
         thisIsOnP = oldLine.isCorner(cPoint)
         otherIsOnP = closestObj.isCorner(p)
         if thisIsOnP and otherIsOnP: # Point off point collision
+            collTyp = 0
             # Reflect off the same way as you came in (as if you can land an infintesimally small point on another infintesimally small point anyway)
             normal, phi = 0, 0
         elif thisIsOnP and (not otherIsOnP): # Point off line
+            collTyp = 1
             # Reflect off the other object's normal to the point
             normal = closestObj.tangent(closestP, accel)-90
             phi = math.degrees(math.atan2(newPoint[1] - closestP[1], newPoint[0] - closestP[0]))-90 # The angle of incidence
         elif (not thisIsOnP) and otherIsOnP: # Line off point
+            collTyp = 2
             # Reflect off this line's normal
             normal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))-180 # The normal off the line
             phi = math.degrees(math.atan2(closestP[1] - newPoint[1], closestP[0] - newPoint[0]))-90 # The angle of incidence
         else: # elif (not thisIsOnP) and (not otherIsOnP): # Line off line
+            collTyp = 3
             # Reflect off the object's normal to the point (but really could be either point; the tangents *should* be the same)
             normal = 0 # TODO
             phi = 0 # TODO
@@ -477,18 +489,24 @@ class Line(Shape):
         # HACK
         smallness = rotateBy0([0, AVERYSMALLNUMBER], phi-180-diff*2)
         newp1, newp2 = (oldLine.p1[0]+odiff[0], oldLine.p1[1]+odiff[1]), (oldLine.p2[0]+odiff[0], oldLine.p2[1]+odiff[1])
-        out, outaccel = self.handleCollisionsPos(
+        o = self.handleCollisionsPos(
             Line((oldLine.p1[0]+diff2Point[0]+smallness[0], oldLine.p1[1]+diff2Point[1]+smallness[1]), 
                  (oldLine.p2[0]+diff2Point[0]+smallness[0], oldLine.p2[1]+diff2Point[1]+smallness[1])), 
-            Line(newp1, newp2), objs, accel, False)
+            Line(newp1, newp2), objs, accel, False, verbose)
+        out, outaccel = o[0], o[1]
         if replaceSelf:
             self.p1, self.p2 = out.p1, out.p2
+        if verbose:
+            return out, outaccel, [collTyp, *o[2]]
         return out, outaccel
 
-    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Line', pointLike]:
-        out, outaccel = self.handleCollisionsPos(self, Line((self.p1[0]+accel[0], self.p1[1]+accel[1]), (self.p2[0]+accel[0], self.p2[1]+accel[1])), objs, accel, False)
+    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True, verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
+        o = self.handleCollisionsPos(self, Line((self.p1[0]+accel[0], self.p1[1]+accel[1]), (self.p2[0]+accel[0], self.p2[1]+accel[1])), objs, accel, False, verbose)
+        out, outaccel = o[0], o[1]
         if replaceSelf:
             self.p1, self.p2 = out.p1, out.p2
+        if verbose:
+            return out, outaccel, o[2]
         return out, outaccel
     
     def copy(self) -> 'Line':

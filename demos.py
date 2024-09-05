@@ -569,7 +569,7 @@ def OCollisionsDemo():
     accel = [0, 0]
     maxcombinetyps = 2
     
-    def drawObj(obj, t, col):
+    def drawObj(obj, t, col): # TODO: Work off of type(obj), not t. ALSO # TODO: things like; If a rect has w and h of 0, draw a dot instead.
         if t == 7: # As well as drawing the point, outline the shapes to be combined
             for o in objs:
                 if isinstance(o, highlightTyps[dir[3]]) and o.collides(curObj):
