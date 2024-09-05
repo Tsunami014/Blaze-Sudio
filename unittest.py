@@ -39,40 +39,43 @@ def testCollisions():
     def testLine(line, accel, shapes, expectedp1, expectedp2, expectedaccel):
         outLine, outaccel = collisions.Line(*line).handleCollisionsAccel(accel, collisions.Shapes(*shapes))
         
-        def debug(highlights=[]):
-            ins = [str(accel[0]), str(accel[1])]
-            outs = [str(i) for i in [outLine.p1[0], outLine.p1[1], outaccel[0], outaccel[1]]]
-            expecteds = [str(i) for i in [expectedp1[0], expectedp1[1], expectedaccel[0], expectedaccel[1]]]
+        def debug(highlights=None):
+            ins = [str(i) for i in [line[0][0], line[0][1], line[1][0], line[1][1], accel[0], accel[1]]]
+            outs = [str(i) for i in [outLine[0][0], outLine[0][1], outLine[1][0], outLine[1][1], outaccel[0], outaccel[1]]]
+            expecteds = [str(i) for i in [expectedp1[0], expectedp1[1], expectedp2[0], expectedp2[1], expectedaccel[0], expectedaccel[1]]]
             
-            max_lens = [max(len(outs[i]), len(expecteds[i]), len(ins[i-2]) if i >= 2 else 0) for i in range(4)]
+            max_lens = [max(len(ins[i]), len(outs[i]), len(expecteds[i])) for i in range(len(ins))]
+            ins, outs, expecteds = ([f'{i[j]:<{max_lens[j]}}' for j in range(len(i))] for i in [ins, outs, expecteds])
+            def formatLi(li):
+                return f'[({li[0]}, {li[1]}), ({li[2]}, {li[3]})], ({li[4]}, {li[5]})'
             
-            print(f'In:       {str(line):<{sum(max_lens[:2])+4}} ({ins[0]:<{max_lens[2]}}, {ins[1]:<{max_lens[3]}})')
-            print(f'Out:      ({outs[0]:<{max_lens[0]}}, {outs[1]:<{max_lens[1]}}) ({outs[2]:<{max_lens[2]}}, {outs[3]:<{max_lens[3]}})')
-            print(f'Expected: ({expecteds[0]:<{max_lens[0]}}, {expecteds[1]:<{max_lens[1]}}) ({expecteds[2]:<{max_lens[2]}}, {expecteds[3]:<{max_lens[3]}})')
+            print('In:       '+formatLi(ins))
+            print('Out:      '+formatLi(outs))
+            print('Expected: '+formatLi(expecteds))
             
-            if highlights != []:
+            if highlights is not None:
                 # Calculate the position of the highlight
-                highlight_positions = [sum(max_lens[:i]) + 2 * i + 1 for i in range(4)]
-                offsets = [0, 0, 1, 1]
-                highlight_line = ' ' * 10  # Initial spaces for alignment
+                highlight_positions = [sum(max_lens[:i]) + 2 * i + 1 for i in range(len(ins))]
+                offsets = [0, 0, 2, 2, 5, 5]
+                highlight_line = ' ' * 11  # Initial spaces for alignment
                 prevlns = 0
                 for h in highlights:
                     new = ' ' * (highlight_positions[h]+offsets[h]-prevlns) + '^' * max_lens[h]
                     highlight_line += new
                     prevlns += len(new)
-    
                 print(highlight_line)
+        
         # debug()
         errors = []
         errortxts = []
-        if roundTuple(outLine.p1) != expectedp1:
-            errors.append(0)
-            errortxts.append(f'In p1: Expected {expectedp1}, got {outLine.p1}')
-        if roundTuple(outLine.p2) != expectedp2:
-            errors.append(1)
-            errortxts.append(f'In p2: Expected {expectedp2}, got {outLine.p2}')
-        if roundTuple(outaccel) != expectedaccel:
+        if roundTuple(outLine[0]) != expectedp1:
+            errors.extend([0, 1])
+            errortxts.append(f'In p1: Expected {expectedp1}, got {outLine[0]}')
+        if roundTuple(outLine[1]) != expectedp2:
             errors.extend([2, 3])
+            errortxts.append(f'In p2: Expected {expectedp2}, got {outLine[1]}')
+        if roundTuple(outaccel) != expectedaccel:
+            errors.extend([4, 5])
             errortxts.append(f'In accel: Expected {expectedaccel}, got {outaccel}')
         if errors != []:
             debug(errors)
@@ -90,6 +93,14 @@ def testCollisions():
 
     testLine(((2, -1), (1, 0)), [0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
              (1, -1), (2, -2), (0, -3))
+    # /
+    #+--+
+    #|  |
+    #|  |
+    #+--+
+
+    testLine(((1, 0.9), (2, 0)), [0, 0.3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             (1, 0.8), (2, -0.1), (0, -0.3))
     # /
     #+--+
     #|  |
