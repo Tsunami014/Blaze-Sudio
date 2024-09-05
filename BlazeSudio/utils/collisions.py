@@ -463,6 +463,8 @@ class Line(Shape):
             colllidingLns = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
             if colllidingLns != []:
                 cLine = colllidingLns[0]
+        elif isinstance(closestObj, Circle):
+            paralell = True
         if cLine is not None:
             sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
             otherLnNormal = math.degrees(math.atan2(sortedOtherLn[0][1]-sortedOtherLn[1][1], sortedOtherLn[0][0]-sortedOtherLn[1][0]))
