@@ -1,14 +1,20 @@
 # Contrary to the fact that this is unittest.py, we will not use the unittest library.
 # This is intended for development, not practical use.
 
-def debug(ins, outs, expecteds, formatter, offsets, highlights=None):
+def debug(names, ins, outs, expecteds, formatter, offsets, highlights=None):
     sins = [str(i) for i in ins]
     souts = [str(i) for i in outs]
     sxpecteds = [str(i) for i in expecteds]
+
+    def adjust(t, ln):
+        return t + ' ' * (ln - len(t))
+        # return ' ' * ((ln - len(t)) // 2) + t + ' ' * ((ln - len(t) + 1) // 2)
     
-    max_lens = [max(len(sins[i]), len(souts[i]), len(sxpecteds[i])) for i in range(len(sins))]
-    ins, outs, expecteds = ([f'{i[j]:<{max_lens[j]}}' for j in range(len(i))] for i in [sins, souts, sxpecteds])
+    ls = [names, sins, souts, sxpecteds]
+    max_lens = [max(len(j[i]) for j in ls) for i in range(len(sins))]
+    names, ins, outs, expecteds = ([adjust(i[j],max_lens[j]) for j in range(len(i))] for i in ls)
     
+    print('          '+formatter(names))
     print('In:       '+formatter(ins))
     print('Out:      '+formatter(outs))
     print('Expected: '+formatter(expecteds))
@@ -78,6 +84,7 @@ def testCollisions():
         if errors != []:
             print(f'TEST {testName} FAILED:')
             debug(
+                ['p1x', 'p1y', 'p2x', 'p2y', 'accelx', 'accely', 'type'],
                 [*line[0], *line[1], *accel, 'N/A'],
                 [*outLine[0], *outLine[1], *outaccel, v[0]],
                 [*expectedp1, *expectedp2, *expectedaccel, expectedtype],
