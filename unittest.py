@@ -29,6 +29,8 @@ def debug(names, ins, outs, expecteds, formatter, offsets, highlights=None):
             highlight_line += new
             prevlns += len(new)
         print(highlight_line)
+    else:
+        print()
 
 def testCollisions():
     from BlazeSudio.utils import collisions
@@ -145,6 +147,14 @@ def testCollisions():
     #+--+
     #|  |
     #|  |
+    #+--+
+
+    testLine('Non-basic copied from a (hopefully previously) incorrect scenario in demos.py',
+             ((620.52, 584), (670.52, 684)), [-3.52, 0], collisions.Shapes(collisions.Rect(520, 547, 100, 100)),
+             (617, 584), (667, 684), (3.52, 0), 1)
+    #+--+
+    #|  |
+    #|  |/
     #+--+
 
     testLine('Line bounce off rect corner',
