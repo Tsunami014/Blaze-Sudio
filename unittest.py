@@ -151,14 +151,20 @@ def testCollisions():
 
     testLine('Non-basic copied from a (hopefully previously) incorrect scenario in demos.py',
              ((620.52, 584), (670.52, 684)), [-3.52, 0], collisions.Shapes(collisions.Rect(520, 547, 100, 100)),
-             (617, 584), (667, 684), (3.52, 0), 1)
+             (623, 584), (673, 684), (3.52, 0), 1)
     #+--+
     #|  |
     #|  |/
     #+--+
 
+    testLine('Line bounce off another paralell line',
+             ((0, 1), (1, 0)), [0, 2], collisions.Shapes(collisions.Line((0, 2), (1, 1))),
+             (-1, 2), (0, 1), (-2, 0), 3)
+    #/
+    #/
+
     testLine('Line bounce off rect corner',
-             ((0, 1), (1, 0)), [1, 1], collisions.Shapes(collisions.Rect(0.5, 0.5, 4, 4)),
+             ((0, 1), (1, 0)), [1, 1], collisions.Shapes(collisions.Rect(1, 1, 4, 4)),
              (0, 1), (1, 0), (-1, -1), 2)
     #/+--+
     # |  |
