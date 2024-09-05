@@ -667,14 +667,15 @@ def OCollisionsDemo():
                     elif typ == 6:
                         curObj = collisions.Point(*event.pos)
                     else: # Last item in list - help menu
-                        pygame.draw.rect(win, (155, 155, 155), (win.get_width()//4, win.get_height()//4, win.get_width()//2, win.get_height()//2), border_radius=8)
+                        ratio = 5
+                        pygame.draw.rect(win, (155, 155, 155), (win.get_width()//ratio, win.get_height()//ratio, win.get_width()//ratio*(ratio-2), win.get_height()//ratio*(ratio-2)), border_radius=8)
                         win.blit(FFONT.render("""How to use:
 Click on one of the options at the top to change your tool. Pressing space adds it to the board. The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too.
 Holding shift in this mode shows the normals, and holding control shows the closest points to the object!
-And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity!
+And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity!
 And pressing 'r' will reset everything without warning.
  
-Press any key/mouse to close this window""",0,allowed_width=win.get_width()//2-4), (win.get_width()//4+2, win.get_height()//4+2))
+Press any key/mouse to close this window""",0,allowed_width=win.get_width()//ratio*(ratio-2)-4), (win.get_width()//ratio+2, win.get_height()//ratio+2))
                         run2 = True
                         pygame.display.update()
                         while run2:
@@ -718,17 +719,23 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//2-4
         
         if playMode:
             if pygame.key.get_mods() & pygame.KMOD_SHIFT:
-                accel[1] += 0.2
+                if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    gravity = [0, -0.2]
+                else:
+                    gravity = [0, 0.2]
+            else:
+                gravity = [0, 0]
+            accel = [accel[0] + gravity[0], accel[1] + gravity[1]]
             accellLimits = [10, 10]
             accel = [min(max(accel[0], -accellLimits[0]), accellLimits[0]), min(max(accel[1], -accellLimits[1]), accellLimits[1])]
-            gravity = [0.02, 0.02]
-            def grav_eff(x, grav):
-                if x < -grav:
-                    return x + grav
-                if x > grav:
-                    return x - grav
+            friction = [0.02, 0.02]
+            def fric_eff(x, fric):
+                if x < -fric:
+                    return x + fric
+                if x > fric:
+                    return x - fric
                 return 0
-            accel = [grav_eff(accel[0], gravity[0]), grav_eff(accel[1], gravity[1])]
+            accel = [fric_eff(accel[0], friction[0]), fric_eff(accel[1], friction[1])]
             _, accel = curObj.handleCollisionsAccel(accel, objs)
 
         else:

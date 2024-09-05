@@ -341,6 +341,8 @@ class Line(Shape):
         if isinstance(othershape, Point):
             dx, dy = self.p2[0] - self.p1[0], self.p2[1] - self.p1[1]
             det = dx * dx + dy * dy
+            if det == 0:
+                return self.p1
             a = (dy * (othershape[1] - self.p1[1]) + dx * (othershape[0] - self.p1[0])) / det
             a = min(1, max(0, a))
             p = (self.p1[0] + a * dx, self.p1[1] + a * dy)
@@ -419,7 +421,6 @@ class Line(Shape):
         oldLine = Line(*sorted([oldLine.p1, oldLine.p2], key=lambda x: x[0]))
         newLine = Line(*sorted([newLine.p1, newLine.p2], key=lambda x: x[0]))
         mvement = Polygon(oldLine.p1, oldLine.p2, newLine.p2, newLine.p1)
-        thisT = math.degrees(math.atan2(accel[1], accel[0]))+90
         points = []
         hit = False
         for o in objs:
@@ -446,7 +447,7 @@ class Line(Shape):
 
         # TODO: both are False if the objects are both lines and they are paralel
         thisIsOnP = oldLine.isCorner(cPoint)
-        otherIsOnP = o.isCorner(p)
+        otherIsOnP = closestObj.isCorner(p)
         if thisIsOnP and otherIsOnP: # Point off point collision
             # Reflect off the same way as you came in (as if you can land an infintesimally small point on another infintesimally small point anyway)
             normal = math.degrees(math.atan2(accel[1], accel[0]))+90
@@ -455,7 +456,7 @@ class Line(Shape):
             normal = closestObj.tangent(closestP, accel)-90
         elif (not thisIsOnP) and otherIsOnP: # Line off point
             # Reflect off the line's tangent
-            normal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))+90 # The angle of the line
+            normal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))-180 # The normal off the line
         else: # elif (not thisIsOnP) and (not otherIsOnP): # Line off line
             # Reflect off the object's tangent to the point (but really could be either 0 or 1; the tangents should be the same)
             # TODO
@@ -465,8 +466,8 @@ class Line(Shape):
         newPoint = newLine.closestPointTo(Line(closestP, (closestP[0]+accel[0],closestP[1]+accel[1])))
         dist_left = math.sqrt((newPoint[0]-closestP[0])**2 + (newPoint[1]-closestP[1])**2)
         phi = math.degrees(math.atan2(newPoint[1] - closestP[1], newPoint[0] - closestP[0]))-90 # The angle of incidence
-        diff = (phi - normal) % 360 # The difference between the angle of incidence and the normal
-        if diff > 180:
+        diff = (phi-normal) % 360 # The difference between the angle of incidence and the normal
+        if diff > 180: # Do we even need this?
             diff -= 360
         pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], phi-180-diff*2)
         accel = list(rotateBy0(accel, 180-diff*2))
@@ -618,7 +619,7 @@ class Circle(Shape):
             qy = self.y + math.cos(angle) * self.r
             if returnAll:
                 return [[qx, qy]]
-            return 
+            return qx, qy
         elif isinstance(othershape, Line):
             return self.closestPointTo(Point(*othershape.closestPointTo(Point(self.x, self.y))), returnAll)
         elif isinstance(othershape, Circle):
@@ -767,7 +768,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
             return tries[0][0]
     
     def isCorner(self, point: pointLike) -> bool:
-        return point in self.toPoints()
+        return list(point) in self.toPoints()
     
     def toLines(self):
         return []
@@ -820,10 +821,10 @@ class Rect(ClosedShape):
     
     def toPoints(self) -> Iterable[pointLike]:
         return [
-            (self.x, self.y),
-            (self.x + self.w, self.y),
-            (self.x + self.w, self.y + self.h),
-            (self.x, self.y + self.h)
+            [self.x, self.y],
+            [self.x + self.w, self.y],
+            [self.x + self.w, self.y + self.h],
+            [self.x, self.y + self.h]
         ]
     
     def copy(self) -> 'Rect':
@@ -999,7 +1000,7 @@ class Polygon(ClosedShape):
         ] + [Line(self.points[len(self.points)-1], self.points[0])]
     
     def toPoints(self) -> Iterable[pointLike]:
-        return self.points
+        return [list(i) for i in self.points]
     
     def copy(self) -> 'Polygon':
         return Polygon(*self.points)
