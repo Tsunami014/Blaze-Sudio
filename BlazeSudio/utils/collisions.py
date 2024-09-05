@@ -4,7 +4,7 @@ Number = Union[int, float]
 verboseOutput = Union[Iterable[Any], None]
 pointLike = Union['Point', Iterable[Number]]
 AVERYSMALLNUMBER = 1e-6
-BASEPRECISION = 3
+BASEPRECISION = 5
 
 def rotate(origin, point, angle):
     """
@@ -435,13 +435,10 @@ class Line(Shape):
                 hit = True
                 ps = o.whereCollides(mvement) # o.closestPointTo(oldLine, True)
                 for p in ps:
-                    if not mvement.collides(Point(*p)):
-                        continue
                     # The rotation is making sure the line crosses the oldLine
                     cPoint = oldLine.closestPointTo(Line(p, (p[0]-accel[0],p[1]-accel[1])))
                     points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2])
                     #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
-                    break
         if not hit:
             if verbose:
                 return newLine, accel, []
