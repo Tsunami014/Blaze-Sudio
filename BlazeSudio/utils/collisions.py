@@ -4,6 +4,7 @@ Number = Union[int, float]
 verboseOutput = Union[Iterable[Any], None]
 pointLike = Union['Point', Iterable[Number]]
 AVERYSMALLNUMBER = 1e-6
+BASEPRECISION = 3
 
 def rotate(origin, point, angle):
     """
@@ -67,7 +68,7 @@ class Shape:
     def closestPointTo(self, othershape: 'Shape', returnAll: bool = False) -> pointLike|Iterable[pointLike]:
         return [0, 0]
     
-    def isCorner(self, point: pointLike) -> bool:
+    def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
         return True
     
     def tangent(self, point: pointLike, accel: pointLike) -> Number:
@@ -132,10 +133,10 @@ class Shapes:
                 points.append(s.closestPointTo(othershape, False))
         return points
     
-    def isCorner(self, point: pointLike) -> dict[Union[Shape,'Shapes']: bool]:
+    def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> dict[Union[Shape,'Shapes']: bool]:
         cs = {}
         for s in self.shapes:
-            cs[s] = s.isCorner(point)
+            cs[s] = s.isCorner(point, precision)
         return cs
     
     def tangent(self, point: pointLike, accel: pointLike) -> pointLike:
@@ -195,7 +196,7 @@ class Point(Shape):
     def getTuple(self) -> tuple[Number]:
         return (self.x, self.y)
     
-    def handleCollisionsPos(self, oldPoint: Union['Point',pointLike], newPoint: Union['Point',pointLike], objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True) -> tuple['Point', pointLike]:
+    def handleCollisionsPos(self, oldPoint: Union['Point',pointLike], newPoint: Union['Point',pointLike], objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True, precision: Number = BASEPRECISION) -> tuple['Point', pointLike]:
         # TODO: Check if the objects collide before finding closest point
         mvement = Line(oldPoint, newPoint)
         if not mvement.collides(objs):
@@ -226,13 +227,13 @@ class Point(Shape):
         accel = list(rotateBy0(accel, 180-diff*2))
         # HACK
         smallness = rotateBy0([0,AVERYSMALLNUMBER], phi-180-diff*2)
-        out, outaccel = self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel, False)
+        out, outaccel = self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel, False, precision)
         if replaceSelf:
             self.x, self.y = out[0], out[1]
         return out, outaccel
 
-    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True) -> tuple['Point', pointLike]:
-        out, outaccel = self.handleCollisionsPos(self, (self.x+accel[0], self.y+accel[1]), objs, accel, False)
+    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True, precision: Number = BASEPRECISION) -> tuple['Point', pointLike]:
+        out, outaccel = self.handleCollisionsPos(self, (self.x+accel[0], self.y+accel[1]), objs, accel, False, precision)
         if replaceSelf:
             self.x, self.y = out[0], out[1]
         return out, outaccel
@@ -400,8 +401,10 @@ class Line(Shape):
                 return [i[0] for i in tries]
             return tries[0][0]
     
-    def isCorner(self, point: pointLike) -> bool:
-        return list(point) == list(self.p1) or list(point) == list(self.p2)
+    def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
+        def rountTuple(x):
+            return (round(x[0], precision), round(x[1], precision))
+        return rountTuple(self.p1) == rountTuple(point) or rountTuple(self.p2) == rountTuple(point)
     
     def tangent(self, point: pointLike, accel: pointLike) -> Number:
         if point == self.p1:
@@ -418,7 +421,7 @@ class Line(Shape):
         tries = [fixangle(phi-toDeg), fixangle(phi-toDeg-180)]
         return [(phi-180)%360, phi % 360][tries.index(min(tries))]
     
-    def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True, verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
+    def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
         # This function's verbose output: [
         # CollisionType?: list[int, ...], ; This is the type of collision that happened, and it includes each type of collision for each sub-collision
         # ]
@@ -455,8 +458,8 @@ class Line(Shape):
         newPoint = newLine.closestPointTo(Line(closestP, (closestP[0]+accel[0],closestP[1]+accel[1]))) # closestP projected onto the newLine
 
         # TODO: both are False if the objects are both lines and they are paralel
-        thisIsOnP = oldLine.isCorner(cPoint)
-        otherIsOnP = closestObj.isCorner(p)
+        thisIsOnP = oldLine.isCorner(cPoint, precision)
+        otherIsOnP = closestObj.isCorner(p, precision)
         if thisIsOnP and otherIsOnP: # Point off point collision
             collTyp = 0
             # Reflect off the same way as you came in (as if you can land an infintesimally small point on another infintesimally small point anyway)
@@ -492,7 +495,7 @@ class Line(Shape):
         o = self.handleCollisionsPos(
             Line((oldLine.p1[0]+diff2Point[0]+smallness[0], oldLine.p1[1]+diff2Point[1]+smallness[1]), 
                  (oldLine.p2[0]+diff2Point[0]+smallness[0], oldLine.p2[1]+diff2Point[1]+smallness[1])), 
-            Line(newp1, newp2), objs, accel, False, verbose)
+            Line(newp1, newp2), objs, accel, False, precision, verbose)
         out, outaccel = o[0], o[1]
         if replaceSelf:
             self.p1, self.p2 = out.p1, out.p2
@@ -500,8 +503,8 @@ class Line(Shape):
             return out, outaccel, [collTyp, *o[2]]
         return out, outaccel
 
-    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True, verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
-        o = self.handleCollisionsPos(self, Line((self.p1[0]+accel[0], self.p1[1]+accel[1]), (self.p2[0]+accel[0], self.p2[1]+accel[1])), objs, accel, False, verbose)
+    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
+        o = self.handleCollisionsPos(self, Line((self.p1[0]+accel[0], self.p1[1]+accel[1]), (self.p2[0]+accel[0], self.p2[1]+accel[1])), objs, accel, False, precision, verbose)
         out, outaccel = o[0], o[1]
         if replaceSelf:
             self.p1, self.p2 = out.p1, out.p2
@@ -652,7 +655,7 @@ class Circle(Shape):
                 return [self.closestPointTo(Point(*p)) for p in ps]
             return self.closestPointTo(Point(*ps[0]))
     
-    def isCorner(self, point: pointLike) -> bool:
+    def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
         return False
 
     def tangent(self, point: pointLike, accel: pointLike) -> Number:
@@ -786,8 +789,11 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                 return [i[0] for i in tries]
             return tries[0][0]
     
-    def isCorner(self, point: pointLike) -> bool:
-        return list(point) in self.toPoints()
+    def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
+        for i in self.toPoints():
+            if round(i[0], precision) == round(point[0], precision) and round(i[1], precision) == round(point[1], precision):
+                return True
+        return False
     
     def toLines(self):
         return []
@@ -924,9 +930,6 @@ class RotatedRect(ClosedShape):
                     return True
             return othershape.collides(Point(self.x, self.y)) or self.collides(Point(othershape.x, othershape.y))
         return othershape._collides(self)
-    
-    def isCorner(self, point: pointLike) -> bool:
-        return list(point) in self.getCache()
     
     def toPoints(self) -> Iterable[pointLike]:
         return self.getCache()
