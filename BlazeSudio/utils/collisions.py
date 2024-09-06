@@ -1058,6 +1058,8 @@ class Polygon(ClosedShape):
 class ShapeCombiner:
     @classmethod
     def to_rects(cls, *shapes: Rect, encapsulate: bool = False) -> Shapes:
+        if not shapes:
+            return Shapes()
         if encapsulate:
             rs = [s.rect() for s in shapes]
             mins, maxs = [
@@ -1076,6 +1078,8 @@ class ShapeCombiner:
 
     @classmethod
     def to_polygons(cls, *shapes: Shape) -> Shapes:
+        if not shapes:
+            return Shapes()
         return Shapes() # TODO
 
 # TODO: colliding VELOCITY, not accel
