@@ -566,9 +566,18 @@ def OCollisionsDemo():
     curObj = collisions.Point(0, 0)
     objs = collisions.Shapes()
     dir = [0, 0, 0]
+    combineTyp = 0
     pos = [0, 0]
     accel = [0, 0]
-    maxcombinetyps = 2
+    maxcombinetyps = 3
+
+    def findCombinedOutput():
+        toCombineObjs = [o for o in objs if isinstance(o, highlightTyps[combineTyp]) and o.collides(curObj)]
+        if combineTyp in (1, 2):
+            combined = collisions.ShapeCombiner.to_rects(*toCombineObjs, encapsulate=combineTyp==2)
+        else:
+            combined = collisions.ShapeCombiner.to_polygons(*toCombineObjs)
+        return combined, toCombineObjs
 
     def drawRect(obj, col):
         if obj.w == 0 and obj.h == 0:
@@ -588,9 +597,11 @@ def OCollisionsDemo():
     
     def drawObj(obj, t, col): # TODO: Work off of type(obj), not t.
         if t == 7: # As well as drawing the point, outline the shapes to be combined
-            for o in objs:
-                if isinstance(o, highlightTyps[dir[3]]) and o.collides(curObj):
-                    drawObj(o, types.index(type(o)), (255, 110, 60))
+            combined, objsToCombine = findCombinedOutput()
+            for o in objsToCombine:
+                drawObj(o, types.index(type(o)), (255, 110, 60))
+            for o in combined:
+                drawObj(o, types.index(type(o)), (244, 194, 194, 0.8))
         
         if t in (0, 6):
             pygame.draw.circle(win, ((255, 255, 255) if t == 6 else col), (obj.x, obj.y), 8)
@@ -656,13 +667,9 @@ def OCollisionsDemo():
                             if i.collides(curObj):
                                 objs.remove_shape(i)
                     elif typ == 7:
-                        toCombineObjs = [o for o in objs if isinstance(o, highlightTyps[dir[3]]) and o.collides(curObj)]
-                        objs.remove_shapes(*toCombineObjs)
-                        if dir[3] in (1, 2):
-                            combined = collisions.ShapeCombiner.to_rects(*toCombineObjs, encapsulate=dir[3]==2)
-                        else:
-                            combined = collisions.ShapeCombiner.to_polygons(*toCombineObjs)
-                        objs.add_shapes(*combined)
+                        new, toRemove = findCombinedOutput()
+                        objs.remove_shapes(*toRemove)
+                        objs.add_shapes(*new)
                     else:
                         objs.add_shape(curObj)
                         if typ == 5:
@@ -677,9 +684,9 @@ def OCollisionsDemo():
                     else:
                         curObj.points += [pygame.mouse.get_pos()]
                 elif event.key == pygame.K_COMMA and typ == 7:
-                    dir[3] = (dir[3] + 1) % maxcombinetyps
+                    combineTyp = (combineTyp + 1) % maxcombinetyps
                 elif event.key == pygame.K_PERIOD and typ == 7:
-                    dir[3] = (dir[3] - 1) % maxcombinetyps
+                    combineTyp = (combineTyp - 1) % maxcombinetyps
                 elif event.key == pygame.K_r:
                     objs = collisions.Shapes()
                 elif not playMode:
@@ -716,7 +723,7 @@ def OCollisionsDemo():
                         curObj = collisions.Point(*event.pos)
                     elif typ == 7:
                         curObj = collisions.Rect(*event.pos, 0, 0)
-                        dir = [0, 0, 0, 0]
+                        dir = [0, 0, 0]
                     else: # Last item in list - help menu
                         ratio = 5
                         pygame.draw.rect(win, (155, 155, 155), (win.get_width()//ratio, win.get_height()//ratio, win.get_width()//ratio*(ratio-2), win.get_height()//ratio*(ratio-2)), border_radius=8)
