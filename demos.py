@@ -570,14 +570,22 @@ def OCollisionsDemo():
     pos = [0, 0]
     accel = [0, 0]
     maxcombinetyps = 3
+    combineCache = [None, None]
 
     def findCombinedOutput():
+        nonlocal combineCache
         toCombineObjs = [o for o in objs if isinstance(o, highlightTyps[combineTyp]) and o.collides(curObj)]
-        if combineTyp in (1, 2):
-            combined = collisions.ShapeCombiner.to_rects(*toCombineObjs, encapsulate=combineTyp==2)
+        cacheCheck = (toCombineObjs, combineTyp)
+        if combineCache[0] == cacheCheck:
+            return combineCache[1]
         else:
-            combined = collisions.ShapeCombiner.to_polygons(*toCombineObjs)
-        return combined, toCombineObjs
+            if combineTyp in (1, 2):
+                combined = collisions.ShapeCombiner.to_rects(*toCombineObjs, encapsulate=combineTyp==2)
+            else:
+                combined = collisions.ShapeCombiner.to_polygons(*toCombineObjs)
+            ret = (combined, toCombineObjs)
+            combineCache = [cacheCheck, ret]
+            return ret
 
     def drawRect(obj, col):
         if obj.w == 0 and obj.h == 0:
