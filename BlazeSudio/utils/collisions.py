@@ -1101,8 +1101,8 @@ class RotatedRect(ClosedShape):
         return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {self.toPoints()}>'
 
 class Polygon(ClosedShape):
-    def __init__(self, *points: pointLike):
-        if len(points) < 3:
+    def __init__(self, *points: pointLike, errorOnLT3: bool = True):
+        if len(points) < 3 and errorOnLT3:
             raise ValueError(
                 f'Cannot have a Polygon with less than 3 points! Found: {len(points)} points!'
             )
@@ -1193,6 +1193,8 @@ class ShapeCombiner:
             return Shapes()
         outshps = []
         for s in shapes:
+            if isinstance(s, Line):
+                s = Polygon(s.p1, s.p2, errorOnLT3=False)
             if isinstance(s, ClosedShape):
                 colls = [i.collides(s) for i in outshps]
                 if any(colls):
@@ -1241,6 +1243,7 @@ class ShapeCombiner:
                 pass # TODO
         return Shapes(*outshps)
 
+# TODO: A lot more bounding box checks everywhere
 # TODO: colliding VELOCITY, not accel
 # TODO: Ovals, ovaloids and arcs (Ellipse & capsule)
 # TODO: Can also input pointlike, linelike (2 points) and polygon-like iterables into all functions to reduce conversion
