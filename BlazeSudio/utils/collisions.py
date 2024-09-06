@@ -1080,7 +1080,45 @@ class ShapeCombiner:
     def to_polygons(cls, *shapes: Shape) -> Shapes:
         if not shapes:
             return Shapes()
-        return Shapes() # TODO
+        return Shapes()
+        """outshps = []
+        for s in shapes:
+            if isinstance(s, ClosedShape):
+                colls = [i.collides(s) for i in outshps]
+                if any(colls):
+                    for i in range(len(colls)):
+                        if colls[i]:
+                            newpts = []
+                            lns = [outshps[i].toLines(), s.toLines()]
+                            check = False
+                            checked = []
+                            j = 0
+                            while True:
+                                if (check, j) not in checked:
+                                    ln = lns[check][j]
+                                    newpts.append(ln.p1)
+                                    if ln.collides(outshps[i]):
+                                        wheres = []
+                                        for k in range(len(lns[not check])):
+                                            if ln.collides(lns[not check][k]):
+                                                wheres.extend(ln.whereCollides(lns[not check][k]))
+                                        wheres.sort(lambda x: (x[0]-ln.p1[0])**2+(x[1]-ln.p1[1])**2)
+                                        newpts.append(wheres[0])
+                                        check = not check
+                                        j = k
+
+                                    else:
+                                        newpts.append(ln.p2)
+                                    checked.append((check, j))
+                                if j == len(lns[check])-1:
+                                    break
+                                j = (j + 1) % len(lns[check])
+                            outshps[i] = Polygon(*newpts)
+                else:
+                    outshps.append(s)
+            else:
+                pass # TODO
+        return Shapes(*outshps)"""
 
 # TODO: colliding VELOCITY, not accel
 # TODO: Ovals, ovaloids and arcs (Ellipse & capsule)
