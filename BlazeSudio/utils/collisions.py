@@ -819,23 +819,25 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                 return [i[0] for i in tries]
             return tries[0][0]
     
-    def handleCollisionsPos(self, oldShp: 'Line', newShp: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['ClosedShape', pointLike, verboseOutput]:
+    def handleCollisionsPos(self, oldShp: 'ClosedShape', newShp: 'ClosedShape', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['ClosedShape', pointLike, verboseOutput]:
         # This function's verbose output: [
         # CollisionType?: list[int, ...], ; This is the type of collision that happened, and it includes each type of collision for each sub-collision
         # ]
-        raise NotImplementedError('WIP')
-        mvement = Polygon(oldShp, oldShp.p2, newShp.p2, newShp.p1)
         points = []
         hit = False
-        for o in objs:
-            if o.collides(mvement):
-                hit = True
-                ps = o.whereCollides(mvement) + [i for i in o.closestPointTo(oldShp, True) if mvement.collides(Point(*i))]
-                for p in ps:
-                    # The rotation is making sure the line crosses the oldLine
-                    cPoint = oldShp.closestPointTo(Line(p, (p[0]-accel[0],p[1]-accel[1])))
-                    points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2])
-                    #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+        for oldLine, newLine in zip(oldShp.toLines(), newShp.toLines()):
+            oldLine = Line(*sorted([oldLine.p1, oldLine.p2], key=lambda x: x[0]))
+            newLine = Line(*sorted([newLine.p1, newLine.p2], key=lambda x: x[0]))
+            mvement = Polygon(oldLine.p1, oldLine.p2, newLine.p2, newLine.p1)
+            for o in objs:
+                if o.collides(mvement):
+                    hit = True
+                    ps = o.whereCollides(mvement) + [i for i in o.closestPointTo(oldLine, True) if mvement.collides(Point(*i))]
+                    for p in ps:
+                        # The rotation is making sure the line crosses the oldLine
+                        cPoint = oldLine.closestPointTo(Line(p, (p[0]-accel[0],p[1]-accel[1])))
+                        points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2, oldLine, newLine])
+                        #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         if not hit:
             if verbose:
                 return newShp, accel, []
@@ -846,15 +848,16 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                 return oldShp, [0, 0], []
             return oldShp, [0, 0]
         points.sort(key=lambda x: x[3])
+        oldLine, newLine = points[0][4], points[0][5]
         closestP = points[0][0] # Closest point on the OTHER object
         cPoint = points[0][2] # closestP projected onto the oldLine
         closestObj = points[0][1]
-        newPoint = newShp.closestPointTo(Line(closestP, (closestP[0]+accel[0],closestP[1]+accel[1]))) # closestP projected onto the newLine
+        newPoint = newLine.closestPointTo(Line(closestP, (closestP[0]+accel[0],closestP[1]+accel[1]))) # closestP projected onto the newLine
 
-        thisNormal = math.degrees(math.atan2(oldShp[0][1]-oldShp[1][1], oldShp[0][0]-oldShp[1][0]))
+        thisNormal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))
         paralell = False
         cLine = None
-        thisIsOnP = oldShp.isCorner(cPoint, precision)
+        thisIsOnP = oldLine.isCorner(cPoint, precision)
         if isinstance(closestObj, Line):
             cLine = closestObj
         elif isinstance(closestObj, ClosedShape):
@@ -908,14 +911,13 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         odiff = (pos[0]-cPoint[0], pos[1]-cPoint[1])
         # HACK
         smallness = rotateBy0([0, AVERYSMALLNUMBER], phi-180-diff*2)
-        newp1, newp2 = (oldShp.p1[0]+odiff[0], oldShp.p1[1]+odiff[1]), (oldShp.p2[0]+odiff[0], oldShp.p2[1]+odiff[1])
+        newshp = [(i[0]+odiff[0], i[1]+odiff[1]) for i in oldShp.toPoints()]
         o = self.handleCollisionsPos(
-            Line((oldShp.p1[0]+diff2Point[0]+smallness[0], oldShp.p1[1]+diff2Point[1]+smallness[1]), 
-                 (oldShp.p2[0]+diff2Point[0]+smallness[0], oldShp.p2[1]+diff2Point[1]+smallness[1])), 
-            Line(newp1, newp2), objs, accel, False, precision, verbose)
+            Polygon(*[(i[0]+diff2Point[0]+smallness[0], i[1]+diff2Point[1]+smallness[1]) for i in oldShp.toPoints()]), 
+            Polygon(*newshp), objs, accel, False, precision, verbose)
         out, outaccel = o[0], o[1]
         if replaceSelf:
-            self[0] = out
+            self[0] = out[0]
         if verbose:
             return out, outaccel, [collTyp, *o[2]]
         return out, outaccel
@@ -926,7 +928,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         o = self.handleCollisionsPos(self, n, objs, accel, False, precision, verbose)
         out, outaccel = o[0], o[1]
         if replaceSelf:
-            self[0] = out
+            self[0] = out[0]
         if verbose:
             return out, outaccel, o[2]
         return out, outaccel
@@ -1260,6 +1262,7 @@ class ShapeCombiner:
         return Shapes(*outshps)
 
 # TODO: A lot more bounding box checks everywhere
+# TODO: Split functions up into smaller bits and have more sharing of functions (especially with the handleCollisions)
 # TODO: colliding VELOCITY, not accel
 # TODO: Ovals, ovaloids and arcs (Ellipse & capsule)
 # TODO: Can also input pointlike, linelike (2 points) and polygon-like iterables into all functions to reduce conversion
