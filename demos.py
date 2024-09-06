@@ -558,8 +558,9 @@ def OCollisionsDemo():
     header_opts = ['point', 'line', 'circle', 'rect', 'rotated rect', 'polygon', 'eraser', 'combiner', 'help']
     types = [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.Polygon]
     highlightTyps = {
-                0: (collisions.Rect),
-                1: (collisions.Point, collisions.Line, collisions.ClosedShape)
+                0: (collisions.Point, collisions.Line, collisions.ClosedShape),
+                1: (collisions.Rect),
+                2: (collisions.Shape)
             }
     typ = 0
     curObj = collisions.Point(0, 0)
@@ -568,21 +569,37 @@ def OCollisionsDemo():
     pos = [0, 0]
     accel = [0, 0]
     maxcombinetyps = 2
+
+    def drawRect(obj, col):
+        if obj.w == 0 and obj.h == 0:
+            pygame.draw.circle(win, col, (obj.x, obj.y), 4)
+        elif obj.w == 0:
+            pygame.draw.line(win, col, (obj.x, obj.y), (obj.x, obj.y+obj.h), 3)
+        elif obj.h == 0:
+            pygame.draw.line(win, col, (obj.x, obj.y), (obj.x+obj.w, obj.y), 3)
+        minx = min(obj.x, obj.x+obj.w)
+        miny = min(obj.y, obj.y+obj.h)
+        pygame.draw.rect(win, col, (minx, miny, abs(obj.w), abs(obj.h)), 8)
     
-    def drawObj(obj, t, col): # TODO: Work off of type(obj), not t. ALSO # TODO: things like; If a rect has w and h of 0, draw a dot instead.
+    def drawLine(obj, col):
+        if obj.p1 == obj.p2:
+            pygame.draw.circle(win, col, obj.p1, 8)
+        pygame.draw.line(win, col, obj.p1, obj.p2, 8)
+    
+    def drawObj(obj, t, col): # TODO: Work off of type(obj), not t.
         if t == 7: # As well as drawing the point, outline the shapes to be combined
             for o in objs:
                 if isinstance(o, highlightTyps[dir[3]]) and o.collides(curObj):
                     drawObj(o, types.index(type(o)), (255, 110, 60))
         
-        if t in (0, 6, 7):
+        if t in (0, 6):
             pygame.draw.circle(win, ((255, 255, 255) if t == 6 else col), (obj.x, obj.y), 8)
         elif t == 1:
-            pygame.draw.line(win, col, obj.p1, obj.p2, 8)
+            drawLine(obj, col)
         elif t == 2:
             pygame.draw.circle(win, col, (obj.x, obj.y), obj.r, 8)
-        elif t == 3:
-            pygame.draw.rect(win, col, (obj.x, obj.y, obj.w, obj.h), 8) # TODO: Rects with negative width and hei
+        elif t in (3, 7):
+            drawRect(obj, col)
         elif t == 4:
             for line in obj.toLines():
                 pygame.draw.line(win, col, line.p1, line.p2, 8)
@@ -616,11 +633,10 @@ def OCollisionsDemo():
             curObj.x, curObj.y = pos
             if typ == 2:
                 curObj.r = dir[1]
-            elif typ == 3:
+            elif typ in (4, 3, 7):
                 curObj.w, curObj.h = dir[0], dir[1]
-            elif typ == 4:
-                curObj.w, curObj.h = dir[0], dir[1]
-                curObj.rot = dir[2]
+                if typ == 4:
+                    curObj.rot = dir[2]
         return curObj
     
     clock = pygame.time.Clock()
@@ -642,10 +658,10 @@ def OCollisionsDemo():
                     elif typ == 7:
                         toCombineObjs = [o for o in objs if isinstance(o, highlightTyps[dir[3]]) and o.collides(curObj)]
                         objs.remove_shapes(*toCombineObjs)
-                        if dir[3] == 0:
-                            combined = collisions.ShapeCombiner.to_rects(*toCombineObjs, encapsulate=pygame.key.get_mods() & pygame.KMOD_SHIFT)
+                        if dir[3] in (1, 2):
+                            combined = collisions.ShapeCombiner.to_rects(*toCombineObjs, encapsulate=dir[3]==2)
                         else:
-                            combined = collisions.ShapeCombiner.to_polygon(*toCombineObjs)
+                            combined = collisions.ShapeCombiner.to_polygons(*toCombineObjs)
                         objs.add_shapes(*combined)
                     else:
                         objs.add_shape(curObj)
@@ -666,6 +682,15 @@ def OCollisionsDemo():
                     dir[3] = (dir[3] - 1) % maxcombinetyps
                 elif event.key == pygame.K_r:
                     objs = collisions.Shapes()
+                elif not playMode:
+                    if event.key == pygame.K_w:
+                        dir[1] -= 5
+                    elif event.key == pygame.K_s:
+                        dir[1] += 5
+                    elif event.key == pygame.K_a:
+                        dir[0] -= 5
+                    elif event.key == pygame.K_d:
+                        dir[0] += 5
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Get the header_opts that got clicked, if any
                 if event.pos[1] < 50:
@@ -690,13 +715,13 @@ def OCollisionsDemo():
                     elif typ == 6:
                         curObj = collisions.Point(*event.pos)
                     elif typ == 7:
-                        curObj = collisions.Point(*event.pos)
+                        curObj = collisions.Rect(*event.pos, 0, 0)
                         dir = [0, 0, 0, 0]
                     else: # Last item in list - help menu
                         ratio = 5
                         pygame.draw.rect(win, (155, 155, 155), (win.get_width()//ratio, win.get_height()//ratio, win.get_width()//ratio*(ratio-2), win.get_height()//ratio*(ratio-2)), border_radius=8)
                         win.blit(FFONT.render("""How to use:
-Click on one of the options at the top to change your tool. Pressing space adds it to the board. The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too.
+Click on one of the options at the top to change your tool. Pressing space adds it to the board (or applies some function to existing objects). The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too. When not holding alt to be in play mode, wsad does the same as the arrow keys but is more precise.
 Holding shift in this mode shows the normals, and holding control shows the closest points to the object!
 And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity!
 And pressing 'r' will reset everything without warning.
