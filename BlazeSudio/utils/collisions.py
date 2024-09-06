@@ -36,7 +36,7 @@ def rotateBy0(point, angle):
 class Shape:
     # This class always collides; so *can* be used as an infinite plane, but why?
     
-    def collides(self, othershape: Union['Shape','Shapes',Iterable['Shape']]):
+    def collides(self, othershape: Union['Shape','Shapes',Iterable['Shape']]) -> bool:
         if isinstance(othershape, Shape):
             return self._collides(othershape)
         for s in othershape:
@@ -146,6 +146,10 @@ class Shapes:
         return points
     
     # TODO: handleCollisions
+
+    def rect(self) -> Iterable[Number]:
+        rs = [s.rect() for s in self.shapes]
+        return min(i[0] for i in rs), min(i[1] for i in rs), max(i[2] for i in rs), max(i[3] for i in rs)
     
     def copy(self) -> 'Shapes':
         return Shapes(s.copy() for s in self.shapes)
@@ -589,6 +593,8 @@ class Circle(Shape):
         if isinstance(othershape, Point):
             return [[othershape.x, othershape.y]] if ((self.x - othershape.x)**2 + (self.y - othershape.y)**2 == self.r**2) else []
         if isinstance(othershape, Line):
+            if not self.check_rects(othershape):
+                return []
             def sign(x):
                 return -1 if x < 0 else 1
             x1 = othershape.p1[0] - self.x
@@ -621,6 +627,8 @@ class Circle(Shape):
             xpt += [(xb + self.x, yb + self.y)] if 0 < tb < dr else []
             return xpt
         if isinstance(othershape, Circle):
+            if not self.check_rects(othershape):
+                return []
             # circle 1: (x0, y0), radius r0
             # circle 2: (x1, y1), radius r1
 
@@ -715,6 +723,8 @@ class Circle(Shape):
 
 class ClosedShape(Shape): # I.e. rect, polygon, etc.
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
+        if not self.check_rects(othershape):
+            return []
         if isinstance(othershape, Point):
             for i in self.toLines():
                 if i.collides(othershape):
@@ -813,6 +823,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         # This function's verbose output: [
         # CollisionType?: list[int, ...], ; This is the type of collision that happened, and it includes each type of collision for each sub-collision
         # ]
+        raise NotImplementedError('WIP')
         mvement = Polygon(oldShp, oldShp.p2, newShp.p2, newShp.p1)
         points = []
         hit = False
@@ -1033,6 +1044,8 @@ class RotatedRect(ClosedShape):
         return min([i[0] for i in ps]), min([i[1] for i in ps]), max([i[0] for i in ps]), max([i[1] for i in ps])
     
     def _collides(self, othershape: Shape) -> bool:
+        if not self.check_rects(othershape):
+            return False
         if isinstance(othershape, Point):
             ps = self.toPoints()
             c = False
@@ -1112,6 +1125,8 @@ class Polygon(ClosedShape):
         return min([i[0] for i in self.points]), min([i[1] for i in self.points]), max([i[0] for i in self.points]), max([i[1] for i in self.points])
     
     def _collides(self, othershape: Shape) -> bool:
+        if not self.check_rects(othershape):
+            return False
         if isinstance(othershape, Point):
             ps = self.points
             c = False
