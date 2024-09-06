@@ -1232,7 +1232,8 @@ class ShapeCombiner:
                                             if ln.collides(lns[not check][k]):
                                                 ws = ln.whereCollides(lns[not check][k])
                                                 wheres.extend(zip(ws, [k for _ in range(len(ws))]))
-                                        wheres.sort(key=lambda x: (x[0][0]-ln.p1[0])**2+(x[0][1]-ln.p1[1])**2)
+                                        compareTo = (ln.p1 if direc == 1 else ln.p2)
+                                        wheres.sort(key=lambda x: (x[0][0]-compareTo[0])**2+(x[0][1]-compareTo[1])**2)
                                         if not wheres:
                                             newpts.append(ln.p2)
                                         else:
