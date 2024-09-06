@@ -469,7 +469,7 @@ class Line(Shape):
         if cLine is not None:
             sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
             otherLnNormal = math.degrees(math.atan2(sortedOtherLn[0][1]-sortedOtherLn[1][1], sortedOtherLn[0][0]-sortedOtherLn[1][0]))
-            paralell = otherLnNormal % 360 == thisNormal % 360 or (otherLnNormal - 180) % 360 == thisNormal % 360
+            paralell = abs(otherLnNormal%360 - thisNormal%360) < precision or abs((otherLnNormal-180)%360 - thisNormal%360) < precision
         accelDiff = 180
         if paralell: # Line off line
             collTyp = 3
@@ -832,28 +832,30 @@ class Rect(ClosedShape):
         self.x, self.y, self.w, self.h = x, y, w, h
     
     def rect(self) -> Iterable[Number]:
-        return self.x, self.y, self.x + self.w, self.y + self.h
+        return min(self.x, self.x + self.w), min(self.y, self.y + self.h), max(self.x, self.x + self.w), max(self.y, self.y + self.h)
     
     def _collides(self, othershape: Shape) -> bool:
+        x, y, mx, my = self.rect()
         if isinstance(othershape, Point):
-            return self.x <= othershape.x and self.x + self.w >= othershape.x and self.y <= othershape.y and self.y + self.h >= othershape.y
+            return x <= othershape.x <= mx and y <= othershape.y and my >= othershape.y
         if isinstance(othershape, Line):
             return self.check_rects(othershape) and (
-                   (self.x < othershape.p1[0] and self.x + self.w > othershape.p1[0] and self.y < othershape.p1[1] and self.y + self.h > othershape.p1[1]) or \
-                   (self.x < othershape.p2[0] and self.x + self.w > othershape.p2[0] and self.y < othershape.p2[1] and self.y + self.h > othershape.p2[1]) or \
+                   (x < othershape.p1[0] and mx > othershape.p1[0] and y < othershape.p1[1] and my > othershape.p1[1]) or \
+                   (x < othershape.p2[0] and mx > othershape.p2[0] and y < othershape.p2[1] and my > othershape.p2[1]) or \
                    any([i.collides(othershape) for i in self.toLines()])
             )
         if isinstance(othershape, Circle):
             return self.check_rects(othershape) and (
-                   (self.x - othershape.r < othershape.x and self.x + self.w + othershape.r > othershape.x and self.y < othershape.y and self.y + self.h > othershape.y) or \
-                   (self.x < othershape.x and self.x + self.w > othershape.x and self.y - othershape.r < othershape.y and self.y + self.h + othershape.r > othershape.y) or \
-                   ((self.x - othershape.x)**2 + (self.y - othershape.y)**2 < othershape.r**2) or \
-                   (((self.x + self.w) - othershape.x)**2 + (self.y - othershape.y)**2 < othershape.r**2) or \
-                   ((self.x - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2) or \
-                   (((self.x + self.w) - othershape.x)**2 + ((self.y + self.h) - othershape.y)**2 < othershape.r**2)
+                   (x - othershape.r < othershape.x and mx + othershape.r > othershape.x and y < othershape.y and my > othershape.y) or \
+                   (x < othershape.x and mx > othershape.x and y - othershape.r < othershape.y and my + othershape.r > othershape.y) or \
+                   ((x - othershape.x)**2 + (y - othershape.y)**2 < othershape.r**2) or \
+                   (((mx) - othershape.x)**2 + (y - othershape.y)**2 < othershape.r**2) or \
+                   ((x - othershape.x)**2 + ((my) - othershape.y)**2 < othershape.r**2) or \
+                   (((mx) - othershape.x)**2 + ((my) - othershape.y)**2 < othershape.r**2)
             )
         if isinstance(othershape, Rect):
-            return self.x <= othershape.x + othershape.w and self.x + self.w >= othershape.x and self.y <= othershape.y + othershape.h and self.y + self.h >= othershape.y
+            ox, oy, omx, omy = othershape.rect()
+            return x <= omx and mx >= ox and y <= omy and my >= oy
         return othershape._collides(self)
     
     def toLines(self) -> Iterable[Line]:
