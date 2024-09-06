@@ -457,13 +457,14 @@ class Line(Shape):
         thisNormal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))
         paralell = False
         cLine = None
+        thisIsOnP = oldLine.isCorner(cPoint, precision)
         if isinstance(closestObj, Line):
             cLine = closestObj
         elif isinstance(closestObj, ClosedShape):
             colllidingLns = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
             if colllidingLns != []:
                 cLine = colllidingLns[0]
-        elif isinstance(closestObj, Circle):
+        elif isinstance(closestObj, Circle) and (not thisIsOnP):
             paralell = True
         if cLine is not None:
             sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
@@ -476,7 +477,6 @@ class Line(Shape):
             normal = thisNormal
             phi = math.degrees(math.atan2(newPoint[1] - closestP[1], newPoint[0] - closestP[0]))-90
         else:
-            thisIsOnP = oldLine.isCorner(cPoint, precision)
             otherIsOnP = closestObj.isCorner(closestP, precision)
             if thisIsOnP and otherIsOnP: # Point off point collision
                 collTyp = 0
