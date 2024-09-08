@@ -659,6 +659,48 @@ def OCollisionsDemo():
                     curObj.rot = dir[2]
         return curObj
     
+    def offsetColour(obj, col):
+        r, g, b = col
+        r, g, b = r / 255.0, g / 255.0, b / 255.0
+        mx, mn = max(r, g, b), min(r, g, b)
+        df = mx - mn
+    
+        # Calculate hsv
+        if mx == mn:
+            h = 0
+        elif mx == r:
+            h = (60 * ((g - b) / df) + 360) % 360
+        elif mx == g:
+            h = (60 * ((b - r) / df) + 120) % 360
+        elif mx == b:
+            h = (60 * ((r - g) / df) + 240) % 360
+        s = 0 if mx == 0 else df / mx
+        v = mx
+
+        # modify h
+        h = (h + obj.bounciness * 40) % 360
+    
+        # Convert HSV back to RGB
+        c = v * s
+        x = c * (1 - abs((h / 60) % 2 - 1))
+        m = v - c
+    
+        if 0 <= h < 60:
+            r, g, b = c, x, 0
+        elif 60 <= h < 120:
+            r, g, b = x, c, 0
+        elif 120 <= h < 180:
+            r, g, b = 0, c, x
+        elif 180 <= h < 240:
+            r, g, b = 0, x, c
+        elif 240 <= h < 300:
+            r, g, b = x, 0, c
+        elif 300 <= h < 360:
+            r, g, b = c, 0, x
+    
+        r, g, b = (r + m) * 255, (g + m) * 255, (b + m) * 255
+        return int(r), int(g), int(b)
+    
     clock = pygame.time.Clock()
     while run:
         playMode = pygame.key.get_mods() & pygame.KMOD_ALT
@@ -738,6 +780,7 @@ def OCollisionsDemo():
                         pygame.draw.rect(win, (155, 155, 155), (win.get_width()//ratio, win.get_height()//ratio, win.get_width()//ratio*(ratio-2), win.get_height()//ratio*(ratio-2)), border_radius=8)
                         win.blit(FFONT.render("""How to use:
 Click on one of the options at the top to change your tool. Pressing space adds it to the board (or applies some function to existing objects). The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too. When not holding alt to be in play mode, wsad does the same as the arrow keys but is more precise.
+Holding '[' and ']' changes the bounciness of the object.
 Holding shift in this mode shows the normals, and holding control shows the closest points to the object!
 And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity!
 And pressing 'r' will reset everything without warning.
@@ -774,6 +817,11 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
             accel[0] -= 1
         if btns[pygame.K_d]:
             accel[0] += 1
+        
+        if btns[pygame.K_LEFTBRACKET]:
+            curObj.bounciness = max(0.1, curObj.bounciness-0.05)
+        if btns[pygame.K_RIGHTBRACKET]:
+            curObj.bounciness = min(1.5, curObj.bounciness+0.05)
             
         win.fill((0, 0, 0) if (not objs.collides(curObj)) or playMode else (250, 50, 50))
         pygame.draw.rect(win, (255, 255, 255), (0, 0, win.get_width(), 50))
@@ -811,8 +859,8 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
             curObj = moveCurObj(curObj)
         
         for i in objs:
-            drawObj(i, types.index(type(i)), (10, 255, 50))
-        drawObj(curObj, typ, CRAINBOWCOLOURS[typ])
+            drawObj(i, types.index(type(i)), offsetColour(i, (10, 255, 50)))
+        drawObj(curObj, typ, offsetColour(curObj, CRAINBOWCOLOURS[typ]))
 
         if not playMode:
             for i in objs.whereCollides(curObj):

@@ -226,7 +226,7 @@ class Point(Shape):
         closestObj = points[0][1]
         t = closestObj.tangent(closestP, accel)
         normal = t-90
-        dist_left = math.sqrt(abs(newPoint[0]-closestP[0])**2+abs(newPoint[1]-closestP[1])**2)
+        dist_left = math.sqrt(abs(newPoint[0]-closestP[0])**2+abs(newPoint[1]-closestP[1])**2) * closestObj.bounciness
         x, y = newPoint[0] - closestP[0], newPoint[1] - closestP[1]
         phi = math.degrees(math.atan2(y, x))-90
         diff = (phi-normal) % 360
@@ -234,6 +234,7 @@ class Point(Shape):
             diff = diff - 360
         pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2)
         accel = list(rotateBy0(accel, 180-diff*2))
+        accel = [accel[0]*closestObj.bounciness, accel[1]*closestObj.bounciness]
         # HACK
         smallness = rotateBy0([0,AVERYSMALLNUMBER], phi-180-diff*2)
         out, outaccel = self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel, False, precision)
@@ -528,12 +529,13 @@ class Line(Shape):
                 normal, phi = 0, 0
 
         # the distance between the closest point on the other object and the corresponding point on the newLine
-        dist_left = math.sqrt((newPoint[0]-closestP[0])**2 + (newPoint[1]-closestP[1])**2)
+        dist_left = math.sqrt((newPoint[0]-closestP[0])**2 + (newPoint[1]-closestP[1])**2) * closestObj.bounciness
         diff = (phi-normal) % 360 # The difference between the angle of incidence and the normal
         if diff > 180: # Do we even need this?
             diff -= 360
         pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], phi-180-diff*2)
         accel = list(rotateBy0(accel, accelDiff-diff*2))
+        accel = [accel[0]*closestObj.bounciness, accel[1]*closestObj.bounciness]
         diff2Point = (closestP[0]-cPoint[0], closestP[1]-cPoint[1])
         odiff = (pos[0]-cPoint[0], pos[1]-cPoint[1])
         # HACK
@@ -931,12 +933,13 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                 normal, phi = 0, 0
 
         # the distance between the closest point on the other object and the corresponding point on the newLine
-        dist_left = math.sqrt((newPoint[0]-closestP[0])**2 + (newPoint[1]-closestP[1])**2)
+        dist_left = math.sqrt((newPoint[0]-closestP[0])**2 + (newPoint[1]-closestP[1])**2) * closestObj.bounciness
         diff = (phi-normal) % 360 # The difference between the angle of incidence and the normal
         if diff > 180: # Do we even need this?
             diff -= 360
         pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], phi-180-diff*2)
         accel = list(rotateBy0(accel, accelDiff-diff*2))
+        accel = [accel[0]*closestObj.bounciness, accel[1]*closestObj.bounciness]
         diff2Point = (closestP[0]-cPoint[0], closestP[1]-cPoint[1])
         odiff = (pos[0]-cPoint[0], pos[1]-cPoint[1])
         # HACK
