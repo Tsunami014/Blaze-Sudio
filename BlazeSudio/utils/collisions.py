@@ -836,7 +836,10 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                     for p in ps:
                         # The rotation is making sure the line crosses the oldLine
                         cPoint = oldLine.closestPointTo(Line(p, (p[0]-accel[0],p[1]-accel[1])))
-                        points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2, oldLine, newLine])
+                        dist_to = abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2 + \
+                                  abs(p[0]-oldLine.p1[0])**2+abs(p[1]-oldLine.p1[1])**2 + \
+                                  abs(p[0]-oldLine.p2[0])**2+abs(p[1]-oldLine.p2[1])**2
+                        points.append([p, o, cPoint, dist_to, oldLine, newLine])
                         #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         if not hit:
             if verbose:
@@ -856,20 +859,21 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
 
         thisNormal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))
         paralell = False
-        cLine = None
+        cLines = []
         thisIsOnP = oldLine.isCorner(cPoint, precision)
         if isinstance(closestObj, Line):
-            cLine = closestObj
+            cLines = [closestObj]
         elif isinstance(closestObj, ClosedShape):
-            colllidingLns = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
-            if colllidingLns != []:
-                cLine = colllidingLns[0]
+            cLines = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
         elif isinstance(closestObj, Circle) and (not thisIsOnP):
             paralell = True
-        if cLine is not None:
-            sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
-            otherLnNormal = math.degrees(math.atan2(sortedOtherLn[0][1]-sortedOtherLn[1][1], sortedOtherLn[0][0]-sortedOtherLn[1][0]))
-            paralell = abs(otherLnNormal%360 - thisNormal%360) < precision or abs((otherLnNormal-180)%360 - thisNormal%360) < precision
+        if cLines != []:
+            for cLine in cLines:
+                sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
+                otherLnNormal = math.degrees(math.atan2(sortedOtherLn[0][1]-sortedOtherLn[1][1], sortedOtherLn[0][0]-sortedOtherLn[1][0]))
+                paralell = abs(otherLnNormal%360 - thisNormal%360) < precision or abs((otherLnNormal-180)%360 - thisNormal%360) < precision
+                if paralell:
+                    break
         accelDiff = 180
         if paralell: # Line off line
             collTyp = 3
@@ -1202,7 +1206,28 @@ class ShapeCombiner:
                 maxs[0]-mins[0],
                 maxs[1]-mins[1]
             ))
-        return Shapes() # TODO
+        # This combines different rectangles that are next to each other into one rectangle
+        shapes = sorted(shapes, key=lambda x: x.x)
+        outshapes1 = []
+        while shapes:
+            rect = shapes.pop(0)
+            for i in shapes:
+                if rect.y == i.y and rect.h == i.h and rect.x + rect.w == i.x:
+                    rect.w += i.w
+                    shapes.remove(i)
+                    break
+            outshapes1.append(rect)
+        outshapes1 = sorted(outshapes1, key=lambda x: x.y)
+        outshapes2 = []
+        while outshapes1:
+            rect = outshapes1.pop(0)
+            for i in outshapes1:
+                if rect.x == i.x and rect.w == i.w and rect.y + rect.h == i.y:
+                    rect.h += i.h
+                    outshapes1.remove(i)
+                    break
+            outshapes2.append(rect)
+        return Shapes(*outshapes2)
 
     @classmethod
     def to_polygons(cls, *shapes: Shape) -> Shapes:
