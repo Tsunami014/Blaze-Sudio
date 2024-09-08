@@ -1203,28 +1203,40 @@ class ShapeCombiner:
                 maxs[0]-mins[0],
                 maxs[1]-mins[1]
             ))
-        # This combines different rectangles that are next to each other into one rectangle
-        shapes = sorted(shapes, key=lambda x: x.x)
-        outshapes1 = []
-        while shapes:
-            rect = shapes.pop(0)
-            for i in shapes:
-                if rect.y == i.y and rect.h == i.h and rect.x + rect.w == i.x:
-                    rect.w += i.w
-                    shapes.remove(i)
-                    break
-            outshapes1.append(rect)
-        outshapes1 = sorted(outshapes1, key=lambda x: x.y)
-        outshapes2 = []
-        while outshapes1:
-            rect = outshapes1.pop(0)
-            for i in outshapes1:
-                if rect.x == i.x and rect.w == i.w and rect.y + rect.h == i.y:
-                    rect.h += i.h
-                    outshapes1.remove(i)
-                    break
-            outshapes2.append(rect)
-        return Shapes(*outshapes2)
+        merged = True
+        while merged:
+            merged = False
+            # Sort shapes by x-coordinate
+            shapes = sorted(shapes, key=lambda x: x.x)
+            outshapes1 = []
+            
+            while shapes:
+                rect = shapes.pop(0)
+                for i in shapes:
+                    if rect.y == i.y and rect.h == i.h and (rect.x + rect.w >= i.x):
+                        rect.w = max(rect.x + rect.w, i.x + i.w) - rect.x
+                        shapes.remove(i)
+                        merged = True
+                        break
+                outshapes1.append(rect)
+            
+            # Sort shapes by y-coordinate
+            outshapes1 = sorted(outshapes1, key=lambda x: x.y)
+            outshapes2 = []
+            
+            while outshapes1:
+                rect = outshapes1.pop(0)
+                for i in outshapes1:
+                    if rect.x == i.x and rect.w == i.w and (rect.y + rect.h >= i.y):
+                        rect.h = max(rect.y + rect.h, i.y + i.h) - rect.y
+                        outshapes1.remove(i)
+                        merged = True
+                        break
+                outshapes2.append(rect)
+            
+            shapes = outshapes2
+        
+        return Shapes(*shapes)
 
     @classmethod
     def to_polygons(cls, *shapes: Shape) -> Shapes:
