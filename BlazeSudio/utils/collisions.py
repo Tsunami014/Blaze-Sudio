@@ -823,6 +823,11 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         # This function's verbose output: [
         # CollisionType?: list[int, ...], ; This is the type of collision that happened, and it includes each type of collision for each sub-collision
         # ]
+        # Don't let you move when you're in a wall
+        #if oldShp.collides(objs):
+        #    if verbose:
+        #        return oldShp, [0, 0], []
+        #    return oldShp, [0, 0]
         points = []
         hit = False
         for oldLine, newLine in zip(oldShp.toLines(), newShp.toLines()):
