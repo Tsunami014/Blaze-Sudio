@@ -836,10 +836,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                     for p in ps:
                         # The rotation is making sure the line crosses the oldLine
                         cPoint = oldLine.closestPointTo(Line(p, (p[0]-accel[0],p[1]-accel[1])))
-                        dist_to = abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2 + \
-                                  abs(p[0]-oldLine.p1[0])**2+abs(p[1]-oldLine.p1[1])**2 + \
-                                  abs(p[0]-oldLine.p2[0])**2+abs(p[1]-oldLine.p2[1])**2
-                        points.append([p, o, cPoint, dist_to, oldLine, newLine])
+                        points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2, oldLine, newLine])
                         #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         if not hit:
             if verbose:
@@ -920,7 +917,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
             Polygon(*[(i[0]+diff2Point[0]+smallness[0], i[1]+diff2Point[1]+smallness[1]) for i in oldShp.toPoints()]), 
             Polygon(*newshp), objs, accel, False, precision, verbose)
         out, outaccel = o[0], o[1]
-        if replaceSelf:
+        if replaceSelf: # TODO: Fix for polygons
             self[0] = out[0]
         if verbose:
             return out, outaccel, [collTyp, *o[2]]
