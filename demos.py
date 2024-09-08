@@ -579,8 +579,10 @@ def OCollisionsDemo():
         if combineCache[0] == cacheCheck:
             return combineCache[1]
         else:
-            if combineTyp in (1, 2):
-                combined = collisions.ShapeCombiner.to_rects(*toCombineObjs, encapsulate=combineTyp==2)
+            if combineTyp == 1:
+                combined = collisions.ShapeCombiner.to_rects(*toCombineObjs)
+            elif combineTyp == 2:
+                combined = collisions.ShapeCombiner.bounding_box(*toCombineObjs)
             else:
                 combined = collisions.ShapeCombiner.to_polygons(*toCombineObjs)
             ret = (combined, toCombineObjs)

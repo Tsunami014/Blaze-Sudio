@@ -1236,23 +1236,27 @@ class Polygon(ClosedShape):
 
 class ShapeCombiner:
     @classmethod
-    def to_rects(cls, *shapes: Rect, encapsulate: bool = False) -> Shapes:
+    def bounding_box(cls, *shapes: Rect) -> Shapes:
         if not shapes:
             return Shapes()
-        if encapsulate:
-            rs = [s.rect() for s in shapes]
-            mins, maxs = [
-                min(i[0] for i in rs),
-                min(i[1] for i in rs)
-            ], [
-                max(i[2] for i in rs),
-                max(i[3] for i in rs)
-            ]
-            return Shapes(Rect(
-                *mins,
-                maxs[0]-mins[0],
-                maxs[1]-mins[1]
-            ))
+        rs = [s.rect() for s in shapes]
+        mins, maxs = [
+            min(i[0] for i in rs),
+            min(i[1] for i in rs)
+        ], [
+            max(i[2] for i in rs),
+            max(i[3] for i in rs)
+        ]
+        return Shapes(Rect(
+            *mins,
+            maxs[0]-mins[0],
+            maxs[1]-mins[1]
+        ))
+    
+    @classmethod
+    def to_rects(cls, *shapes: Rect) -> Shapes:
+        if not shapes:
+            return Shapes()
         merged = True
         while merged:
             merged = False
