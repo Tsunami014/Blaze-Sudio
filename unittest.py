@@ -32,10 +32,11 @@ def debug(names, ins, outs, expecteds, formatter, offsets, highlights=None):
     else:
         print()
 
+def roundTuple(t):
+    return tuple(round(x, 2) for x in t)
+
 def testCollisions():
     from BlazeSudio.utils import collisions
-    def roundTuple(t):
-        return tuple(round(x, 2) for x in t)
     
     assert collisions.rotate([0, 0], [123, 456], 127.001) == collisions.rotateBy0([123, 456], 127.001)
     assert roundTuple(collisions.rotate([1, 0], [1, -1], 90)) == (2, 0)
@@ -171,7 +172,28 @@ def testCollisions():
     # |  |
     # +--+
 
-    print('IT ALL WORKS YAY')
+def testCombine():
+    from BlazeSudio.utils import collisions
+    def testCombine(testName, shapes, expected):
+        out = collisions.combine(*shapes)
+        if out != expected:
+            debug( # TODO: Make better
+                ['Shape 1', 'Shape 2'],
+                [str(shapes[0]), str(shapes[1])],
+                [str(out), str(expected)],
+                [str(expected), str(expected)],
+                lambda li: li,
+                [0, 0],
+                [0, 1]
+            )
+            raise AssertionError(f'Test {testName} failed: Expected {expected}, got {out}')
+    
+    # This is stupidly hard to wrap my head around for making test cases. 
+    #testCombine('2 squares', 
+    #            [collisions.Rect(0, 0, 1, 1), collisions.Rect(0.5, 0.5, 1, 1)]\
+    #            [collisions.Polygon([(0, 0), (1, 0), (1, 0.5), (1.5, 0.5), (1.5, 1.5), (0.5, 1.5),])]
+    #)
 
 if __name__ == "__main__":
     testCollisions()
+    print('IT ALL WORKS YAY')

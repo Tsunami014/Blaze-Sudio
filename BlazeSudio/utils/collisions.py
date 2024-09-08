@@ -1252,7 +1252,7 @@ class ShapeCombiner:
             maxs[0]-mins[0],
             maxs[1]-mins[1]
         ))
-    
+
     @classmethod
     def to_rects(cls, *shapes: Rect) -> Shapes:
         if not shapes:
@@ -1314,20 +1314,22 @@ class ShapeCombiner:
                             j = [not s.collides(Point(*i)) for i in outshps[i].toPoints()].index(True)
                             while True:
                                 if (check, j) not in checked:
+                                    checked.append((check, j))
                                     ln = lns[check][j]
-                                    newpts.append(ln.p1)
+                                    p1 = ln.p1 if direc == 1 else ln.p2
+                                    p2 = ln.p2 if direc == 1 else ln.p1
+                                    newpts.append(p1)
                                     if ln.collides(oshps[not check]):
                                         wheres = []
                                         for k in range(len(lns[not check])):
                                             if ln.collides(lns[not check][k]):
                                                 ws = ln.whereCollides(lns[not check][k])
                                                 wheres.extend(zip(ws, [k for _ in range(len(ws))]))
-                                        compareTo = (ln.p1 if direc == 1 else ln.p2)
+                                        compareTo = (p1)
                                         wheres.sort(key=lambda x: (x[0][0]-compareTo[0])**2+(x[0][1]-compareTo[1])**2)
                                         if not wheres:
-                                            newpts.append(ln.p2)
+                                            newpts.append(p2)
                                         else:
-                                            checked.append((check, j))
                                             newpts.append(wheres[0][0])
                                             # Correct direction handling
                                             if oshps[check].collides(Point(*lns[not check][wheres[0][1]].p2)):
@@ -1338,7 +1340,6 @@ class ShapeCombiner:
                                             j = wheres[0][1]
                                     else:
                                         newpts.append(ln.p2)
-                                    checked.append((check, j))
                                 else:
                                     break
                                 j = (j + direc) % len(lns[check])
