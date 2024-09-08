@@ -40,7 +40,7 @@ def testCollisions():
     assert collisions.rotate([0, 0], [123, 456], 127.001) == collisions.rotateBy0([123, 456], 127.001)
     assert roundTuple(collisions.rotate([1, 0], [1, -1], 90)) == (2, 0)
     
-    outpos, outaccel = collisions.Point(2, 0).handleCollisionsAccel([0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
+    outpos, outaccel = collisions.Point(2, 0).handleCollisionsAccel([0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)))
     assert roundTuple(outpos) == (2, 0) # It rebounded perfectly and now is exactly where it started
     assert roundTuple(outaccel) == (0, -2) # It is now going the opposite direction
     # . = current pos, N = new pos
@@ -49,7 +49,7 @@ def testCollisions():
     #| N|
     #|  |
     #+--+
-    outpos, outaccel = collisions.Point(0, 2).handleCollisionsAccel([2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4)))
+    outpos, outaccel = collisions.Point(0, 2).handleCollisionsAccel([2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4, 1)))
     assert roundTuple(outpos) == (0, 2) # It rebounded perfectly and now is exactly where it started
     assert roundTuple(outaccel) == (-2, 0) # It is now going the opposite direction
     # . = current pos, N = new pos
@@ -57,7 +57,7 @@ def testCollisions():
     # |  |
     #.|N |
     # +--+
-    outpos, outaccel = collisions.Point(0, 0).handleCollisionsAccel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)))
+    outpos, outaccel = collisions.Point(0, 0).handleCollisionsAccel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)))
     assert roundTuple(outpos) == (2, 0) # It rebounded like a v shape
     assert roundTuple(outaccel) == (2, -2)
     # . = current pos, N = new pos
@@ -105,7 +105,7 @@ def testCollisions():
     # 3: Line off line collision
     
     testLine('Basic point off line',
-             ((1, 0), (2, -1)), [0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             ((1, 0), (2, -1)), [0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)),
              (1, -1), (2, -2), (0, -3), 1)
     # /
     #+--+
@@ -114,7 +114,7 @@ def testCollisions():
     #+--+
 
     testLine('Basic point off line 2: points reversed',
-             ((2, -1), (1, 0)), [0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             ((2, -1), (1, 0)), [0, 3], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)),
              (1, -1), (2, -2), (0, -3), 1)
     # /
     #+--+
@@ -123,7 +123,7 @@ def testCollisions():
     #+--+
 
     testLine('Basic point off line 3: closer to rect',
-             ((1, 0.9), (2, 0)), [0, 0.3], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             ((1, 0.9), (2, 0)), [0, 0.3], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)),
              (1, 0.8), (2, -0.1), (0, -0.3), 1)
     # /
     #+--+
@@ -132,7 +132,7 @@ def testCollisions():
     #+--+
 
     testLine('Basic point off line 4: further from rect',
-             ((2, -3), (4, -4)), [0, 6], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             ((2, -3), (4, -4)), [0, 6], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)),
              (2, -1), (4, -2), (0, -6), 1)
     # /
     #+--+
@@ -141,7 +141,7 @@ def testCollisions():
     #+--+
 
     testLine('V shape bounce point off line',
-             ((0, 0), (1, -1)), [2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4)),
+             ((0, 0), (1, -1)), [2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)),
              (2, 0), (3, -1), (2, -2), 1)
     #/v/
     #+--+
@@ -150,7 +150,7 @@ def testCollisions():
     #+--+
 
     testLine('Non-basic copied from a (hopefully previously) incorrect scenario in demos.py',
-             ((620.52, 584), (670.52, 684)), [-3.52, 0], collisions.Shapes(collisions.Rect(520, 547, 100, 100)),
+             ((620.52, 584), (670.52, 684)), [-3.52, 0], collisions.Shapes(collisions.Rect(520, 547, 100, 100, 1)),
              (623, 584), (673, 684), (3.52, 0), 1)
     #+--+
     #|  |
@@ -158,13 +158,13 @@ def testCollisions():
     #+--+
 
     testLine('Line bounce off another paralell line',
-             ((0, 1), (1, 0)), [0, 2], collisions.Shapes(collisions.Line((0, 2), (1, 1))),
+             ((0, 1), (1, 0)), [0, 2], collisions.Shapes(collisions.Line((0, 2), (1, 1), 1)),
              (-1, 2), (0, 1), (-2, 0), 3)
     #/
     #/
 
     testLine('Line bounce off rect corner',
-             ((0, 1), (1, 0)), [1, 1], collisions.Shapes(collisions.Rect(1, 1, 4, 4)),
+             ((0, 1), (1, 0)), [1, 1], collisions.Shapes(collisions.Rect(1, 1, 4, 4, 1)),
              (0, 1), (1, 0), (-1, -1), 2)
     #/+--+
     # |  |
