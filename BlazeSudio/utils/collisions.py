@@ -5,6 +5,7 @@ verboseOutput = Union[Iterable[Any], None]
 pointLike = Union['Point', Iterable[Number]]
 AVERYSMALLNUMBER = 1e-6
 BASEPRECISION = 5
+BASEBOUNCINESS = 0.7 # The lower the less bouncy, 1 = reflects perfectly
 
 def rotate(origin, point, angle):
     """
@@ -35,6 +36,9 @@ def rotateBy0(point, angle):
 
 class Shape:
     # This class always collides; so *can* be used as an infinite plane, but why?
+    x, y = 0, 0
+    def __init__(self, bounciness: float = BASEBOUNCINESS):
+        self.bounciness = bounciness
     
     def collides(self, othershape: Union['Shape','Shapes',Iterable['Shape']]) -> bool:
         if isinstance(othershape, Shape):
@@ -84,7 +88,7 @@ class Shape:
         return self, accel
     
     def copy(self) -> 'Shape':
-        return Shape()
+        return Shape(self.bounciness)
     
     def __getitem__(self) -> None:
         pass
@@ -176,7 +180,8 @@ class Shapes:
 # Also each is in order of complexity.
 
 class Point(Shape):
-    def __init__(self, x: Number, y: Number):
+    def __init__(self, x: Number, y: Number, bounciness: float = BASEBOUNCINESS):
+        super().__init__(bounciness)
         self.x, self.y = x, y
     
     def rect(self) -> Iterable[Number]:
@@ -243,7 +248,7 @@ class Point(Shape):
         return out, outaccel
 
     def copy(self) -> 'Point':
-        return Point(self.x, self.y)
+        return Point(self.x, self.y, self.bounciness)
 
     def __getitem__(self, item: Number) -> Number:
         if item == 0:
@@ -269,8 +274,26 @@ class Point(Shape):
         return f'<Point @ ({self.x}, {self.y})>'
 
 class Line(Shape):
-    def __init__(self, p1: pointLike, p2: pointLike):
+    def __init__(self, p1: pointLike, p2: pointLike, bounciness: float = BASEBOUNCINESS):
+        super().__init__(bounciness)
         self.p1, self.p2 = p1, p2
+    
+    @property
+    def x(self):
+        return self.p1[0]
+    @x.setter
+    def x(self, value):
+        diff = value - self.p1[0]
+        self.p1 = [value, self.p1[1]]
+        self.p2 = [self.p2[0]+diff, self.p2[1]]
+    @property
+    def y(self):
+        return self.p1[1]
+    @y.setter
+    def y(self, value):
+        diff = value - self.p1[1]
+        self.p1 = [self.p1[0], value]
+        self.p2 = [self.p2[0], self.p2[1]+diff]
     
     # Some code yoinked off of https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/ modified for this use case and debugged
     
@@ -537,7 +560,7 @@ class Line(Shape):
         return out, outaccel
     
     def copy(self) -> 'Line':
-        return Line(self.p1, self.p2)
+        return Line(self.p1, self.p2, self.bounciness)
     
     def __getitem__(self, item: Number) -> pointLike:
         if item == 0:
@@ -563,7 +586,8 @@ class Line(Shape):
         return f'<Line from {self.p1} to {self.p2}>'
 
 class Circle(Shape):
-    def __init__(self, x: Number, y: Number, r: Number):
+    def __init__(self, x: Number, y: Number, r: Number, bounciness: float = BASEBOUNCINESS):
+        super().__init__(bounciness)
         self.x, self.y, self.r = x, y, r
     
     def rect(self) -> Iterable[Number]:
@@ -692,7 +716,7 @@ class Circle(Shape):
         return math.degrees(math.atan((point[1]-self.y)/(point[0]-self.x))) + (0 if self.x>point[0] else 180)
 
     def copy(self) -> 'Circle':
-        return Circle(self.x, self.y, self.r)
+        return Circle(self.x, self.y, self.r, self.bounciness)
     
     def __getitem__(self, item: Number) -> Number:
         if item == 0:
@@ -922,19 +946,19 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
             Polygon(*[(i[0]+diff2Point[0]+smallness[0], i[1]+diff2Point[1]+smallness[1]) for i in oldShp.toPoints()]), 
             Polygon(*newshp), objs, accel, False, precision, verbose)
         out, outaccel = o[0], o[1]
-        if replaceSelf: # TODO: Fix for polygons
-            self[0] = out[0]
+        if replaceSelf:
+            self.x, self.y = out.x, out.y
         if verbose:
             return out, outaccel, [collTyp, *o[2]]
         return out, outaccel
 
     def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['ClosedShape', pointLike, verboseOutput]:
         n = self.copy()
-        n[0] = [n[0][0]+accel[0], n[0][1]+accel[1]]
+        n.x, n.y = n.x+accel[0], n.y+accel[1]
         o = self.handleCollisionsPos(self, n, objs, accel, False, precision, verbose)
         out, outaccel = o[0], o[1]
         if replaceSelf:
-            self[0] = out[0]
+            self.x, self.y = out.x, out.y
         if verbose:
             return out, outaccel, o[2]
         return out, outaccel
@@ -958,7 +982,8 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         return '<Closed Shape>'
 
 class Rect(ClosedShape):
-    def __init__(self, x: Number, y: Number, w: Number, h: Number):
+    def __init__(self, x: Number, y: Number, w: Number, h: Number, bounciness: float = BASEBOUNCINESS):
+        super().__init__(bounciness)
         self.x, self.y, self.w, self.h = x, y, w, h
     
     def rect(self) -> Iterable[Number]:
@@ -1005,7 +1030,7 @@ class Rect(ClosedShape):
         ]
     
     def copy(self) -> 'Rect':
-        return Rect(self.x, self.y, self.w, self.h)
+        return Rect(self.x, self.y, self.w, self.h, self.bounciness)
     
     def __setitem__(self, item: Number, new: pointLike) -> None:
         if item == 0:
@@ -1024,8 +1049,9 @@ class Rect(ClosedShape):
     def __str__(self):
         return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h}>'
 
-class RotatedRect(ClosedShape):
-    def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number):
+class RotatedRect(ClosedShape): # TODO: Fix movement physics on a rotated rect
+    def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number, bounciness: float = BASEBOUNCINESS):
+        super().__init__(bounciness)
         self.x, self.y, self.w, self.h, self.rot = x, y, w, h, rotation
         self.cachedPoints = []
         self.cacheRequirements = []
@@ -1096,7 +1122,7 @@ class RotatedRect(ClosedShape):
         ] + [Line(ps[len(ps)-1], ps[0])]
     
     def copy(self) -> 'RotatedRect':
-        return RotatedRect(self.x, self.y, self.w, self.h, self.rot)
+        return RotatedRect(self.x, self.y, self.w, self.h, self.rot, self.bounciness)
     
     def __setitem__(self, item: Number, new: pointLike) -> None:
         def rot(x, y):
@@ -1122,12 +1148,28 @@ class RotatedRect(ClosedShape):
         return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {self.toPoints()}>'
 
 class Polygon(ClosedShape):
-    def __init__(self, *points: pointLike, errorOnLT3: bool = True):
+    def __init__(self, *points: pointLike, errorOnLT3: bool = True, bounciness: float = BASEBOUNCINESS):
+        super().__init__(bounciness)
         if len(points) < 3 and errorOnLT3:
             raise ValueError(
                 f'Cannot have a Polygon with less than 3 points! Found: {len(points)} points!'
             )
         self.points = list(points)
+    
+    @property
+    def x(self):
+        return min([i[0] for i in self.points])
+    @x.setter
+    def x(self, new):
+        diff = new - self.x
+        self.points = [[i[0]+diff, i[1]] for i in self.points]
+    @property
+    def y(self):
+        return min([i[1] for i in self.points])
+    @y.setter
+    def y(self, new):
+        diff = new - self.y
+        self.points = [[i[0], i[1]+diff] for i in self.points]
     
     def rect(self) -> Iterable[Number]:
         return min([i[0] for i in self.points]), min([i[1] for i in self.points]), max([i[0] for i in self.points]), max([i[1] for i in self.points])
@@ -1181,7 +1223,7 @@ class Polygon(ClosedShape):
         return [list(i) for i in self.points]
     
     def copy(self) -> 'Polygon':
-        return Polygon(*self.points)
+        return Polygon(*self.points, errorOnLT3=False, bounciness=self.bounciness)
     
     def __setitem__(self, item: Number, new: pointLike) -> None:
         self.points[item] = new
