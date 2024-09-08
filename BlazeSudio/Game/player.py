@@ -69,6 +69,7 @@ class Player:
         self.accel = [round(min(max(self.accel[0]+self.gravity[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1]+self.gravity[1], -self.max_accel[1]), self.max_accel[1]), 3)]
         
         self.pos, self.accel = self.Game._collisions(self.pos, self.accel, "Player")
+        self.pos, self.accel = list(self.pos), list(self.accel)
         
         sur = pygame.transform.scale(self.sur, (self.sur.get_width()*self.settings['scale'], self.sur.get_height()*self.settings['scale']))
 

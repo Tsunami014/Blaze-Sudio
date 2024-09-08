@@ -189,6 +189,7 @@ class IntGridCSV:
                     rs[typ].append(colls.Rect(x*size, y*size, size, size))
                 else:
                     rs[typ] = [colls.Rect(x*size, y*size, size, size)]
+        rs[typ] = colls.ShapeCombiner.to_rects(*rs[typ])
         self.rects = rs
         return self.getRects(matches, size)
     
