@@ -551,7 +551,7 @@ def OLDtkAPPDemo():
 def OCollisionsDemo():
     from BlazeSudio.utils import collisions
     from BlazeSudio.graphics.options import CRAINBOWCOLOURS, FFONT
-    import pygame
+    import pygame, math
     pygame.init()
     win = pygame.display.set_mode()
     run = True
@@ -784,7 +784,7 @@ def OCollisionsDemo():
 Click on one of the options at the top to change your tool. Pressing space adds it to the board (or applies some function to existing objects). The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too. When not holding alt to be in play mode, wsad does the same as the arrow keys but is more precise.
 Holding '[' and ']' changes the bounciness of the object.
 Holding shift in this mode shows the normals, and holding control shows the closest points to the object!
-And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity!
+And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity! And holding '/' while holding shift will... well... I'll let you find that out for yourself.
 And pressing 'r' will reset everything without warning.
  
 Press any key/mouse to close this window""",0,allowed_width=win.get_width()//ratio*(ratio-2)-4), (win.get_width()//ratio+2, win.get_height()//ratio+2))
@@ -836,7 +836,17 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
         
         if playMode:
             if pygame.key.get_mods() & pygame.KMOD_SHIFT:
-                if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                if pygame.key.get_pressed()[pygame.K_SLASH]:
+                    cpoints = objs.closestPointTo(curObj) # [(i, i.closestPointTo(curObj)) for i in objs]
+                    if cpoints:
+                        cpoints.sort(key=lambda x: (curObj.x-x[0])**2+(curObj.y-x[1])**2)
+                        # Find the point on the unit circle * 0.2 that is closest to the object
+                        closest = cpoints[0]
+                        angle = math.atan2(curObj.y-closest[1], curObj.x-closest[0])
+                        gravity = [-0.2*math.cos(angle), -0.2*math.sin(angle)]
+                    else:
+                        gravity = [0, 0]
+                elif pygame.key.get_mods() & pygame.KMOD_CTRL:
                     gravity = [0, -0.2]
                 else:
                     gravity = [0, 0.2]
