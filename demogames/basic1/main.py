@@ -2,8 +2,10 @@ from BlazeSudio.Game import Game
 from BlazeSudio.collisions import collisions
 import BlazeSudio.Game.statics as Ss
 
+thispth = __file__[:__file__.rindex('/')]
+
 G = Game()
-G.load_map("test-files/world.ldtk")
+G.load_map(thispth+"/world.ldtk")
 G.SetSettings(scale=8, gravity=[0, 0.1])
 
 @G.Collision
@@ -16,5 +18,4 @@ class Collisions(Ss.BaseCollisions):
 class player(Ss.BasePlayer):
     StartUID = 107
 
-if __name__ == '__main__':
-    G.play(debug=True)
+G.play(debug=True)

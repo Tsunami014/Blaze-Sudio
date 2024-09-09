@@ -13,7 +13,7 @@
             "justMyCode": false
         },
         {
-            "name": "Run Demos",
+            "name": "Run Feature Demos",
             "type": "debugpy",
             "request": "launch",
             "program": "demos.py",
@@ -21,10 +21,10 @@
             "justMyCode": false
         },
         {
-            "name": "Run Test",
+            "name": "Run Demo Games",
             "type": "debugpy",
             "request": "launch",
-            "program": "test.py",
+            "program": "gamedemo.py",
             "console": "integratedTerminal",
             "justMyCode": false
         },
