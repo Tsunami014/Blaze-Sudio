@@ -1,6 +1,9 @@
 # Contrary to the fact that this is unittest.py, we will not use the unittest library.
 # This is intended for development, not practical use.
 
+# This is the debug statement. If you wanted to use the compiled class, run `import BlazeSudio.collisions` instead.
+from BlazeSudio.collisions.lib import collisions
+
 def debug(names, ins, outs, expecteds, formatter, offsets, highlights=None):
     sins = [str(i) for i in ins]
     souts = [str(i) for i in outs]
@@ -36,8 +39,6 @@ def roundTuple(t):
     return tuple(round(x, 2) for x in t)
 
 def testCollisions():
-    from BlazeSudio.utils import collisions
-    
     assert collisions.rotate([0, 0], [123, 456], 127.001) == collisions.rotateBy0([123, 456], 127.001)
     assert roundTuple(collisions.rotate([1, 0], [1, -1], 90)) == (2, 0)
     
@@ -173,7 +174,6 @@ def testCollisions():
     # +--+
 
 def testCombine():
-    from BlazeSudio.utils import collisions
     def testCombine(testName, shapes, expected):
         out = collisions.combine(*shapes)
         if out != expected:

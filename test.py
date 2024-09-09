@@ -1,5 +1,5 @@
 from BlazeSudio.Game import Game
-from BlazeSudio.utils import collisions
+from BlazeSudio.collisions import collisions
 import BlazeSudio.Game.statics as Ss
 
 G = Game()
