@@ -898,105 +898,46 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
         clock.tick(60)
 
 if __name__ == '__main__':
-    import tkinter as Tk # Because everyone has tkinter
-    from tkinter.scrolledtext import ScrolledText
-    root = Tk.Tk()
-    def cmd(cmdd):
-        root.destroy()
-        print('loading...')
-        cmdd()
-    def rcmd(cmdd):
-        root.protocol("WM_DELETE_WINDOW", load)
-        for widget in root.winfo_children():
-            widget.destroy()
-        E = ScrolledText(root,  
-                         wrap = Tk.WORD,  
-                         width = 40,  
-                         height = 10,
-                         state=Tk.DISABLED)
-        E.pack(fill=Tk.BOTH, side=Tk.LEFT, expand=True)
-        def npr(*txts, sep='  '):
-            E.config(state=Tk.NORMAL)
-            E.insert(Tk.END,sep.join([str(i) for i in txts])+'\n')
-            E.config(state=Tk.DISABLED)
-            root.update()
-        def ninp(prompt=''):
-            class blank: pass
-            b = blank()
-            b.done = False
-            def run():
-                v = E2.get()
-                for widget in root.winfo_children():
-                    if widget != E and not E in widget.winfo_children(): widget.destroy()
-                b.done = True
-                b.res = v
-            Tk.Label(root, text=prompt).pack()
-            E2 = Tk.Entry(root)
-            E2.pack()
-            E2.bind("<Return>", lambda *args: run())
-            Tk.Button(root, command=lambda *args: run(), text='GO!').pack()
-            root.update()
-            while b.done == False: root.update()
-            return b.res
-        oprint = print
-        globals()['print'] = npr
-        oinput = input
-        globals()['input'] = ninp
-        oprint('Loading please wait...')
-        print('Loading please wait...')
-        root.update()
-        def go():
-            cmdd()
-            globals()['print'] = oprint
-            globals()['input'] = oinput
-            return
-            # Spare code
-            try:
-                cmdd()
-            except Exception as e:
-                print('AN EXCEPTION HAS OCURRED:', type(e), e, sep='\n') # Breakpoint here and in console use
-                # `e.with_traceback()`
-        t = Thread(target=go, daemon=False)
-        t.start()
+    opts = {}
+    def add_opt(name, cmd):
+        idx = len(opts)
+        print(f"{idx}: {name}")
+        opts[str(idx)] = cmd
+    print('Type one of the numbers to run that command. Type anything but them to quit.\nPlease keep in mind most of these probably won\'t work or will re removed in the future.')
         
-    def load():
-        for widget in root.winfo_children():
-            widget.destroy()
-        Tk.Button(root, text='EXIT', command=root.destroy).pack()
-        
-        Tk.Label (root, text='Node stuff:').pack() # Nodes
-        Tk.Button(root, text='Node Editor Demo',        command=lambda: cmd(NNodeEditorDemo)                    ).pack()
-        Tk.Button(root, text='Node Parser Demo',        command=lambda: rcmd(NNodeParserDemo), relief=Tk.RIDGE  ).pack()
+    print('Node stuff:') # Nodes
+    add_opt('Node Editor Demo',        NNodeEditorDemo                 )
+    add_opt('Node Parser Demo',        NNodeParserDemo                 )
 
-        Tk.Label (root, text='Graphics stuff:').pack() # BlazeSudio.graphics
-        Tk.Button(root, text='Graphics Demo',           command=lambda: cmd(GGraphicsDemo)                       ).pack()
-        Tk.Button(root, text='Loading Demo',            command=lambda: cmd(GLoadingDemo)                        ).pack()
-        Tk.Button(root, text='Toast Demo',              command=lambda: cmd(GToastDemo)                          ).pack()
-        Tk.Button(root, text='Switch Demo',             command=lambda: cmd(GSwitchDemo)                         ).pack()
-        Tk.Button(root, text='Colour Picker Demo',      command=lambda: cmd(GColourPickDemo)                     ).pack()
-        Tk.Button(root, text='Input Box Demo',          command=lambda: cmd(GInputBoxDemo)                       ).pack()
-        Tk.Button(root, text='Scrollable Demo',         command=lambda: cmd(GScrollableDemo)                     ).pack()
-        Tk.Button(root, text='Dropdown Demo',           command=lambda: cmd(GDropdownDemo)                       ).pack()
-        Tk.Button(root, text='Other Graphics Demo',     command=lambda: cmd(GOtherGraphicsDemo)                  ).pack()
+    print('Graphics stuff:') # BlazeSudio.graphics
+    add_opt('Graphics Demo',           GGraphicsDemo                   )
+    add_opt('Loading Demo',            GLoadingDemo                    )
+    add_opt('Toast Demo',              GToastDemo                      )
+    add_opt('Switch Demo',             GSwitchDemo                     )
+    add_opt('Colour Picker Demo',      GColourPickDemo                 )
+    add_opt('Input Box Demo',          GInputBoxDemo                   )
+    add_opt('Scrollable Demo',         GScrollableDemo                 )
+    add_opt('Dropdown Demo',           GDropdownDemo                   )
+    add_opt('Other Graphics Demo',     GOtherGraphicsDemo              )
 
-        Tk.Label (root, text='Generation stuff:').pack() # Terrain
-        Tk.Button(root, text='Generate World Demo',     command=lambda: rcmd(TWorldsDemo), relief=Tk.RIDGE       ).pack()
-        Tk.Button(root, text='Generate Terrain Demo',   command=lambda: rcmd(TTerrainGenDemo), relief=Tk.RIDGE   ).pack()
+    print('Generation stuff:') # Terrain
+    add_opt('Generate World Demo',     TWorldsDemo                     )
+    add_opt('Generate Terrain Demo',   TTerrainGenDemo                 )
 
-        Tk.Label (root, text='AI stuff:').pack() # Ai
-        Tk.Button(root, text='TinyLLM Demo',            command=lambda: rcmd(ATinyLLMDemo), relief=Tk.RIDGE      ).pack()
-        Tk.Button(root, text='Test LLM Demo',           command=lambda: rcmd(ATestLLMDemo), relief=Tk.RIDGE      ).pack()
-        Tk.Button(root, text='Rate AIs Demo',           command=lambda: rcmd(ARateAIsDemo), relief=Tk.RIDGE      ).pack()
-        
-        Tk.Label (root, text='Other stuff:').pack() # Other
-        Tk.Button(root, text='Overlays Demo',           command=lambda: cmd(OOverlaysDemo),                      ).pack()
-        Tk.Button(root, text='LDtk app Demo',           command=lambda: cmd(OLDtkAPPDemo),                       ).pack()
-        Tk.Button(root, text='Collisions Demo',         command=lambda: cmd(OCollisionsDemo),                    ).pack()
-        Tk.Button(root, text='DEBUG Collisions Demo',   command=lambda: cmd(lambda: OCollisionsDemo(True)),      ).pack()
-        Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(OConversationParserDemo), relief=Tk.SUNKEN ).pack()
-        root.protocol("WM_DELETE_WINDOW", root.destroy)
-    load()
-    def btt():
-        root.attributes('-topmost', True)
-    root.after(1, btt)
-    root.mainloop()
+    print('AI stuff:') # Ai
+    add_opt('TinyLLM Demo',            ATinyLLMDemo                    )
+    add_opt('Test LLM Demo',           ATestLLMDemo                    )
+    add_opt('Rate AIs Demo',           ARateAIsDemo                    )
+    
+    print('Other stuff:') # Other
+    add_opt('Overlays Demo',           OOverlaysDemo,                  )
+    add_opt('LDtk app Demo',           OLDtkAPPDemo,                   )
+    add_opt('Collisions Demo',         OCollisionsDemo,                )
+    add_opt('DEBUG Collisions Demo',   lambda: OCollisionsDemo(True)   )
+    add_opt('Conversation Parse Demo', OConversationParserDemo         )
+    i = input("> ")
+    if i in opts:
+        print('Loading demo...')
+        opts[i]()
+    else:
+        print('Could not find demo! Quitting...')
