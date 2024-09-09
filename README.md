@@ -1,5 +1,5 @@
 # Welcome to Blaze Sudios!
-# CURRENT VERSION: v2.3.0-beta (💥 Flare)
+# CURRENT VERSION: v2.4.0-beta (💥 Flare)
 
 [![Docs](https://badgen.net/badge/Documentation/tsunami014.gitbook.io?color=orange&icon=wiki)](https://tsunami014.gitbook.io/blaze-sudios/)
 [![Website](https://badgen.net/badge/website/tsunami014.github.io?icon=rss)](https://tsunami014.github.io/Blaze-Sudio/)
@@ -37,10 +37,10 @@ Also known as:
     4. You guys don't have to install another package :)
     5. It won't ever change (unless I change it myself)
 
-Please join our Discord server here (I need friends): [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have! Alternatively, you can post bug reports/ideas in the [issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose)
+Please join our Discord server here <small>(I need friends)</small>: [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have! Alternatively, you can post bug reports/ideas in the [issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose)
 
 # Next versions coming soon:
- - v3.0.0 - 🌿`Kindle` - Able to make an actual game! Not just a world! Because you all know that to make a big fire you must first put in kindling
+ - v3.0.0 - 🌿`Kindle` - I have a working game written! Not just a world! Because you all know that to make a big fire you must first put in kindling
  - v4.0.0 - ♨️`Smolder` - Pretty cool so far and have ability to make an OK game that one could submit for a competition or something. (WINGS OF FIRE REFERENCE)
  - v5.0.0 - 🌋`Fire` - cos by then it'll be on fire :grin: many cool things and stuff to make good looking games that are super cool and would totally win a competition!
  - v6.0.0 - ❤️‍🔥`Bonfire` - Who knows 🤷

@@ -12,11 +12,11 @@ with codecs.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as fh
 
 setup(
     name='Blaze-Sudio',
-    version='2.3.0',
+    version='2.4.0',
     license='Apache',
-    description='This is the really cool studio to create games!',
+    description='This is the really cool game engine!',
     url='https://github.com/Tsunami014/Blaze-Sudio',
-    download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v2.3.0-beta.tar.gz',
+    download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v2.4.0-beta.tar.gz',
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),
@@ -25,7 +25,7 @@ setup(
     author='Tsunami014 (Max)',
     author_email='tsunami014@duck.com',
     install_requires=packages,
-    keywords=['AI', 'Python', 'games', 'engine'],
+    keywords=['Python', 'games', 'engine'],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
