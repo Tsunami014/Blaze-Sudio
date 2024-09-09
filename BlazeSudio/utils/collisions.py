@@ -1296,58 +1296,63 @@ class ShapeCombiner:
     def to_polygons(cls, *shapes: Shape) -> Shapes:
         if not shapes:
             return Shapes()
+        def reformat(obj):
+            if isinstance(obj, ClosedShape):
+                return obj
+            elif isinstance(s, Line):
+                return Polygon(obj.p1, obj.p2, obj.p2, obj.p1)
+            # TODO: More
+        reform = [reformat(s) for s in shapes]
+        shapes = [reform[i] for i in range(len(reform)) if reform[i]]
         outshps = []
-        for s in shapes:
-            if isinstance(s, Line):
-                s = Polygon(s.p1, s.p2, errorOnLT3=False)
-            if isinstance(s, ClosedShape):
-                colls = [i.collides(s) for i in outshps]
-                if any(colls):
-                    for i in range(len(colls)):
-                        if colls[i]:
-                            newpts = []
-                            lns = [outshps[i].toLines(), s.toLines()]
-                            oshps = [outshps[i], s]
-                            direc = 1
-                            check = False
-                            checked = []
-                            j = [not s.collides(Point(*i)) for i in outshps[i].toPoints()].index(True)
-                            while True:
-                                if (check, j) not in checked:
-                                    checked.append((check, j))
-                                    ln = lns[check][j]
-                                    p1 = ln.p1 if direc == 1 else ln.p2
-                                    p2 = ln.p2 if direc == 1 else ln.p1
-                                    newpts.append(p1)
-                                    if ln.collides(oshps[not check]):
-                                        wheres = []
-                                        for k in range(len(lns[not check])):
-                                            if ln.collides(lns[not check][k]):
-                                                ws = ln.whereCollides(lns[not check][k])
-                                                wheres.extend(zip(ws, [k for _ in range(len(ws))]))
-                                        compareTo = (p1)
-                                        wheres.sort(key=lambda x: (x[0][0]-compareTo[0])**2+(x[0][1]-compareTo[1])**2)
-                                        if not wheres:
-                                            newpts.append(p2)
-                                        else:
-                                            newpts.append(wheres[0][0])
-                                            # Correct direction handling
-                                            if oshps[check].collides(Point(*lns[not check][wheres[0][1]].p2)):
-                                                direc = -1
-                                            else:
-                                                direc = 1
-                                            check = not check
-                                            j = wheres[0][1]
+        while shapes:
+            s = shapes.pop(0)
+            colls = [i.collides(s) for i in outshps]
+            if any(colls):
+                for i in range(len(colls)):
+                    if colls[i]:
+                        newpts = []
+                        oshps = [s, outshps[i]]
+                        lns = [j.toLines() for j in oshps]
+                        direc = 1
+                        check = 0
+                        checked = []
+                        # TODO: When objs are covered
+                        ps = [any(k.collides(Point(*j)) for k in oshps if k != s) for j in s.toPoints()]
+                        j = ps.index(False)
+                        while True:
+                            if (check, j) not in checked:
+                                checked.append((check, j))
+                                ln = lns[check][j]
+                                p1 = ln.p1 if direc == 1 else ln.p2
+                                p2 = ln.p2 if direc == 1 else ln.p1
+                                newpts.append(p1)
+                                wheres = []
+                                for other in range(len(oshps)):
+                                    if other != check:
+                                        if ln.collides(oshps[other]):
+                                            for k in range(len(lns[other])):
+                                                if ln.collides(lns[other][k]):
+                                                    ws = ln.whereCollides(lns[other][k])
+                                                    wheres.extend(zip(ws, [(other, k) for _ in range(len(ws))]))
+                                if wheres != []:
+                                    wheres.sort(key=lambda x: (x[0][0]-p1[0])**2+(x[0][1]-p1[1])**2)
+                                    newpts.append(wheres[0][0])
+                                    # Correct direction handling
+                                    if oshps[check].collides(Point(*lns[wheres[0][1][0]][wheres[0][1][1]].p2)):
+                                        direc = -1
                                     else:
-                                        newpts.append(ln.p2)
+                                        direc = 1
+                                    check = wheres[0][1][0]
+                                    j = wheres[0][1][1]
                                 else:
-                                    break
-                                j = (j + direc) % len(lns[check])
-                            outshps[i] = Polygon(*newpts)
-                else:
-                    outshps.append(s)
+                                    newpts.append(p2)
+                            else:
+                                break
+                            j = (j + direc) % len(lns[check])
+                        outshps[i] = Polygon(*newpts)
             else:
-                pass # TODO
+                outshps.append(s)
         return Shapes(*outshps)
 
 # TODO: A lot more bounding box checks everywhere
