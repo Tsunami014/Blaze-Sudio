@@ -1,3 +1,4 @@
+# TODO: Prune depricated entries
 BlazeSudio/keys/apiKeys.key
 *.pyc
 *.bin
@@ -5,6 +6,7 @@ BlazeSudio/bot/model/*
 BlazeSudio/bot/Unusedmodels/*
 *.db
 *.json
+!demogames/data.json
 !BlazeSudio/bot/preferencesDefault.json
 !BlazeSudio/data/defaultWorld/src/nodes/dat.json
 !BlazeSudio/data/nodes/types.json

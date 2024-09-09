@@ -1,0 +1,10 @@
+{
+    "basic1": {
+        "Name": "Basic-1",
+        "Description": "One of the demo levels in LDtk itself, brought to life with BS!"
+    },
+    "gravityGolf": {
+        "Name": "Gravity Golf",
+        "Description": "The collisions demo remastered into a game - gravity golf. Make and play your levels!"
+    }
+}
