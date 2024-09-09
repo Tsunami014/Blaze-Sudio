@@ -1,5 +1,5 @@
 import json, pygame, os
-import BlazeSudio.utils.collisions as colls
+import BlazeSudio.collisions as colls
 from math import ceil, floor
 from importlib.resources import files
 

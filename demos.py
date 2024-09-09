@@ -548,8 +548,11 @@ def OLDtkAPPDemo():
         except:
             winopen = False
 
-def OCollisionsDemo():
-    from BlazeSudio.utils import collisions
+def OCollisionsDemo(debug=False):
+    if debug:
+        from BlazeSudio.collisions.lib import collisions
+    else:
+        from BlazeSudio import collisions
     from BlazeSudio.graphics.options import CRAINBOWCOLOURS, FFONT
     import pygame, math
     pygame.init()
@@ -989,6 +992,7 @@ if __name__ == '__main__':
         Tk.Button(root, text='Overlays Demo',           command=lambda: cmd(OOverlaysDemo),                      ).pack()
         Tk.Button(root, text='LDtk app Demo',           command=lambda: cmd(OLDtkAPPDemo),                       ).pack()
         Tk.Button(root, text='Collisions Demo',         command=lambda: cmd(OCollisionsDemo),                    ).pack()
+        Tk.Button(root, text='DEBUG Collisions Demo',   command=lambda: cmd(lambda: OCollisionsDemo(True)),      ).pack()
         Tk.Button(root, text='Conversation Parse Demo', command=lambda: cmd(OConversationParserDemo), relief=Tk.SUNKEN ).pack()
         root.protocol("WM_DELETE_WINDOW", root.destroy)
     load()

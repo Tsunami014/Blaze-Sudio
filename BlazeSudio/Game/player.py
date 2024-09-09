@@ -1,5 +1,5 @@
 from math import sqrt, ceil
-import BlazeSudio.utils.collisions as colls
+import BlazeSudio.collisions as colls
 import pygame
 import BlazeSudio.graphics.options as GO
 import BlazeSudio.Game.statics as statics
