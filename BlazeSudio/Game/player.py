@@ -7,18 +7,8 @@ class Player:
         self.Game = Game
         self.G = G
         self.world = world
-        self.sur = None
-    
-    def load_sur(self):
-        resp = self.Game.curScene.render()
-        if resp is None:
-            return False
-        self.sur = resp
-        return True
 
     def update(self, events, mPos):
-        if self.sur is None:
-            self.load_sur()
         win = self.G.WIN
         sze = self.G.size
         keys = pygame.key.get_pressed()
@@ -29,7 +19,8 @@ class Player:
         pos = self.Game.curScene.CamPos()
         
         win.fill(self.Game.currentLvL._bgColor)
-        sur = pygame.transform.scale(self.sur, (self.sur.get_width() * scale, self.sur.get_height() * scale))
+        sur = self.Game.curScene.render()
+        sur = pygame.transform.scale(sur, (sur.get_width() * scale, sur.get_height() * scale))
         
         bounds = self.Game.curScene.CamBounds()
 
@@ -43,6 +34,7 @@ class Player:
         if bounds[3] is not None:
             pos[1] = min(pos[1], bounds[3])
 
+        # TODO: Not need the 'self.Game.currentLvL.layerInstances[0]['__gridSize']'
         # Calculate real position
         realpos = ((pos[0] * self.Game.currentLvL.layerInstances[0]['__gridSize']) * scale,
                 (pos[1] * self.Game.currentLvL.layerInstances[0]['__gridSize']) * scale)
