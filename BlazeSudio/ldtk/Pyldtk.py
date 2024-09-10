@@ -42,7 +42,7 @@ class LdtkJSON:
         
         self.levels = [Ldtklevel(l, self.tilesets, self.defs) for l in self.ldtkData['levels']]
         
-        self.entities = [Entity(e, self.tilesets) for e in self.defs['entities']]
+        self.entitiyDefs = self.defs['entities']
             
 
 class Tileset:
@@ -70,11 +70,22 @@ class Tileset:
         return pygame.transform.scale(end, (gridsize, gridsize))
 
 class Entity:
-    def __init__(self, data, tilesets):
+    def __init__(self, layer, data, tilesets):
+        self.layer = layer
         self.data = data
         self.tilesets = tilesets
         for k, v in self.data.items():
+            if k.startswith('__'): 
+                k = k[1:]
             self.__dict__[k] = v
+        self.ScaledPos = [
+            self.px[0] + self.layer['pxOffsetX'],
+            self.px[1] + self.layer['pxOffsetY']
+        ]
+        self.UnscaledPos = [
+            self.ScaledPos[0] / self.layer['__gridSize'],
+            self.ScaledPos[1] / self.layer['__gridSize']
+        ]
     
     def get_tile(self, ui=False):
         tiler = self.tileRect if not ui else self.uiTileRect
@@ -101,7 +112,7 @@ class Ldtklevel:
         self.layers = []
         for l in self.layerInstances:
             if l['__type'] == 'Entities':
-                self.entities.extend([{**i, 'layerId': l['__identifier']} for i in l['entityInstances']])
+                self.entities.extend([Entity(l, {**i, 'layerId': l['__identifier']}, self.tilesets) for i in l['entityInstances']])
             else:
                 self.layers.append(layer(l, self, defs['layers'][ids.index(l['__identifier'])]))
         self.layers.reverse() 
