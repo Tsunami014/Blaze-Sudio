@@ -150,10 +150,10 @@ Please note:
                             G.add_button(f'Copy uid ({e.uid})', next(rainbow), TOPLEFT, font=GO.FSMALL, callback=lambda *args, e=e: func(e))
                             G.add_empty_space(TOPLEFT, 0, 10)
                 
-                cmdNms = [i[0] for i in self.cmds]
                 @tb.onEnter
                 def tbEnter(txt):
                     txt = txt.lower().strip()
+                    cmdNms = [i[0] for i in self.cmds]
                     if not txt.startswith('/'):
                         return
                     args = txt.split(' ')
@@ -162,7 +162,7 @@ Please note:
                     elif args[0] == '/items':
                         items()
                     elif args[0] in cmdNms:
-                        self.cmds[cmdNms.index(args[0])][2]
+                        self.cmds[cmdNms.index(args[0])][2](*args[1:])
                     else:
                         G.Toast('Invalid command! for help use /help') # TODO: Difflib get_close_matches
         elif event == GO.ETICK:

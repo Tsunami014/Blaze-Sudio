@@ -24,16 +24,6 @@ class Player:
         
         bounds = self.Game.curScene.CamBounds()
 
-        # Apply bounds to position
-        if bounds[0] is not None:
-            pos[0] = max(pos[0], bounds[0])
-        if bounds[2] is not None:
-            pos[0] = min(pos[0], bounds[2])
-        if bounds[1] is not None:
-            pos[1] = max(pos[1], bounds[1])
-        if bounds[3] is not None:
-            pos[1] = min(pos[1], bounds[3])
-
         # TODO: Not need the 'self.Game.currentLvL.layerInstances[0]['__gridSize']'
         # Calculate real position
         realpos = ((pos[0] * self.Game.currentLvL.layerInstances[0]['__gridSize']) * scale,
@@ -44,15 +34,23 @@ class Player:
         # Zero Check
         ZC = lambda x: (0 if x < 0 else x)
 
+        # TODO: I have no idea what's going on
         if sur.get_width() < sze[0] or (bounds[0] is None and bounds[2] is None):
             diff_x = 0
         else:
             if bounds[0] is None:
-                diff_x = -ZC(realpos[0] - (sur.get_width() - mw))
+                d = realpos[0] - (sur.get_width() - mw)
+                diff_x = -(bounds[2] if d < bounds[2] else d)
             elif bounds[2] is None:
-                diff_x = ZC(mw - realpos[0])
+                d = mw - realpos[0]
+                diff_x = (bounds[0] if d < bounds[0] else d)
             else:
-                diff_x = ZC(mw - realpos[0]) or -ZC(realpos[0] - (sur.get_width() - mw))
+                d1 = mw - realpos[0]
+                if d1 < bounds[0]:
+                    diff_x = bounds[0]
+                else:
+                    d2 = realpos[0] - (sur.get_width() - mw)
+                    diff_x = -(bounds[2] if d2 < bounds[2] else d2)
         
         if sur.get_height() < sze[1] or (bounds[1] is None and bounds[3] is None):
             diff_y = 0
