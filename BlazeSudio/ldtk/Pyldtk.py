@@ -78,6 +78,8 @@ class Entity:
     
     def get_tile(self, ui=False):
         tiler = self.tileRect if not ui else self.uiTileRect
+        if not tiler:
+            return pygame.Surface((self.width, self.height)).convert_alpha()
         return self.tilesets[tiler['tilesetUid']].subsurface(tiler['x'], 
                                                              tiler['y'], 
                                                              tiler['w'], 

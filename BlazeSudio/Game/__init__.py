@@ -132,16 +132,22 @@ Please note:
                         rainbow = GO.CRAINBOW()
                         for e in self.world.ldtk.entities:
                             idf = G.add_text(e.identifier, GO.CBLACK, TOPLEFT)
-                            doc = G.add_text(e.doc, GO.CBLACK, TOPLEFT, GO.FSMALL)
+                            docsze = 0
+                            if e.doc:
+                                doc = G.add_text(e.doc, GO.CBLACK, TOPLEFT, GO.FSMALL)
+                                docsze = doc.size[0]
                             size = 60
                             scaleby = size / max(e.width, e.height)
                             UITile = pygame.transform.scale(e.get_tile(True), (e.width * scaleby, e.height * scaleby))
                             InGameTile = pygame.transform.scale(e.get_tile(False), (e.width * scaleby, e.height * scaleby))
                             idfp = idf.stackP()
-                            ms = max(idf.size[0], doc.size[0]) + 10
+                            ms = max(idf.size[0], docsze) + 10
                             G.add_surface(UITile, GO.PSTATIC(idfp[0] + ms, idfp[1]))
                             G.add_surface(InGameTile, GO.PSTATIC(idfp[0] + ms + size + 10, idfp[1]))
-                            G.add_button(f'Copy uid ({e.uid})', next(rainbow), TOPLEFT, font=GO.FSMALL, callback=copy(e.uid))
+                            def func(e):
+                                copy(e.uid)
+                                G.Toast(f'Copied "{e.uid}" to clipboard!')
+                            G.add_button(f'Copy uid ({e.uid})', next(rainbow), TOPLEFT, font=GO.FSMALL, callback=lambda *args, e=e: func(e))
                             G.add_empty_space(TOPLEFT, 0, 10)
                 
                 cmdNms = [i[0] for i in self.cmds]
