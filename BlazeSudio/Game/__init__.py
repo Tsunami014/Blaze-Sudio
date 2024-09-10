@@ -17,68 +17,47 @@ __all__ = [
 
 G = Graphic()
 
-
-_settings = {
-    # Name: (type, type explanation, default, explanation)
-    "scale": (statics.Number, "Number", 1, "the scale of the level"),
-    "gravity": (statics.Iterable, "list[int,int]", [0, 0], "the gravity of the player, x and y")
-}
-
 class Game:
     def __init__(self):
+        self.G = G
         self.world: world.World = None
         self.debug: bool = None
-        self._player: statics.BasePlayer = statics.BasePlayer() # The player character in the game
-        self._gameplayer: Player = None # The object which renders the game (like a video player)
-        self._scenes = []
-        self._defaultScene = 0
-        self.settings = {
-            i: i[2] for i in _settings
-        }
-        self._onticks = []
-        self._collisions: statics.BaseCollisions = statics.BaseCollisions()
+        self.playing = False
+        self.needCreateScene = False
+
+        self.curScene = None
+        self.sceneLoader = statics.BaseScene
+        self.gameplayer: Player = None # The object which renders the game (like a video player)
+
+        self.scenes = []
+        self.cmds = []
+        self.sceneLoader = 0
     
     @property
     def currentLvL(self):
-        return self._gameplayer.currentLvL
+        return self.world.get_level(self.curScene.lvl)
     
-    def Collision(self, cls):
-        self._collisions = cls()
-        return cls
+    @property
+    def currentScene(self):
+        return self.curScene
     
-    def Scene(self, func, default=False):
-        pass
-    
-    def Player(self, cls):
-        self._player = cls()
-        return cls
+    def DefaultSceneLoader(self, cls):
+        self.sceneLoader = cls
     
     def load_map(self, fpath):
         self.world = world.World(fpath)
     
-    def SetSettings(self, **kwargs):
-        """
-        Sets settings for the world
-        
-        Settings
-        --------
-        scale : int, default 1
-            The scale of the map
-        gravity : list[int,int], default [0, 0]
-            The gravity of the player, in x, y
-        """
-        self.settings.update(kwargs)
+    def load_scene(self, type=None, **sceneSettings):
+        if type is None:
+            type = self.sceneLoader
+        if self.playing:
+            self.curScene = type(self, **sceneSettings)
+        else:
+            self.curScene = (type, sceneSettings)
+        self.needCreateScene = not self.playing
     
-    def ontick(self, func):
-        """
-        Add a function to be called every tick
-        
-        Parameters
-        ----------
-        func : function
-            The function to be called
-        """
-        self._onticks.append(func)
+    def AddCommand(self, name, desc, func):
+        self.cmds.append([name, desc, func])
     
     @G.CGraphic
     def play(self, event, element=None, aborted=False, debug=False):
@@ -93,15 +72,14 @@ class Game:
             customisable scales to find the right one for your purposes, and more; all avaliable via the terminalbar.
         """
         self.debug = debug
+        self.playing = True
         if event == GO.EFIRST:
-            self._gameplayer = Player(G, self.world, self)
-            if self._player is not None and self._player.StartUID is not None:
-                for e in self.world.get_level(self._gameplayer.lvl).entities:
-                    if e['defUid'] == self._player.StartUID:
-                        self._gameplayer.pos = [e['px'][0] / e['width'], e['px'][1] / e['height']]
-                        break
+            self.gameplayer = Player(G, self.world, self)
+            if self.needCreateScene:
+                self.needCreateScene = False
+                self.curScene = self.curScene[0](self, **self.curScene[1])
         elif event == GO.ELOADUI:
-            G.add_custom(self._gameplayer)
+            G.add_custom(self.gameplayer)
             
             if debug:
                 tb = G.add_TerminalBar()
@@ -118,7 +96,7 @@ class Game:
                         newG2, e = G.add_Scrollable(GO.PRCENTER, (G.size[0]/3, G.size[0]/2), (G.size[0]/3, G.size[0]))
                         rainbow = GO.CRAINBOW()
                         newG.add_empty_space(GO.PCTOP, 0, 10)
-                        newG.add_text('ALL COMMANDS', GO.CBLACK, GO.PCTOP, GO.FTITLE)
+                        newG.add_text('Built-in commands', GO.CBLACK, GO.PCTOP, GO.FTITLE)
                         def add_cmd(cmd, txt, cpy):
                             col = next(rainbow)
                             newG.add_text(cmd, col, GO.PCTOP, allowed_width=G.size[0]/3-10)
@@ -126,15 +104,14 @@ class Game:
                             newG.add_button('Copy command', col, GO.PCTOP, callback=lambda e: copy(cpy))
                         add_cmd('/help ...', 'Get help; a list of all the commands you can use!', '/help')
                         add_cmd('/items ...', 'Go to the items page: to view all the entities and other useful information in the game/level!', '/items')
-                        add_cmd('/set <setting> <setTo>', 'Set a setting. See "Settings"', '/set ')
-                        add_cmd('/get <setting> ...', 'Gets a setting. See "Settings"', '/get ')
                         newG2.add_empty_space(GO.PCTOP, 0, 10)
-                        newG2.add_text('Settings', GO.CBLACK, GO.PCTOP, GO.FTITLE)
+                        newG2.add_text('Game-specific commands', GO.CBLACK, GO.PCTOP, GO.FTITLE)
+                        rainbow = GO.CRAINBOW()
                         def add_sett(txt):
-                            newG2.add_text(txt, GO.CBLACK, GO.PCTOP, allowed_width=G.size[0]/3-10)
-                        for i in _settings:
-                            it = _settings[i]
-                            add_sett(f'"{i}" ({it[1]}): {it[3]}, default: {it[2]}')
+                            col = next(rainbow)
+                            newG2.add_text(txt, col, GO.PCTOP, allowed_width=G.size[0]/3-10)
+                        for name, desc, _ in self.cmds:
+                            add_sett(f'"{name}": {desc}')
                 
                 @G.Graphic
                 def items(event, element=None, aborted=False):
@@ -167,37 +144,20 @@ Please note:
                             G.add_button(f'Copy uid ({e.uid})', next(rainbow), TOPLEFT, font=GO.FSMALL, callback=copy(e.uid))
                             G.add_empty_space(TOPLEFT, 0, 10)
                 
+                cmdNms = [i[0] for i in self.cmds]
                 @tb.onEnter
                 def tbEnter(txt):
                     txt = txt.lower().strip()
                     if not txt.startswith('/'):
                         return
                     args = txt.split(' ')
-                    if args[0] == '/set':
-                        if len(args) != 3:
-                            G.Toast('Incorrect amount of arguments for command "/set"! Expected: 2')
-                        else:
-                            if args[1] in self.settings:
-                                try:
-                                    out = eval(args[2])
-                                    assert isinstance(out, _settings[args[1]][0])
-                                    self.settings[args[1]] = out
-                                except:
-                                    G.Toast(f'Expected argument 2 of "/set" to be a {_settings[args[1]][1]}, but was not!')
-                            else:
-                                G.Toast('Invalid setting to set!')
-                    elif args[0] == '/get':
-                        if args[1] in self.settings:
-                            G.Toast(f"{args[1]} is {self.settings[args[1]]}")
-                        else:
-                            G.Toast('Invalid setting to get!')
-                    elif args[0] == '/help':
+                    if args[0] == '/help':
                         help()
                     elif args[0] == '/items':
                         items()
+                    elif args[0] in cmdNms:
+                        self.cmds[cmdNms.index(args[0])][2]
                     else:
                         G.Toast('Invalid command! for help use /help') # TODO: Difflib get_close_matches
         elif event == GO.ETICK:
-            self._gameplayer.gravity = self.settings['gravity']
-            for i in self._onticks:
-                i()
+            pass

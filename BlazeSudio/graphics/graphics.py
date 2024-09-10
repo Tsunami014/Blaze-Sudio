@@ -290,6 +290,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                 @self.Graphic
                 def errored(event, *args, element=None, aborted=False, **kwargs):
                     if event == GO.ELOADUI:
+                        nonlocal e
                         self.Clear()
                         self.add_text('AN EXCEPTION OCCURED!', GO.CRED, GO.PCTOP, GO.FTITLE)
                         self.add_text(str(type(e)), GO.CRED, GO.PCTOP, GO.FTITLE)
