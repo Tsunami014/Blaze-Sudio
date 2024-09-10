@@ -52,16 +52,25 @@ class Player:
         # Zero Check
         ZC = lambda x: (0 if x < 0 else x)
 
-        # TODO: Partial bounding
         if sur.get_width() < sze[0] or (bounds[0] is None and bounds[2] is None):
             diff_x = 0
         else:
-            diff_x = ZC(mw - realpos[0]) or -ZC(realpos[0] - (sur.get_width() - mw))
+            if bounds[0] is None:
+                diff_x = -ZC(realpos[0] - (sur.get_width() - mw))
+            elif bounds[2] is None:
+                diff_x = ZC(mw - realpos[0])
+            else:
+                diff_x = ZC(mw - realpos[0]) or -ZC(realpos[0] - (sur.get_width() - mw))
         
         if sur.get_height() < sze[1] or (bounds[1] is None and bounds[3] is None):
             diff_y = 0
         else:
-            diff_y = ZC(mh - realpos[1]) or -ZC(realpos[1] - (sur.get_height() - mh))
+            if bounds[1] is None:
+                diff_y = -ZC(realpos[1] - (sur.get_height() - mh))
+            elif bounds[3] is None:
+                diff_y = ZC(mh - realpos[1])
+            else:
+                diff_y = ZC(mh - realpos[1]) or -ZC(realpos[1] - (sur.get_height() - mh))
 
         # Blit the surface considering the camera bounds and diffs
         win.blit(sur, [
