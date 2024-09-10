@@ -67,7 +67,7 @@ class MainGameScene(Ss.BaseScene):
         return self.entities[0].pos
     
     def CamDist(self):
-        return 8
+        return 4
     
     def CamBounds(self):
         return [None, None, None, None]
