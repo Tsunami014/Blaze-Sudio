@@ -1,21 +1,66 @@
-from enum import Enum
-from typing import Any, Union, Iterable
+import pygame
 
-Number = Union[int, float]
-
-class BasePlayer:
-    # STUFF YOU CAN SET
-    """The UID of the entity which is the player start"""
-    StartUID: int = None
-
-class BaseCollisions:
-    # STUFF YOU CAN SET
-    def __call__(self, pos: list[Number], accel: list[Number], entity: str) -> tuple[list[Number], list[Number]]:
-        return [pos[0]+accel[0], pos[1]+accel[1]], accel # Your new position and movement
-
-class SceneEvent(Enum):
-    INIT = 0
-    """At the start, before anything has loaded"""
+class BaseScene:
+    def __init__(self, Game, **settings):
+        self.Game = Game
+        self.entities = []
+        self.lvl = 0
     
-    LOADED = 1
-    """At the start of the scene after all the elements have loaded"""
+    @property
+    def currentLvl(self):
+        return self.Game.world.get_level(self.lvl)
+    
+    def CamPos(self):
+        return [0, 0]
+    
+    def CamDist(self):
+        return 0
+    
+    def tick(self, keys):
+        for e in self.entities:
+            e(keys)
+
+    def render(self):
+        pass
+
+class BaseEntity:
+    def __init__(self):
+        self.pos = [0, 0]
+        self.accel = [0, 0]
+        self.gravity = [0, 0]
+        #                   Accel,      decel
+        self.accel_amnt = [[0.2, 0.2], [0.25, 0.25]]
+        self.max_accel = [0.7, 0.7]
+    
+    def handle_accel(self, keys):
+        if keys[pygame.K_UP] ^ keys[pygame.K_DOWN]:
+            if keys[pygame.K_UP]:
+                self.accel[1] -= self.accel_amnt[0][1]
+            elif keys[pygame.K_DOWN]:
+                self.accel[1] += self.accel_amnt[0][1]
+        else:
+            if self.accel[1] < -self.accel_amnt[1][1]:
+                self.accel[1] += self.accel_amnt[1][1]
+            elif self.accel[1] > self.accel_amnt[1][1]:
+                self.accel[1] -= self.accel_amnt[1][1]
+            else:
+                self.accel[1] = 0
+        
+        if keys[pygame.K_RIGHT] ^ keys[pygame.K_LEFT]:
+            if keys[pygame.K_RIGHT]:
+                self.accel[0] += self.accel_amnt[0][0]
+            elif keys[pygame.K_LEFT]:
+                self.accel[0] -= self.accel_amnt[0][0]
+        else:
+            if self.accel[0] < -self.accel_amnt[1][0]:
+                self.accel[0] += self.accel_amnt[1][0]
+            elif self.accel[0] > self.accel_amnt[1][0]:
+                self.accel[0] -= self.accel_amnt[1][0]
+            else:
+                self.accel[0] = 0
+        
+        self.accel = [round(min(max(self.accel[0]+self.gravity[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1]+self.gravity[1], -self.max_accel[1]), self.max_accel[1]), 3)]
+    
+    def __call__(self, keys):
+        self.handle_accel(keys)
+        self.pos = [self.pos[0] + self.accel[0], self.pos[1] + self.accel[1]]
