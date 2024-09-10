@@ -1,4 +1,4 @@
-import pygame
+import pygame, math
 
 class BaseScene:
     def __init__(self, Game, **settings):
@@ -16,6 +16,11 @@ class BaseScene:
     def CamDist(self):
         return 0
     
+    def CamBounds(self):
+        return [0, 0,
+                self.currentLvl.layerInstances[0]['__cWid'],
+                self.currentLvl.layerInstances[0]['__cHei']]
+    
     def tick(self, keys):
         for e in self.entities:
             e(keys)
@@ -23,16 +28,20 @@ class BaseScene:
     def render(self):
         pass
 
+    def renderUI(self, win, offset, midp, scale):
+        pass
+
 class BaseEntity:
     def __init__(self):
         self.pos = [0, 0]
         self.accel = [0, 0]
         self.gravity = [0, 0]
+        self.friction = [0.05, 0.05]
         #                   Accel,      decel
         self.accel_amnt = [[0.2, 0.2], [0.25, 0.25]]
         self.max_accel = [0.7, 0.7]
     
-    def handle_accel(self, keys):
+    def handle_keys(self, keys):
         if keys[pygame.K_UP] ^ keys[pygame.K_DOWN]:
             if keys[pygame.K_UP]:
                 self.accel[1] -= self.accel_amnt[0][1]
@@ -58,9 +67,12 @@ class BaseEntity:
                 self.accel[0] -= self.accel_amnt[1][0]
             else:
                 self.accel[0] = 0
-        
+    
+    def handle_accel(self):
+        self.accel = [self.accel[0]*(1-self.friction[0]), self.accel[1]*(1-self.friction[1])]
         self.accel = [round(min(max(self.accel[0]+self.gravity[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1]+self.gravity[1], -self.max_accel[1]), self.max_accel[1]), 3)]
     
     def __call__(self, keys):
-        self.handle_accel(keys)
+        self.handle_keys(keys)
+        self.handle_accel()
         self.pos = [self.pos[0] + self.accel[0], self.pos[1] + self.accel[1]]

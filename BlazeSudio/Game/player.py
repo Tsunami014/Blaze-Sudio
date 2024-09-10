@@ -1,4 +1,3 @@
-from math import sqrt, ceil
 import pygame
 import BlazeSudio.graphics.options as GO
 import BlazeSudio.Game.statics as statics
@@ -25,58 +24,50 @@ class Player:
         keys = pygame.key.get_pressed()
         
         self.Game.curScene.tick(keys)
-
+        
         scale = self.Game.curScene.CamDist()
         pos = self.Game.curScene.CamPos()
         
-        sur = pygame.transform.scale(self.sur, (self.sur.get_width()*scale, self.sur.get_height()*scale))
+        win.fill(self.Game.currentLvL._bgColor)
+        sur = pygame.transform.scale(self.sur, (self.sur.get_width() * scale, self.sur.get_height() * scale))
+        
+        bounds = self.Game.curScene.CamBounds()
 
-        # TODO: replace the changing of the level to work with the ldtk neighbours thing and implement that in world.py
-        realpos = ((pos[0] * self.Game.currentLvL.layerInstances[0]['__gridSize']) * scale, 
-                   (pos[1] * self.Game.currentLvL.layerInstances[0]['__gridSize']) * scale)
-        if realpos[0] > sur.get_width():
-            self.lvl += 1
-            if self.load_sur():
-                pos[0] = 0.1
-            else: # It failed
-                self.lvl -= 1
-        elif realpos[0] < 0:
-            self.lvl -= 1
-            if self.load_sur():
-                pos[0] = self.Game.currentLvL.layerInstances[0]['__cWid']-0.1
-            else: # It failed
-                self.lvl += 1
-        if realpos[1] < 0:
-            oldlvl = self.lvl
-            self.lvl -= ceil(sqrt(len(self.world.ldtk.levels)))
-            if self.load_sur():
-                pos[1] = self.Game.currentLvL.layerInstances[0]['__cHei']-0.1
-            else: # It failed
-                self.lvl = oldlvl
-        elif realpos[1] > sur.get_height():
-            oldlvl = self.lvl
-            self.lvl += ceil(sqrt(len(self.world.ldtk.levels)))
-            if self.load_sur():
-                pos[1] = 0.1
-            else: # It failed
-                self.lvl = oldlvl
-        
-        pos[0] = max(min(pos[0], self.Game.currentLvL.layerInstances[0]['__cWid']), 0)
-        pos[1] = max(min(pos[1], self.Game.currentLvL.layerInstances[0]['__cHei']), 0)
-        
+        # Apply bounds to position
+        if bounds[0] is not None:
+            pos[0] = max(pos[0], bounds[0])
+        if bounds[2] is not None:
+            pos[0] = min(pos[0], bounds[2])
+        if bounds[1] is not None:
+            pos[1] = max(pos[1], bounds[1])
+        if bounds[3] is not None:
+            pos[1] = min(pos[1], bounds[3])
+
+        # Calculate real position
         realpos = ((pos[0] * self.Game.currentLvL.layerInstances[0]['__gridSize']) * scale,
-                   (pos[1] * self.Game.currentLvL.layerInstances[0]['__gridSize']) * scale)
+                (pos[1] * self.Game.currentLvL.layerInstances[0]['__gridSize']) * scale)
+
+        mw, mh = sze[0] / 2, sze[1] / 2
+
+        # Zero Check
+        ZC = lambda x: (0 if x < 0 else x)
+
+        # TODO: Partial bounding
+        if sur.get_width() < sze[0] or (bounds[0] is None and bounds[2] is None):
+            diff_x = 0
+        else:
+            diff_x = ZC(mw - realpos[0]) or -ZC(realpos[0] - (sur.get_width() - mw))
         
-        sur = pygame.transform.scale(self.sur, (self.sur.get_width()*scale, self.sur.get_height()*scale))
-        
-        mw, mh = sze[0]/2, sze[1]/2
-        ZC = lambda x: (0 if x < 0 else x) # Zero Check
-        diff = ((ZC(mw-realpos[0]) or -ZC(realpos[0]-(sur.get_width()-mw))),
-                (ZC(mh-realpos[1]) or -ZC(realpos[1]-(sur.get_height()-mh))))
+        if sur.get_height() < sze[1] or (bounds[1] is None and bounds[3] is None):
+            diff_y = 0
+        else:
+            diff_y = ZC(mh - realpos[1]) or -ZC(realpos[1] - (sur.get_height() - mh))
+
+        # Blit the surface considering the camera bounds and diffs
         win.blit(sur, [
-            -realpos[0]+mw-diff[0],
-            -realpos[1]+mh-diff[1]
-            ])
+            -realpos[0] + mw - diff_x,
+            -realpos[1] + mh - diff_y
+        ])
+
         playersze = self.Game.currentLvL.layerInstances[0]['__gridSize'] * scale
-        pygame.draw.rect(win, (0, 0, 0), (mw-diff[0]-(playersze//2), mh-diff[1]-(playersze//2), playersze, playersze), border_radius=2)
-        pygame.draw.rect(win, (255, 255, 255), (mw-diff[0]-(playersze//2), mh-diff[1]-(playersze//2), playersze, playersze), width=5, border_radius=2)
+        self.Game.curScene.renderUI(win, (diff_x, diff_y), (mw, mh), playersze)
