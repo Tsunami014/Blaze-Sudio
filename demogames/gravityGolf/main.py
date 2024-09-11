@@ -92,9 +92,9 @@ class MainGameScene(Ss.BaseScene):
                 self.entities[0].pos = [e.UnscaledPos[0]+0.5, e.UnscaledPos[1]+0.5]
                 break
     
-    def tick(self, keys):
-        super().tick(keys)
-        if pygame.mouse.get_pressed()[0] and self.entities[0].collided:
+    def tick(self, evs):
+        super().tick(evs)
+        if any(e.type == pygame.MOUSEBUTTONDOWN for e in evs) and self.entities[0].collided:
             angle = math.atan2(self.last_playerPos[1]-pygame.mouse.get_pos()[1], self.last_playerPos[0]-pygame.mouse.get_pos()[0])
             addAccel = [-40*math.cos(angle), -40*math.sin(angle)]
             self.entities[0].accel[0] += addAccel[0]

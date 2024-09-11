@@ -41,7 +41,8 @@ class BaseEntity:
         self.accel_amnt = [[0.2, 0.2], [0.25, 0.25]]
         self.max_accel = [0.7, 0.7]
     
-    def handle_keys(self, keys):
+    def handle_keys(self):
+        keys = pygame.key.get_pressed()
         if keys[pygame.K_UP] ^ keys[pygame.K_DOWN]:
             if keys[pygame.K_UP]:
                 self.accel[1] -= self.accel_amnt[0][1]
@@ -72,7 +73,7 @@ class BaseEntity:
         self.accel = [self.accel[0]*(1-self.friction[0]), self.accel[1]*(1-self.friction[1])]
         self.accel = [round(min(max(self.accel[0]+self.gravity[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1]+self.gravity[1], -self.max_accel[1]), self.max_accel[1]), 3)]
     
-    def __call__(self, keys):
-        self.handle_keys(keys)
+    def __call__(self, evs):
+        self.handle_keys()
         self.handle_accel()
         self.pos = [self.pos[0] + self.accel[0], self.pos[1] + self.accel[1]]

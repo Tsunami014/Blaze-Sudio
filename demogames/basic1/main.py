@@ -13,8 +13,8 @@ class BaseEntity(Ss.BaseEntity):
         super().__init__()
         self.gravity = [0, 0.1]
     
-    def __call__(self, keys):
-        self.handle_keys(keys)
+    def __call__(self, evs):
+        self.handle_keys()
         self.handle_accel()
         outRect, self.accel = collisions.Rect(self.pos[0]-0.5, self.pos[1]-0.5, 1, 1).handleCollisionsAccel(self.accel, G.currentLvL.layers[1].intgrid.getRects(1), False)
         self.pos = [outRect.x+0.5, outRect.y+0.5]
