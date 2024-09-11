@@ -8,12 +8,11 @@ class Player:
         self.G = G
         self.world = world
 
-    def update(self, events, mPos):
+    def update(self, mPos, events):
         win = self.G.WIN
         sze = self.G.size
-        keys = pygame.key.get_pressed()
         
-        self.Game.curScene.tick(keys)
+        self.Game.curScene.tick(events.copy())
         
         scale = self.Game.curScene.CamDist()
         pos = self.Game.curScene.CamPos()
