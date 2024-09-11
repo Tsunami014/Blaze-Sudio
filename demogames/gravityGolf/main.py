@@ -50,7 +50,10 @@ class PlayerEntity(Ss.BaseEntity):
         self.handle_accel()
         oldaccel = self.accel
         outRect, self.accel = thisObj.handleCollisionsAccel(self.accel, G.currentScene.GetEntitiesByLayer('Collisions'), False)
-        if collisions.Line(oldPos, outRect).collides(collisions.Shapes(*G.currentScene.GetEntitiesByID('Goal'))):
+        mvementLine = collisions.Line(oldPos, outRect)
+        if mvementLine.collides(collisions.Shapes(*G.currentScene.GetEntitiesByID('BlackHole'))):
+            G.load_scene(lvl=G.currentScene.lvl)
+        if mvementLine.collides(collisions.Shapes(*G.currentScene.GetEntitiesByID('Goal'))):
             if G.currentScene.lvl+1 >= len(G.world.ldtk.levels):
                 G.load_scene(SplashScreen)
             else:
@@ -102,7 +105,7 @@ class MainGameScene(Ss.BaseScene):
             self.colls[0][typ] = []
             for e in self.currentLvl.entities:
                 if e.layerId == typ:
-                    if e._identifier == 'CircleRegion':
+                    if e._identifier == 'CircleRegion' or e._identifier == 'BlackHole':
                         self.colls[0][typ].append(collisions.Circle(e.ScaledPos[0], e.ScaledPos[1], e.width/2))
                     elif e._identifier == 'RectRegion':
                         self.colls[0][typ].append(collisions.Rect(*e.ScaledPos, e.width, e.height))
@@ -115,7 +118,7 @@ class MainGameScene(Ss.BaseScene):
             self.colls[1][typ] = []
             for e in self.currentLvl.entities:
                 if e._identifier == typ:
-                    if e._identifier == 'CircleRegion':
+                    if e._identifier == 'CircleRegion' or e._identifier == 'BlackHole':
                         self.colls[1][typ].append(collisions.Circle(e.ScaledPos[0], e.ScaledPos[1], e.width/2))
                     elif e._identifier == 'RectRegion':
                         self.colls[1][typ].append(collisions.Rect(*e.ScaledPos, e.width, e.height))
@@ -137,10 +140,11 @@ class MainGameScene(Ss.BaseScene):
             return self.sur
         lvl = self.currentLvl
         sur = pygame.Surface((lvl.pxWid, lvl.pxHei))
+        sur.fill(G.currentLvL._bgColor)
         for e in lvl.entities:
             typs = ['Collisions', 'GravityFields']
-            col = (255, 255, 255) if e.layerId not in typs else [(255, 50, 50), (10, 255, 50)][typs.index(e.layerId)]
-            if e._identifier == 'CircleRegion':
+            col = (255, 255, 255) if e.layerId not in typs else [(255, 50, 50), (10, 50, 50)][typs.index(e.layerId)]
+            if e._identifier == 'CircleRegion' or e._identifier == 'BlackHole':
                 pygame.draw.circle(sur, col, (e.ScaledPos[0], e.ScaledPos[1]), e.width//2)
             elif e._identifier == 'RectRegion':
                 pygame.draw.rect(sur, col, (*e.ScaledPos, e.width, e.height))

@@ -64,7 +64,7 @@ class World:
     def get_pygame(self, lvl=0):
         level = self.ldtk.levels[lvl]
         end = Surface((level.width, level.height))
-        end.fill(tuple(int(level._bgColor.lstrip('#')[i:i+2], 16) for i in (0, 2, 4)))
+        end.fill(level._bgColor)
         end = end.convert_alpha()
         for i in level.layers:
             end.blit(i.getImg(), (0, 0))
