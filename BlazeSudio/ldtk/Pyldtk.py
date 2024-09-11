@@ -65,9 +65,9 @@ class Tileset:
     def subsurface(self, x, y, w, h):
         return self.tileSet.subsurface(pygame.Rect(x, y, w, h))
     
-    def getTile(self, tile, gridsize):
+    def getTile(self, tile):
         end = pygame.transform.flip(self.tileSet.subsurface(pygame.Rect(tile.src.x, tile.src.y, self.tileGridSize, self.tileGridSize)), *tile.flip)
-        return pygame.transform.scale(end, (gridsize, gridsize))
+        return pygame.transform.scale(end, (self.tileGridSize, self.tileGridSize))
 
 class Entity:
     def __init__(self, layer, data, tilesets):
@@ -167,14 +167,12 @@ class layer:
                             h = self.intGridValues[vals.index(self.intGridCsv[y, x])]['color'].lstrip('#')
                             col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
                         end.blit(col, (x*self.gridSize, y*self.gridSize))
-            else:
-                end.fill((255, 255, 255, 1))
             return end
         tset = self.tilesets[self._tilesetDefUid]
-        if self.tiles == None: self.loadTileSheet()
-        for j in range(len(self.tiles)):
-            i = self.tiles[j]
-            end.blit(tset.getTile(i, self._gridSize), i.pos)
+        if self.tiles is None:
+            self.loadTileSheet()
+        for i in self.tiles:
+            end.blit(tset.getTile(i), i.pos)
         return end
 
 class IntGridCSV:
@@ -195,6 +193,7 @@ class IntGridCSV:
                     li.extend(self.rects[i])
             return li
         rs = {}
+        typ = None
         for y in range(len(self.intgrid)):
             for x in range(len(self.intgrid[y])):
                 typ = self.intgrid[y][x]
@@ -202,7 +201,8 @@ class IntGridCSV:
                     rs[typ].append(colls.Rect(x*size, y*size, size, size))
                 else:
                     rs[typ] = [colls.Rect(x*size, y*size, size, size)]
-        rs[typ] = colls.ShapeCombiner.to_rects(*rs[typ])
+        if typ is not None:
+            rs[typ] = colls.ShapeCombiner.to_rects(*rs[typ])
         self.rects = rs
         return self.getRects(matches, size)
     
@@ -240,4 +240,4 @@ class tile:
         # self.px (as from above, self.pos) = coordinates of the tile IN THE LAYER. Don't forget layer offsets, if they exist!
     
     def getImg(self):
-        return pygame.transform.flip(self.layer.tileSet[self.layer._tilesetDefUid].getTile(self.src.x, self.src.y, self.layer._gridSize), *self.flip)
+        return pygame.transform.flip(self.layer.tileSet[self.layer._tilesetDefUid].getTile(self.src.x, self.src.y), *self.flip)
