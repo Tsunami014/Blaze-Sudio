@@ -27,15 +27,16 @@ class DebugCommands:
 debug = DebugCommands()
 
 class PlayerEntity(Ss.BaseEntity):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, entity):
+        super().__init__(entity)
         self.collided = False
         self.accel_amnt = [[5, 5], [0.5, 0.5]]
         self.max_accel = [60, 60]
     
     def __call__(self, keys):
         objs = collisions.Shapes(*G.currentScene.GetEntitiesByLayer('GravityFields'))
-        oldPos = (self.pos[0]*G.currentLvL.layerInstances[0]['__gridSize'], self.pos[1]*G.currentLvL.layerInstances[0]['__gridSize'])
+        pygame.event.pump()
+        oldPos = self.scaled_pos
         thisObj = collisions.Point(*oldPos)
         cpoints = objs.closestPointTo(thisObj) # [(i, i.closestPointTo(curObj)) for i in objs]
         if cpoints:
@@ -63,7 +64,11 @@ class PlayerEntity(Ss.BaseEntity):
         if self.collided and debug.dotCollisionDebug:
             pygame.draw.circle(G.currentScene.sur, (255, 0, 0), 
                                (int(outRect[0]), int(outRect[1])), 5)
-        self.pos = [outRect[0]/G.currentLvL.layerInstances[0]['__gridSize'], outRect[1]/G.currentLvL.layerInstances[0]['__gridSize']]
+        self.pos = self.entity.unscale_pos(outRect)
+    
+    @property
+    def scaled_pos(self):
+        return self.entity.scale_pos(self.pos)
 
 class SplashScreen(Ss.BaseScene):
     def __init__(self, Game, **settings):
@@ -82,15 +87,21 @@ class SplashScreen(Ss.BaseScene):
 class MainGameScene(Ss.BaseScene):
     def __init__(self, Game, **settings):
         super().__init__(Game, **settings)
+        self.CamDist = 2
+        self.CamBounds = [None, None, None, None]
         self.lvl = settings.get('lvl', 0)
         self.colls = [{}, {}]
         self.sur = None
         self.last_playerPos = [0, 0]
-        self.entities.append(PlayerEntity()) # The Player
         for e in self.currentLvl.entities:
             if e.defUid == 7:
+                self.entities.append(PlayerEntity(e)) # The Player
                 self.entities[0].pos = [e.UnscaledPos[0]+0.5, e.UnscaledPos[1]+0.5]
                 break
+        if self.entities == []:
+            raise Ss.IncorrectLevelError(
+                'Need a player start!'
+            )
     
     def tick(self, evs):
         super().tick(evs)
@@ -105,11 +116,11 @@ class MainGameScene(Ss.BaseScene):
             self.colls[0][typ] = []
             for e in self.currentLvl.entities:
                 if e.layerId == typ:
-                    if e._identifier == 'CircleRegion' or e._identifier == 'BlackHole':
-                        self.colls[0][typ].append(collisions.Circle(e.ScaledPos[0], e.ScaledPos[1], e.width/2))
-                    elif e._identifier == 'RectRegion':
+                    if e.identifier == 'CircleRegion' or e.identifier == 'BlackHole':
+                        self.colls[0][typ].append(collisions.Circle(e.ScaledPos[0]-e.width/2, e.ScaledPos[1]-e.width/2, e.width/2))
+                    elif e.identifier == 'RectRegion':
                         self.colls[0][typ].append(collisions.Rect(*e.ScaledPos, e.width, e.height))
-                    elif e._identifier == 'Goal':
+                    elif e.identifier == 'Goal':
                         self.colls[0][typ].append(collisions.Rect(*e.ScaledPos, e.width, e.height))
         return self.colls[0][typ]
 
@@ -117,40 +128,35 @@ class MainGameScene(Ss.BaseScene):
         if typ not in self.colls[1]:
             self.colls[1][typ] = []
             for e in self.currentLvl.entities:
-                if e._identifier == typ:
-                    if e._identifier == 'CircleRegion' or e._identifier == 'BlackHole':
-                        self.colls[1][typ].append(collisions.Circle(e.ScaledPos[0], e.ScaledPos[1], e.width/2))
-                    elif e._identifier == 'RectRegion':
+                if e.identifier == typ:
+                    if e.identifier == 'CircleRegion' or e.identifier == 'BlackHole':
+                        self.colls[1][typ].append(collisions.Circle(e.ScaledPos[0]-e.width/2, e.ScaledPos[1]-e.width/2, e.width/2))
+                    elif e.identifier == 'RectRegion':
                         self.colls[1][typ].append(collisions.Rect(*e.ScaledPos, e.width, e.height))
-                    elif e._identifier == 'Goal':
+                    elif e.identifier == 'Goal':
                         self.colls[1][typ].append(collisions.Rect(*e.ScaledPos, e.width, e.height))
         return self.colls[1][typ]
     
+    @property
     def CamPos(self):
-        return self.entities[0].pos
-    
-    def CamDist(self):
-        return 2
-    
-    def CamBounds(self):
-        return [None, None, None, None]
+        return self.entities[0].scaled_pos
 
     def render(self):
         if self.sur is not None:
             return self.sur
         lvl = self.currentLvl
-        sur = pygame.Surface((lvl.pxWid, lvl.pxHei))
-        sur.fill(G.currentLvL._bgColor)
+        sur = pygame.Surface(lvl.sizePx)
+        sur.fill(G.currentLvL.bgColour)
         for e in lvl.entities:
             typs = ['Collisions', 'GravityFields']
             col = (255, 255, 255) if e.layerId not in typs else [(255, 50, 50), (10, 50, 50)][typs.index(e.layerId)]
-            if e._identifier == 'CircleRegion' or e._identifier == 'BlackHole':
-                pygame.draw.circle(sur, col, (e.ScaledPos[0], e.ScaledPos[1]), e.width//2)
-            elif e._identifier == 'RectRegion':
+            if e.identifier == 'CircleRegion' or e.identifier == 'BlackHole':
+                pygame.draw.circle(sur, col, (e.ScaledPos[0]-e.width//2, e.ScaledPos[1]-e.width//2), e.width//2)
+            elif e.identifier == 'RectRegion':
                 pygame.draw.rect(sur, col, (*e.ScaledPos, e.width, e.height))
-            elif e._identifier == 'Goal':
+            elif e.identifier == 'Goal':
                 # The star shape was made by me which is why it probably doesn't look very good
-                pygame.draw.polygon(sur, col, [(e.ScaledPos[0]+i[0]*e.width, e.ScaledPos[1]+i[1]*e.height) for i in 
+                pygame.draw.polygon(sur, (255, 180, 10), [(e.ScaledPos[0]+i[0]*e.width, e.ScaledPos[1]+(1-i[1])*e.height) for i in 
                                                [(0, 0), (0.5, 0.23), (1, 0), (0.7, 0.35), 
                                                 (1, 0.5), (0.6, 0.6), (0.5, 1), (0.4, 0.6), 
                                                 (0, 0.5), (0.3, 0.35)]])
@@ -167,6 +173,6 @@ class MainGameScene(Ss.BaseScene):
                             (midp[0]-offset[0]+addPos[0], midp[1]-offset[1]+addPos[1]), 5)
         self.last_playerPos = (midp[0]-offset[0], midp[1]-offset[1])
 
-G.load_scene(SplashScreen)
+G.load_scene()#SplashScreen)
 
 G.play(debug=True)

@@ -1,66 +1,46 @@
 import json, pygame, os
 import BlazeSudio.collisions as colls
-from math import ceil, floor
+from math import ceil
 from importlib.resources import files
 
-def get_data(file):
-    with open(file, "r") as data:
-        return json.loads(data.read())
-
 ## This is object holds all the data for a .ldtk file
-class Ldtk:
-    def __init__(self, ldtkfile): ## It takes in the file path
-        self.ldtkData = get_data(ldtkfile) ## Loads the JSON
-        self.header = self.ldtkData['__header__'] ## Sets the header info to something more convenient
-
-        for k, v in self.ldtkData.items(): ## Here what it does is load all the floating information into the object as attributes  
-            if not isinstance(v, dict) or not isinstance(v, list): ## but it ignores all the lists and dictionary to handle them seperately
-                self.__dict__[k] = v
-            else:
-                print(v)
-        
-        self.levels = []
-
-        for l in self.ldtkData['levels']:
-            self.levels.append(Ldtklevel(l, ldtkfile, self.defs))
-
+# TODO: fieldinstance class WITH DEFAULTS
 class LdtkJSON:
     def __init__(self, jsoninf, fileloc=''): ## It takes in JSON
         self.ldtkData = jsoninf
-        self.header = self.ldtkData['__header__'] ## Sets the header info to something more convenient
-
-        for k, v in self.ldtkData.items(): ## Here what it does is load all the floating information into the object as attributes
-            if not isinstance(v, dict) or not isinstance(v, list): ## but it ignores all the lists and dictionary to handle them seperately
-                self.__dict__[k] = v
-            else:
-                print(v)
+        self.header = self.ldtkData['__header__']
+        self.defs = self.ldtkData['defs']
         
         self.tilesets = {}
         for i in self.defs['tilesets']:
             t = Tileset(fileloc, i)
             self.tilesets[t.uid] = t
         
-        self.levels = [Ldtklevel(l, self.tilesets, self.defs) for l in self.ldtkData['levels']]
-        
-        self.entitiyDefs = self.defs['entities']
-            
+        self.levels = [Ldtklevel(lvl, self.tilesets, self.defs) for lvl in self.ldtkData['levels']]
+
+class Ldtk(LdtkJSON):
+    def __init__(self, ldtkfile): ## It takes in the file path
+        with open(ldtkfile, "r") as data:
+            dat = json.loads(data.read())
+        super().__init__(dat)
 
 class Tileset:
     def __init__(self, fileloc, data):
         self.data = data
-        for k, v in self.data.items():
-            if k.startswith('__'): 
-                k = k[1:]
-            self.__dict__[k] = v
-        if self.embedAtlas == 'LdtkIcons' and self.relPath is None:
-            self.relPath = str(files('BlazeSudio') / 'ldtk/internal-icons.png')
-            self.tilesetPath = self.relPath
-            self.tileSet = pygame.image.load(self.relPath).convert_alpha()
-        elif self.relPath is not None:
-            self.tilesetPath = self.relPath
+
+        self.identifier = self.data['identifier']
+        self.uid = self.data['uid']
+        self.tileGridSize = self.data['tileGridSize']
+
+        self.tilesetPath = None
+        if self.data['relPath'] is not None:
+            self.tilesetPath = self.data['relPath']
             if self.tilesetPath.startswith('..'):
                 self.tilesetPath = os.path.abspath(os.path.join(fileloc,'../',self.tilesetPath))
             self.tileSet = pygame.image.load(os.path.abspath(os.path.join(fileloc,'../',self.tilesetPath))).convert_alpha()
+        elif self.data['embedAtlas'] == 'LdtkIcons' and self.data['relPath'] is None:
+            self.tilesetPath = str(files('BlazeSudio') / 'ldtk/internal-icons.png')
+            self.tileSet = pygame.image.load(self.tilesetPath).convert_alpha()
     
     def subsurface(self, x, y, w, h):
         return self.tileSet.subsurface(pygame.Rect(x, y, w, h))
@@ -74,50 +54,73 @@ class Entity:
         self.layer = layer
         self.data = data
         self.tilesets = tilesets
-        for k, v in self.data.items():
-            if k.startswith('__'): 
-                k = k[1:]
-            self.__dict__[k] = v
+        
+        self.identifier = self.data['__identifier']
+        self.iid = self.data['iid']
+        self.defUid = self.data['defUid'] # The UID of the entity definition
+        self.tileData = self.data['__tile']
+        self.fieldInstances = self.data['fieldInstances']
+        self.layerId = self.data['layerId']
+
+        self.width = self.data['width']
+        self.height = self.data['height']
+        
+        self.gridSze = self.layer['__gridSize']
+        self.layerOffset = [self.layer['pxOffsetX'], self.layer['pxOffsetY']]
+        self.pivot = self.data['__pivot']
         self.ScaledPos = [
-            self.px[0] + self.layer['pxOffsetX'],
-            self.px[1] + self.layer['pxOffsetY']
+            self.data['px'][0] + self.layerOffset[0] + self.pivot[0] * self.width,
+            self.data['px'][1] + self.layerOffset[1] + self.pivot[1] * self.height
         ]
         self.UnscaledPos = [
-            self.ScaledPos[0] / self.layer['__gridSize'],
-            self.ScaledPos[1] / self.layer['__gridSize']
+            (self.data['px'][0] + self.pivot[0] * self.width) / self.gridSze,
+            (self.data['px'][1] + self.pivot[1] * self.height) / self.gridSze
         ]
     
+    def scale_pos(self, pos):
+        return (
+            pos[0] * self.gridSze + self.layerOffset[0],# - self.pivot[0] * self.gridSze,
+            pos[1] * self.gridSze + self.layerOffset[1]# - self.pivot[1] * self.gridSze
+        )
+
+    def unscale_pos(self, pos):
+        return (
+            pos[0] / self.gridSze - self.layerOffset[0],# + self.pivot[0] * self.gridSze,
+            pos[1] / self.gridSze - self.layerOffset[1]# + self.pivot[1] * self.gridSze
+        )
+    
     def get_tile(self, ui=False):
-        tiler = self.tileRect if not ui else self.uiTileRect
-        if not tiler:
+        if not self.tileData:
             return pygame.Surface((self.width, self.height)).convert_alpha()
-        return self.tilesets[tiler['tilesetUid']].subsurface(tiler['x'], 
-                                                             tiler['y'], 
-                                                             tiler['w'], 
-                                                             tiler['h'])
+        return self.tilesets[self.tileData['tilesetUid']].subsurface(self.tileData['x'], 
+                                                                     self.tileData['y'], 
+                                                                     self.tileData['w'], 
+                                                                     self.tileData['h'])
 
 class Ldtklevel:
     def __init__(self, data, tilesets, defs):
         self.defs = defs
         self.data = data
         self.tilesets = tilesets
-        for k, v in self.data.items():
-            if k.startswith('__'): 
-                k = k[1:]
-            self.__dict__[k] = v
+        
+        self.identifier = self.data['identifier']
+        self.iid = self.data['iid']
+        self.uid = self.data['uid']
+        self.worldPos = [self.data['worldX'], self.data['worldY'], self.data['worldDepth']]
+        self.bgColour = self.data['bgColor'] or self.data['__bgColor']
+        self.fieldInstances = self.data['fieldInstances'] # The specific level flags
+        self.sizePx = [self.data['pxWid'], self.data['pxHei']]
         
         ids = [i['identifier'] for i in defs['layers']]
         
         self.entities = []
         self.layers = []
-        for l in self.layerInstances:
-            if l['__type'] == 'Entities':
-                self.entities.extend([Entity(l, {**i, 'layerId': l['__identifier']}, self.tilesets) for i in l['entityInstances']])
+        for lay in self.data['layerInstances']:
+            if lay['__type'] == 'Entities':
+                self.entities.extend([Entity(lay, {**i, 'layerId': lay['__identifier']}, self.tilesets) for i in lay['entityInstances']])
             else:
-                self.layers.append(layer(l, self, defs['layers'][ids.index(l['__identifier'])]))
+                self.layers.append(layer(lay, self))
         self.layers.reverse() 
-
-        self.width, self.height = self.pxWid, self.pxHei
     
     # TODO: Get layer by id
     
@@ -125,38 +128,45 @@ class Ldtklevel:
         return list(l for l in self.layers if l._type == "Tiles")
 
 class layer:
-    def __init__(self, data, level, moreData):
+    def __init__(self, data, level):
         self.data = data
-        md = moreData.copy()
-        md.pop('__type') # These are already in self.data, so we don't need the extra keys 
-        md.pop('type')
-        md.pop('identifier')
-        self.data.update(md)
         self.level = level
         self.tilesets = level.tilesets
+
+        self.identifier = self.data['__identifier']
+        self.iid = self.data['iid']
+        self.defUid = self.data['layerDefUid']
+        self.type = self.data['__type']
+        self.gridSize = self.data['__gridSize']
+        self.sizeCells = [self.data['__cWid'], self.data['__cHei']]
+        self.sizePx = [self.sizeCells[0] * self.gridSize, self.sizeCells[1] * self.gridSize]
+        self.opacity = self.data['__opacity']
+        self.visible = self.data['visible']
+        self.pxOffset = [self.data['__pxTotalOffsetX'], self.data['__pxTotalOffsetY']]
+        self.tileset = None
+        if self.data['__tilesetDefUid'] is not None:
+            self.tileset = self.tilesets[self.data['__tilesetDefUid']]
+
+        # TODO: Paralallax
+
         self.tiles = None
-        for k, v in self.data.items():
-            if k[0:2] == '__':      ## Note this part where python seems to dislike the use of __ so I reduced it to a single underscore
-                self.__dict__[k[1:]] = v
-            else:
-                self.__dict__[k] = v
-        self.intgrid = IntGridCSV(self.intGridCsv, self._cWid, self._cHei)
+        self.intgrid = IntGridCSV(self.data['intGridCsv'], *self.sizeCells, self.pxOffset, self.gridSize)
         
-        if self._type == "Tiles":
+        if self.type == "Tiles":
             self.loadTileSheet()
 
     def loadTileSheet(self):
-        if self.gridTiles == []:
-            self.tiles = [tile(t, self) for t in self.autoLayerTiles]
+        if self.data['gridTiles'] == []:
+            self.tiles = [tile(t, self) for t in self.data['autoLayerTiles']]
         else:
-            self.tiles = [tile(t, self) for t in self.gridTiles]
+            self.tiles = [tile(t, self) for t in self.data['gridTiles']]
     
     def getImg(self):
-        end = pygame.Surface((self._cWid * self._gridSize, self._cHei * self._gridSize)).convert_alpha()
+        end = pygame.Surface(self.sizePx).convert_alpha()
         end.fill((255, 255, 255, 1))
-        if self._tilesetDefUid == None:
+        if self.tileset is None:
             # TODO: add support for non-tileset things for not just intgrid (i.e. is just colour, non-rendered)
-            if self._type == 'IntGrid':
+            if self.type == 'IntGrid':
                 vals = [i['value'] for i in self.intGridValues]
                 for y in range(len(self.intgrid)):
                     for x in range(len(self.intgrid[y])):
@@ -168,22 +178,23 @@ class layer:
                             col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
                         end.blit(col, (x*self.gridSize, y*self.gridSize))
             return end
-        tset = self.tilesets[self._tilesetDefUid]
         if self.tiles is None:
             self.loadTileSheet()
         for i in self.tiles:
-            end.blit(tset.getTile(i), i.pos)
+            end.blit(self.tileset.getTile(i), i.pos)
         return end
 
 class IntGridCSV:
-    def __init__(self, intgrid, cwid, chei=None):
+    def __init__(self, intgrid, cwid, chei=None, offsets=[0, 0], gridsize=1):
         self.rawintgrid = intgrid
         self.cwid = cwid
         self.chei = chei or ceil(len(intgrid) / self.cwid)
+        self.offsets = offsets
+        self.gridsze = gridsize
         self.intgrid = [intgrid[cwid*i:cwid*(i+1)] for i in range(chei)]
         self.rects = None
     
-    def getRects(self, matches, size=1):
+    def getRects(self, matches):
         if isinstance(matches, int):
             matches = [matches]
         if self.rects is not None:
@@ -198,13 +209,13 @@ class IntGridCSV:
             for x in range(len(self.intgrid[y])):
                 typ = self.intgrid[y][x]
                 if typ in rs:
-                    rs[typ].append(colls.Rect(x*size, y*size, size, size))
+                    rs[typ].append(colls.Rect(x*self.gridsze+self.offsets[0], y*self.gridsze+self.offsets[1], self.gridsze, self.gridsze))
                 else:
-                    rs[typ] = [colls.Rect(x*size, y*size, size, size)]
+                    rs[typ] = [colls.Rect(x*self.gridsze, y*self.gridsze, self.gridsze, self.gridsze)]
         if typ is not None:
             rs[typ] = colls.ShapeCombiner.to_rects(*rs[typ])
         self.rects = rs
-        return self.getRects(matches, size)
+        return self.getRects(matches)
     
     def __iter__(self):
         return iter(self.intgrid)
@@ -222,11 +233,13 @@ class tile:
     def __init__(self, data, layer):
         self.data = data
         self.layer = layer
-        for k, v in self.data.items():
-            if k[0:2] == '__':      
-                self.__dict__[k[1:]] = v
-            else:
-                self.__dict__[k] = v
+
+        self.px = self.data['px']
+        self.src = self.data['src']
+        self.f = self.data['f']
+        self.t = self.data['t']
+        self.a = self.data['a']
+        # what is self.data['d']???
 
         self.pos = pygame.Vector2(tuple(self.px))
         self.src = pygame.Vector2(tuple(self.src))

@@ -11,24 +11,19 @@ class Player:
     def update(self, mPos, events):
         win = self.G.WIN
         sze = self.G.size
+        mw, mh = sze[0] / 2, sze[1] / 2
         
         self.Game.curScene.tick(events.copy())
         
-        scale = self.Game.curScene.CamDist()
-        pos = self.Game.curScene.CamPos()
+        scale = self.Game.curScene.CamDist
+        realpos = self.Game.curScene.CamPos
+        realpos = [realpos[0] * scale, realpos[1] * scale]
         
-        win.fill(self.Game.currentLvL._bgColor)
+        win.fill(self.Game.currentLvL.bgColour)
         sur = self.Game.curScene.render()
         sur = pygame.transform.scale(sur, (sur.get_width() * scale, sur.get_height() * scale))
         
-        bounds = self.Game.curScene.CamBounds()
-
-        # TODO: Not need the 'self.Game.currentLvL.layerInstances[0]['__gridSize']'
-        # Calculate real position
-        realpos = ((pos[0] * self.Game.currentLvL.layerInstances[0]['__gridSize']) * scale,
-                (pos[1] * self.Game.currentLvL.layerInstances[0]['__gridSize']) * scale)
-
-        mw, mh = sze[0] / 2, sze[1] / 2
+        bounds = self.Game.curScene.CamBounds
 
         # Zero Check
         ZC = lambda x: (0 if x < 0 else x)
@@ -67,5 +62,5 @@ class Player:
             -realpos[1] + mh - diff_y
         ])
 
-        playersze = self.Game.currentLvL.layerInstances[0]['__gridSize'] * scale
+        playersze = scale
         self.Game.curScene.renderUI(win, (diff_x, diff_y), (mw, mh), playersze)

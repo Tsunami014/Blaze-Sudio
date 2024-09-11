@@ -1,8 +1,8 @@
 import pygame
 
 # A Thing is a singular object
-# A Stuff is a collection of objects
-# A Collection is 2 Stuffs; one which is being watched for any modifications and the other is not
+# A Stuff is a bunch of Things
+# A Collection is a collection of layers of Stuff
 
 class Container:
     pass
@@ -33,8 +33,8 @@ class Stuff:
         else:
             self.categories = {}
     
-    def clear(self):
-        self.categories = {i: [] for i in self.categories}
+    def clear(self, ignores=[]):
+        self.categories = {i: ([] if i not in ignores else self.categories[i]) for i in self.categories}
 
     def copy(self):
         return Stuff(self.categories.copy())
@@ -101,9 +101,9 @@ class Collection:
             if obj in i:
                 i.remove(obj)
     
-    def clear(self):
+    def clear(self, ignores=[]):
         for i in self.layers:
-            i.clear()
+            i.clear(ignores)
     
     def copy(self):
         return Collection([i.copy() for i in self.layers])
