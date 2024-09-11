@@ -9,11 +9,15 @@ G = Game()
 G.load_map(thispth+"/world.ldtk")
 
 class BaseEntity(Ss.BaseEntity):
-    pass
-    # def __call__(self, keys):
-    #     self.handle_accel(keys)
-    #     outRect, self.accel = collisions.Rect(self.pos[0]-0.5, self.pos[1]-0.5, 1, 1).handleCollisionsAccel(self.accel, G.currentLvL.layers[1].intgrid.getRects(1), False)
-    #     self.pos = [outRect.x, outRect.y]
+    def __init__(self):
+        super().__init__()
+        self.gravity = [0, 0.1]
+    
+    def __call__(self, keys):
+        self.handle_keys(keys)
+        self.handle_accel()
+        outRect, self.accel = collisions.Rect(self.pos[0]-0.5, self.pos[1]-0.5, 1, 1).handleCollisionsAccel(self.accel, G.currentLvL.layers[1].intgrid.getRects(1), False)
+        self.pos = [outRect.x+0.5, outRect.y+0.5]
 
 def isValidLevel(lvl):
     return 0 <= lvl < len(G.world.ldtk.levels)
@@ -28,8 +32,8 @@ class MainGameScene(Ss.BaseScene):
         self.entities[0].pos = [0.1, 0.1]
         if settings.get('UsePlayerStart', False):
             for e in self.currentLvl.entities:
-                if e['defUid'] == 107:
-                    self.entities[0].pos = [e['px'][0] / e['width'], e['px'][1] / e['height']]
+                if e.defUid == 107:
+                    self.entities[0].pos = [e.UnscaledPos[0]+0.5, e.UnscaledPos[1]+0.5]
                     break
     
     def CamPos(self):
