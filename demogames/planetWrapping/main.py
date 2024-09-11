@@ -13,17 +13,24 @@ class BaseEntity(Ss.BaseEntity):
         objs = collisions.Shapes(*G.currentScene.GetEntitiesByLayer('GravityFields'))
         oldPos = (self.pos[0]*G.currentLvL.layerInstances[0]['__gridSize'], self.pos[1]*G.currentLvL.layerInstances[0]['__gridSize'])
         thisObj = collisions.Point(*oldPos)
-        cpoints = objs.closestPointTo(thisObj) # [(i, i.closestPointTo(thisObj)) for i in objs]
+        cpoints = [(i.closestPointTo(thisObj), i) for i in objs]
         if cpoints:
-            cpoints.sort(key=lambda x: (thisObj.x-x[0])**2+(thisObj.y-x[1])**2)
+            cpoints.sort(key=lambda x: (thisObj.x-x[0][0])**2+(thisObj.y-x[0][1])**2)
             # Find the point on the unit circle * 0.2 that is closest to the object
-            closest = cpoints[0]
-            angle = math.atan2(thisObj.y-closest[1], thisObj.x-closest[0])
+            closest = cpoints[0][0]
+            ydiff, xdiff = thisObj.y-closest[1], thisObj.x-closest[0]
+            angle = math.atan2(ydiff, xdiff)
+            tan = cpoints[0][1].tangent(closest, [xdiff, ydiff])
             gravity = [-0.2*math.cos(angle), -0.2*math.sin(angle)]
         else:
             gravity = [0, 0]
+            tan = 0
         self.gravity = gravity
+        prevaccel = self.accel
+        self.accel = [0, 0]
         self.handle_keys()
+        self.accel = collisions.rotateBy0(self.accel, tan-90)
+        self.accel = [self.accel[0]+prevaccel[0], self.accel[1]+prevaccel[1]]
         self.handle_accel()
         colls = G.currentScene.GetEntitiesByLayer('Entities')
         for i in colls:
