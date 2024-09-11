@@ -11,7 +11,7 @@ G.load_map(thispth+"/main.ldtk")
 class BaseEntity(Ss.BaseEntity):
     def __call__(self, evs):
         objs = collisions.Shapes(*G.currentScene.GetEntitiesByLayer('GravityFields'))
-        oldPos = (self.pos[0]*G.currentLvL.layerInstances[0]['__gridSize'], self.pos[1]*G.currentLvL.layerInstances[0]['__gridSize'])
+        oldPos = self.scaled_pos
         thisObj = collisions.Point(*oldPos)
         cpoints = [(i.closestPointTo(thisObj), i) for i in objs]
         if cpoints:
@@ -36,7 +36,11 @@ class BaseEntity(Ss.BaseEntity):
         for i in colls:
             i.bounciness = 1
         outRect, self.accel = thisObj.handleCollisionsAccel(self.accel, colls, False)
-        self.pos = [outRect[0]/G.currentLvL.layerInstances[0]['__gridSize'], outRect[1]/G.currentLvL.layerInstances[0]['__gridSize']]
+        self.pos = self.entity.unscale_pos(outRect)
+    
+    @property
+    def scaled_pos(self):
+        return self.entity.scale_pos(self.pos)
 
 @G.DefaultSceneLoader
 class MainGameScene(Ss.BaseScene):
@@ -44,20 +48,26 @@ class MainGameScene(Ss.BaseScene):
         super().__init__(Game, **settings)
         self.colls = [{}, {}]
         self.sur = None
-        self.entities.append(BaseEntity()) # The Player
+        self.CamDist = 4
+        self.CamBounds = [None, None, None, None]
         for e in self.currentLvl.entities:
             if e.defUid == 6:
+                self.entities.append(BaseEntity(e)) # The Player
                 self.entities[0].pos = [e.UnscaledPos[0]+0.5, e.UnscaledPos[1]+0.5]
                 break
+        if self.entities == []:
+            raise Ss.IncorrectLevelError(
+                'Need a player start!'
+            )
     
     def GetEntitiesByLayer(self, typ):
         if typ not in self.colls[0]:
             self.colls[0][typ] = []
             for e in self.currentLvl.entities:
                 if e.layerId == typ:
-                    if e._identifier == 'CircleRegion':
+                    if e.identifier == 'CircleRegion':
                         self.colls[0][typ].append(collisions.Circle(e.ScaledPos[0]+e.width/2, e.ScaledPos[1]+e.height/2, e.width/2))
-                    elif e._identifier == 'RectRegion':
+                    elif e.identifier == 'RectRegion':
                         self.colls[0][typ].append(collisions.Rect(*e.ScaledPos, e.width, e.height))
         return self.colls[0][typ]
 
@@ -65,31 +75,21 @@ class MainGameScene(Ss.BaseScene):
         if typ not in self.colls[1]:
             self.colls[1][typ] = []
             for e in self.currentLvl.entities:
-                if e._identifier == typ:
-                    if e._identifier == 'CircleRegion':
+                if e.identifier == typ:
+                    if e.identifier == 'CircleRegion':
                         self.colls[1][typ].append(collisions.Circle(e.ScaledPos[0]+e.width/2, e.ScaledPos[1]+e.height/2, e.width/2))
-                    elif e._identifier == 'RectRegion':
+                    elif e.identifier == 'RectRegion':
                         self.colls[1][typ].append(collisions.Rect(*e.ScaledPos, e.width, e.height))
         return self.colls[1][typ]
     
+    @property
     def CamPos(self):
-        return self.entities[0].pos
-    
-    def CamDist(self):
-        return 4
-    
-    def CamBounds(self):
-        return [None, None, None, None]
+        return self.entities[0].scaled_pos
 
     def render(self):
         if self.sur is not None:
             return self.sur
-        @self.Game.G.Loading
-        def LS(slf):
-            self.sur = self.Game.world.get_pygame(self.lvl)
-        fin, _ = LS()
-        if not fin:
-            self.Game.G.Abort()
+        self.sur = self.Game.world.get_pygame(self.lvl)
         return self.sur
     
     def renderUI(self, win, offset, midp, scale):
