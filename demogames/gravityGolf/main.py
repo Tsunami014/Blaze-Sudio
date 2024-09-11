@@ -199,6 +199,6 @@ class MainGameScene(Ss.BaseScene):
                             (midp[0]-offset[0]+addPos[0], midp[1]-offset[1]+addPos[1]), 5)
         self.last_playerPos = (midp[0]-offset[0], midp[1]-offset[1])
 
-G.load_scene()#SplashScreen)
+G.load_scene(SplashScreen)
 
 G.play(debug=True)
