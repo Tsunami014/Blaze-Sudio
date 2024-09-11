@@ -27,40 +27,23 @@ class Thing:
         return {self.obj: self.obj.update(mousePos, events)}
 
 class Stuff:
-    NAMES = []
-
-    def __init__(self, overrideCategories=None):
-        if overrideCategories is None:
-            self.setup()
+    def __init__(self, categories=None):
+        if categories is not None:
+            self.categories = categories
         else:
-            self.categories = overrideCategories
-            self.watch = self.categories.copy()
-            self.sync()
-    
-    def setup(self):
-        self.categories = {}
-        for i in self.NAMES:
-            self.categories[i] = []
-        self.watch = self.categories.copy()
+            self.categories = {}
     
     def clear(self):
-        self.setup()
-    
-    def diff(self):
-        if self.watch != self.categories:
-            self.watch = self.categories.copy()
-            self.sync()
-            return True
-        return False
+        self.categories = {i: [] for i in self.categories}
 
     def copy(self):
         return Stuff(self.categories.copy())
     
     def get(self):
-        l = []
+        li = []
         for i in self.categories:
-            l.extend(self.categories[i])
-        return l
+            li.extend(self.categories[i])
+        return li
     
     def update(self, mousePos, events):
         returns = {}
@@ -71,16 +54,9 @@ class Stuff:
     
     def add(self, _name):
         self.categories[_name] = []
-        self.sync()
     
     def add_many(self, _names):
         self.categories.update({i: [] for i in _names if i not in self.categories})
-        self.sync()
-    
-    def sync(self):
-        for i in self.categories:
-            if i not in self.NAMES:
-                self.NAMES.append(i)
     
     def remove(self, obj):
         for i in self.categories:
@@ -108,50 +84,54 @@ class Stuff:
     def __repr__(self): return str(self)
 
 class Collection:
-    def __init__(self, watch=None, sprites=None):
-        if watch is None:
-            self.watch = Stuff()
+    def __init__(self, layers=None):
+        if layers is None:
+            self.layers = [Stuff()]
         else:
-            self.watch = watch
-
-        if sprites is None:
-            self.sprites = Stuff()
-        else:
-            self.sprites = sprites
+            self.layers = layers
     
     def getall(self):
-        return self.watch.get() + self.sprites.get()
+        alls = []
+        for i in self.layers:
+            alls.extend(i.get())
+        return alls
     
     def remove(self, obj):
-        if obj in self.watch:
-            self.watch.remove(obj)
-        if obj in self.sprites:
-            self.sprites.remove(obj)
+        for i in self.layers:
+            if obj in i:
+                i.remove(obj)
     
     def clear(self):
-        self.watch.clear()
-        self.sprites.clear()
-    
-    def diff(self):
-        return self.watch.diff()
+        for i in self.layers:
+            i.clear()
     
     def copy(self):
-        return Collection(self.watch.copy(), self.sprites.copy())
+        return Collection([i.copy() for i in self.layers])
     
     def update(self, mousePos, events):
-        outs = self.watch.update(mousePos, events)
-        outs.update(self.sprites.update(mousePos, events))
+        outs = {}
+        for i in self.layers:
+            outs.update(i.update(mousePos, events))
         return outs
+    
+    def insert_layer(self, pos=-1):
+        s = Stuff()
+        self.layers.insert(pos, s)
+        return s
     
     def __len__(self):
         return len(self.watch) + len(self.sprites)
     
     def __getitem__(self, _name):
-        try:
-            return self.watch[_name]
-        except KeyError:
-            return self.sprites[_name]
+        for i in self.layers:
+            try:
+                return i[_name]
+            except KeyError:
+                pass
+        raise KeyError(
+            f'Item {_name} does not exist in any layer!'
+        )
     
     def __str__(self):
-        return f'<Collection watch={self.watch}, sprites={self.sprites}>'
+        return f'<Collection {self.layers}>'
     def __repr__(self): return str(self)

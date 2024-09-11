@@ -16,6 +16,7 @@ __all__ = [
 ]
 
 G = Graphic()
+G.Stuff.insert_layer(0).add('Player')
 
 class Game:
     def __init__(self):
@@ -55,6 +56,9 @@ class Game:
         else:
             self.curScene = (type, sceneSettings)
         self.needCreateScene = not self.playing
+        for lay in G.Stuff.layers:
+            if 'Player' not in lay.categories:
+                lay.clear()
     
     def AddCommand(self, name, desc, func):
         self.cmds.append([name, desc, func])
@@ -79,7 +83,7 @@ class Game:
                 self.needCreateScene = False
                 self.curScene = self.curScene[0](self, **self.curScene[1])
         elif event == GO.ELOADUI:
-            G.add_custom(self.gameplayer)
+            G.add_custom(self.gameplayer, 'Player')
             
             if debug:
                 tb = G.add_TerminalBar()
