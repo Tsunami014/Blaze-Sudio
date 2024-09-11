@@ -32,6 +32,10 @@ class PlayerEntity(Ss.BaseEntity):
         self.collided = False
         self.accel_amnt = [[5, 5], [0.5, 0.5]]
         self.max_accel = [60, 60]
+        self.defcollideDelay = 3
+        self.collidingDelay = self.defcollideDelay
+        self.defClickDelay = 3
+        self.clicked = 0
     
     def __call__(self, keys):
         objs = collisions.Shapes(*G.currentScene.GetEntitiesByLayer('GravityFields'))
@@ -60,7 +64,19 @@ class PlayerEntity(Ss.BaseEntity):
             else:
                 G.load_scene(lvl=G.currentScene.lvl+1)
             return
-        self.collided = oldaccel != self.accel
+        newcolliding = oldaccel != self.accel
+        if newcolliding != self.collided:
+            if self.collidingDelay <= 0:
+                self.collided = newcolliding
+            else:
+                self.collidingDelay -= 1
+                if self.collidingDelay <= 0:
+                    self.collided = newcolliding
+        else:
+            if self.collidingDelay >= self.defcollideDelay:
+                pass
+            else:
+                self.collidingDelay += 0.25
         if self.collided and debug.dotCollisionDebug:
             pygame.draw.circle(G.currentScene.sur, (255, 0, 0), 
                                (int(outRect[0]), int(outRect[1])), 5)
@@ -105,11 +121,21 @@ class MainGameScene(Ss.BaseScene):
     
     def tick(self, evs):
         super().tick(evs)
-        if any(e.type == pygame.MOUSEBUTTONDOWN for e in evs) and self.entities[0].collided:
-            angle = math.atan2(self.last_playerPos[1]-pygame.mouse.get_pos()[1], self.last_playerPos[0]-pygame.mouse.get_pos()[0])
-            addAccel = [-40*math.cos(angle), -40*math.sin(angle)]
-            self.entities[0].accel[0] += addAccel[0]
-            self.entities[0].accel[1] += addAccel[1]
+        playere = self.entities[0]
+        didClick = any(e.type == pygame.MOUSEBUTTONDOWN for e in evs)
+        if didClick or playere.clicked > 0:
+            if playere.collided:
+                playere.collidingDelay = playere.defcollideDelay
+                playere.collided = False
+                angle = math.atan2(self.last_playerPos[1]-pygame.mouse.get_pos()[1], self.last_playerPos[0]-pygame.mouse.get_pos()[0])
+                addAccel = [-40*math.cos(angle), -40*math.sin(angle)]
+                playere.accel[0] += addAccel[0]
+                playere.accel[1] += addAccel[1]
+            else:
+                if didClick:
+                    playere.clicked = playere.defClickDelay
+                else:
+                    playere.clicked -= 1
     
     def GetEntitiesByLayer(self, typ):
         if typ not in self.colls[0]:
