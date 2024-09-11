@@ -419,48 +419,6 @@
 							"defUid": 9,
 							"px": [208,128],
 							"fieldInstances": []
-						},
-						{
-							"__identifier": "RectRegion",
-							"__grid": [2,8],
-							"__pivot": [0,0],
-							"__tags": ["region"],
-							"__tile": null,
-							"__smartColor": "#BE4A2F",
-							"iid": "87769bb0-4ce0-11ef-aefc-0bf34ee96835",
-							"width": 16,
-							"height": 16,
-							"defUid": 6,
-							"px": [32,128],
-							"fieldInstances": []
-						},
-						{
-							"__identifier": "RectRegion",
-							"__grid": [9,14],
-							"__pivot": [0,0],
-							"__tags": ["region"],
-							"__tile": null,
-							"__smartColor": "#BE4A2F",
-							"iid": "8a2a4a00-4ce0-11ef-aefc-0f50417b1951",
-							"width": 64,
-							"height": 16,
-							"defUid": 6,
-							"px": [144,224],
-							"fieldInstances": []
-						},
-						{
-							"__identifier": "CircleRegion",
-							"__grid": [12,13],
-							"__pivot": [0.5,0.5],
-							"__tags": ["region"],
-							"__tile": null,
-							"__smartColor": "#D77643",
-							"iid": "8d2a6aa0-4ce0-11ef-aefc-af7122f7ee55",
-							"width": 48,
-							"height": 48,
-							"defUid": 5,
-							"px": [200,216],
-							"fieldInstances": []
 						}
 					]
 				},
@@ -666,6 +624,48 @@
 							"height": 80,
 							"defUid": 5,
 							"px": [216,184],
+							"fieldInstances": []
+						},
+						{
+							"__identifier": "RectRegion",
+							"__grid": [2,8],
+							"__pivot": [0,0],
+							"__tags": ["region"],
+							"__tile": null,
+							"__smartColor": "#BE4A2F",
+							"iid": "029b4430-4ce0-11ef-aefc-29d0c94de595",
+							"width": 16,
+							"height": 32,
+							"defUid": 6,
+							"px": [32,128],
+							"fieldInstances": []
+						},
+						{
+							"__identifier": "RectRegion",
+							"__grid": [9,14],
+							"__pivot": [0,0],
+							"__tags": ["region"],
+							"__tile": null,
+							"__smartColor": "#BE4A2F",
+							"iid": "04fb0620-4ce0-11ef-aefc-177a01995ff1",
+							"width": 64,
+							"height": 16,
+							"defUid": 6,
+							"px": [144,224],
+							"fieldInstances": []
+						},
+						{
+							"__identifier": "CircleRegion",
+							"__grid": [12,13],
+							"__pivot": [0.5,0.5],
+							"__tags": ["region"],
+							"__tile": null,
+							"__smartColor": "#D77643",
+							"iid": "07c82fe0-4ce0-11ef-aefc-59bee6bf07c6",
+							"width": 48,
+							"height": 48,
+							"defUid": 5,
+							"px": [200,216],
 							"fieldInstances": []
 						}
 					]
