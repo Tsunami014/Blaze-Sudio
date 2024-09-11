@@ -86,7 +86,7 @@ class MainGameScene(Ss.BaseScene):
         self.entities.append(PlayerEntity()) # The Player
         for e in self.currentLvl.entities:
             if e.defUid == 7:
-                self.entities[0].pos = e.UnscaledPos
+                self.entities[0].pos = [e.UnscaledPos[0]+0.5, e.UnscaledPos[1]+0.5]
                 break
     
     def tick(self, keys):
