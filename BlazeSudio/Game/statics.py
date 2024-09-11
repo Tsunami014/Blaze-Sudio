@@ -1,4 +1,4 @@
-import pygame, math
+import pygame
 
 class BaseScene:
     def __init__(self, Game, **settings):
