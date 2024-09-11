@@ -2,11 +2,11 @@ import os, sys
 if 'demogames/planetWrapping' in sys.path[0]:
     sys.path.append(os.path.abspath(os.path.join(__file__, '../../../'))) # Make sure you can still access BS
 from BlazeSudio.ldtk import sync
-if not sync.is_synced():
-    print(sync.explanation())
-    print("For this file, it's best to use it with the 'after save', so it will automatically update the file.")
-    print(sync.generate_sync_code('wrap.py', 'demogames/planetWrapping'))
-    exit()
+# if not sync.is_synced():
+#     print(sync.explanation())
+#     print("For this file, it's best to use it with the 'after save', so it will automatically update the file.")
+#     print(sync.generate_sync_code('wrap.py', 'demogames/planetWrapping'))
+#     exit()
 
 # TODO: Clean up and don't use PIL and stuff
 # Thanks to https://stackoverflow.com/questions/38745020/wrap-image-around-a-circle !
@@ -23,7 +23,7 @@ Ro = 100.0
 Ri = 50.0
 size = 128
 for e in world.ldtk.levels[lvl].entities:
-    if e._identifier == 'Settings':
+    if e.identifier == 'Settings':
         for i in e.fieldInstances:
             if i['__identifier'] == 'Ro':
                 Ro = i['__value'] or Ro

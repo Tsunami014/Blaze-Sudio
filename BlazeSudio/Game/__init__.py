@@ -56,9 +56,7 @@ class Game:
         else:
             self.curScene = (type, sceneSettings)
         self.needCreateScene = not self.playing
-        for lay in G.Stuff.layers:
-            if 'Player' not in lay.categories:
-                lay.clear()
+        G.Stuff.clear(['Player', 'TB']) # IGNORE the player and TerminalBar
     
     def AddCommand(self, name, desc, func):
         self.cmds.append([name, desc, func])

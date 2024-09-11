@@ -1,25 +1,24 @@
 import pygame
 
+class IncorrectLevelError(TypeError):
+    """For when the level format is incorrect"""
+    pass
+
 class BaseScene:
     def __init__(self, Game, **settings):
         self.Game = Game
         self.entities = []
         self.lvl = 0
+        self.CamBounds = [0, 0, *self.currentLvl.sizePx]
+        self.CamDist = 1
     
     @property
     def currentLvl(self):
         return self.Game.world.get_level(self.lvl)
     
+    @property
     def CamPos(self):
         return [0, 0]
-    
-    def CamDist(self):
-        return 0
-    
-    def CamBounds(self):
-        return [0, 0,
-                self.currentLvl.layerInstances[0]['__cWid'],
-                self.currentLvl.layerInstances[0]['__cHei']]
     
     def tick(self, keys):
         for e in self.entities:
@@ -32,7 +31,8 @@ class BaseScene:
         pass
 
 class BaseEntity:
-    def __init__(self):
+    def __init__(self, entity):
+        self.entity = entity
         self.pos = [0, 0]
         self.accel = [0, 0]
         self.gravity = [0, 0]
