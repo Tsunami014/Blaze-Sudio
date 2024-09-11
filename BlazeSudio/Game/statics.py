@@ -38,8 +38,8 @@ class BaseEntity:
         self.gravity = [0, 0]
         self.friction = [0.05, 0.05]
         #                   Accel,      decel
-        self.accel_amnt = [[0.2, 0.2], [0.25, 0.25]]
-        self.max_accel = [0.7, 0.7]
+        self.accel_amnt = [[0.5, 0.5], [0.25, 0.25]]
+        self.max_accel = [2, 2]
     
     def handle_keys(self):
         keys = pygame.key.get_pressed()

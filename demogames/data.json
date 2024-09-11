@@ -6,5 +6,9 @@
     "gravityGolf": {
         "Name": "Gravity Golf",
         "Description": "Play golf across the universe!"
+    },
+    "planetWrapping": {
+        "Name": "Planet Wrapping",
+        "Description": "A thingo to test image wrapping to make planets!"
     }
 }
