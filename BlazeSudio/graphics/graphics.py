@@ -197,8 +197,7 @@ class Graphic:
         self.clock = pygame.time.Clock()
         self.stacks = STACKS.Stack()
         self.Stuff = GS.Collection()
-        # Watch is for elements that should always exist
-        self.Stuff.watch.add_many((
+        self.Stuff.layers[0].add_many((
             'buttons',
             'text',
             'surs',
@@ -208,10 +207,7 @@ class Graphic:
             'scrollsables',
             'cps', # ColourPickerS
             'Empties',
-            'TB'
-        ))
-        # Sprites are for things that may get deleted and nothing should happen because of it
-        self.Stuff.sprites.add_many((
+            'TB',
             'toasts',
             'TextBoxes',
         ))
@@ -513,7 +509,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         self.Stuff['TB'].append(tb)
         return tb
     
-    def add_custom(self, sprite):
+    def add_custom(self, sprite, layer='customs'):
         """
         Adds a custom sprite to the screen!
 
@@ -521,10 +517,18 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         ----------
         sprite : Any
             The sprite to add!
+        layer : str
+            The layer to add the custom sprite to in the Stuff, by default 'customs'.
+            For example, if you wanted to add a sprite `s` that updates BEFORE everything else, you could do this: (assuming the layer doesn't already exist)
+            ```py
+            G.Stuff.insert_layer(0).add('below_layer')
+            G.add_custom(s, 'below_layer')
+            ```
+            That inserts a layer in front of everything else
         
         The sprite MUST have an `update` function which takes in 2 arguments: the current mouse position, and then the current events.
         """
-        self.Stuff['customs'].append(sprite)
+        self.Stuff[layer].append(sprite)
     
     def add_text(self, txt, colour, position, font=GO.FFONT, allowed_width=900):
         """Adds text to the GUI!

@@ -1,6 +1,7 @@
 from BlazeSudio.Game import Game
 from BlazeSudio.collisions import collisions
 import BlazeSudio.Game.statics as Ss
+from BlazeSudio.graphics import options as GO
 import pygame, math
 
 thispth = __file__[:__file__.rindex('/')]
@@ -14,6 +15,7 @@ class DebugCommands:
         G.AddCommand('/load', 'Load any level', lambda x: G.load_scene(lvl=int(x[0])))
         G.AddCommand('/next', 'Load the next level', lambda: G.load_scene(lvl=G.currentScene.lvl+1))
         G.AddCommand('/prev', 'Load the previous level', lambda: G.load_scene(lvl=G.currentScene.lvl-1))
+        G.AddCommand('/splash', 'Go back to the splash screen', lambda: G.load_scene(SplashScreen))
         G.AddCommand('/reload', 'Reload the current level', lambda: G.load_scene(lvl=G.currentScene.lvl))
         self.dotCollisionDebug = False
         G.AddCommand('/dot', 'Toggle dot collision debug', self.toggleDot)
@@ -33,9 +35,8 @@ class PlayerEntity(Ss.BaseEntity):
     
     def __call__(self, keys):
         objs = collisions.Shapes(*G.currentScene.GetEntitiesByLayer('GravityFields'))
-        thisObj = collisions.Point(self.pos[0]*G.currentLvL.layerInstances[0]['__gridSize'], self.pos[1]*G.currentLvL.layerInstances[0]['__gridSize'])
-        if thisObj.collides(collisions.Shapes(*G.currentScene.GetEntitiesByID('Goal'))):
-            G.load_scene(lvl=G.currentScene.lvl+1)
+        oldPos = (self.pos[0]*G.currentLvL.layerInstances[0]['__gridSize'], self.pos[1]*G.currentLvL.layerInstances[0]['__gridSize'])
+        thisObj = collisions.Point(*oldPos)
         cpoints = objs.closestPointTo(thisObj) # [(i, i.closestPointTo(curObj)) for i in objs]
         if cpoints:
             cpoints.sort(key=lambda x: (thisObj.x-x[0])**2+(thisObj.y-x[1])**2)
@@ -49,11 +50,30 @@ class PlayerEntity(Ss.BaseEntity):
         self.handle_accel()
         oldaccel = self.accel
         outRect, self.accel = thisObj.handleCollisionsAccel(self.accel, G.currentScene.GetEntitiesByLayer('Collisions'), False)
+        if collisions.Line(oldPos, outRect).collides(collisions.Shapes(*G.currentScene.GetEntitiesByID('Goal'))):
+            if G.currentScene.lvl+1 >= len(G.world.ldtk.levels):
+                G.load_scene(SplashScreen)
+            else:
+                G.load_scene(lvl=G.currentScene.lvl+1)
+            return
         self.collided = oldaccel != self.accel
         if self.collided and debug.dotCollisionDebug:
             pygame.draw.circle(G.currentScene.sur, (255, 0, 0), 
                                (int(outRect[0]), int(outRect[1])), 5)
         self.pos = [outRect[0]/G.currentLvL.layerInstances[0]['__gridSize'], outRect[1]/G.currentLvL.layerInstances[0]['__gridSize']]
+
+class SplashScreen(Ss.BaseScene):
+    def __init__(self, Game, **settings):
+        super().__init__(Game, **settings)
+        self.rendered = False
+    def render(self):
+        if not self.rendered:
+            G.G.WIN.fill((0, 0, 0))
+            G.G.add_empty_space(GO.PCTOP, 0, 30)
+            G.G.add_text('Gravity golf!', (255, 255, 255), GO.PCTOP, GO.FTITLE)
+            G.G.add_button('Play!!!', GO.CGREEN, GO.PCCENTER, callback=lambda x: self.Game.load_scene())
+            self.rendered = True
+        return pygame.Surface((0, 0))
 
 @G.DefaultSceneLoader
 class MainGameScene(Ss.BaseScene):
@@ -143,6 +163,6 @@ class MainGameScene(Ss.BaseScene):
                             (midp[0]-offset[0]+addPos[0], midp[1]-offset[1]+addPos[1]), 5)
         self.last_playerPos = (midp[0]-offset[0], midp[1]-offset[1])
 
-G.load_scene(None)
+G.load_scene(SplashScreen)
 
 G.play(debug=True)
