@@ -69,16 +69,16 @@ for lvl in range(len(world.ldtk.levels)):
                 angle = m.atan2(y-Ro,x-Ro)/2
                 distance = m.sqrt((y-Ro)*(y-Ro) + (x-Ro)*(x-Ro))
                 distance = m.floor((distance-Ri+1)*(height-1)/(Ro-Ri))
-            #   if distance >= height:
-            #       distance = height-1
+                if distance >= height:
+                    distance = height-1
                 cir[int(y)][int(x)] = pixels[int(width*angle/m.pi) % width, height-distance-1]
                 y = Ro+i
                 # calculate source
                 angle = m.atan2(y-Ro,x-Ro)/2
                 distance = m.sqrt((y-Ro)*(y-Ro) + (x-Ro)*(x-Ro))
                 distance = m.floor((distance-Ri+1)*(height-1)/(Ro-Ri))
-            #   if distance >= height:
-            #       distance = height-1
+                if distance >= height:
+                    distance = height-1
                 cir[int(y)][int(x)] = pixels[int(width*angle/m.pi) % width, height-distance-1]
     imgs.append(cir)
 
