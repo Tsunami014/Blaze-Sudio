@@ -132,6 +132,7 @@ class layer:
     def __init__(self, data, level):
         self.data = data
         self.level = level
+        self.layerDef = level.defs['layers'][[i['uid'] for i in level.defs['layers']].index(self.data['layerDefUid'])]
         self.tilesets = level.tilesets
 
         self.identifier = self.data['__identifier']
@@ -144,11 +145,11 @@ class layer:
         self.opacity = self.data['__opacity']
         self.visible = self.data['visible']
         self.pxOffset = [self.data['__pxTotalOffsetX'], self.data['__pxTotalOffsetY']]
+        self.intGridValues = self.layerDef['intGridValues']
+        # TODO: if self.layerDef['parallaxScaling']
         self.tileset = None
         if self.data['__tilesetDefUid'] is not None:
             self.tileset = self.tilesets[self.data['__tilesetDefUid']]
-
-        # TODO: Paralallax
 
         self.tiles = None
         self.intgrid = IntGridCSV(self.data['intGridCsv'], *self.sizeCells, self.pxOffset, self.gridSize)
@@ -165,8 +166,9 @@ class layer:
     def getImg(self):
         end = pygame.Surface(self.sizePx).convert_alpha()
         end.fill((255, 255, 255, 1))
+        if not self.data['visible']:
+            return end
         if self.tileset is None:
-            # TODO: add support for non-tileset things for not just intgrid (i.e. is just colour, non-rendered)
             if self.type == 'IntGrid':
                 vals = [i['value'] for i in self.intGridValues]
                 for y in range(len(self.intgrid)):
