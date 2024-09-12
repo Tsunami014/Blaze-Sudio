@@ -110,6 +110,7 @@ class Ldtklevel:
         self.bgColour = self.data['bgColor'] or self.data['__bgColor']
         self.fieldInstances = self.data['fieldInstances'] # The specific level flags
         self.sizePx = [self.data['pxWid'], self.data['pxHei']]
+        self.neighbours = self.data['__neighbours']
         
         ids = [i['identifier'] for i in defs['layers']]
         
