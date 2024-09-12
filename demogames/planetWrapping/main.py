@@ -96,7 +96,9 @@ class MainGameScene(Ss.BaseScene):
         d = lay.tileset.data.copy()
         d.update({'relPath': d['relPath'] + '/../colls.png'})
         tmpl.tileset = ldtk.Tileset(lay.tileset.fileLoc, d)
-        self._collider = collisions.Shapes(approximate_polygon(tmpl.getImg()), *G.currentScene.GetCollEntitiesByLayer('Entities'))
+        def translate_polygon(poly, translation):
+            return collisions.Polygon(*[(i[0]+translation[0], i[1]+translation[1]) for i in poly.toPoints()])
+        self._collider = collisions.Shapes(*[translate_polygon(approximate_polygon(t.getImg()), t.pos) for t in tmpl.tiles], *G.currentScene.GetCollEntitiesByLayer('Entities'))
         return self._collider
 
     def render(self):
@@ -106,12 +108,14 @@ class MainGameScene(Ss.BaseScene):
         self.sur = self.Game.world.get_pygame(self.lvl)
         if self.showingColls:
             colls = self.collider()
-            pygame.draw.polygon(self.sur, (255, 50, 10), colls[0].toPoints(), 1)
-            for s in colls[1:] + self.GetCollEntitiesByLayer('GravityFields'):
-                if isinstance(s, collisions.Rect):
-                    pygame.draw.rect(self.sur, (255, 10, 50), (s.x, s.y, s.w, s.h), 1)
-                elif isinstance(s, collisions.Circle):
-                    pygame.draw.circle(self.sur, (10, 50, 255), (s.x, s.y), s.r, 1)
+            for col, li in (((255, 10, 50), colls), ((10, 50, 255), self.GetCollEntitiesByLayer('GravityFields'))):
+                for s in li:
+                    if isinstance(s, collisions.Polygon):
+                        pygame.draw.polygon(self.sur, col, s.toPoints(), 1)
+                    if isinstance(s, collisions.Rect):
+                        pygame.draw.rect(self.sur, col, (s.x, s.y, s.w, s.h), 1)
+                    elif isinstance(s, collisions.Circle):
+                        pygame.draw.circle(self.sur, col, (s.x, s.y), s.r, 1)
         return self.sur
     
     def renderUI(self, win, offset, midp, scale):

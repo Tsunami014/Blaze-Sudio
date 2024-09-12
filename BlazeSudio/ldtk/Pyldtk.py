@@ -47,7 +47,7 @@ class Tileset:
         return self.tileSet.subsurface(pygame.Rect(x, y, w, h))
     
     def getTile(self, tile):
-        end = pygame.transform.flip(self.tileSet.subsurface(pygame.Rect(tile.src.x, tile.src.y, self.tileGridSize, self.tileGridSize)), *tile.flip)
+        end = pygame.transform.flip(self.tileSet.subsurface(pygame.Rect(tile.src[0], tile.src[1], self.tileGridSize, self.tileGridSize)), *tile.flip)
         return pygame.transform.scale(end, (self.tileGridSize, self.tileGridSize))
 
 class Entity:
@@ -242,21 +242,21 @@ class tile:
 
         self.px = self.data['px']
         self.src = self.data['src']
-        self.f = self.data['f']
         self.t = self.data['t']
         self.a = self.data['a']
         # what is self.data['d']???
 
-        self.pos = pygame.Vector2(tuple(self.px))
-        self.src = pygame.Vector2(tuple(self.src))
+        self.pos = [self.px[0] + self.layer.pxOffset[0], self.px[1] + self.layer.pxOffset[1]]
+        self.src = self.src
         
-        self.flip = [self.f in [1, 3], self.f in [2, 3]]
+        self.flip = [self.data['f'] in [1, 3], self.data['f'] in [2, 3]]
         
         # THINGS TO KNOW:
-        # self.f = flip: 0=no flip, 1=flip x, 2=flip y, 3=flip both
+        # self.data['f'] = flip: 0=no flip, 1=flip x, 2=flip y, 3=flip both
         # self.src = position of the tile IN THE TILESET
         # self.a = alpha (opacity) of the tile (1=full,0=invisible)
-        # self.px (as from above, self.pos) = coordinates of the tile IN THE LAYER. Don't forget layer offsets, if they exist!
+        # self.px = coordinates of the tile IN THE LAYER. Don't forget layer offsets, if they exist!
+        # self.pos = coordinates of the tile IN THE LAYER,with offsets!
     
     def getImg(self):
-        return pygame.transform.flip(self.layer.tileSet[self.layer._tilesetDefUid].getTile(self.src.x, self.src.y), *self.flip)
+        return self.layer.tileset.getTile(self)
