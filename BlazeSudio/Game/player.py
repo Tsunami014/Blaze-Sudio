@@ -9,18 +9,20 @@ class Player:
         self.world = world
 
     def update(self, mPos, events):
+        self.Game.curScene.tick(events.copy())
+        rend = self.Game.curScene.render()
+        if not self.Game.curScene.useRenderer:
+            return
         win = self.G.WIN
         sze = self.G.size
         mw, mh = sze[0] / 2, sze[1] / 2
-        
-        self.Game.curScene.tick(events.copy())
         
         scale = self.Game.curScene.CamDist
         realpos = self.Game.curScene.CamPos
         realpos = [realpos[0] * scale, realpos[1] * scale]
         
         win.fill(self.Game.currentLvL.bgColour)
-        sur = self.Game.curScene.render()
+        sur = rend or pygame.Surface((0, 0))
         sur = pygame.transform.scale(sur, (sur.get_width() * scale, sur.get_height() * scale))
         
         bounds = self.Game.curScene.CamBounds

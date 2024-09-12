@@ -1,12 +1,8 @@
 import json, math, os
 from pygame import Surface, Rect
 import pygame.draw
-from importlib.resources import files
 
 import BlazeSudio.ldtk.Pyldtk as ldtk
-
-
-empty = json.loads((files('BlazeSudio') / 'data/defaultWorld/world.ldtk').read_text())
 
 class World:
     def __init__(self, path):
