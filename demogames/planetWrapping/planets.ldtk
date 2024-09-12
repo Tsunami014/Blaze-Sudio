@@ -1871,7 +1871,7 @@
 			"enumTags": [],
 			"customData": [],
 			"savedSelections": [],
-			"cachedPixelData": { "opaqueTiles": "00", "averageColors": "15643345" }
+			"cachedPixelData": { "opaqueTiles": "00", "averageColors": "25665345" }
 		},
 		{
 			"__cWid": 32,
@@ -1902,7 +1902,7 @@
 			"iid": "a2a50ff0-66b0-11ec-9cd7-c721746049b9",
 			"uid": 70,
 			"worldX": -16,
-			"worldY": -48,
+			"worldY": -24,
 			"worldDepth": 0,
 			"pxWid": 96,
 			"pxHei": 56,
@@ -1960,7 +1960,7 @@
 								{ "__identifier": "size", "__type": "Int", "__value": 128, "__tile": null, "defUid": 122, "realEditorValues": [{ "id": "V_Int", "params": [128] }] }
 							],
 							"__worldX": -16,
-							"__worldY": -48
+							"__worldY": -24
 						}
 					]
 				},
@@ -2145,14 +2145,14 @@
 					"entityInstances": []
 				}
 			],
-			"__neighbours": [ { "levelIid": "cde92c90-4ce0-11ef-b79d-67d22d35e9d3", "dir": "o" }, { "levelIid": "51b09ef0-4ce0-11ef-8d82-3d17e96d4ed1", "dir": "e" } ]
+			"__neighbours": [{ "levelIid": "51b09ef0-4ce0-11ef-8d82-3d17e96d4ed1", "dir": "e" }]
 		},
 		{
 			"identifier": "World_Level_1",
 			"iid": "51b09ef0-4ce0-11ef-8d82-3d17e96d4ed1",
 			"uid": 116,
 			"worldX": 80,
-			"worldY": -48,
+			"worldY": -24,
 			"worldDepth": 0,
 			"pxWid": 8,
 			"pxHei": 8,
@@ -2244,7 +2244,7 @@
 					"entityInstances": []
 				}
 			],
-			"__neighbours": [ { "levelIid": "a2a50ff0-66b0-11ec-9cd7-c721746049b9", "dir": "w" }, { "levelIid": "cde92c90-4ce0-11ef-b79d-67d22d35e9d3", "dir": "w" } ]
+			"__neighbours": [{ "levelIid": "a2a50ff0-66b0-11ec-9cd7-c721746049b9", "dir": "w" }]
 		},
 		{
 			"identifier": "World_Level_2",
@@ -2597,7 +2597,7 @@
 					"entityInstances": []
 				}
 			],
-			"__neighbours": [ { "levelIid": "a2a50ff0-66b0-11ec-9cd7-c721746049b9", "dir": "o" }, { "levelIid": "51b09ef0-4ce0-11ef-8d82-3d17e96d4ed1", "dir": "e" }, { "levelIid": "e040ed20-4ce0-11ef-b79d-8d4782fc681c", "dir": "e" } ]
+			"__neighbours": [{ "levelIid": "e040ed20-4ce0-11ef-b79d-8d4782fc681c", "dir": "e" }]
 		},
 		{
 			"identifier": "World_Level_3",

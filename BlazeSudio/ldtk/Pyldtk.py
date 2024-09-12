@@ -27,6 +27,7 @@ class Ldtk(LdtkJSON):
 class Tileset:
     def __init__(self, fileloc, data):
         self.data = data
+        self.fileLoc = fileloc
 
         self.identifier = self.data['identifier']
         self.uid = self.data['uid']
@@ -69,24 +70,24 @@ class Entity:
         self.layerOffset = [self.layer['pxOffsetX'], self.layer['pxOffsetY']]
         self.pivot = self.data['__pivot']
         self.ScaledPos = [
-            self.data['px'][0] + self.layerOffset[0] + self.pivot[0] * self.width,
-            self.data['px'][1] + self.layerOffset[1] + self.pivot[1] * self.height
+            self.data['px'][0] + self.layerOffset[0],# - self.pivot[0] * self.width,
+            self.data['px'][1] + self.layerOffset[1]# - self.pivot[1] * self.height
         ]
         self.UnscaledPos = [
-            (self.data['px'][0] + self.pivot[0] * self.width) / self.gridSze,
-            (self.data['px'][1] + self.pivot[1] * self.height) / self.gridSze
+            self.data['px'][0] / self.gridSze,
+            self.data['px'][1] / self.gridSze
         ]
     
     def scale_pos(self, pos):
         return (
-            pos[0] * self.gridSze + self.layerOffset[0],# - self.pivot[0] * self.gridSze,
-            pos[1] * self.gridSze + self.layerOffset[1]# - self.pivot[1] * self.gridSze
+            pos[0] * self.gridSze + self.layerOffset[0],# - self.pivot[0] * self.width,
+            pos[1] * self.gridSze + self.layerOffset[1]# - self.pivot[1] * self.height
         )
 
     def unscale_pos(self, pos):
         return (
-            pos[0] / self.gridSze - self.layerOffset[0],# + self.pivot[0] * self.gridSze,
-            pos[1] / self.gridSze - self.layerOffset[1]# + self.pivot[1] * self.gridSze
+            pos[0] / self.gridSze - self.layerOffset[0],# + self.pivot[0] * self.width,
+            pos[1] / self.gridSze - self.layerOffset[1]# + self.pivot[1] * self.height
         )
     
     def get_tile(self, ui=False):
@@ -177,7 +178,7 @@ class layer:
                         if self.intgrid[y, x] == 0 or self.intgrid[y, x] not in vals:
                             col.fill((255, 255, 255, 1))
                         else:
-                            h = self.intGridValues[vals.index(self.intGridCsv[y, x])]['color'].lstrip('#')
+                            h = self.intGridValues[vals.index(self.intgrid[y, x])]['color'].lstrip('#')
                             col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
                         end.blit(col, (x*self.gridSize, y*self.gridSize))
             return end
@@ -227,6 +228,8 @@ class IntGridCSV:
         return len(self.intgrid)
 
     def __getitem__(self, args):
+        if isinstance(args, int):
+            return self.intgrid[args]
         y, x = args[0], (None if len(args) < 2 else args[1])
         if y is None:
             return self.intgrid[y]

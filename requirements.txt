@@ -10,3 +10,4 @@ html2text
 dill
 nest_asyncio
 pyperclip
+shapely
