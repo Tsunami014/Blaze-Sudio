@@ -362,7 +362,7 @@
 			"enumTags": [],
 			"customData": [],
 			"savedSelections": [],
-			"cachedPixelData": { "opaqueTiles": "000", "averageColors": "256653453555" }
+			"cachedPixelData": { "opaqueTiles": "000", "averageColors": "256653453556" }
 		},
 		{
 			"__cWid": 32,
@@ -509,23 +509,23 @@
 						},
 						{
 							"__identifier": "CircleRegion",
-							"__grid": [15,18],
+							"__grid": [14,18],
 							"__pivot": [0.5,0.5],
 							"__tags": ["region"],
 							"__tile": null,
 							"__smartColor": "#D77643",
 							"iid": "2f453cc0-4ce0-11ef-9b18-0d780c59e758",
-							"width": 72,
-							"height": 72,
+							"width": 64,
+							"height": 64,
 							"defUid": 5,
-							"px": [124,148],
+							"px": [116,148],
 							"fieldInstances": [],
-							"__worldX": 132,
+							"__worldX": 124,
 							"__worldY": 52
 						},
 						{
 							"__identifier": "CircleRegion",
-							"__grid": [36,11],
+							"__grid": [37,11],
 							"__pivot": [0.5,0.5],
 							"__tags": ["region"],
 							"__tile": null,
@@ -534,9 +534,9 @@
 							"width": 48,
 							"height": 48,
 							"defUid": 5,
-							"px": [292,92],
+							"px": [300,92],
 							"fieldInstances": [],
-							"__worldX": 300,
+							"__worldX": 308,
 							"__worldY": -4
 						}
 					]
