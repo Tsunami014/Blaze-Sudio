@@ -5,6 +5,7 @@ class IncorrectLevelError(TypeError):
     pass
 
 class BaseScene:
+    useRenderer = True
     def __init__(self, Game, **settings):
         self.Game = Game
         self.entities = []

@@ -5,9 +5,9 @@ import pygame.freetype
 from string import printable
 
 # TODO: Modify the __str__ and __repr__ of the class to a name
-def Base(cls=None, default=True, str=True):
+def Base(cls=None, default=True, str=True, addhash=True):
     def wrap(clss):
-        return dataclass(clss, unsafe_hash=True, init=default, repr=default and str)
+        return dataclass(clss, unsafe_hash=addhash, init=default, repr=default and str)
     if cls is None:
         # @Base()
         return wrap
@@ -285,7 +285,7 @@ FFONT =     F___(None, 52)
 FSMALL =    F___(None, 32)
 
 # Positions
-@Base(str=False)
+@Base(str=False, addhash=False)
 class P___:
     idx: int
     lmr: int | None # Left(0) Middle(1) Right(2)
@@ -299,6 +299,9 @@ class P___:
 
     def copy(self):
         return PNEW(self.stack, self.func, self.lmr, self.umd)
+    
+    def __hash__(self):
+        return hash((self.idx, (self.lmr, self.umd), self.func))
     
     def __str__(self):
         return f'<Position {"None" if self.lmr is None else ["Left", "Middle", "Right"][self.lmr]} {"None" if self.umd is None else ["Up", "Middle", "Down"][self.umd]} stacking {self.stack}>'

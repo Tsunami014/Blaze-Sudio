@@ -841,12 +841,12 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         """
         self.rel = True
     
-    def Clear(self):
+    def Clear(self, ignores=[]):
         GO.PIDX = 0
         self.store = {}
         self.pause = False
         self.callbacks = {}
-        self.Stuff.clear()
+        self.Stuff.clear(ignores)
         self.stacks.clear()
     
     def Abort(self, *args):

@@ -97,7 +97,6 @@ class SplashScreen(Ss.BaseScene):
             G.G.add_text('Gravity golf!', (255, 255, 255), GO.PCTOP, GO.FTITLE)
             G.G.add_button('Play!!!', GO.CGREEN, GO.PCCENTER, callback=lambda x: self.Game.load_scene())
             self.rendered = True
-        return pygame.Surface((0, 0))
 
 @G.DefaultSceneLoader
 class MainGameScene(Ss.BaseScene):
