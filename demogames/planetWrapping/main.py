@@ -22,6 +22,10 @@ class DebugCommands:
 debug = DebugCommands()
 
 class BaseEntity(Ss.BaseEntity):
+    def __init__(self, entity):
+        super().__init__(entity)
+        self.max_accel = [2, 5]
+    
     def __call__(self, evs):
         objs = collisions.Shapes(*G.currentScene.GetCollEntitiesByLayer('GravityFields'))
         oldPos = self.scaled_pos
@@ -41,7 +45,21 @@ class BaseEntity(Ss.BaseEntity):
         self.gravity = gravity
         prevaccel = self.accel
         self.accel = [0, 0]
-        self.handle_keys()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_RIGHT] ^ keys[pygame.K_LEFT]:
+            if keys[pygame.K_RIGHT]:
+                self.accel[0] += self.accel_amnt[0][0]
+            elif keys[pygame.K_LEFT]:
+                self.accel[0] -= self.accel_amnt[0][0]
+        else:
+            if self.accel[0] < -self.accel_amnt[1][0]:
+                self.accel[0] += self.accel_amnt[1][0]
+            elif self.accel[0] > self.accel_amnt[1][0]:
+                self.accel[0] -= self.accel_amnt[1][0]
+            else:
+                self.accel[0] = 0
+        if any(e.type == pygame.KEYDOWN and e.key == pygame.K_UP for e in evs):
+            self.accel[1] = -10
         self.accel = collisions.rotateBy0(self.accel, tan-90)
         self.accel = [self.accel[0]+prevaccel[0], self.accel[1]+prevaccel[1]]
         self.handle_accel()
