@@ -142,7 +142,7 @@ class MainGameScene(Ss.BaseScene):
             for e in self.currentLvl.entities:
                 if e.layerId == typ:
                     if e.identifier == 'CircleRegion' or e.identifier == 'BlackHole':
-                        self.colls[0][typ].append(collisions.Circle(e.ScaledPos[0]-e.width/2, e.ScaledPos[1]-e.width/2, e.width/2))
+                        self.colls[0][typ].append(collisions.Circle(e.ScaledPos[0], e.ScaledPos[1], e.width/2))
                     elif e.identifier == 'RectRegion':
                         self.colls[0][typ].append(collisions.Rect(*e.ScaledPos, e.width, e.height))
                     elif e.identifier == 'Goal':
@@ -155,7 +155,7 @@ class MainGameScene(Ss.BaseScene):
             for e in self.currentLvl.entities:
                 if e.identifier == typ:
                     if e.identifier == 'CircleRegion' or e.identifier == 'BlackHole':
-                        self.colls[1][typ].append(collisions.Circle(e.ScaledPos[0]-e.width/2, e.ScaledPos[1]-e.width/2, e.width/2))
+                        self.colls[1][typ].append(collisions.Circle(e.ScaledPos[0], e.ScaledPos[1], e.width/2))
                     elif e.identifier == 'RectRegion':
                         self.colls[1][typ].append(collisions.Rect(*e.ScaledPos, e.width, e.height))
                     elif e.identifier == 'Goal':
@@ -176,7 +176,7 @@ class MainGameScene(Ss.BaseScene):
             typs = ['Collisions', 'GravityFields']
             col = (255, 255, 255) if e.layerId not in typs else [(255, 50, 50), (10, 50, 50)][typs.index(e.layerId)]
             if e.identifier == 'CircleRegion' or e.identifier == 'BlackHole':
-                pygame.draw.circle(sur, col, (e.ScaledPos[0]-e.width//2, e.ScaledPos[1]-e.width//2), e.width//2)
+                pygame.draw.circle(sur, col, (e.ScaledPos[0], e.ScaledPos[1]), e.width//2)
             elif e.identifier == 'RectRegion':
                 pygame.draw.rect(sur, col, (*e.ScaledPos, e.width, e.height))
             elif e.identifier == 'Goal':

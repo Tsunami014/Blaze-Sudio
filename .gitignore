@@ -1,4 +1,5 @@
 # TODO: Prune depricated entries
+.envrc
 BlazeSudio/keys/apiKeys.key
 *.pyc
 *.bin
