@@ -5,9 +5,9 @@ verboseOutput = Union[Iterable[Any], None]
 pointLike = Union['Point', Iterable[Number]]
 AVERYSMALLNUMBER = 1e-6
 BASEPRECISION = 5
-BASEBOUNCINESS = 0.7 # The lower the less bouncy, 1 = reflects perfectly
+BASEBOUNCINESS = 0.7 # The lower the less bouncy, 1 = reflects perfectly (but there will always be rounding imperfections, so it won't be *perfect* perfect)
 
-def rotate(origin, point, angle):
+def rotate(origin: pointLike, point: pointLike, angle: Number) -> pointLike:
     """
     Rotate a point clockwise by a given angle around a given origin.
     The angle should be given in degrees.
@@ -22,7 +22,7 @@ def rotate(origin, point, angle):
     qy = origin[1] + sin * xdiff + cos * ydiff
     return qx, qy
 
-def rotateBy0(point, angle):
+def rotateBy0(point: pointLike, angle: Number) -> pointLike:
     """
     Rotate a point clockwise by a given angle around the origin.
     The angle should be given in degrees.
@@ -33,6 +33,12 @@ def rotateBy0(point, angle):
     qx = cos * point[0] - sin * point[1]
     qy = sin * point[0] + cos * point[1]
     return qx, qy
+
+def direction(fromPoint: pointLike, toPoint: pointLike) -> Number:
+    return math.atan2(toPoint[1]-fromPoint[1], toPoint[0]-fromPoint[0])
+
+def pointOnUnitCircle(angle: Number, strength: Number) -> pointLike:
+    return math.cos(angle)*strength, math.sin(angle)*strength
 
 class Shape:
     # This class always collides; so *can* be used as an infinite plane, but why?
