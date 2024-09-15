@@ -1,8 +1,9 @@
 TO BUILD THIS FOR YOUR DEVICE:
 1. `pip install cython setuptools`
-2. `cd BlazeSudio/collisions/`
-3. `python3 setup.py build_ext --inplace`
-4. Wait for it to finish :)
+2. Make sure you can run the `stubgen` command. On Linux, you need to `sudo apt install mypy`. On any other OS, I have no clue what you need to do, you're on your own.
+3. `cd BlazeSudio/collisions/`
+4. `python3 setup.py build_ext --inplace`
+5. Wait for it to finish :)
 
 ```bash
 cd BlazeSudio/collisions/
