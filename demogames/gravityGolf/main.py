@@ -2,7 +2,7 @@ from BlazeSudio.Game import Game
 from BlazeSudio.collisions import collisions
 import BlazeSudio.Game.statics as Ss
 from BlazeSudio.graphics import options as GO
-import pygame, math
+import pygame
 
 thispth = __file__[:__file__.rindex('/')]
 
@@ -45,10 +45,9 @@ class PlayerEntity(Ss.BaseEntity):
         cpoints = objs.closestPointTo(thisObj) # [(i, i.closestPointTo(curObj)) for i in objs]
         if cpoints:
             cpoints.sort(key=lambda x: (thisObj.x-x[0])**2+(thisObj.y-x[1])**2)
-            # Find the point on the unit circle * 0.2 that is closest to the object
             closest = cpoints[0]
-            angle = math.atan2(thisObj.y-closest[1], thisObj.x-closest[0])
-            gravity = [-math.cos(angle), -math.sin(angle)]
+            angle = collisions.direction(closest, thisObj)
+            gravity = collisions.pointOnUnitCircle(angle, -1)
         else:
             gravity = [0, 0]
         self.gravity = gravity
@@ -126,8 +125,16 @@ class MainGameScene(Ss.BaseScene):
             if playere.collided:
                 playere.collidingDelay = playere.defcollideDelay
                 playere.collided = False
-                angle = math.atan2(self.last_playerPos[1]-pygame.mouse.get_pos()[1], self.last_playerPos[0]-pygame.mouse.get_pos()[0])
-                addAccel = [-40*math.cos(angle), -40*math.sin(angle)]
+                angle = collisions.direction(pygame.mouse.get_pos(), self.last_playerPos)
+                addPos = collisions.pointOnUnitCircle(angle, -40)
+                def sign(x):
+                    if x > 0:
+                        return 1
+                    if x < 0:
+                        return -1
+                    return 0
+                addAccel = [min(abs(addPos[0]), abs(self.last_playerPos[0]-pygame.mouse.get_pos()[0])/4)*sign(addPos[0]),
+                            min(abs(addPos[1]), abs(self.last_playerPos[1]-pygame.mouse.get_pos()[1])/4)*sign(addPos[1])]
                 playere.accel[0] += addAccel[0]
                 playere.accel[1] += addAccel[1]
             else:
@@ -136,7 +143,7 @@ class MainGameScene(Ss.BaseScene):
                 else:
                     playere.clicked -= 1
     
-    def GetEntitiesByLayer(self, typ):
+    def GetEntitiesByLayer(self, typ): # TODO: Move into pyLDtk
         if typ not in self.colls[0]:
             self.colls[0][typ] = []
             for e in self.currentLvl.entities:
@@ -192,8 +199,8 @@ class MainGameScene(Ss.BaseScene):
         pygame.draw.circle(win, (0, 0, 0), (midp[0]-offset[0], midp[1]-offset[1]), 10)
         pygame.draw.circle(win, (255, 255, 255), (midp[0]-offset[0], midp[1]-offset[1]), 10, 2)
         if self.entities[0].collided:
-            angle = math.atan2(self.last_playerPos[1]-pygame.mouse.get_pos()[1], self.last_playerPos[0]-pygame.mouse.get_pos()[0])
-            addPos = [-200*math.cos(angle), -200*math.sin(angle)]
+            angle = collisions.direction(pygame.mouse.get_pos(), self.last_playerPos)
+            addPos = collisions.pointOnUnitCircle(angle, -200)
             pygame.draw.line(win, (255, 155, 155), (midp[0]-offset[0], midp[1]-offset[1]), 
                             (midp[0]-offset[0]+addPos[0], midp[1]-offset[1]+addPos[1]), 5)
         self.last_playerPos = (midp[0]-offset[0], midp[1]-offset[1])
