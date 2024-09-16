@@ -1,0 +1,20 @@
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: 3.9
+          architecture: x64
+
+      - name: Install dependencies
+        run: |
+          python -m pip install cython setuptools
+        
+      - name: Compile collisions module
+        working-directory: ./BlazeSudio/collisions
+        run: python3 setup.py build_ext --inplace
