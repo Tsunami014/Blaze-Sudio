@@ -4,14 +4,36 @@ class IncorrectLevelError(TypeError):
     """For when the level format is incorrect"""
     pass
 
-class BaseScene:
+# Skeletons: The absolute minimum required things that the class needs
+# Bases: Come with some cool functionality
+
+class SkeletonScene:
     useRenderer = True
     def __init__(self, Game, **settings):
         self.Game = Game
+        self.CamBounds = [None, None, None, None]
+        self.CamDist = 1
+    
+    @property
+    def CamPos(self):
+        return [0, 0]
+    
+    def tick(self, keys):
+        pass
+
+    def render(self):
+        pass
+
+    def renderUI(self, win, offset, midp, scale):
+        pass
+
+class BaseScene(SkeletonScene):
+    useRenderer = True
+    def __init__(self, Game, **settings):
+        super().__init__(Game, **settings)
         self.entities = []
         self.lvl = 0
         self.CamBounds = [0, 0, *self.currentLvl.sizePx]
-        self.CamDist = 1
     
     @property
     def currentLvl(self):
@@ -25,15 +47,17 @@ class BaseScene:
         for e in self.entities:
             e(keys)
 
-    def render(self):
-        pass
-
-    def renderUI(self, win, offset, midp, scale):
-        pass
-
-class BaseEntity:
-    def __init__(self, entity):
+class SkeletonEntity:
+    def __init__(self, Game, entity):
+        self.Game = Game
         self.entity = entity
+    
+    def __call__(self, evs):
+        pass
+
+class BaseEntity(SkeletonEntity):
+    def __init__(self, Game, entity):
+        super().__init__(Game, entity)
         self.pos = [0, 0]
         self.accel = [0, 0]
         self.gravity = [0, 0]

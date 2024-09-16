@@ -5,8 +5,8 @@
 [![Docs](https://badgen.net/badge/Documentation/tsunami014.gitbook.io?color=orange&icon=wiki)](https://tsunami014.gitbook.io/blaze-sudios/)
 [![Website](https://badgen.net/badge/website/tsunami014.github.io?icon=rss)](https://tsunami014.github.io/Blaze-Sudio/)
 [![PyPi version](https://badgen.net/pypi/v/Blaze-Sudio?label=PyPi%20version&icon=pypi)](https://pypi.org/project/Blaze-Sudio/)
-[![Build collisions](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml)
-[![Publish Python 🐍 distributions 📦 to PyPI](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml)
+[![Build collisions status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml)
+[![Publish to PyPI status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml)
 
 # ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v2.4.0-beta (💥 Flare)
 
