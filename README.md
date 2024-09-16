@@ -1,6 +1,6 @@
 [![Blaze Sudio Banner](images/BlazeBanner.png)]()
 
-<p style="text-align: center;color: grey"><i>A game engine for Python lovers! ❤️</i></p>
+<p style="color: grey" align="center"><i>A game engine for Python lovers! ❤️</i></p>
 
 [![Docs](https://badgen.net/badge/Documentation/tsunami014.gitbook.io?color=orange&icon=wiki)](https://tsunami014.gitbook.io/blaze-sudios/)
 [![Website](https://badgen.net/badge/website/tsunami014.github.io?icon=rss)](https://tsunami014.github.io/Blaze-Sudio/)
