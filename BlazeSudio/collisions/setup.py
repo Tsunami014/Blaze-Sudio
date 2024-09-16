@@ -1,17 +1,19 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 import os
+import sys
 import shutil
 
 extensions = [
-Extension("collisions", ["lib/collisions.py"]),
+    Extension("collisions", ["lib/collisions.py"]),
 ]
 
 # Build pyi stub file automatically
-os.system("stubgen lib/collisions.py")
+os.system("stubgen lib/collisions.py --include-docstrings")
 shutil.copy('./out/collisions/lib/collisions.pyi', './collisions.pyi')
 
-setup(
-   name="collisions",
-   ext_modules=cythonize(extensions),
-)
+if '--no-build' not in sys.argv:
+    setup(
+        name="collisions",
+        ext_modules=cythonize(extensions),
+    )
