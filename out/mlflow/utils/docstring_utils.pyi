@@ -1,9 +1,0 @@
-from _typeshed import Incomplete
-
-class ParamDocs(dict):
-    def format(self, **kwargs): ...
-    def format_docstring(self, docstring): ...
-
-def format_docstring(param_docs): ...
-
-LOG_MODEL_PARAM_DOCS: Incomplete
