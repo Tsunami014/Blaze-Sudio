@@ -1,0 +1,9 @@
+import shap
+from _typeshed import Incomplete
+
+class _PatchedKernelExplainer(shap.KernelExplainer):
+    @staticmethod
+    def not_equal(i, j): ...
+    def save(self, out_file, model_saver: Incomplete | None = None, masker_saver: Incomplete | None = None) -> None: ...
+    @classmethod
+    def load(cls, in_file, model_loader: Incomplete | None = None, masker_loader: Incomplete | None = None, instantiate: bool = True): ...

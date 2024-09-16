@@ -1,0 +1,6 @@
+from mlflow.tracking.request_header.abstract_request_header_provider import RequestHeaderProvider as RequestHeaderProvider
+from mlflow.utils import databricks_utils as databricks_utils
+
+class DatabricksRequestHeaderProvider(RequestHeaderProvider):
+    def in_context(self): ...
+    def request_headers(self): ...

@@ -1,0 +1,16 @@
+from _typeshed import Incomplete
+from mlflow.types.schema import Schema as Schema
+from typing import Any
+
+MlflowInferableDataset: Incomplete
+
+class ModelSignature:
+    inputs: Incomplete
+    outputs: Incomplete
+    def __init__(self, inputs: Schema, outputs: Schema = None) -> None: ...
+    def to_dict(self) -> dict[str, Any]: ...
+    @classmethod
+    def from_dict(cls, signature_dict: dict[str, Any]): ...
+    def __eq__(self, other) -> bool: ...
+
+def infer_signature(model_input: Any, model_output: MlflowInferableDataset = None) -> ModelSignature: ...
