@@ -20,7 +20,7 @@ if '--no-build' not in sys.argv:
 
 newfs = [i for i in os.listdir('./') if i not in oldfs]
 for f in newfs:
-    newname = re.sub('collisions\.cpython-\\d+-', '', f)
+    newname = re.sub('collisions\\.cpython-\\d+-', 'collisions-', f)
     if os.path.exists(newname):
         os.remove(newname)
     os.rename(f, newname)
