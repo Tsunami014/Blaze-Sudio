@@ -1,9 +1,11 @@
+name: Build collisions
+
 on:
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Close Stale Issues
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
@@ -14,7 +16,7 @@ jobs:
       
       - name: Setup Stubgen
         run: |
-          python -m pip install "mlflow>=1.23.1,!=1.30.0,<2" mypy==1.0.0
+          python -m pip install mlflow mypy
           python3 -c "import mypy.stubgen; mypy.stubgen.main(['-p', 'mlflow'])"
 
       - name: Install dependencies
