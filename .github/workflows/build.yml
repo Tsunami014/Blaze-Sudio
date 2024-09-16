@@ -5,7 +5,7 @@ on:
   push:
 
 jobs:
-  build-linux:
+  build-linux-3_10:
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -14,7 +14,153 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2.2.2
         with:
-          python-version: 3.9
+          python-version: 3.10
+          architecture: x64
+      
+      - name: Setup Stubgen
+        run: |
+          python -m pip install "mlflow>=1.23.1,!=1.30.0,<2" mypy
+          python3 -c "import mypy.stubgen; mypy.stubgen.main(['-p', 'mlflow'])"
+
+      - name: Install dependencies
+        run: python -m pip install cython setuptools
+        
+      - name: Compile collisions module
+        working-directory: ./BlazeSudio/collisions
+        run: python setup.py build_ext --inplace
+      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+        with:
+          add: '-A'
+          default_author: github_actions
+          message: 'ci(build): 🛠️ Build collisions :)'
+  
+  build-linux-3_11:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: 3.11
+          architecture: x64
+      
+      - name: Setup Stubgen
+        run: |
+          python -m pip install "mlflow>=1.23.1,!=1.30.0,<2" mypy
+          python3 -c "import mypy.stubgen; mypy.stubgen.main(['-p', 'mlflow'])"
+
+      - name: Install dependencies
+        run: python -m pip install cython setuptools
+        
+      - name: Compile collisions module
+        working-directory: ./BlazeSudio/collisions
+        run: python setup.py build_ext --inplace
+      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+        with:
+          add: '-A'
+          default_author: github_actions
+          message: 'ci(build): 🛠️ Build collisions :)'
+  
+  build-linux-3_12:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: 3.12
+          architecture: x64
+      
+      - name: Setup Stubgen
+        run: |
+          python -m pip install "mlflow>=1.23.1,!=1.30.0,<2" mypy
+          python3 -c "import mypy.stubgen; mypy.stubgen.main(['-p', 'mlflow'])"
+
+      - name: Install dependencies
+        run: python -m pip install cython setuptools
+        
+      - name: Compile collisions module
+        working-directory: ./BlazeSudio/collisions
+        run: python setup.py build_ext --inplace
+      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+        with:
+          add: '-A'
+          default_author: github_actions
+          message: 'ci(build): 🛠️ Build collisions :)'
+
+  
+  build-windows-3_10:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: 3.10
+          architecture: x64
+      
+      - name: Setup Stubgen
+        run: |
+          python -m pip install "mlflow>=1.23.1,!=1.30.0,<2" mypy
+          python3 -c "import mypy.stubgen; mypy.stubgen.main(['-p', 'mlflow'])"
+
+      - name: Install dependencies
+        run: python -m pip install cython setuptools
+        
+      - name: Compile collisions module
+        working-directory: ./BlazeSudio/collisions
+        run: python setup.py build_ext --inplace
+      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+        with:
+          add: '-A'
+          default_author: github_actions
+          message: 'ci(build): 🛠️ Build collisions :)'
+  
+  build-windows-3_11:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: 3.11
+          architecture: x64
+      
+      - name: Setup Stubgen
+        run: |
+          python -m pip install "mlflow>=1.23.1,!=1.30.0,<2" mypy
+          python3 -c "import mypy.stubgen; mypy.stubgen.main(['-p', 'mlflow'])"
+
+      - name: Install dependencies
+        run: python -m pip install cython setuptools
+        
+      - name: Compile collisions module
+        working-directory: ./BlazeSudio/collisions
+        run: python setup.py build_ext --inplace
+      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+        with:
+          add: '-A'
+          default_author: github_actions
+          message: 'ci(build): 🛠️ Build collisions :)'
+  
+  build-windows-3_12:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: 3.12
           architecture: x64
       
       - name: Setup Stubgen
