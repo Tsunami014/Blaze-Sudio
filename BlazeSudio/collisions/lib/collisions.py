@@ -2,10 +2,10 @@ import math
 from typing import Union, Iterable, Any
 Number = Union[int, float]
 verboseOutput = Union[Iterable[Any], None]
-pointLike = Union['Point', Iterable[Number]]
-AVERYSMALLNUMBER = 1e-6
-BASEPRECISION = 5
-BASEBOUNCINESS = 0.7 # The lower the less bouncy, 1 = reflects perfectly (but there will always be rounding imperfections, so it won't be *perfect* perfect)
+pointLike = Iterable[Number]
+AVERYSMALLNUMBER: Number = 1e-6
+BASEPRECISION: Number = 5
+BASEBOUNCINESS: Number = 0.7 # The lower the less bouncy, 1 = reflects perfectly (but there will always be rounding imperfections, so it won't be *perfect* perfect)
 
 def rotate(origin: pointLike, point: pointLike, angle: Number) -> pointLike:
     """
@@ -42,9 +42,10 @@ def pointOnUnitCircle(angle: Number, strength: Number) -> pointLike:
 
 class Shape:
     # This class always collides; so *can* be used as an infinite plane, but why?
-    x, y = 0, 0
+    x: Number = 0
+    y: Number = 0
     def __init__(self, bounciness: float = BASEBOUNCINESS):
-        self.bounciness = bounciness
+        self.bounciness: Number = bounciness
     
     def collides(self, othershape: Union['Shape','Shapes',Iterable['Shape']]) -> bool:
         if isinstance(othershape, Shape):

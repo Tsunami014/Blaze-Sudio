@@ -3,19 +3,27 @@ from typing import Any, Iterable
 
 Number = int | float
 verboseOutput = Iterable[Any] | None
-pointLike: Incomplete
-AVERYSMALLNUMBER: float
-BASEPRECISION: int
-BASEBOUNCINESS: float
+pointLike = Iterable[Number]
+AVERYSMALLNUMBER: Number
+BASEPRECISION: Number
+BASEBOUNCINESS: Number
 
-def rotate(origin: pointLike, point: pointLike, angle: Number) -> pointLike: ...
-def rotateBy0(point: pointLike, angle: Number) -> pointLike: ...
+def rotate(origin: pointLike, point: pointLike, angle: Number) -> pointLike:
+    """
+    Rotate a point clockwise by a given angle around a given origin.
+    The angle should be given in degrees.
+    """
+def rotateBy0(point: pointLike, angle: Number) -> pointLike:
+    """
+    Rotate a point clockwise by a given angle around the origin.
+    The angle should be given in degrees.
+    """
 def direction(fromPoint: pointLike, toPoint: pointLike) -> Number: ...
 def pointOnUnitCircle(angle: Number, strength: Number) -> pointLike: ...
 
 class Shape:
-    x: Incomplete
-    y: Incomplete
+    x: Number
+    y: Number
     bounciness: Incomplete
     def __init__(self, bounciness: float = ...) -> None: ...
     def collides(self, othershape: Shape | Shapes | Iterable['Shape']) -> bool: ...

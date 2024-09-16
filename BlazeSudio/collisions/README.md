@@ -10,6 +10,12 @@ cd BlazeSudio/collisions/
 python3 setup.py build_ext --inplace
 ```
 
+//TODO: Build for all engines and auto build on release
+
+OPTIONAL ARGS:
+
+`--no-build` will not build the project and just compile the stubs. But using this flag IS STRONGLY NOT RECOMMENDED as it will cause a mismatch between the compiled script and the stubs. 
+
 PLEASE NOTE: If you are using precompiled ones I may have forgotten to compile them and they may be behind. Just sayin', thass all...
 
 # How to use
