@@ -14,14 +14,16 @@ class BaseEntity(Ss.BaseEntity):
         self.accel_amnt = [[0.1, 0.1], [0.05, 0.05]]
         self.gravity = [0, 0.05]
     
-    # def __call__(self, evs):
-    #     self.handle_keys()
-    #     self.handle_accel()
-    #     colls = G.currentLvL.layers[1].intgrid.getRects(1)
-    #     #for i in colls:
-    #     #    i.bounciness = 1
-    #     outRect, self.accel = collisions.Rect(self.scaled_pos[0]-0.5, self.scaled_pos[1]-0.5, 1, 1).handleCollisionsAccel(self.accel, colls, False)
-    #     self.pos = [outRect.x+0.5, outRect.y+0.5]
+    def __call__(self, evs):
+        self.handle_keys()
+        self.handle_accel()
+        colls = G.currentLvL.layers[1].intgrid.getRects(1)
+        #for i in colls:
+        #    i.bounciness = 1
+        self.pos = [self.pos[0]-0.25, self.pos[1]-0.25]
+        outRect, self.accel = collisions.Rect(self.scaled_pos[0], self.scaled_pos[1], 0.5, 0.5).handleCollisionsAccel(self.accel, colls, False)
+        outUnscaled = self.entity.unscale_pos((outRect.x, outRect.y))
+        self.pos = [outUnscaled[0]+0.25, outUnscaled[1]+0.25]
     
     @property
     def scaled_pos(self):
