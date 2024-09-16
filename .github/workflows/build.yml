@@ -28,8 +28,9 @@ jobs:
       - name: Compile collisions module
         working-directory: ./BlazeSudio/collisions
         run: python setup.py build_ext --inplace
-      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+      - uses: EndBug/add-and-commit@v9 
         with:
+          pull: '--rebase'
           add: '-A'
           default_author: github_actions
           message: 'ci(build): 🛠️ Build collisions :)'
@@ -57,8 +58,9 @@ jobs:
       - name: Compile collisions module
         working-directory: ./BlazeSudio/collisions
         run: python setup.py build_ext --inplace
-      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+      - uses: EndBug/add-and-commit@v9
         with:
+          pull: '--rebase'
           add: '-A'
           default_author: github_actions
           message: 'ci(build): 🛠️ Build collisions :)'
@@ -86,8 +88,9 @@ jobs:
       - name: Compile collisions module
         working-directory: ./BlazeSudio/collisions
         run: python setup.py build_ext --inplace
-      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+      - uses: EndBug/add-and-commit@v9
         with:
+          pull: '--rebase'
           add: '-A'
           default_author: github_actions
           message: 'ci(build): 🛠️ Build collisions :)'
@@ -116,8 +119,9 @@ jobs:
       - name: Compile collisions module
         working-directory: ./BlazeSudio/collisions
         run: python setup.py build_ext --inplace
-      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+      - uses: EndBug/add-and-commit@v9
         with:
+          pull: '--rebase'
           add: '-A'
           default_author: github_actions
           message: 'ci(build): 🛠️ Build collisions :)'
@@ -145,8 +149,9 @@ jobs:
       - name: Compile collisions module
         working-directory: ./BlazeSudio/collisions
         run: python setup.py build_ext --inplace
-      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+      - uses: EndBug/add-and-commit@v9
         with:
+          pull: '--rebase'
           add: '-A'
           default_author: github_actions
           message: 'ci(build): 🛠️ Build collisions :)'
@@ -174,8 +179,9 @@ jobs:
       - name: Compile collisions module
         working-directory: ./BlazeSudio/collisions
         run: python setup.py build_ext --inplace
-      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+      - uses: EndBug/add-and-commit@v9
         with:
+          pull: '--rebase'
           add: '-A'
           default_author: github_actions
           message: 'ci(build): 🛠️ Build collisions :)'
