@@ -3,10 +3,12 @@
 <p style="color: grey" align="center"><i>A game engine for Python lovers! ❤️</i></p>
 
 [![Docs](https://badgen.net/badge/Documentation/tsunami014.gitbook.io?color=orange&icon=wiki)](https://tsunami014.gitbook.io/blaze-sudios/)
-[![Website](https://badgen.net/badge/website/tsunami014.github.io?icon=rss)](https://tsunami014.github.io/Blaze-Sudio/)
+[![Website](https://badgen.net/badge/website/tsunami014.github.io?icon=rss&color=yellow)](https://tsunami014.github.io/Blaze-Sudio/)
 [![PyPi version](https://badgen.net/pypi/v/Blaze-Sudio?label=PyPi%20version&icon=pypi)](https://pypi.org/project/Blaze-Sudio/)
 [![Build collisions status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml)
 [![Publish to PyPI status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml)
+[![Python versions: 3.10, 3.11, 3.12](https://badgen.net/static/Python%20versions/3.10%203.11%203.12/purple)]()
+[![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]()
 
 # ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v2.4.0-beta (💥 Flare)
 
