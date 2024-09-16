@@ -35,6 +35,9 @@ def rotateBy0(point: pointLike, angle: Number) -> pointLike:
     return qx, qy
 
 def direction(fromPoint: pointLike, toPoint: pointLike) -> Number:
+    """
+    Finds the direction of `toPoint` from the origin of `fromPoint`
+    """
     return math.atan2(toPoint[1]-fromPoint[1], toPoint[0]-fromPoint[0])
 
 def pointOnUnitCircle(angle: Number, strength: Number) -> pointLike:
