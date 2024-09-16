@@ -57,12 +57,10 @@ Are you ready? This is the most complicated installation process of any python l
 <small>Disclaimer: may not actually be pain-free.<br>Disclaimer of the disclaimer: I'll help you if you run into any issues via [github issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose) or [Discord](https://discord.gg/xr3phyEZtv), so it will be mostly pain-free (for you) as a satisfaction guarantee</small>
 
 ### ⛏️ Installing from source
-// TODO: Finish
-1. `git clone https://github.com/Tsunami014/BlazeSudio`
-2. 
-Or use the below:
 ```bash
-
+git clone https://github.com/Tsunami014/Blaze-Sudio.git
+cd Blaze-Sudio
+pip install .
 ```
 ## 📚 Library usage
 // TODO: Simple demo.
