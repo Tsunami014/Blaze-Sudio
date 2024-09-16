@@ -3,6 +3,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: Close Stale Issues
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
@@ -10,11 +11,15 @@ jobs:
         with:
           python-version: 3.9
           architecture: x64
+      
+      - name: Setup Stubgen
+        run: |
+          python -m pip install "mlflow>=1.23.1,!=1.30.0,<2" mypy==1.0.0
+          python3 -c "import mypy.stubgen; mypy.stubgen.main(['-p', 'mlflow'])"
 
       - name: Install dependencies
-        run: |
-          python -m pip install cython setuptools
+        run: python -m pip install cython setuptools
         
       - name: Compile collisions module
         working-directory: ./BlazeSudio/collisions
-        run: python3 setup.py build_ext --inplace
+        run: python setup.py build_ext --inplace
