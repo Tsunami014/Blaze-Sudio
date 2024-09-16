@@ -1,0 +1,6 @@
+from mlflow.store.tracking import DEFAULT_ARTIFACTS_URI as DEFAULT_ARTIFACTS_URI, DEFAULT_LOCAL_FILE_AND_ARTIFACT_PATH as DEFAULT_LOCAL_FILE_AND_ARTIFACT_PATH
+from mlflow.utils.logging_utils import eprint as eprint
+from mlflow.utils.uri import is_local_uri as is_local_uri
+
+def resolve_default_artifact_root(serve_artifacts: bool, default_artifact_root: str, backend_store_uri: str, resolve_to_local: bool = False) -> str: ...
+def artifacts_only_config_validation(artifacts_only: bool, backend_store_uri: str) -> None: ...

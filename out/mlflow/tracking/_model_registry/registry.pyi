@@ -1,0 +1,6 @@
+from _typeshed import Incomplete
+from mlflow.tracking.registry import StoreRegistry as StoreRegistry
+
+class ModelRegistryStoreRegistry(StoreRegistry):
+    def __init__(self) -> None: ...
+    def get_store(self, store_uri: Incomplete | None = None): ...

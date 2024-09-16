@@ -18,7 +18,10 @@ def rotateBy0(point: pointLike, angle: Number) -> pointLike:
     Rotate a point clockwise by a given angle around the origin.
     The angle should be given in degrees.
     """
-def direction(fromPoint: pointLike, toPoint: pointLike) -> Number: ...
+def direction(fromPoint: pointLike, toPoint: pointLike) -> Number:
+    """
+    Finds the direction of `toPoint` from the origin of `fromPoint`
+    """
 def pointOnUnitCircle(angle: Number, strength: Number) -> pointLike: ...
 
 class Shape:

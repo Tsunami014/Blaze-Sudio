@@ -1,0 +1,18 @@
+from mlflow import tracking as tracking
+from mlflow.environment_variables import MLFLOW_KERBEROS_TICKET_CACHE as MLFLOW_KERBEROS_TICKET_CACHE, MLFLOW_KERBEROS_USER as MLFLOW_KERBEROS_USER, MLFLOW_PYARROW_EXTRA_CONF as MLFLOW_PYARROW_EXTRA_CONF
+from mlflow.exceptions import MlflowException as MlflowException
+from mlflow.projects import env_type as env_type
+from mlflow.projects.backend.abstract_backend import AbstractBackend as AbstractBackend
+from mlflow.projects.submitted_run import LocalSubmittedRun as LocalSubmittedRun
+from mlflow.projects.utils import MLFLOW_DOCKER_WORKDIR_PATH as MLFLOW_DOCKER_WORKDIR_PATH, MLFLOW_LOCAL_BACKEND_RUN_ID_CONFIG as MLFLOW_LOCAL_BACKEND_RUN_ID_CONFIG, PROJECT_DOCKER_ARGS as PROJECT_DOCKER_ARGS, PROJECT_ENV_MANAGER as PROJECT_ENV_MANAGER, PROJECT_STORAGE_DIR as PROJECT_STORAGE_DIR, PROJECT_SYNCHRONOUS as PROJECT_SYNCHRONOUS, SKIP_IMAGE_BUILD as SKIP_IMAGE_BUILD, fetch_and_validate_project as fetch_and_validate_project, get_databricks_env_vars as get_databricks_env_vars, get_entry_point_command as get_entry_point_command, get_or_create_run as get_or_create_run, get_run_env_vars as get_run_env_vars, load_project as load_project
+from mlflow.store.artifact.artifact_repository_registry import get_artifact_repository as get_artifact_repository
+from mlflow.store.artifact.azure_blob_artifact_repo import AzureBlobArtifactRepository as AzureBlobArtifactRepository
+from mlflow.store.artifact.gcs_artifact_repo import GCSArtifactRepository as GCSArtifactRepository
+from mlflow.store.artifact.hdfs_artifact_repo import HdfsArtifactRepository as HdfsArtifactRepository
+from mlflow.store.artifact.local_artifact_repo import LocalArtifactRepository as LocalArtifactRepository
+from mlflow.store.artifact.s3_artifact_repo import S3ArtifactRepository as S3ArtifactRepository
+from mlflow.utils.conda import get_conda_command as get_conda_command, get_or_create_conda_env as get_or_create_conda_env
+from mlflow.utils.mlflow_tags import MLFLOW_PROJECT_ENV as MLFLOW_PROJECT_ENV
+
+class LocalBackend(AbstractBackend):
+    def run(self, project_uri, entry_point, params, version, backend_config, tracking_uri, experiment_id): ...

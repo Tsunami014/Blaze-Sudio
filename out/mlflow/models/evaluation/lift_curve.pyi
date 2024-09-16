@@ -1,0 +1,3 @@
+from _typeshed import Incomplete
+
+def plot_lift_curve(y_true, y_probas, title: str = 'Lift Curve', ax: Incomplete | None = None, figsize: Incomplete | None = None, title_fontsize: str = 'large', text_fontsize: str = 'medium', pos_label: Incomplete | None = None): ...
