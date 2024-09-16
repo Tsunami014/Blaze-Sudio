@@ -1,3 +1,0 @@
-VERSION: str
-
-def is_release_version(): ...

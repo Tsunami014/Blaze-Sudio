@@ -1,6 +1,0 @@
-from pyspark.ml.base import Transformer as Transformer
-from pyspark.ml.pipeline import PipelineModel as PipelineModel
-from pyspark.sql import DataFrame as DataFrame
-
-def cast_spark_df_with_vector_to_array(input_spark_df): ...
-def get_feature_cols(df: DataFrame, transformer: Transformer | PipelineModel) -> set[str]: ...

@@ -2,3 +2,4 @@
 BlazeSudio/collisions/out/**
 *.pyc
 *.elm
+out/**
