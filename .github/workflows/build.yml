@@ -25,3 +25,9 @@ jobs:
       - name: Compile collisions module
         working-directory: ./BlazeSudio/collisions
         run: python setup.py build_ext --inplace
+      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+        with:
+          add: '-A'
+          author_name: Auto-build (bot)
+          author_email: tsunami014@duck.com
+          message: 'ci(build): 🛠️ Build collisions :)'
