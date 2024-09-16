@@ -1,5 +1,5 @@
 from BlazeSudio.Game import Game
-from BlazeSudio.collisions import collisions
+from BlazeSudio import collisions
 import BlazeSudio.Game.statics as Ss
 from BlazeSudio.graphics import options as GO
 import pygame
