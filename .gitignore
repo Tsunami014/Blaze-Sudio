@@ -1,7 +1,6 @@
 # TODO: Prune depricated entries
 .envrc
 BlazeSudio/collisions/out/**
-BlazeSudio/keys/apiKeys.key
 *.pyc
 *.bin
 BlazeSudio/bot/model/*
@@ -17,5 +16,3 @@ BlazeSudio/bot/Unusedmodels/*
 BlazeSudio/data/worlds/*/*
 BlazeSudio/data/worlds/*/world/backups/*
 BlazeSudio/data/defaultWorld/world/backups/*
-Blaze_Sudio.egg-info/*
-build/*
