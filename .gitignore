@@ -1,18 +1,4 @@
-# TODO: Prune depricated entries
 .envrc
 BlazeSudio/collisions/out/**
 *.pyc
-*.bin
-BlazeSudio/bot/model/*
-BlazeSudio/bot/Unusedmodels/*
-*.db
-*.json
-!demogames/data.json
-!BlazeSudio/bot/preferencesDefault.json
-!BlazeSudio/data/defaultWorld/src/nodes/dat.json
-!BlazeSudio/data/nodes/types.json
-!test-files/dat.json
 *.elm
-BlazeSudio/data/worlds/*/*
-BlazeSudio/data/worlds/*/world/backups/*
-BlazeSudio/data/defaultWorld/world/backups/*

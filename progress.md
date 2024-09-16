@@ -1,13 +1,12 @@
 # Roadmap
-## Current version (2.3.0-beta)
- - [x] Structure code to be how I want it so you can make a game! Somewhat! [See this](#new-idea)
- - [ ] Fix documentation
- - [ ] Make the player have physics and stuff!
-## 3.0.0
- - [ ] Make all the demos work or remove them?? (add some, remove others)
- - [ ] Figure out whether we even *need* `__main__.py` or the node editor or other things (and if they don't, remove them or put them somewhere else in the repo that has nothing to do with pip) [SEE THIS](#idea-for-main)
-## After that
+## Current version (2.4.0-beta)
+ - [ ] Remove all files I don't need (bot, etc.)
+ - [ ] Remove demos related to those things
+ - [ ] Make Game much easier to use (have all things with each other and not all over the place)
+## After that (v3.0.0!!!!)
  - Keep adding more features to the main editor, allthewhile doing the below: 
+ - [ ] Fix documentation
+ - [ ] Look into removing other things (`__main__.py`, `pyguix`, etc.)
  - [ ] Make graphics run WAY faster and **efficient** (currently EXTREMLY SLOW)
  - [ ] Overhaul of `terrainGen.py` to remove most of the dependancies, making there less things to install and also load WAYYY faster.
  - [ ] Make `loading.py` MUCH faster (can rewrite it if you want, just need to also update `graphics.py`)
@@ -19,7 +18,7 @@
  - [ ] Make multiple different terrain gens for some fast and some slow generation!
  - [ ] Add optional requirements ([example](https://github.com/xtekky/gpt4free/blob/main/setup.py))
  - [ ] Remove all the AI stuff and instead use my AIHub I also made to make it easier and in a different package
- - [ ] Add type annotations
+ - [ ] Add type annotations to EVERYTHING
 
 # What I'm working on:
 

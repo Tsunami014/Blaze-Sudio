@@ -1,11 +1,14 @@
 # Welcome to Blaze Sudios!
 # CURRENT VERSION: v2.4.0-beta (💥 Flare)
+Don't worry, v3.0.0 is VERY CLOSE to being done.
 
 [![Docs](https://badgen.net/badge/Documentation/tsunami014.gitbook.io?color=orange&icon=wiki)](https://tsunami014.gitbook.io/blaze-sudios/)
 [![Website](https://badgen.net/badge/website/tsunami014.github.io?icon=rss)](https://tsunami014.github.io/Blaze-Sudio/)
 
 # What BS is
 Blaze Sudio is an open source graphical game creation software.
+
+// TODO: Improve README
 
 # Some random info
 [![I've done a crap ton of commits](https://badgen.net/github/commits/Tsunami014/Blaze-Sudio?color=green&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/commits/)
@@ -15,6 +18,8 @@ Blaze Sudio is an open source graphical game creation software.
 
 [![Worked on since Aug 19, 2023](https://badgen.net/badge/worked%20on%20since/Aug%2019,%202023?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/commit/c90beeb2d2e290ffff4e5fb9d112453840883ea7)
 (But back then it was called AIHub, now that's a different thing)
+
+// TODO: A badge for when v3.0.0 is released
 
 [![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=grey)](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors), see [here](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors) for a full breakdown.
 
@@ -28,14 +33,12 @@ Also known as:
 
 ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png)
 
-# Things to note:
-1. This is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! PRs are welcome!
-2. This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix) (Actually I think I removed that one... must check.), [Pyldtk](https://github.com/LGgameLAB/pyLdtk) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). This is for a couple of reasons:
-    1. (The main one) I can modify it myself (they're very niche, unfinished things)
-    2. It can't be installed with pip (last time I tried) (maybe it got taken down? I don't know, or maybe I'm just bad (says the person who made *this*))
-    3. I don't have to wory about dependancy issues with those two packages (tho that's not that big of a deal)
-    4. You guys don't have to install another package :)
-    5. It won't ever change (unless I change it myself)
+// TODO: Get a better icon
+
+# Things to note
+This is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! PRs are welcome!
+
+This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix) (I don't know whether I still need this or not...), [Pyldtk](https://github.com/LGgameLAB/pyLdtk) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). For pyLDtk, this is because I have edited it so much it barely resembles the original library (slight exaggeration, but still). And for the others, it was for similar reasons (and also installation problems and other things too)
 
 Please join our Discord server here <small>(I need friends)</small>: [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have! Alternatively, you can post bug reports/ideas in the [issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose)
 
