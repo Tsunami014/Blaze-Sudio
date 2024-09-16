@@ -11,24 +11,25 @@ G.load_map(thispth+"/levels.ldtk")
 # TODO: A more uniform way to access things (e.g. the current level)
 
 class DebugCommands:
-    def __init__(self):
-        G.AddCommand('/load', 'Load any level', lambda x: G.load_scene(lvl=int(x[0])))
-        G.AddCommand('/next', 'Load the next level', lambda: G.load_scene(lvl=G.currentScene.lvl+1))
-        G.AddCommand('/prev', 'Load the previous level', lambda: G.load_scene(lvl=G.currentScene.lvl-1))
-        G.AddCommand('/splash', 'Go back to the splash screen', lambda: G.load_scene(SplashScreen))
-        G.AddCommand('/reload', 'Reload the current level', lambda: G.load_scene(lvl=G.currentScene.lvl))
+    def __init__(self, Game):
+        self.Game = Game
+        Game.AddCommand('/load', 'Load any level', lambda x: Game.load_scene(lvl=int(x[0])))
+        Game.AddCommand('/next', 'Load the next level', lambda: Game.load_scene(lvl=Game.currentScene.lvl+1))
+        Game.AddCommand('/prev', 'Load the previous level', lambda: Game.load_scene(lvl=Game.currentScene.lvl-1))
+        Game.AddCommand('/splash', 'Go back to the splash screen', lambda: Game.load_scene(SplashScreen))
+        Game.AddCommand('/reload', 'Reload the current level', lambda: Game.load_scene(lvl=Game.currentScene.lvl))
         self.dotCollisionDebug = False
-        G.AddCommand('/dot', 'Toggle dot collision debug', self.toggleDot)
+        Game.AddCommand('/dot', 'Toggle dot collision debug', self.toggleDot)
     
     def toggleDot(self):
         self.dotCollisionDebug = not self.dotCollisionDebug
-        G.G.Toast('Dot collision toggled to ' + ('enabled' if self.dotCollisionDebug else 'disabled'))
+        self.Game.G.Toast('Dot collision toggled to ' + ('enabled' if self.dotCollisionDebug else 'disabled'))
 
-debug = DebugCommands()
+debug = DebugCommands(G)
 
 class PlayerEntity(Ss.BaseEntity):
-    def __init__(self, entity):
-        super().__init__(entity)
+    def __init__(self, Game, entity):
+        super().__init__(Game, entity)
         self.collided = False
         self.accel_amnt = [[5, 5], [0.5, 0.5]]
         self.max_accel = [60, 60]
@@ -38,7 +39,7 @@ class PlayerEntity(Ss.BaseEntity):
         self.clicked = 0
     
     def __call__(self, keys):
-        objs = collisions.Shapes(*G.currentScene.GetEntitiesByLayer('GravityFields'))
+        objs = collisions.Shapes(*self.Game.currentScene.GetEntitiesByLayer('GravityFields'))
         pygame.event.pump()
         oldPos = self.scaled_pos
         thisObj = collisions.Point(*oldPos)
@@ -53,15 +54,15 @@ class PlayerEntity(Ss.BaseEntity):
         self.gravity = gravity
         self.handle_accel()
         oldaccel = self.accel
-        outRect, self.accel = thisObj.handleCollisionsAccel(self.accel, G.currentScene.GetEntitiesByLayer('Collisions'), False)
+        outRect, self.accel = thisObj.handleCollisionsAccel(self.accel, self.Game.currentScene.GetEntitiesByLayer('Collisions'), False)
         mvementLine = collisions.Line(oldPos, outRect)
-        if mvementLine.collides(collisions.Shapes(*G.currentScene.GetEntitiesByID('BlackHole'))):
-            G.load_scene(lvl=G.currentScene.lvl)
-        if mvementLine.collides(collisions.Shapes(*G.currentScene.GetEntitiesByID('Goal'))):
-            if G.currentScene.lvl+1 >= len(G.world.ldtk.levels):
-                G.load_scene(SplashScreen)
+        if mvementLine.collides(collisions.Shapes(*self.Game.currentScene.GetEntitiesByID('BlackHole'))):
+            self.Game.load_scene(lvl=self.Game.currentScene.lvl)
+        if mvementLine.collides(collisions.Shapes(*self.Game.currentScene.GetEntitiesByID('Goal'))):
+            if self.Game.currentScene.lvl+1 >= len(self.Game.world.ldtk.levels):
+                self.Game.load_scene(SplashScreen)
             else:
-                G.load_scene(lvl=G.currentScene.lvl+1)
+                self.Game.load_scene(lvl=self.Game.currentScene.lvl+1)
             return
         newcolliding = oldaccel != self.accel
         if newcolliding != self.collided:
@@ -77,7 +78,7 @@ class PlayerEntity(Ss.BaseEntity):
             else:
                 self.collidingDelay += 0.25
         if self.collided and debug.dotCollisionDebug:
-            pygame.draw.circle(G.currentScene.sur, (255, 0, 0), 
+            pygame.draw.circle(self.Game.currentScene.sur, (255, 0, 0), 
                                (int(outRect[0]), int(outRect[1])), 5)
         self.pos = self.entity.unscale_pos(outRect)
     
@@ -85,16 +86,18 @@ class PlayerEntity(Ss.BaseEntity):
     def scaled_pos(self):
         return self.entity.scale_pos(self.pos)
 
-class SplashScreen(Ss.BaseScene):
+class SplashScreen(Ss.SkeletonScene):
+    useRenderer = False
     def __init__(self, Game, **settings):
         super().__init__(Game, **settings)
         self.rendered = False
     def render(self):
         if not self.rendered:
-            G.G.WIN.fill((0, 0, 0))
-            G.G.add_empty_space(GO.PCTOP, 0, 30)
-            G.G.add_text('Gravity golf!', (255, 255, 255), GO.PCTOP, GO.FTITLE)
-            G.G.add_button('Play!!!', GO.CGREEN, GO.PCCENTER, callback=lambda x: self.Game.load_scene())
+            graphic = self.Game.G
+            graphic.bgcol = self.Game.world.get_level(0).bgColour
+            graphic.add_empty_space(GO.PCTOP, 0, 30)
+            graphic.add_text('Gravity golf!', GO.CWHITE, GO.PCTOP, GO.FTITLE)
+            graphic.add_button('Play!!!', GO.CGREEN, GO.PCCENTER, callback=lambda x: self.Game.load_scene())
             self.rendered = True
 
 @G.DefaultSceneLoader
@@ -109,7 +112,7 @@ class MainGameScene(Ss.BaseScene):
         self.last_playerPos = [0, 0]
         for e in self.currentLvl.entities:
             if e.defUid == 7:
-                self.entities.append(PlayerEntity(e)) # The Player
+                self.entities.append(PlayerEntity(Game, e)) # The Player
                 self.entities[0].pos = [e.UnscaledPos[0]+0.5, e.UnscaledPos[1]+0.5]
                 break
         if self.entities == []:
@@ -178,7 +181,7 @@ class MainGameScene(Ss.BaseScene):
             return self.sur
         lvl = self.currentLvl
         sur = pygame.Surface(lvl.sizePx)
-        sur.fill(G.currentLvL.bgColour)
+        sur.fill(self.Game.currentLvL.bgColour)
         for e in lvl.entities:
             typs = ['Collisions', 'GravityFields']
             col = (255, 255, 255) if e.layerId not in typs else [(255, 50, 50), (10, 50, 50)][typs.index(e.layerId)]

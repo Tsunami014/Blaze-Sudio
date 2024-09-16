@@ -1,6 +1,6 @@
 from BlazeSudio import ldtk
 from BlazeSudio.Game import Game
-from BlazeSudio.collisions import collisions
+from BlazeSudio import collisions
 import BlazeSudio.Game.statics as Ss
 from demogames.planetWrapping.planetCollisions import approximate_polygon
 import pygame, math
@@ -11,23 +11,24 @@ G = Game()
 G.load_map(thispth+"/main.ldtk")
 
 class DebugCommands:
-    def __init__(self):
+    def __init__(self, Game):
+        self.Game = Game
         self.showingColls = False
-        G.AddCommand('/colls', 'Toggle collision debug', self.toggleColls)
+        self.Game.AddCommand('/colls', 'Toggle collision debug', self.toggleColls)
     
     def toggleColls(self):
         self.showingColls = not self.showingColls
-        G.G.Toast(('Showing' if self.showingColls else 'Not showing') + ' collisions')
+        self.Game.G.Toast(('Showing' if self.showingColls else 'Not showing') + ' collisions')
 
-debug = DebugCommands()
+debug = DebugCommands(G)
 
 class BaseEntity(Ss.BaseEntity):
-    def __init__(self, entity):
-        super().__init__(entity)
+    def __init__(self, Game, entity):
+        super().__init__(Game, entity)
         self.max_accel = [2, 5]
     
     def __call__(self, evs):
-        objs = collisions.Shapes(*G.currentScene.GetCollEntitiesByLayer('GravityFields'))
+        objs = collisions.Shapes(*self.Game.currentScene.GetCollEntitiesByLayer('GravityFields'))
         oldPos = self.scaled_pos
         thisObj = collisions.Point(*oldPos)
         cpoints = [(i.closestPointTo(thisObj), i) for i in objs]
@@ -63,7 +64,7 @@ class BaseEntity(Ss.BaseEntity):
         self.accel = collisions.rotateBy0(self.accel, tan-90)
         self.accel = [self.accel[0]+prevaccel[0], self.accel[1]+prevaccel[1]]
         self.handle_accel()
-        colls = G.currentScene.collider()
+        colls = self.Game.currentScene.collider()
         outRect, self.accel = thisObj.handleCollisionsAccel(self.accel, colls, False)
         self.pos = self.entity.unscale_pos(outRect)
     
@@ -83,7 +84,7 @@ class MainGameScene(Ss.BaseScene):
         self.CamBounds = [None, None, None, None]
         for e in self.currentLvl.entities:
             if e.defUid == 6:
-                self.entities.append(BaseEntity(e)) # The Player
+                self.entities.append(BaseEntity(Game, e)) # The Player
                 self.entities[0].pos = [e.UnscaledPos[0]+0.5, e.UnscaledPos[1]+0.5]
                 break
         if self.entities == []:
@@ -109,14 +110,14 @@ class MainGameScene(Ss.BaseScene):
     def collider(self):
         if self._collider is not None:
             return self._collider
-        lay = G.currentLvL.layers[1]
+        lay = self.Game.currentLvL.layers[1]
         tmpl = ldtk.layer(lay.data, lay.level)
         d = lay.tileset.data.copy()
         d.update({'relPath': d['relPath'] + '/../colls.png'})
         tmpl.tileset = ldtk.Tileset(lay.tileset.fileLoc, d)
         def translate_polygon(poly, translation):
             return collisions.Polygon(*[(i[0]+translation[0], i[1]+translation[1]) for i in poly.toPoints()])
-        self._collider = collisions.Shapes(*[translate_polygon(approximate_polygon(t.getImg()), t.pos) for t in tmpl.tiles], *G.currentScene.GetCollEntitiesByLayer('Entities'))
+        self._collider = collisions.Shapes(*[translate_polygon(approximate_polygon(t.getImg()), t.pos) for t in tmpl.tiles], *self.GetCollEntitiesByLayer('Entities'))
         return self._collider
 
     def render(self):

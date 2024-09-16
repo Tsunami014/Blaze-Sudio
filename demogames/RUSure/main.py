@@ -4,9 +4,10 @@ from BlazeSudio.graphics import options as GO
 G = Game()
 
 @G.DefaultSceneLoader
-class MainGameScene(Ss.BaseScene):
+class MainGameScene(Ss.SkeletonScene):
     useRenderer = False
     def __init__(self, Game, **settings):
+        super().__init__(Game, **settings)
         self.rendered = False
         self.title = settings.get('title', ' ')
         self.txt = settings.get('txt', ' ')
@@ -14,22 +15,20 @@ class MainGameScene(Ss.BaseScene):
     
     def render(self):
         if not self.rendered:
-            G.G.stacks.clear()
-            G.G.WIN.fill((175, 175, 175))
-            G.G.add_empty_space(GO.PCTOP, 0, 30)
-            G.G.add_text(self.title, GO.CACTIVE, GO.PCTOP, GO.FTITLE)
-            G.G.add_text(self.txt, GO.CINACTIVE, GO.PCTOP)
+            graphic = self.Game.G
+            graphic.stacks.clear()
+            graphic.WIN.fill((175, 175, 175))
+            graphic.add_empty_space(GO.PCTOP, 0, 30)
+            graphic.add_text(self.title, GO.CACTIVE, GO.PCTOP, GO.FTITLE)
+            graphic.add_text(self.txt, GO.CINACTIVE, GO.PCTOP)
             centre = GO.PNEW([1, 0], GO.PCCENTER.func, 1, 1)
-            G.G.add_empty_space(centre, -50, 0)
+            graphic.add_empty_space(centre, -50, 0)
             for n, inf in self.buttons.items():
                 if isinstance(inf[1], str):
-                    G.G.add_button(n, inf[0], centre, callback=lambda x, inf=inf: G.load_scene(txt=inf[1], buttons=inf[2]))
+                    graphic.add_button(n, inf[0], centre, callback=lambda x, inf=inf: self.Game.load_scene(txt=inf[1], buttons=inf[2]))
                 else:
-                    G.G.add_button(n, inf[0], centre, callback=inf[1])
+                    graphic.add_button(n, inf[0], centre, callback=inf[1])
             self.rendered = True
-    
-    def tick(self, keys):
-        pass
 
 def load_title(*args):
     orng = GO.CNEW('orange')
