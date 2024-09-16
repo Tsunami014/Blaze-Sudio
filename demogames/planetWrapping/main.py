@@ -3,7 +3,7 @@ from BlazeSudio.Game import Game
 from BlazeSudio import collisions
 import BlazeSudio.Game.statics as Ss
 from demogames.planetWrapping.planetCollisions import approximate_polygon
-import pygame, math
+import pygame
 
 thispth = __file__[:__file__.rindex('/')]
 
@@ -34,12 +34,11 @@ class BaseEntity(Ss.BaseEntity):
         cpoints = [(i.closestPointTo(thisObj), i) for i in objs]
         if cpoints:
             cpoints.sort(key=lambda x: (thisObj.x-x[0][0])**2+(thisObj.y-x[0][1])**2)
-            # Find the point on the unit circle * 0.2 that is closest to the object
             closest = cpoints[0][0]
             ydiff, xdiff = thisObj.y-closest[1], thisObj.x-closest[0]
-            angle = math.atan2(ydiff, xdiff)
+            angle = collisions.direction(closest, thisObj)
             tan = cpoints[0][1].tangent(closest, [xdiff, ydiff])
-            gravity = [-0.2*math.cos(angle), -0.2*math.sin(angle)]
+            gravity = collisions.pointOnUnitCircle(angle, -0.2)
         else:
             gravity = [0, 0]
             tan = 0
