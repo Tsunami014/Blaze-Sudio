@@ -35,7 +35,8 @@ basetxts = {
     'error': '\033[38;5;160m-',
     'good': '\033[38;5;28m+',
     'warn': '\033[38;5;202;52;1m!',
-    'mid': '\033[38;2;193;156;0m='
+    'mid': '\033[38;2;193;156;0m=',
+    'bad': '\033[38;5;9m:('
 }
 
 txts = {
@@ -157,8 +158,8 @@ def options(title, opts, default=0):
     disable_input_mode()
     return opt
 
-def ask(title, keyOpts):
-    print(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}\n\033[94;5m> ', end='')
+def ask(title, keyOpts, newline=True):
+    print(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}{"\n" if newline else " "}\033[94;5m> ', end='')
     while True:
         k = getch()
         if k in keyOpts:
@@ -166,15 +167,16 @@ def ask(title, keyOpts):
             disable_input_mode()
             return keyOpts.index(k)
 
-def askInp(title):
+def askInp(title, newline=True):
     disable_input_mode()
-    return input(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}\n\033[94;5m> ')
+    return input(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}{"\n" if newline else " "}\033[94;5m> ')
 
 l = ['Make a new project here 📁', 'Make a new project in a subdirectory 🗃️', 'Open docs 📚️', '\033[35mQuit 👋']
 chosen = options('What would you like to do?', l)
 
 def makeNewProject(where):
     print(txts['info']+'Making project in '+where+'...')
+    print(txts['bad']+'NOTIMPLEMENTED')
 
 if chosen == 0:
     if os.listdir(os.getcwd()) != []:
@@ -205,7 +207,7 @@ elif chosen == 1:
             if os.listdir(where) != []:
                 resp = options(f'Path %s exists and has things in it! What do you want to do?'%where, ['Override it & delete everything in it 🔥', 'Choose again 🤔', '\033[35mQuit 👋'])
                 if resp == 0:
-                    if ask(highlight(f'Are you sure you want to override the folder {where} and delete everything in it?')+' [y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
+                    if ask(highlight(f'Are you sure you want to override the folder {where} and delete everything in it?')+' [y/n]', ['y', 'Y', 'n', 'N'], False) in (0, 1):
                         print(txts['warn']+'Deleting folder '+where+'...')
                         shutil.rmtree(where)
                         os.mkdir(where)
@@ -222,9 +224,12 @@ elif chosen == 1:
             os.mkdir(where)
             makeNewProject(where)
 elif chosen == 2:
-    if ask('Would you like to open the offline 🖥️  docs (y) or the online 🌐 docs (n)?', ['y', 'Y', 'n', 'N']) in (0, 1):
+    if ask('Would you like to open the offline 🖥️  docs (1) or the online 🌐 docs (2)?', ['1', '2'], False) == 0:
         print(txts['good']+'OK! Opening offline docs...')
+        print(txts['bad']+'NOTIMPLEMENTED')
     else:
         print(txts['good']+'OK! Opening online docs...')
+        import webbrowser
+        webbrowser.open('https://tsunami014.gitbook.io/blaze-sudios')
 else: # quit
     print(txts['good']+'OK, quitting!')
