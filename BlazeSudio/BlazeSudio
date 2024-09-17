@@ -26,11 +26,32 @@ txt = re.sub('([;,]+)', '\033[32m\\1\033[0m', txt)
 print(txt)
 print()
 
+def bracketulate(txt):
+    return f'\033[93m[{txt}\033[93m]\033[0m'
+
+txts = {
+    'info': '\033[38;5;69m~',
+    'error': '\033[38;5;160m-',
+    'good': '\033[38;5;28m+',
+    'warn': '\033[38;5;202;52;1m!',
+    'mid': '\033[38;2;193;156;0m='
+}
+
+BTs = {
+    i: bracketulate(txts[i])+' ' for i in txts
+}
+
+def highlight(txt):
+    return '\033[38;5;172m' + txt + '\033[0m'
+
 class Spinner:
-    @staticmethod
-    def spinning_cursor():
+    spins = ['|', '/', '-', '\\']
+
+    @classmethod
+    def spinning_cursor(cls):
         while 1:
-            for cursor in ['[|]', '[/]', '[-]', '[\\]']: yield cursor
+            for cursor in cls.spins:
+                yield bracketulate('\033[38;5;166m'+cursor)
 
     def __init__(self, txt, delay=0.1):
         self.txt = txt
@@ -74,7 +95,7 @@ def options(title, opts, default=0):
     opt = default
 
     def print_opts():
-        print(f'\033[38;5;231m[\033[38;5;166m?\033[38;5;231m] \033[92m{title}: \033[94m{opts[opt]}\033[0m'+' '*max(len(i) for i in opts))
+        print(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}: \033[94m{opts[opt]}\033[0m'+' '*max(len(i) for i in opts))
         for i in range(len(opts)):
             t = opts[i]
             if i == opt:
@@ -84,6 +105,7 @@ def options(title, opts, default=0):
     print_opts()
 
     def update_opts():
+        nonlocal prevchr
         prevchr = 0
         print(f'\033[{len(opts)+2}B', end='')
         print('\033[F'*(len(opts)+2))
