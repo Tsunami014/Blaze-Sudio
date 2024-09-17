@@ -15,13 +15,13 @@ SS    `:; SS        SS    `:;  sSS      SS                  `:; SS    `:; SS    
 SS    ;,. SS    ;,. SS    ;,. sSS       SS    ;,.     .,;   ;,. SS    ;,. SS    ;,. ;,. SS    ;,. 
 `:;;;;;:' `:;;;;;:' :;    ;:' `:;;;;;:' `:;;;;;:'     `:;;;;;:' `:;;;;;:' ;;;;;;;:' ;:' `:;;;;;:' 
 """ # Font used: amcslash
-txt = txt[1:-1]
+txt = txt[1:-1]+'\033[0m'
 
-txt = re.sub('([%]+)', '\033[34m\\1\033[0m', txt)
-txt = re.sub('([5S]+)', '\033[94m\\1\033[0m', txt)
-txt = re.sub('([s.]+)', '\033[96m\\1\033[0m', txt)
-txt = re.sub('([`:"\']+)', '\033[92m\\1\033[0m', txt)
-txt = re.sub('([;,]+)', '\033[32m\\1\033[0m', txt)
+txt = re.sub('([5S]+)', '\033[31m\\1', txt)
+txt = re.sub(r'(%+)', '\033[35m\\1', txt)
+txt = re.sub('([s.]+)', '\033[91m\\1', txt)
+txt = re.sub('([`:"\']+)', '\033[92m\\1', txt)
+txt = re.sub('([;,]+)', '\033[32m\\1', txt)
 
 print(txt)
 print()
@@ -96,13 +96,13 @@ def options(title, opts, default=0):
     opt = default
 
     def print_opts():
-        print(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}: \033[94m{opts[opt]}\033[0m'+' '*max(len(i) for i in opts))
+        print(f'{bracketulate('\033[38;5;166m?')} \033[92;11m{title}: \033[94;5m{opts[opt]}\033[0m'+' '*max(len(i) for i in opts))
         for i in range(len(opts)):
             t = opts[i]
             if i == opt:
                 print(f'\033[94;1;3m>  {t}\033[0m')
             else:
-                print(f'   {t}')
+                print(f'   {t}\033[0m')
     print_opts()
 
     def update_opts():
@@ -148,15 +148,17 @@ def ask(title, keyOpts):
             print(f'\033[94m{k}\033[0m')
             return keyOpts.index(k)
 
-resp = ask('How are you? [G/B] > ', ['G', 'B'])
-print('you chose option '+str(resp))
-
-l = ['Make a new project here', 'Make a new project in a subdirectory', '\033[35mQuit']
+l = ['Make a new project here 📁', 'Make a new project in a subdirectory 🗃️', 'Open docs 📚️', '\033[35mQuit 👋']
 chosen = options('What would you like to do?', l)
 
 if chosen == 0:
     print("Ok! Making a new project here...")
 elif chosen == 1:
     print('ok!')
+elif chosen == 2:
+    if ask('Would you like to open the offline 🖥️  docs (y) or the online 🌐 docs (n)?\n> ', ['y', 'Y', 'n', 'N']) in (0, 1):
+        print(txts['info']+'OK! Opening offline docs...')
+    else:
+        print(txts['info']+'OK! Opening online docs...')
 else: # quit
     print(txts['info']+'OK, quitting!')
