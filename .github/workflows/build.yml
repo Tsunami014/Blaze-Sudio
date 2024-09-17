@@ -2,7 +2,6 @@ name: Build collisions
 
 on:
   workflow_dispatch:
-  push:
 
 jobs:
   build-linux-3_10:
