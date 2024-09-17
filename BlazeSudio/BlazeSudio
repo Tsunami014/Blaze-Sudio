@@ -29,7 +29,7 @@ print()
 def bracketulate(txt):
     return f'\033[93m[{txt}\033[93m]\033[0m'
 
-txts = {
+basetxts = {
     'info': '\033[38;5;69m~',
     'error': '\033[38;5;160m-',
     'good': '\033[38;5;28m+',
@@ -37,8 +37,9 @@ txts = {
     'mid': '\033[38;2;193;156;0m='
 }
 
-BTs = {
-    i: bracketulate(txts[i])+' ' for i in txts
+txts = {
+    i: bracketulate(basetxts[i])+' ' for i in basetxts
+    #i: basetxts[i]+'\033[0m ' for i in basetxts
 }
 
 def highlight(txt):
@@ -80,17 +81,17 @@ class Spinner:
         while self.running:
             pass
 
-def options(title, opts, default=0):
-    def getch():
-        fd = sys.stdin.fileno()
-        orig = termios.tcgetattr(fd)
+def getch():
+    fd = sys.stdin.fileno()
+    orig = termios.tcgetattr(fd)
 
-        try:
-            tty.setcbreak(fd)  # or tty.setraw(fd) if you prefer raw mode's behavior.
-            return sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSAFLUSH, orig)
-    
+    try:
+        tty.setcbreak(fd)  # or tty.setraw(fd) if you prefer raw mode's behavior.
+        return sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSAFLUSH, orig)
+
+def options(title, opts, default=0):
     prevchrs = 0
     opt = default
 
@@ -133,14 +134,29 @@ def options(title, opts, default=0):
             opt = len(opts)-1
             update_opts()
         elif char == '\n':
-            print(f'\033[F\033[{len(opts)+2}B', end='')
-            return opt
+            break
+        else:
+            prevchr = 0
+    print(f'\033[F\033[{len(opts)+2}B', end='')
+    return opt
 
-l = ['hi', 'hello', 'bye', 'goodbye']
+def ask(title, keyOpts):
+    print(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}', end='')
+    while True:
+        k = getch()
+        if k in keyOpts:
+            print(f'\033[94m{k}\033[0m')
+            return keyOpts.index(k)
+
+resp = ask('How are you? [G/B] > ', ['G', 'B'])
+print('you chose option '+str(resp))
+
+l = ['Make a new project here', 'Make a new project in a subdirectory', '\033[35mQuit']
 chosen = options('What would you like to do?', l)
-print('You chose: '+l[chosen])
 
-with Spinner('Doing something '):
-    sleep(5)
-
-print('Done!')
+if chosen == 0:
+    print("Ok! Making a new project here...")
+elif chosen == 1:
+    print('ok!')
+else: # quit
+    print(txts['info']+'OK, quitting!')
