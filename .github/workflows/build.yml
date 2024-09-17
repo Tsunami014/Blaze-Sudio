@@ -32,7 +32,7 @@ jobs:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: 'ci(build): 🛠️ Build collisions :)'
+          message: 'ci(build): 🛠️ Build collisions for linux & python 3.10 :)'
   
   build-linux-3_11:
     permissions:
@@ -62,7 +62,7 @@ jobs:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: 'ci(build): 🛠️ Build collisions :)'
+          message: 'ci(build): 🛠️ Build collisions for linux & python 3.11 :)'
   
   build-linux-3_12:
     permissions:
@@ -92,7 +92,7 @@ jobs:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: 'ci(build): 🛠️ Build collisions :)'
+          message: 'ci(build): 🛠️ Build collisions for linux & python 3.12 :)'
 
   
   build-windows-3_10:
@@ -123,7 +123,7 @@ jobs:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: 'ci(build): 🛠️ Build collisions :)'
+          message: 'ci(build): 🛠️ Build collisions for windows & python 3.10 :)'
   
   build-windows-3_11:
     permissions:
@@ -153,7 +153,7 @@ jobs:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: 'ci(build): 🛠️ Build collisions :)'
+          message: 'ci(build): 🛠️ Build collisions for windows & python 3.11 :)'
   
   build-windows-3_12:
     permissions:
@@ -183,4 +183,4 @@ jobs:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: 'ci(build): 🛠️ Build collisions :)'
+          message: 'ci(build): 🛠️ Build collisions for windows & python 3.12 :)'
