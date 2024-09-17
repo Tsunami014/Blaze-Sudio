@@ -1,5 +1,6 @@
 #!/bin/python3
 import re, os
+import shutil, atexit
 import sys, termios, tty
 from threading import Thread
 from time import sleep
@@ -81,15 +82,30 @@ class Spinner:
         while self.running:
             pass
 
-def getch():
-    fd = sys.stdin.fileno()
-    orig = termios.tcgetattr(fd)
+# Save the original terminal attributes globally so we can restore them later
+orig_termios = None
 
+def enable_input_mode():
+    global orig_termios
+    fd = sys.stdin.fileno()
+    orig_termios = termios.tcgetattr(fd)
+    tty.setcbreak(fd) # or tty.setraw(fd) if you prefer raw mode
+
+def disable_input_mode():
+    global orig_termios
+    if orig_termios:
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSAFLUSH, orig_termios)
+        orig_termios = None
+
+atexit.register(disable_input_mode)
+
+def getch():
+    if orig_termios is None:
+        enable_input_mode()
     try:
-        tty.setcbreak(fd)  # or tty.setraw(fd) if you prefer raw mode's behavior.
         return sys.stdin.read(1)
     finally:
-        termios.tcsetattr(fd, termios.TCSAFLUSH, orig)
+        disable_input_mode()
 
 def options(title, opts, default=0):
     prevchrs = 0
@@ -138,27 +154,77 @@ def options(title, opts, default=0):
         else:
             prevchr = 0
     print(f'\033[F\033[{len(opts)+2}B', end='')
+    disable_input_mode()
     return opt
 
 def ask(title, keyOpts):
-    print(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}', end='')
+    print(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}\n\033[94;5m> ', end='')
     while True:
         k = getch()
         if k in keyOpts:
             print(f'\033[94m{k}\033[0m')
+            disable_input_mode()
             return keyOpts.index(k)
+
+def askInp(title):
+    disable_input_mode()
+    return input(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}\n\033[94;5m> ')
 
 l = ['Make a new project here 📁', 'Make a new project in a subdirectory 🗃️', 'Open docs 📚️', '\033[35mQuit 👋']
 chosen = options('What would you like to do?', l)
 
+def makeNewProject(where):
+    print(txts['info']+'Making project in '+where+'...')
+
 if chosen == 0:
-    print("Ok! Making a new project here...")
-elif chosen == 1:
-    print('ok!')
-elif chosen == 2:
-    if ask('Would you like to open the offline 🖥️  docs (y) or the online 🌐 docs (n)?\n> ', ['y', 'Y', 'n', 'N']) in (0, 1):
-        print(txts['info']+'OK! Opening offline docs...')
+    if os.listdir(os.getcwd()) != []:
+        resp = options(f'Path {os.getcwd()} has things in it! What do you want to do?', ['Override it & delete everything in it 🔥', '\033[35mQuit 👋'])
+        if resp == 0:
+            if ask(highlight(f'Are you sure you want to override the folder {os.getcwd()} and delete everything in it?')+' [y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
+                print(txts['warn']+'Deleting folder '+os.getcwd()+'...')
+                shutil.rmtree(os.getcwd())
+                os.mkdir(os.getcwd())
+                makeNewProject(os.getcwd())
+            else:
+                print(txts['good']+'OK, quitting!')
+                complete = True
+        else:
+            print(txts['good']+'OK, quitting!')
+            complete = True
     else:
-        print(txts['info']+'OK! Opening online docs...')
+        makeNewProject(os.getcwd())
+elif chosen == 1:
+    complete = False
+    while not complete:
+        where = os.path.join(os.getcwd(), askInp('What would you like to name the folder? (Type nothing to exit)').replace('/', '_'))
+        if not where.replace('/', ''):
+            print(txts['good']+'OK, exiting!')
+            complete = True
+            continue
+        if os.path.exists(where):
+            if os.listdir(where) != []:
+                resp = options(f'Path %s exists and has things in it! What do you want to do?'%where, ['Override it & delete everything in it 🔥', 'Choose again 🤔', '\033[35mQuit 👋'])
+                if resp == 0:
+                    if ask(highlight(f'Are you sure you want to override the folder {where} and delete everything in it?')+' [y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
+                        print(txts['warn']+'Deleting folder '+where+'...')
+                        shutil.rmtree(where)
+                        os.mkdir(where)
+                        makeNewProject(where)
+                elif resp == 1:
+                    pass
+                else:
+                    print(txts['good']+'OK, quitting!')
+                    complete = True
+            else:
+                print(txts['info']+'Directory %s exists, but is empty. Using that.'%where)
+                makeNewProject(where)
+        else:
+            os.mkdir(where)
+            makeNewProject(where)
+elif chosen == 2:
+    if ask('Would you like to open the offline 🖥️  docs (y) or the online 🌐 docs (n)?', ['y', 'Y', 'n', 'N']) in (0, 1):
+        print(txts['good']+'OK! Opening offline docs...')
+    else:
+        print(txts['good']+'OK! Opening online docs...')
 else: # quit
-    print(txts['info']+'OK, quitting!')
+    print(txts['good']+'OK, quitting!')
