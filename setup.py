@@ -26,6 +26,7 @@ setup(
     author_email='tsunami014@duck.com',
     install_requires=packages,
     keywords=['Python', 'games', 'engine'],
+    scripts=['BlazeSudio/BlazeSudio'],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
