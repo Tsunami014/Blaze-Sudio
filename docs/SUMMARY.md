@@ -4,14 +4,16 @@
 
 ## Important stuff
 
-* [Installing the app](Installing/README.md)
+* [Installing the app](Installing.md)
 
-## Important utils
+## Main functionality
 
-* [Graphics](utils/graphics/README.md)
-    * [All functions](utils/graphics/funcs.md)
-    * [Graphics Options (GO)](utils/graphics/GO.md)
-    * [Examples](utils/graphics/examples.md)
+* [Making a game](game/README.md)
+
+* [Graphics](graphics/README.md)
+    * [All functions](graphics/funcs.md)
+    * [Graphics Options (GO)](graphics/GO.md)
+    * [Examples](graphics/examples.md)
 
 ## Other utils
 
