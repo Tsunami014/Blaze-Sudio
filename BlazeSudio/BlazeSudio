@@ -16,7 +16,7 @@ SS    `:; SS        SS    `:;  sSS      SS                  `:; SS    `:; SS    
 SS    ;,. SS    ;,. SS    ;,. sSS       SS    ;,.     .,;   ;,. SS    ;,. SS    ;,. ;,. SS    ;,. 
 `:;;;;;:' `:;;;;;:' :;    ;:' `:;;;;;:' `:;;;;;:'     `:;;;;;:' `:;;;;;:' ;;;;;;;:' ;:' `:;;;;;:' 
 """ # Font used: amcslash
-txt = txt[1:-1]+'\033[0m'
+txt = txt+'\033[0m'
 
 txt = re.sub('([5S]+)', '\033[31m\\1', txt)
 txt = re.sub(r'(%+)', '\033[35m\\1', txt)
@@ -25,10 +25,12 @@ txt = re.sub('([`:"\']+)', '\033[92m\\1', txt)
 txt = re.sub('([;,]+)', '\033[32m\\1', txt)
 
 print(txt)
-print()
+print(' '*8+'\033[91mMade by @Tsunami014\033[0m')
+print('\n')
 
 def bracketulate(txt):
-    return f'\033[93m[{txt}\033[93m]\033[0m'
+    return txt+'\033[0m' #f'\033[93m[{txt}\033[93m]\033[0m'
+BracketulateAmount = 1 # The amount of chars used up in a bracketulate
 
 basetxts = {
     'info': '\033[38;5;69m~',
@@ -36,16 +38,24 @@ basetxts = {
     'good': '\033[38;5;28m+',
     'warn': '\033[38;5;202;52;1m!',
     'mid': '\033[38;2;193;156;0m=',
-    'bad': '\033[38;5;9m:('
+    'bad': '\033[38;5;9m*'
 }
 
 txts = {
-    i: bracketulate(basetxts[i])+' ' for i in basetxts
+    i: bracketulate(basetxts[i])+' '+basetxts[i][:-1] for i in basetxts
     #i: basetxts[i]+'\033[0m ' for i in basetxts
 }
 
 def highlight(txt):
-    return '\033[38;5;172m' + txt + '\033[0m'
+    return '\033[38;5;172m' + txt + '\033[39m'
+
+def bold(txt):
+    return '\033[1m' + txt + '\033[22m'
+
+def header(txt):
+    txt = f' {txt} '
+    lines = "─"*len(txt)
+    return f'\033[35m╭{lines}╮\n│\033[95;15;1;3m{txt}\033[35m│\n╰{lines}╯\033[0m'
 
 class Spinner:
     spins = ['|', '/', '-', '\\']
@@ -113,13 +123,14 @@ def options(title, opts, default=0):
     opt = default
 
     def print_opts():
-        print(f'{bracketulate('\033[38;5;166m?')} \033[92;11m{title}: \033[94;5m{opts[opt]}\033[0m'+' '*max(len(i) for i in opts))
+        print(f'\033[K{bracketulate('\033[38;5;166m?')} \033[92;11m{title}: \033[90m(Use arrow keys) \033[94;5m{opts[opt]}\033[0m')
         for i in range(len(opts)):
             t = opts[i]
+            spaces = ' '*(BracketulateAmount+1)
             if i == opt:
-                print(f'\033[94;1;3m>  {t}\033[0m')
+                print(f'\033[94;1;3m>{spaces[:-1]}{t}\033[0m')
             else:
-                print(f'   {t}\033[0m')
+                print(f'{spaces}{t}\033[0m')
     print_opts()
 
     def update_opts():
@@ -154,7 +165,7 @@ def options(title, opts, default=0):
             break
         else:
             prevchr = 0
-    print(f'\033[F\033[{len(opts)+2}B', end='')
+    print(f'\033[F\033[{len(opts)+2}B'+'\033[F\033[K'*len(opts), end='')
     disable_input_mode()
     return opt
 
@@ -163,7 +174,6 @@ def ask(title, keyOpts, newline=True):
     while True:
         k = getch()
         if k in keyOpts:
-            print(f'\033[94m{k}\033[0m')
             disable_input_mode()
             return keyOpts.index(k)
 
@@ -179,15 +189,18 @@ def makeNewProject(where):
     print(txts['bad']+'NOTIMPLEMENTED')
 
 if chosen == 0:
+    print(f'\n{header("NEW PROJECT")}')
     if os.listdir(os.getcwd()) != []:
-        resp = options(f'Path {os.getcwd()} has things in it! What do you want to do?', ['Override it & delete everything in it 🔥', '\033[35mQuit 👋'])
+        resp = options(f'Path {os.getcwd()} has things in it! What do you want to do?', [f'{bold("Override")} it & {highlight("delete everything in it")} 🔥', '\033[35mQuit 👋'])
         if resp == 0:
-            if ask(highlight(f'Are you sure you want to override the folder {os.getcwd()} and delete everything in it?')+' [y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
+            if ask(highlight(f'Are you sure you want to {bold("override")} the folder {os.getcwd()} and delete everything in it?')+' \033[90m[y/n]', ['y', 'Y', 'n', 'N'], newline=False) in (0, 1):
+                print('Yes\033[0m')
                 print(txts['warn']+'Deleting folder '+os.getcwd()+'...')
                 shutil.rmtree(os.getcwd())
                 os.mkdir(os.getcwd())
                 makeNewProject(os.getcwd())
             else:
+                print('No\033[0m')
                 print(txts['good']+'OK, quitting!')
                 complete = True
         else:
@@ -196,22 +209,26 @@ if chosen == 0:
     else:
         makeNewProject(os.getcwd())
 elif chosen == 1:
+    print(f'\n{header("NEW PROJECT")}')
     complete = False
     while not complete:
-        where = os.path.join(os.getcwd(), askInp('What would you like to name the folder? (Type nothing to exit)').replace('/', '_'))
-        if not where.replace('/', ''):
+        where = os.path.join(os.getcwd(), askInp('What would you like to name the folder? \033[90m(Type nothing to exit)').replace('/', '_'))
+        if where == os.getcwd():
             print(txts['good']+'OK, exiting!')
             complete = True
             continue
         if os.path.exists(where):
             if os.listdir(where) != []:
-                resp = options(f'Path %s exists and has things in it! What do you want to do?'%where, ['Override it & delete everything in it 🔥', 'Choose again 🤔', '\033[35mQuit 👋'])
+                resp = options(f'Path %s exists and has things in it! What do you want to do?'%where, [f'{bold("Override")} it & {highlight("delete everything in it")} 🔥', 'Choose again 🤔', '\033[35mQuit 👋'])
                 if resp == 0:
-                    if ask(highlight(f'Are you sure you want to override the folder {where} and delete everything in it?')+' [y/n]', ['y', 'Y', 'n', 'N'], False) in (0, 1):
+                    if ask(highlight(f'Are you sure you want to {bold("override")} the folder {where} and delete everything in it"?')+' \033[90m[y/n]', ['y', 'Y', 'n', 'N'], False) in (0, 1):
+                        print('Yes\033[0m')
                         print(txts['warn']+'Deleting folder '+where+'...')
                         shutil.rmtree(where)
                         os.mkdir(where)
                         makeNewProject(where)
+                    else:
+                        print('No\033[0m')
                 elif resp == 1:
                     pass
                 else:
@@ -224,12 +241,17 @@ elif chosen == 1:
             os.mkdir(where)
             makeNewProject(where)
 elif chosen == 2:
-    if ask('Would you like to open the offline 🖥️  docs (1) or the online 🌐 docs (2)?', ['1', '2'], False) == 0:
+    print(f'\n{header("DOCS")}')
+    if ask(f'Would you like to open the {bold("offline")} 🖥️  docs {highlight("(1)")} or the {bold("online")} 🌐 docs {highlight("(2)")}?', ['1', '2'], False) == 0:
+        print('Offline\033[0m')
         print(txts['good']+'OK! Opening offline docs...')
         print(txts['bad']+'NOTIMPLEMENTED')
     else:
+        print('Online\033[0m')
         print(txts['good']+'OK! Opening online docs...')
         import webbrowser
         webbrowser.open('https://tsunami014.gitbook.io/blaze-sudios')
 else: # quit
     print(txts['good']+'OK, quitting!')
+
+print('\033[0m', end='')
