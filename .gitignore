@@ -3,3 +3,5 @@ BlazeSudio/collisions/out/**
 *.pyc
 *.elm
 out/**
+Blaze_Sudio.egg-info/**
+build/**
