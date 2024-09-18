@@ -1,11 +1,13 @@
 from setuptools import setup, find_packages
 import codecs
 import os
+import re
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = fh.read()
+    long_description = re.sub(re.escape('<!-- Pypi ignore -->')+'.*'+re.escape('<!-- End Pypi ignore -->'), '', long_description)
 
 with codecs.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as fh:
     packages = [i for i in fh.readlines() if i]
@@ -21,7 +23,7 @@ setup(
     long_description=long_description,
     packages=find_packages(),
     include_package_data=True,
-    package_data={'BlazeSudio' :['BlazeSudio/data/*'], 'BlazeSudio.collisions': ['BlazeSudio/collisions/*.so', 'BlazeSudio/collisions/*.pyd']},
+    package_data={'BlazeSudio' :['BlazeSudio/data/*'], 'BlazeSudio.collisions': ['**/*.so', '**/*.pyd']},
     author='Tsunami014 (Max)',
     author_email='tsunami014@duck.com',
     install_requires=packages,
@@ -34,7 +36,7 @@ setup(
         'Topic :: Software Development :: Build Tools',
         "Operating System :: Unix",
         "Operating System :: Microsoft :: Windows"
-        # ~~No one~~ **I don't** like~~s~~ Apple
+        # ~~No one~~ **I don't** like Apple
     ]
 )
 
