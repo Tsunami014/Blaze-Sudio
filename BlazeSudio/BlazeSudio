@@ -1,9 +1,11 @@
 #!/bin/python3
-import re, os
+import re, os, subprocess
 import shutil, atexit
 import sys, termios, tty
 from threading import Thread
 from time import sleep
+
+# TODO: Command line args --no-title / -nt, --no-colour / -no, --help / -h and --version / -v
 
 txt = """
 .s5SSSs.                                              .s5SSSs.                                    
@@ -18,11 +20,11 @@ SS    ;,. SS    ;,. SS    ;,. sSS       SS    ;,.     .,;   ;,. SS    ;,. SS    
 """ # Font used: amcslash
 txt = txt+'\033[0m'
 
-txt = re.sub('([5S]+)', '\033[31m\\1', txt)
-txt = re.sub(r'(%+)', '\033[35m\\1', txt)
-txt = re.sub('([s.]+)', '\033[91m\\1', txt)
-txt = re.sub('([`:"\']+)', '\033[92m\\1', txt)
 txt = re.sub('([;,]+)', '\033[32m\\1', txt)
+txt = re.sub('([5S]+)', '\033[38;2;210;85;80m\\1', txt)
+txt = re.sub('([s.]+)', '\033[38;2;255;120;120m\\1', txt)
+txt = re.sub(r'(%+)', '\033[38;2;225;60;50m\\1', txt)
+txt = re.sub('([`:"\']+)', '\033[92m\\1', txt)
 
 print(txt)
 print(' '*8+'\033[91mMade by @Tsunami014\033[0m')
@@ -123,7 +125,7 @@ def options(title, opts, default=0):
     opt = default
 
     def print_opts():
-        print(f'\033[K{bracketulate('\033[38;5;166m?')} \033[92;11m{title}: \033[90m(Use arrow keys) \033[94;5m{opts[opt]}\033[0m')
+        print(f'\033[K{bracketulate('\033[38;5;166m?')} \033[92;11m{title}: \033[90m(Use arrow keys) \033[94m{opts[opt]}\033[0m')
         for i in range(len(opts)):
             t = opts[i]
             spaces = ' '*(BracketulateAmount+1)
@@ -169,36 +171,90 @@ def options(title, opts, default=0):
     disable_input_mode()
     return opt
 
-def ask(title, keyOpts, newline=True):
-    print(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}{"\n" if newline else " "}\033[94;5m> ', end='')
+def ask(title, keyOpts, newline=False, printAtEnd=False):
+    print(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}{"\n" if newline else " "}\033[94m> ', end='', flush=True)
     while True:
         k = getch()
         if k in keyOpts:
             disable_input_mode()
+            if printAtEnd:
+                print(k+'\033[0m')
             return keyOpts.index(k)
 
-def askInp(title, newline=True):
+def askInp(title, newline=False):
     disable_input_mode()
-    return input(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}{"\n" if newline else " "}\033[94;5m> ')
+    return input(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}{"\n" if newline else " "}\033[94m> ')
 
 l = ['Make a new project here 📁', 'Make a new project in a subdirectory 🗃️', 'Open docs 📚️', '\033[35mQuit 👋']
 chosen = options('What would you like to do?', l)
 
+def emptyFolder(folder): # From https://stackoverflow.com/questions/185936/how-to-delete-the-contents-of-a-folder
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
+
 def makeNewProject(where):
     print(txts['info']+'Making project in '+where+'...')
-    print(txts['bad']+'NOTIMPLEMENTED')
+    usingGit = False
+    if subprocess.run(['git', '--version'], stdout=subprocess.DEVNULL).returncode == 0:
+        if ask(f'Do you want to initialise a git repo? \033[90m[y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
+            print('Yes\033[0m')
+            subprocess.run(['git', 'init', where], stdout=subprocess.DEVNULL)
+            usingGit = True
+        else:
+            print('No\033[0m')
+    else:
+        print(txts['info']+'Git not found, so cannot make a repo!')
+    with open(os.path.join(where, 'README.md'), 'w+') as f:
+        f.write('# '+(askInp('What is the name of the project? \033[90m(My Project)') or 'My Project'))
+    with open(os.path.join(where, (askInp('What is the name of the main file? \033[90m(main.py)') or 'main.py')), 'w+') as f:
+        # TODO: Various default files
+        f.write("""from BlazeSudio.Game import Game
+from BlazeSudio import collisions
+import BlazeSudio.Game.statics as Ss
 
+G = Game()
+
+@G.DefaultSceneLoader
+class MainGameScene(Ss.BaseScene):
+    pass
+
+G.load_scene()
+G.play(debug=True)
+""")
+    with open(os.path.join(where, 'requirements.txt'), 'w+') as f:
+        f.write('Blaze-Sudio\n')
+    if usingGit:
+        subprocess.run(['git', 'add', '-A'], cwd=where, stdout=subprocess.DEVNULL)
+    if subprocess.run(['code', '--version'], stdout=subprocess.DEVNULL).returncode == 0:
+        if ask(f'Do you want to launch VSCode? \033[90m[y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
+            print('Yes\033[0m')
+            subprocess.run(['code', where], stdout=subprocess.DEVNULL)
+        else:
+            print('No\033[0m')
+    else:
+        print(txts['info']+'VSCode not found, so cannot open!')
+    # TODO: Ask if add empty ldtk file
+    # TODO: Ask if use direnv and/or if should add a venv (if have direnv)
+
+# TODO: Templates
 if chosen == 0:
     print(f'\n{header("NEW PROJECT")}')
     if os.listdir(os.getcwd()) != []:
         resp = options(f'Path {os.getcwd()} has things in it! What do you want to do?', [f'{bold("Override")} it & {highlight("delete everything in it")} 🔥', '\033[35mQuit 👋'])
         if resp == 0:
-            if ask(highlight(f'Are you sure you want to {bold("override")} the folder {os.getcwd()} and delete everything in it?')+' \033[90m[y/n]', ['y', 'Y', 'n', 'N'], newline=False) in (0, 1):
+            if ask(highlight(f'Are you sure you want to {bold("override")} the folder {os.getcwd()} and delete everything in it?')+' \033[90m[y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
                 print('Yes\033[0m')
-                print(txts['warn']+'Deleting folder '+os.getcwd()+'...')
-                shutil.rmtree(os.getcwd())
-                os.mkdir(os.getcwd())
-                makeNewProject(os.getcwd())
+                dr = os.getcwd()
+                print(txts['warn']+'Deleting all files in '+dr+'...')
+                emptyFolder(dr)
+                makeNewProject(dr)
             else:
                 print('No\033[0m')
                 print(txts['good']+'OK, quitting!')
@@ -221,12 +277,12 @@ elif chosen == 1:
             if os.listdir(where) != []:
                 resp = options(f'Path %s exists and has things in it! What do you want to do?'%where, [f'{bold("Override")} it & {highlight("delete everything in it")} 🔥', 'Choose again 🤔', '\033[35mQuit 👋'])
                 if resp == 0:
-                    if ask(highlight(f'Are you sure you want to {bold("override")} the folder {where} and delete everything in it"?')+' \033[90m[y/n]', ['y', 'Y', 'n', 'N'], False) in (0, 1):
+                    if ask(highlight(f'Are you sure you want to {bold("override")} the folder {where} and delete everything in it"?')+' \033[90m[y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
                         print('Yes\033[0m')
                         print(txts['warn']+'Deleting folder '+where+'...')
-                        shutil.rmtree(where)
-                        os.mkdir(where)
+                        emptyFolder(where)
                         makeNewProject(where)
+                        complete = True
                     else:
                         print('No\033[0m')
                 elif resp == 1:
@@ -237,12 +293,14 @@ elif chosen == 1:
             else:
                 print(txts['info']+'Directory %s exists, but is empty. Using that.'%where)
                 makeNewProject(where)
+                complete = True
         else:
             os.mkdir(where)
             makeNewProject(where)
+            complete = True
 elif chosen == 2:
     print(f'\n{header("DOCS")}')
-    if ask(f'Would you like to open the {bold("offline")} 🖥️  docs {highlight("(1)")} or the {bold("online")} 🌐 docs {highlight("(2)")}?', ['1', '2'], False) == 0:
+    if ask(f'Would you like to open the {bold("offline")} 🖥️  docs {highlight("(1)")} or the {bold("online")} 🌐 docs {highlight("(2)")}?', ['1', '2']) == 0:
         print('Offline\033[0m')
         print(txts['good']+'OK! Opening offline docs...')
         print(txts['bad']+'NOTIMPLEMENTED')
