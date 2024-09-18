@@ -21,7 +21,7 @@ setup(
     long_description=long_description,
     packages=find_packages(),
     include_package_data=True,
-    package_data={'BlazeSudio' :['BlazeSudio/data/*', 'BlazeSudio/bot/preferencesDefault.json']},
+    package_data={'BlazeSudio' :['BlazeSudio/data/*', *['BlazeSudio/collisions/'+i for i in os.listdir('BlazeSudio/collisions') if i.endswith('.so') or i.endswith('.pyd')]]},
     author='Tsunami014 (Max)',
     author_email='tsunami014@duck.com',
     install_requires=packages,
