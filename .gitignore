@@ -5,3 +5,4 @@ BlazeSudio/collisions/out/**
 out/**
 Blaze_Sudio.egg-info/**
 build/**
+BlazeSudio/collisions/build/**
