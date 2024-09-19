@@ -10,4 +10,8 @@ For starters, let's make a Game object
 ```py
 G = Game()
 ```
-And
+
+// TODO: Finish
+
+# Demo games
+Demo games to see some real examples of games can be found [HERE](https://github.com/Tsunami014/BlazeTests)!

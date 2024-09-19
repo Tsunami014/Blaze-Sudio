@@ -69,7 +69,7 @@ cd Blaze-Sudio
 pip install .
 ```
 ## 📚 Library usage (Demos)
-A simple demo is kinda hard because you need an ldtk file to make the levels with, but in this repo you can find some demo games, and //TODO: one day I'll make a repo with a whole bunch of JUST sample games and link it here.
+A simple demo is kinda hard because you need an ldtk file to make the levels with, but if you want there are some demo games [here](https://github.com/Tsunami014/BlazeTests).
 But, the docs for making a game would be helpful, and are here: <!-- Pypi ignore -->[Offfine 🖥️](docs/game/README.md) / <!-- End Pypi ignore -->[Online 🌐](https://tsunami014.gitbook.io/blaze-sudios/main-functionality/game)
 
 And if you want full, in-depth explanation of each thing Blaze Sudio has to offer and how to use it all, visit [the docs](https://tsunami014.gitbook.io/blaze-sudios/)!
