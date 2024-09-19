@@ -199,14 +199,16 @@ class MainGameScene(Ss.BaseScene):
         return self.sur
     
     def renderUI(self, win, offset, midp, scale):
-        pygame.draw.circle(win, (0, 0, 0), (midp[0]-offset[0], midp[1]-offset[1]), 10)
-        pygame.draw.circle(win, (255, 255, 255), (midp[0]-offset[0], midp[1]-offset[1]), 10, 2)
+        pos = self.entities[0].scaled_pos
+        p = (pos[0]*scale+offset[0], pos[1]*scale+offset[1])
+        pygame.draw.circle(win, (0, 0, 0), (p[0], p[1]), 10)
+        pygame.draw.circle(win, (255, 255, 255), (p[0], p[1]), 10, 2)
         if self.entities[0].collided:
             angle = collisions.direction(pygame.mouse.get_pos(), self.last_playerPos)
             addPos = collisions.pointOnUnitCircle(angle, -200)
-            pygame.draw.line(win, (255, 155, 155), (midp[0]-offset[0], midp[1]-offset[1]), 
-                            (midp[0]-offset[0]+addPos[0], midp[1]-offset[1]+addPos[1]), 5)
-        self.last_playerPos = (midp[0]-offset[0], midp[1]-offset[1])
+            pygame.draw.line(win, (255, 155, 155), (p[0], p[1]), 
+                            (p[0]+addPos[0], p[1]+addPos[1]), 5)
+        self.last_playerPos = (p[0], p[1])
 
 G.load_scene(SplashScreen)
 

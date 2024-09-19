@@ -25,7 +25,7 @@ debug = DebugCommands(G)
 class BaseEntity(Ss.BaseEntity):
     def __init__(self, Game, entity):
         super().__init__(Game, entity)
-        self.max_accel = [2, 5]
+        self.max_accel = [3, 3]
     
     def __call__(self, evs):
         objs = collisions.Shapes(*self.Game.currentScene.GetCollEntitiesByLayer('GravityFields'))
@@ -137,8 +137,9 @@ class MainGameScene(Ss.BaseScene):
         return self.sur
     
     def renderUI(self, win, offset, midp, scale):
-        pygame.draw.circle(win, (0, 0, 0), (midp[0]-offset[0], midp[1]-offset[1]), 10)
-        pygame.draw.circle(win, (255, 255, 255), (midp[0]-offset[0], midp[1]-offset[1]), 10, 2)
+        pos = self.entities[0].scaled_pos
+        pygame.draw.circle(win, (0, 0, 0), (pos[0]*scale+offset[0], pos[1]*scale+offset[1]), 10)
+        pygame.draw.circle(win, (255, 255, 255), (pos[0]*scale+offset[0], pos[1]*scale+offset[1]), 10, 2)
 
 G.load_scene()
 
