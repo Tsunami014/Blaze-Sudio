@@ -11,7 +11,7 @@
 [![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]()
 [![v3.0.0 released on Sept 19, 2024](https://badgen.net/badge/v3.0.0%20released:/Sept%2019,%202024?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/releases/tag/v3.0.0)
 
-# ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v3.0.0 (🌿 Kindle)
+# ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v3.0.1 (🌿 Kindle)
 
 <!-- // TODO: Get a better icon (and put it in the banner) -->
 
@@ -158,7 +158,7 @@ This code is a modified version of `Basic-1`, which is playable and is contained
 ## 💻️ The terminal script
 If you have installed BlazeSudio into your global pip, you *should* be able to run the `BlazeSudio` command in your terminal. This is a script to really quickly make a new project or open the docs. you can run with `BlazeSudio --help` to see all the options.
 
-# 🗨️ [Contributing](CONTRIBUTING.md)
+# 🗨️ Contributing
 If you would like to report a bug, security vulnerability, request a feature, etc. then [make a new issue about it](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose). If you know how to code, you can fork this repo and make a PR!
 
 Please join our Discord server here <small>(I need friends)</small>: [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have! Alternatively (as said before), you can post bug reports/ideas in the [Github issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose).
