@@ -1,6 +1,8 @@
 import pygame
 import math
 
+# Thanks to https://stackoverflow.com/questions/38745020/wrap-image-around-a-circle !!
+
 def renderWorld(world):
     imgs = [[], []]
     szes = []
