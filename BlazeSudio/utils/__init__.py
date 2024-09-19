@@ -1,3 +1,3 @@
-from BlazeSudio.wrap import wrapWorld
-from BlazeSudio.wrap import save as saveWrapped
-from BlazeSudio.genCollisions import approximate_polygon
+from BlazeSudio.utils.wrap import wrapWorld
+from BlazeSudio.utils.wrap import save as saveWrapped
+from BlazeSudio.utils.genCollisions import approximate_polygon
