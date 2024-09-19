@@ -21,8 +21,8 @@
 | [🚀 About](#-about) |
 | [💡 Things to note](#-things-to-note) |
 | [🛠️ Installation](#️-installation) |
-| [📚 Library usage](#-library-usage) |
-| [💻️ The script](#️-the-script) |
+| [📚 Library usage (Demos)](#-library-usage-demos) |
+| [💻️ The terminal script](#️-the-terminal-script) |
 | [🗨️ Contributing](#️-contributing) |
 | [🔜 Next versions](#-next-versions) |
 | [⭐️ Star History](#️-star-history) |
@@ -68,14 +68,95 @@ git clone https://github.com/Tsunami014/Blaze-Sudio.git
 cd Blaze-Sudio
 pip install .
 ```
-## 📚 Library usage
+## 📚 Library usage (Demos)
 A simple demo is kinda hard because you need an ldtk file to make the levels with, but in this repo you can find some demo games, and //TODO: one day I'll make a repo with a whole bunch of JUST sample games and link it here.
 But, the docs for making a game would be helpful, and are here: <!-- Pypi ignore -->[Offfine 🖥️](docs/game/README.md) / <!-- End Pypi ignore -->[Online 🌐](https://tsunami014.gitbook.io/blaze-sudios/main-functionality/game)
 
 And if you want full, in-depth explanation of each thing Blaze Sudio has to offer and how to use it all, visit [the docs](https://tsunami014.gitbook.io/blaze-sudios/)!
 
-## 💻️ The script
-If you have installed BlazeSudio into your global pip, you *should* be able to run the `BlazeSudio` command in your terminal. This is a script to really quickly make a new project or open the docs. 
+But if you want to see the kind of code that is created, well, here is an example:
+<details>
+    <summary>Click to see the code</summary>
+
+<!-- TODO: Remember to always update this whenever something major changes -->
+```python
+from BlazeSudio.Game import Game
+from BlazeSudio.collisions import collisions
+import BlazeSudio.Game.statics as Ss
+import pygame
+
+G = Game()
+G.load_map("./world.ldtk")
+
+class BaseEntity(Ss.BaseEntity):
+    def __init__(self, Game, e):
+        super().__init__(Game, e)
+        self.accel_amnt = [[0.2, 0.2], [0.05, 0.05]]
+        self.gravity = [0, 0.1]
+    
+    def __call__(self, evs):
+        self.handle_keys()
+        self.handle_accel()
+        colls = self.Game.currentLvl.layers[1].intgrid.getRects(1)
+        self.pos = [self.pos[0]-0.45, self.pos[1]-0.45]
+        outRect, self.accel = collisions.Rect(self.scaled_pos[0], self.scaled_pos[1], self.entity.gridSze*0.9, self.entity.gridSze*0.9).handleCollisionsAccel(self.accel, colls, False)
+        outUnscaled = self.entity.unscale_pos((outRect.x, outRect.y))
+        outUnscaled = [outUnscaled[0]+0.45, outUnscaled[1]+0.45]
+        self.pos = outUnscaled
+    
+    @property
+    def scaled_pos(self):
+        return self.entity.scale_pos(self.pos)
+
+@G.DefaultSceneLoader
+class MainGameScene(Ss.BaseScene):
+    DefaultEntity = []
+    def __init__(self, Game, **settings):
+        self.lvl = settings.get('lvl', 0) # This before because it loads the bounds in the super() and it needs the level
+        super().__init__(Game, **settings)
+        self.sur = None
+        self.CamDist = 8
+        for e in self.currentLvl.entities:
+            if e.defUid == 107:
+                self.entities.append(BaseEntity(self, e)) # The Player
+                self.DefaultEntity.append(e)
+                self.entities[0].pos = [e.UnscaledPos[0]+0.5, e.UnscaledPos[1]+0.5]
+                break
+        else:
+            raise Ss.IncorrectLevelError(
+                'Need a player start!'
+            )
+    
+    @property
+    def CamPos(self):
+        return self.entities[0].scaled_pos
+
+    def render(self):
+        if self.sur is not None:
+            return self.sur
+        self.sur = self.Game.world.get_pygame(self.lvl)
+        return self.sur
+    
+    def renderUI(self, win, offset, midp, scale):
+        playersze = scale*self.entities[0].entity.gridSze
+        pos = self.entities[0].scaled_pos
+        r = (pos[0]*scale+offset[0]-(playersze//2), pos[1]*scale+offset[1]-(playersze//2), playersze, playersze)
+        pygame.draw.rect(win, (0, 0, 0), r, border_radius=2)
+        pygame.draw.rect(win, (255, 255, 255), r, width=5, border_radius=2)
+
+G.load_scene()
+
+G.play(debug=False)
+```
+
+This code is a modified version of `Basic-1`, which is playable and is contained inside this repo. It was modified to remove the changing level script (an extra 2 functions) for simplicity and also to remove other things it didn't need (like the debug functions) but still does virtually the exact same thing.
+<br>
+</details>
+
+**BUT DON'T WORRY** as making a game is super easy with the help of the documentation, no matter how hard you think this may look. It is all explained there.
+
+## 💻️ The terminal script
+If you have installed BlazeSudio into your global pip, you *should* be able to run the `BlazeSudio` command in your terminal. This is a script to really quickly make a new project or open the docs. you can run with `BlazeSudio --help` to see all the options.
 
 # 🗨️ [Contributing](CONTRIBUTING.md)
 Please join our Discord server here <small>(I need friends)</small>: [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have! Alternatively, you can post bug reports/ideas in the [Github issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose).
