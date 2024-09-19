@@ -21,11 +21,12 @@
 | [💡 Things to note](#-things-to-note) |
 | [🛠️ Installation](#️-installation) |
 | [📚 Library usage](#-library-usage) |
+| [💻️ The script](#️-the-script) |
 | [🗨️ Contributing](#️-contributing) |
 | [🔜 Next versions](#-next-versions) |
 | [⭐️ Star History](#️-star-history) |
 
-The docs are in progress. If you are working offline, you can look [here](docs/SUMMARY.md) or if you're online, [https://tsunami014.gitbook.io/blaze-sudios](https://tsunami014.gitbook.io/blaze-sudios)
+The docs are in progress. If you are working offline, you can look in <!-- Pypi ignore -->[the docs folder of *this* repo](docs/SUMMARY.md) or if you're online, <!-- End Pypi ignore -->[https://tsunami014.gitbook.io/blaze-sudios](https://tsunami014.gitbook.io/blaze-sudios)
 
 # 🚀 About
 Blaze Sudio is an open source graphical game creation software.
@@ -67,9 +68,13 @@ cd Blaze-Sudio
 pip install .
 ```
 ## 📚 Library usage
-// TODO: Simple demo.
+A simple demo is kinda hard because you need an ldtk file to make the levels with, but in this repo you can find some demo games, and //TODO: one day I'll make a repo with a whole bunch of JUST sample games and link it here.
+But, the docs for making a game would be helpful, and are here: <!-- Pypi ignore -->[Offfine 🖥️](docs/game/README.md) / <!-- End Pypi ignore -->[Online 🌐](https://tsunami014.gitbook.io/blaze-sudios/main-functionality/game)
 
-If you want full, in-depth explanation of each thing Blaze Sudio has to offer and how to use it all, visit [the docs](https://tsunami014.gitbook.io/blaze-sudios/)!
+And if you want full, in-depth explanation of each thing Blaze Sudio has to offer and how to use it all, visit [the docs](https://tsunami014.gitbook.io/blaze-sudios/)!
+
+## 💻️ The script
+If you have installed BlazeSudio into your global pip, you *should* be able to run the `BlazeSudio` command in your terminal. This is a script to really quickly make a new project or open the docs. 
 
 # 🗨️ [Contributing](CONTRIBUTING.md)
 Please join our Discord server here <small>(I need friends)</small>: [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have! Alternatively, you can post bug reports/ideas in the [Github issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose).
