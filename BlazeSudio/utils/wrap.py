@@ -1,3 +1,4 @@
+import os
 import pygame
 import math
 
@@ -89,4 +90,6 @@ def save(imgs, fname, size):
             for i, pixel in enumerate(col):
                 new_image.set_at((x, y * len(col) + i), pixel)
     new_image = pygame.transform.scale(new_image, (size, size * len(imgs)))
+    if not os.path.exists(os.path.dirname(fname)):
+        os.makedirs(os.path.dirname(fname))
     pygame.image.save(new_image, fname)
