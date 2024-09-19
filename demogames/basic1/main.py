@@ -53,10 +53,10 @@ def isValidLevel(lvl):
 class MainGameScene(Ss.BaseScene):
     DefaultEntity = []
     def __init__(self, Game, **settings):
+        self.lvl = settings.get('lvl', 0) # This before because it loads the bounds in the super() and it needs the level
         super().__init__(Game, **settings)
         self.sur = None
         self.CamDist = 8
-        self.lvl = settings.get('lvl', 0)
         for e in self.currentLvl.entities:
             if e.defUid == 107:
                 self.entities.append(BaseEntity(self, e)) # The Player
@@ -95,7 +95,8 @@ class MainGameScene(Ss.BaseScene):
     
     def renderUI(self, win, offset, midp, scale):
         playersze = scale*self.entities[0].entity.gridSze
-        r = (midp[0]-offset[0]-(playersze//2), midp[1]-offset[1]-(playersze//2), playersze, playersze)
+        pos = self.entities[0].scaled_pos
+        r = (pos[0]*scale+offset[0]-(playersze//2), pos[1]*scale+offset[1]-(playersze//2), playersze, playersze)
         pygame.draw.rect(win, (0, 0, 0), r, border_radius=2)
         pygame.draw.rect(win, (255, 255, 255), r, width=5, border_radius=2)
 

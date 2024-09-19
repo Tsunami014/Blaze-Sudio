@@ -26,43 +26,33 @@ class Player:
         sur = pygame.transform.scale(sur, (sur.get_width() * scale, sur.get_height() * scale))
         
         bounds = self.Game.curScene.CamBounds
-
-        # Zero Check
-        ZC = lambda x: (0 if x < 0 else x)
-
-        # TODO: I have no idea what's going on
+        
+        # Calculate diff_x
         if sur.get_width() < sze[0] or (bounds[0] is None and bounds[2] is None):
-            diff_x = 0
+            diff_x = realpos[0]
         else:
             if bounds[0] is None:
-                d = realpos[0] - (sur.get_width() - mw)
-                diff_x = -(bounds[2] if d < bounds[2] else d)
+                diff_x = min(realpos[0], bounds[2]*scale-mw)
             elif bounds[2] is None:
-                d = mw - realpos[0]
-                diff_x = (bounds[0] if d < bounds[0] else d)
+                diff_x = max(realpos[0], bounds[0]*scale+mw)
             else:
-                d1 = mw - realpos[0]
-                if d1 < bounds[0]:
-                    diff_x = bounds[0]
-                else:
-                    d2 = realpos[0] - (sur.get_width() - mw)
-                    diff_x = -(bounds[2] if d2 < bounds[2] else d2)
+                diff_x = max(min(realpos[0], bounds[2]*scale-mw), bounds[0]*scale+mw)
         
+        # Calculate diff_y
         if sur.get_height() < sze[1] or (bounds[1] is None and bounds[3] is None):
-            diff_y = 0
+            diff_y = realpos[1]
         else:
             if bounds[1] is None:
-                diff_y = -ZC(realpos[1] - (sur.get_height() - mh))
+                diff_y = min(realpos[1], bounds[3]*scale-mh)
             elif bounds[3] is None:
-                diff_y = ZC(mh - realpos[1])
+                diff_y = max(realpos[1], bounds[1]*scale+mh)
             else:
-                diff_y = ZC(mh - realpos[1]) or -ZC(realpos[1] - (sur.get_height() - mh))
-
+                diff_y = max(min(realpos[1], bounds[3]*scale-mh), bounds[1]*scale+mh)
+        
+        diff_x = mw - diff_x
+        diff_y = mh - diff_y
+        
         # Blit the surface considering the camera bounds and diffs
-        win.blit(sur, [
-            -realpos[0] + mw - diff_x,
-            -realpos[1] + mh - diff_y
-        ])
+        win.blit(sur, [diff_x, diff_y])
 
-        playersze = scale
-        self.Game.curScene.renderUI(win, (diff_x, diff_y), (mw, mh), playersze)
+        self.Game.curScene.renderUI(win, (diff_x, diff_y), (mw, mh), scale) # TODO: Make this so much better

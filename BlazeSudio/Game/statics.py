@@ -29,10 +29,10 @@ class SkeletonScene:
 
 class BaseScene(SkeletonScene):
     useRenderer = True
+    lvl = 0
     def __init__(self, Game, **settings):
         super().__init__(Game, **settings)
         self.entities = []
-        self.lvl = 0
         self.CamBounds = [0, 0, *self.currentLvl.sizePx]
     
     @property
