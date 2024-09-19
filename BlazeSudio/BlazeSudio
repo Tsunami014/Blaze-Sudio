@@ -249,7 +249,7 @@ def makeNewProject(where):
     with open(os.path.join(where, 'README.md'), 'w+') as f:
         f.write('# '+(askInp('What is the name of the project? \033[90m(My Project)') or 'My Project'))
     with open(os.path.join(where, (askInp('What is the name of the main file? \033[90m(main.py)') or 'main.py')), 'w+') as f:
-        l = fileDemos.keys()
+        l = list(fileDemos.keys())
         chosen = options('What starter main.py structure would you like?', l, 2)
         f.write(l[chosen])
     with open(os.path.join(where, 'requirements.txt'), 'w+') as f:
