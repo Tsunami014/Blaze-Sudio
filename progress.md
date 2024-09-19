@@ -1,9 +1,7 @@
 # Roadmap
-## Current version (2.4.0-beta)
  - [ ] Remove all files I don't need (bot, etc.)
  - [ ] Remove demos related to those things
  - [ ] Make Game much easier to use (have all things with each other and not all over the place)
-## After that (v3.0.0!!!!)
  - Keep adding more features to the main editor, allthewhile doing the below: 
  - [ ] Fix documentation
  - [ ] Look into removing other things (`__main__.py`, `pyguix`, etc.)
@@ -20,7 +18,7 @@
  - [ ] Remove all the AI stuff and instead use my AIHub I also made to make it easier and in a different package
  - [ ] Add type annotations to EVERYTHING
 
-# What I'm working on:
+# What I'm (not really) working on:
 
 Stages of production (SOP):
  1. ![Just an idea](https://badgen.net/badge/Just%20an/IDEA?color=pink)
