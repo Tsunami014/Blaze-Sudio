@@ -21,14 +21,6 @@
             "justMyCode": false
         },
         {
-            "name": "Run Demo Games",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "gamedemo.py",
-            "console": "integratedTerminal",
-            "justMyCode": false
-        },
-        {
             "name": "Current File",
             "type": "debugpy",
             "request": "launch",
