@@ -1,11 +1,23 @@
 #!/bin/python3
-import re, os, subprocess
+import re, os, subprocess, sys
 import shutil, atexit
 import sys, termios, tty
 from threading import Thread
 from time import sleep
 
-# TODO: Command line args --no-title / -nt, --no-colour / -no, --help / -h and --version / -v
+if '--help' in sys.argv or '-h' in sys.argv:
+    print("""BlazeSudio CLI
+Usage: BlazeSudio [--no-title/-nt] [--no-colour/-no] [--help/-h] [--version/-v]
+
+Options:
+  --no-title, -nt    Don't show the title
+  --no-colour, -no   Don't use colour (not implemented //TODO: this)
+  --help, -h         Show this help message and exit
+  --version, -v      Show the version number and exit""")
+    sys.exit(0)
+elif '--version' in sys.argv or '-v' in sys.argv:
+    print('BlazeSudio v3.0.0')
+    sys.exit(0)
 
 txt = """
 .s5SSSs.                                              .s5SSSs.                                    
@@ -26,9 +38,10 @@ txt = re.sub('([s.]+)', '\033[38;2;255;120;120m\\1', txt)
 txt = re.sub(r'(%+)', '\033[38;2;225;60;50m\\1', txt)
 txt = re.sub('([`:"\']+)', '\033[92m\\1', txt)
 
-print(txt)
-print(' '*8+'\033[91mMade by @Tsunami014\033[0m')
-print('\n')
+if '--no-title' not in sys.argv and '-nt' not in sys.argv:
+    print(txt)
+    print(' '*8+'\033[91mMade by @Tsunami014\033[0m')
+    print('\n')
 
 def bracketulate(txt):
     return txt+'\033[0m' #f'\033[93m[{txt}\033[93m]\033[0m'
