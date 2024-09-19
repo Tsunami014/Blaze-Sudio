@@ -870,12 +870,14 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                     return newShp, accel, []
                 return newShp, accel
         points = []
+        hit = False
         for oldLine, newLine in zip(oldShp.toLines(), newShp.toLines()):
             oldLine = Line(*sorted([oldLine.p1, oldLine.p2], key=lambda x: x[0]))
             newLine = Line(*sorted([newLine.p1, newLine.p2], key=lambda x: x[0]))
             mvement = Polygon(oldLine.p1, oldLine.p2, newLine.p2, newLine.p1)
             for o in objs:
                 if o.collides(mvement):
+                    hit = True
                     ps = o.whereCollides(mvement) + [i for i in o.closestPointTo(oldLine, True) if mvement.collides(Point(*i))]
                     for p in ps:
                         if oldShp.collides(Point(*p)):
@@ -885,6 +887,10 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                         pdists = (oldLine.p1[0]-p[0])**2+(oldLine.p1[1]-p[1])**2 + (oldLine.p2[0]-p[0])**2+(oldLine.p2[1]-p[1])**2
                         points.append([p, o, cPoint, round((p[0]-cPoint[0])**2+(p[1]-cPoint[1])**2, precision), round(pdists, precision), oldLine, newLine])
                         #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+        if not hit:
+            if verbose:
+                return newShp, accel, []
+            return newShp, accel
         # Don't let you move when you're in a wall
         if points == []:
             if verbose:

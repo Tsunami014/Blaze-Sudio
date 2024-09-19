@@ -1,3 +1,9 @@
+# How to use
+Regular: `from BlazeSudio import collisions`
+
+To debug (will probably be very very much slower): `from BlazeSudio.collisions.lib import collisions`
+
+Also with the debug statement it *will* get **very** annoyed at you if you have half your code using the regular and the other half with the debug. It *can* tell the difference between the two and will not rest until they are the same, causing an infinite loop.
 # TO BUILD THIS FOR YOUR DEVICE:
 1. `pip install cython setuptools`
 2. Make sure you can run the `stubgen` command. On Linux, you need to `sudo apt install mypy`. On any other OS, I have no clue what you need to do, you're on your own.
@@ -16,8 +22,3 @@ The code will manually be built into linux and windows for python versions 3.10 
 PLEASE NOTE: If you are using precompiled ones I may have forgotten to compile them and they may be behind. Just sayin', thass all...
 
 BUT if you are using the main release I *should* have compiled everything for you.
-
-# How to use
-Regular: `from BlazeSudio import collisions`
-
-To debug (will probably be very very much slower): `from BlazeSudio.collisions.lib import collisions`
