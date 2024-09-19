@@ -11,17 +11,13 @@
     "conventionalCommits.scopes": [
         "docs",
         "build",
-        "conversation",
         "main",
         "GUI",
+        "physics",
         "graphics",
         "worlds",
-        "STT",
-        "characters",
-        "sound gen",
-        "other",
         "nodes",
-        "physics"
+        "other"
     ],
     "python.REPL.enableREPLSmartSend": false
 }
