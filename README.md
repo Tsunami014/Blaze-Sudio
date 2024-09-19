@@ -9,8 +9,9 @@
 [![Publish to PyPI status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml)
 [![Python versions: 3.10, 3.11, 3.12](https://badgen.net/static/Python%20versions/3.10%203.11%203.12/purple)]()
 [![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]()
+[![v3.0.0 released on Sept 19, 2024](https://badgen.net/badge/v3.0.0%20released:/Sept%2019,%202024?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/releases/tag/v3.0.0)
 
-# ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v2.4.0-beta (💥 Flare)
+# ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v3.0.0 (🌿 Kindle)
 
 <!-- // TODO: Get a better icon (and put it in the banner) -->
 
@@ -43,10 +44,10 @@ Also known as:
 [![Open Issues](https://badgen.net/github/open-issues/Tsunami014/Blaze-Sudio?color=red&label=open%20issues&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/issues)
 [![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=grey&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors)
 
-[![Worked on since Aug 19, 2023](https://badgen.net/badge/worked%20on%20since/Aug%2019,%202023?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/commit/c90beeb2d2e290ffff4e5fb9d112453840883ea7)
-<small>(But back then it was called AIHub, now that's a different thing)</small>
+[![Worked on since Aug 19, 2023](https://badgen.net/badge/worked%20on%20since/Aug%2019,%202023?color=orange)](https://github.com/Tsunami014/Blaze-Sudio/commit/c90beeb2d2e290ffff4e5fb9d112453840883ea7)
+<small>(But back then it was called AIHub, now that's a different thing; if you want to compare to something compare to when v3.0.0 was released)</small>
 
-<!-- // TODO: A badge for when v3.0.0 is released and put it at the top -->
+[![v3.0.0](https://badgen.net/badge/v3.0.0%20released:/Sept%2019,%202024?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/releases/tag/v3.0.0)
 
 This is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! PRs are welcome!
 
@@ -80,7 +81,6 @@ If you have installed BlazeSudio into your global pip, you *should* be able to r
 Please join our Discord server here <small>(I need friends)</small>: [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have! Alternatively, you can post bug reports/ideas in the [Github issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose).
 
 # 🔜 [Next versions](progress.md)
- - v3.0.0 - 🌿`Kindle` - You can easily make a working game! Not just a world! Because you all know that to make a big fire you must first put in kindling
  - v4.0.0 - ♨️`Smolder` - Pretty cool so far and have ability to make an OK game that one could submit for a competition or something. (WINGS OF FIRE REFERENCE)
  - v5.0.0 - 🌋`Fire` - cos by then it'll be on fire :grin: many cool things and stuff to make good looking games that are super cool and would totally win a competition!
  - v6.0.0 - ❤️‍🔥`Bonfire` - Who knows 🤷
