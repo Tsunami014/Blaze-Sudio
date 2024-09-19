@@ -1,4 +1,6 @@
-import json, pygame, os
+import json
+import pygame
+import os
 import BlazeSudio.collisions as colls
 from math import ceil
 from importlib.resources import files
