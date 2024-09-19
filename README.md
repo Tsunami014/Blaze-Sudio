@@ -27,7 +27,7 @@
 | [🔜 Next versions](#-next-versions) |
 | [⭐️ Star History](#️-star-history) |
 
-The docs are in progress. If you are working offline, you can look in <!-- Pypi ignore -->[the docs folder of *this* repo](docs/SUMMARY.md) or if you're online, <!-- End Pypi ignore -->[https://tsunami014.gitbook.io/blaze-sudios](https://tsunami014.gitbook.io/blaze-sudios)
+The docs are in progress. If you are working offline, you can look in <!-- Pypi ignore -->[the docs folder of *this* repo (not the built package)](docs/SUMMARY.md) or if you're online, <!-- End Pypi ignore -->[https://tsunami014.gitbook.io/blaze-sudios](https://tsunami014.gitbook.io/blaze-sudios)
 
 # 🚀 About
 Blaze Sudio is an open source graphical game creation software.
@@ -42,7 +42,7 @@ Also known as:
 [![I've done a crap ton of commits](https://badgen.net/github/commits/Tsunami014/Blaze-Sudio?color=green&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/commits/)
 [![I've also done a ton of releases too](https://badgen.net/github/releases/Tsunami014/Blaze-Sudio?color=purple&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/releases)
 [![Open Issues](https://badgen.net/github/open-issues/Tsunami014/Blaze-Sudio?color=red&label=open%20issues&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/issues)
-[![Contributers: 2](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=grey&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors)
+[![Contributers](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=grey&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors)
 
 [![Worked on since Aug 19, 2023](https://badgen.net/badge/worked%20on%20since/Aug%2019,%202023?color=orange)](https://github.com/Tsunami014/Blaze-Sudio/commit/c90beeb2d2e290ffff4e5fb9d112453840883ea7)
 <small>(But back then it was called AIHub, now that's a different thing; if you want to compare to something compare to when v3.0.0 was released)</small>
@@ -159,7 +159,17 @@ This code is a modified version of `Basic-1`, which is playable and is contained
 If you have installed BlazeSudio into your global pip, you *should* be able to run the `BlazeSudio` command in your terminal. This is a script to really quickly make a new project or open the docs. you can run with `BlazeSudio --help` to see all the options.
 
 # 🗨️ [Contributing](CONTRIBUTING.md)
-Please join our Discord server here <small>(I need friends)</small>: [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have! Alternatively, you can post bug reports/ideas in the [Github issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose).
+If you would like to report a bug, security vulnerability, request a feature, etc. then [make a new issue about it](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose). If you know how to code, you can fork this repo and make a PR!
+
+Please join our Discord server here <small>(I need friends)</small>: [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have! Alternatively (as said before), you can post bug reports/ideas in the [Github issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose).
+
+Just modifying whitespace or anything else that doesn't actually do anything won't be accepted (but if it's a spelling miss-steak or a broken link or something then you can tell me about it on [Discord](https://discord.com/invite/xr3phyEZtv).)
+
+And if you want more version compatability, please *ask on Discord* as that requires changing the 'auto' build script, and I don't want to do that unless I have to (I feel bad enough taking 6 different computers up every time I want to build the collisions module).
+
+And no, building it yourself and PR'ing that is not going to work. If I change the module it will be painful attempting to recompile the module into a version I don't have myself.
+
+But if you're confused please ask on Discord, and thanks for any help making Blaze Sudios even better!!
 
 # 🔜 [Next versions](progress.md)
  - v4.0.0 - ♨️`Smolder` - Pretty cool so far and have ability to make an OK game that one could submit for a competition or something. (WINGS OF FIRE REFERENCE)
