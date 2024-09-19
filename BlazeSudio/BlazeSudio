@@ -199,6 +199,28 @@ def emptyFolder(folder): # From https://stackoverflow.com/questions/185936/how-t
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
+fileDemos = {
+    'Empty': '',
+    'Basic imports': """from BlazeSudio.Game import Game
+from BlazeSudio import collisions
+import BlazeSudio.Game.statics as Ss
+""",
+    'Basic game code': """from BlazeSudio.Game import Game
+from BlazeSudio import collisions
+import BlazeSudio.Game.statics as Ss
+
+G = Game()
+
+@G.DefaultSceneLoader
+class MainGameScene(Ss.BaseScene):
+    pass
+
+G.load_scene()
+G.play(debug=True)
+""",
+    # TODO: 'Basic LDtk game' and more
+}
+
 def makeNewProject(where):
     print(txts['info']+'Making project in '+where+'...')
     usingGit = False
@@ -214,20 +236,9 @@ def makeNewProject(where):
     with open(os.path.join(where, 'README.md'), 'w+') as f:
         f.write('# '+(askInp('What is the name of the project? \033[90m(My Project)') or 'My Project'))
     with open(os.path.join(where, (askInp('What is the name of the main file? \033[90m(main.py)') or 'main.py')), 'w+') as f:
-        # TODO: Various default files
-        f.write("""from BlazeSudio.Game import Game
-from BlazeSudio import collisions
-import BlazeSudio.Game.statics as Ss
-
-G = Game()
-
-@G.DefaultSceneLoader
-class MainGameScene(Ss.BaseScene):
-    pass
-
-G.load_scene()
-G.play(debug=True)
-""")
+        l = fileDemos.keys()
+        chosen = options('What starter main.py structure would you like?', l, 2)
+        f.write(l[chosen])
     with open(os.path.join(where, 'requirements.txt'), 'w+') as f:
         f.write('Blaze-Sudio\n')
     if usingGit:
