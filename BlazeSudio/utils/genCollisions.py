@@ -1,6 +1,6 @@
 from shapely import concave_hull
 from shapely.geometry import MultiPoint
-from BlazeSudio.collisions import Polygon
+import BlazeSudio.collisions as colls
 
 def approximate_polygon(surface, tolerance=3, ratio=0.1):
     """
@@ -29,7 +29,14 @@ def approximate_polygon(surface, tolerance=3, ratio=0.1):
             check(point[0], point[1] - tolerance)
         ):
             polygon_points.append(point)
+    
+    if len(polygon_points) == 2:
+        return colls.Line(polygon_points[0], polygon_points[1])
+    elif len(polygon_points) == 1:
+        return colls.Point(*polygon_points[0])
+    elif len(polygon_points) <= 0:
+        return
 
     hull = concave_hull(MultiPoint(polygon_points), ratio=ratio)
 
-    return Polygon(*list(zip(*[list(i) for i in hull.exterior.coords.xy])))
+    return colls.Polygon(*list(zip(*[list(i) for i in hull.exterior.coords.xy])))
