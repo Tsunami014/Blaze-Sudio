@@ -9,8 +9,8 @@ def wrapWorld(world):
     szes = []
     for outlining in (False, True):
         for lvl in range(len(world.ldtk.levels)):
-            Ro = 100.0
-            Ri = 50.0
+            Ro = 50.0
+            Ri = 1.0
             size = 128
             settingsExists = False
             for e in world.ldtk.levels[lvl].entities:
