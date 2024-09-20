@@ -63,23 +63,31 @@ class Entity:
         self.defUid = self.data['defUid'] # The UID of the entity definition
         self.tileData = self.data['__tile']
         self.fieldInstances = self.data['fieldInstances']
-        self.layerId = self.data['layerId']
+        self.layerId = self.layer.identifier
 
         self.width = self.data['width']
         self.height = self.data['height']
         
-        self.gridSze = self.layer['__gridSize']
-        self.layerOffset = [self.layer['pxOffsetX'], self.layer['pxOffsetY']]
+        self.gridSze = self.layer.gridSize
+        self.layerOffset = self.layer.pxOffset
         self.pivot = self.data['__pivot']
-        piv = (self.pivot[0] * self.width, self.pivot[1] * self.height)
+        #piv = (self.pivot[0] * self.width, self.pivot[1] * self.height)
         self.ScaledPos = [
-            self.data['px'][0] + self.layerOffset[0] - piv[0]*self.gridSze,
-            self.data['px'][1] + self.layerOffset[1] - piv[1]*self.gridSze
+            self.data['px'][0] + self.layerOffset[0]-self.pivot[0]*self.width, 
+            self.data['px'][1] + self.layerOffset[1]-self.pivot[1]*self.height
         ]
         self.UnscaledPos = [
-            self.data['px'][0] / self.gridSze - piv[0],
-            self.data['px'][1] / self.gridSze - piv[1]
+            self.data['px'][0] / self.gridSze,
+            self.data['px'][1] / self.gridSze
         ]
+        # self.ScaledPos = [
+        #     self.data['px'][0] + self.layerOffset[0],# + piv[0]*self.width,
+        #     self.data['px'][1] + self.layerOffset[1]# + piv[1]*self.height
+        # ]
+        # self.UnscaledPos = [
+        #     self.data['px'][0] / self.gridSze,# + piv[0]*self.gridSze,
+        #     self.data['px'][1] / self.gridSze# + piv[1]*self.gridSze
+        # ]
     
     def scale_pos(self, pos):
         return (
@@ -122,7 +130,8 @@ class Ldtklevel:
         self.layers = []
         for lay in self.data['layerInstances']:
             if lay['__type'] == 'Entities':
-                self.entities.extend([Entity(lay, {**i, 'layerId': lay['__identifier']}, self.tilesets) for i in lay['entityInstances']])
+                l = layer(lay, self)
+                self.entities.extend([Entity(l, i, self.tilesets) for i in lay['entityInstances']])
             else:
                 self.layers.append(layer(lay, self))
         self.layers.reverse() 
