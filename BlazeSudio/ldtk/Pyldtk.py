@@ -189,7 +189,7 @@ class layer:
             self.loadTileSheet()
         for i in self.tiles:
             t = self.tileset.getTile(i)
-            end.blit(t, self.add_offset((i.pos[0]+self.pxOffset[0], i.pos[1]-self.layerDef['tilePivotY']), t.get_size()))
+            end.blit(t, self.add_offset(i.pos, t.get_size()))
         return end
     
     def add_offset(self, pos, sze):
