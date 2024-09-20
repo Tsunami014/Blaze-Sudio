@@ -91,10 +91,14 @@ class Shape:
     def rect(self) -> Iterable[Number]:
         return -float('inf'), -float('inf'), float('inf'), float('inf')
     
-    def handleCollisionsPos(self, oldP: 'Shape', newP: 'Shape', objs: Union['Shapes',Iterable['Shape']], accel: pointLike = [0,0]) -> tuple['Shape', pointLike]:
+    def handleCollisionsPos(self, oldP: 'Shape', newP: 'Shape', objs: Union['Shapes',Iterable['Shape']], accel: pointLike = [0,0], verbose: bool = False) -> tuple['Shape', pointLike, verboseOutput]:
+        if verbose:
+            return newP, accel, []
         return newP, accel
     
-    def handleCollisionsAccel(self, accel: pointLike, objs: Union['Shapes',Iterable['Shape']]) -> tuple['Shape', pointLike]:
+    def handleCollisionsAccel(self, accel: pointLike, objs: Union['Shapes',Iterable['Shape']], verbose: bool = False) -> tuple['Shape', pointLike, verboseOutput]:
+        if verbose:
+            return self, accel, []
         return self, accel
     
     def copy(self) -> 'Shape':
@@ -215,12 +219,14 @@ class Point(Shape):
     def getTuple(self) -> tuple[Number]:
         return (self.x, self.y)
     
-    def handleCollisionsPos(self, oldPoint: Union['Point',pointLike], newPoint: Union['Point',pointLike], objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True, precision: Number = BASEPRECISION) -> tuple['Point', pointLike]:
-        # TODO: Check if the objects collide before finding closest point
+    def handleCollisionsPos(self, oldPoint: Union['Point',pointLike], newPoint: Union['Point',pointLike], objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['Point', pointLike, verboseOutput]:
+        # This function's verbose output: [
+        # DidReflect: bool ; Whether the line reflected off of something
+        # ]
         mvement = Line(oldPoint, newPoint)
         if not mvement.collides(objs):
-            if isinstance(newPoint, Point):
-                return newPoint, accel
+            if verbose:
+                return newPoint, accel, [False]
             return newPoint, accel
         points = []
         for o in objs:
@@ -228,9 +234,9 @@ class Point(Shape):
             points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         # Don't let you move when you're in a wall
         if points == []:
-            if isinstance(oldPoint, Point):
-                return oldPoint, [0, 0]
-            return Point(*oldPoint), [0, 0]
+            if verbose:
+                return oldPoint, [0, 0], [True]
+            return oldPoint, [0, 0]
         points.sort(key=lambda x: abs(x[0][0]-oldPoint[0])**2+abs(x[0][1]-oldPoint[1])**2)
         closestP = points[0][0]
         closestObj = points[0][1]
@@ -250,13 +256,17 @@ class Point(Shape):
         out, outaccel = self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel, False, precision)
         if replaceSelf:
             self.x, self.y = out[0], out[1]
+        if verbose:
+            return out, outaccel, [True]
         return out, outaccel
 
-    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True, precision: Number = BASEPRECISION) -> tuple['Point', pointLike]:
-        out, outaccel = self.handleCollisionsPos(self, (self.x+accel[0], self.y+accel[1]), objs, accel, False, precision)
+    def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['Point', pointLike, verboseOutput]:
+        o = self.handleCollisionsPos(self, (self.x+accel[0], self.y+accel[1]), objs, accel, False, precision, verbose)
         if replaceSelf:
-            self.x, self.y = out[0], out[1]
-        return out, outaccel
+            self.x, self.y = o[0], o[1]
+        if verbose:
+            return o[0], o[1], o[2]
+        return o[0], o[1]
 
     def copy(self) -> 'Point':
         return Point(self.x, self.y, self.bounciness)
@@ -461,7 +471,8 @@ class Line(Shape):
     
     def handleCollisionsPos(self, oldLine: 'Line', newLine: 'Line', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
         # This function's verbose output: [
-        # CollisionType?: list[int, ...], ; This is the type of collision that happened, and it includes each type of collision for each sub-collision
+        # CollisionType: list[int, ...]|None, ; This is the type of collision that happened, and it includes each type of collision for each sub-collision if it happened
+        # DidReflect: bool ; Whether the line reflected off of something
         # ]
         oldLine = Line(*sorted([oldLine.p1, oldLine.p2], key=lambda x: x[0]))
         newLine = Line(*sorted([newLine.p1, newLine.p2], key=lambda x: x[0]))
@@ -479,12 +490,12 @@ class Line(Shape):
                     #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         if not hit:
             if verbose:
-                return newLine, accel, []
+                return newLine, accel, [None, False]
             return newLine, accel
         # Don't let you move when you're in a wall
         if points == []:
             if verbose:
-                return oldLine, [0, 0], []
+                return oldLine, [0, 0], [None, True]
             return oldLine, [0, 0]
         points.sort(key=lambda x: x[3])
         closestP = points[0][0] # Closest point on the OTHER object
@@ -559,7 +570,7 @@ class Line(Shape):
         if replaceSelf:
             self.p1, self.p2 = out.p1, out.p2
         if verbose:
-            return out, outaccel, [collTyp, *o[2]]
+            return out, outaccel, [collTyp, True]
         return out, outaccel
 
     def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
@@ -857,17 +868,18 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
     
     def handleCollisionsPos(self, oldShp: 'ClosedShape', newShp: 'ClosedShape', objs: Union[Shapes,Iterable[Shape]], accel: pointLike = [0,0], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['ClosedShape', pointLike, verboseOutput]:
         # This function's verbose output: [
-        # CollisionType?: list[int, ...], ; This is the type of collision that happened, and it includes each type of collision for each sub-collision
+        # CollisionType: list[int, ...]|None, ; This is the type of collision that happened, and it includes each type of collision for each sub-collision if it happened
+        # DidReflect: bool ; Whether the line reflected off of something
         # ]
         # Don't let you move when you're in a wall, but if you are leaving a wall then GET THE HELLA OUTTA THERE
         if oldShp.collides(objs):
             if newShp.collides(objs):
                 if verbose:
-                    return oldShp, [0, 0], []
+                    return oldShp, [0, 0], [None, True]
                 return oldShp, [0, 0]
             else:
                 if verbose:
-                    return newShp, accel, []
+                    return newShp, accel, [None, False]
                 return newShp, accel
         points = []
         hit = False
@@ -889,12 +901,12 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                         #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         if not hit:
             if verbose:
-                return newShp, accel, []
+                return newShp, accel, [None, False]
             return newShp, accel
         # Don't let you move when you're in a wall
         if points == []:
             if verbose:
-                return oldShp, [0, 0], []
+                return oldShp, [0, 0], [None, True]
             return oldShp, [0, 0]
         
         points.sort(key=lambda x: (x[3], x[4]))
@@ -971,7 +983,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         if replaceSelf:
             self.x, self.y = out.x, out.y
         if verbose:
-            return out, outaccel, [collTyp, *o[2]]
+            return out, outaccel, [collTyp, True]
         return out, outaccel
 
     def handleCollisionsAccel(self, accel: pointLike, objs: Union[Shapes,Iterable[Shape]], replaceSelf: bool = True, precision: Number = BASEPRECISION, verbose: bool = False) -> tuple['ClosedShape', pointLike, verboseOutput]:
