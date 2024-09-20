@@ -1479,7 +1479,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char *__pyx_f[] = {
-  "lib/collisions.py",
+  "lib\\\\collisions.py",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* ForceInitThreads.proto */
@@ -3517,7 +3517,7 @@ static const char __pyx_k_Shapes_add_shapes[] = "Shapes.add_shapes";
 static const char __pyx_k_cacheRequirements[] = "cacheRequirements";
 static const char __pyx_k_copy_leave_shapes[] = "copy_leave_shapes";
 static const char __pyx_k_degrees_to_vector[] = "degrees_to_vector";
-static const char __pyx_k_lib_collisions_py[] = "lib/collisions.py";
+static const char __pyx_k_lib_collisions_py[] = "lib\\collisions.py";
 static const char __pyx_k_pointOnUnitCircle[] = "pointOnUnitCircle";
 static const char __pyx_k_with_dimensions_2[] = "), with dimensions ";
 static const char __pyx_k_ClosedShape__where[] = "ClosedShape._where";
