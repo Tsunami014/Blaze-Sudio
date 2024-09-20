@@ -71,13 +71,14 @@ class Entity:
         self.gridSze = self.layer['__gridSize']
         self.layerOffset = [self.layer['pxOffsetX'], self.layer['pxOffsetY']]
         self.pivot = self.data['__pivot']
+        piv = (self.pivot[0] * self.width, self.pivot[1] * self.height)
         self.ScaledPos = [
-            self.data['px'][0] + self.layerOffset[0],# - self.pivot[0] * self.width,
-            self.data['px'][1] + self.layerOffset[1]# - self.pivot[1] * self.height
+            self.data['px'][0] + self.layerOffset[0] - piv[0]*self.gridSze,
+            self.data['px'][1] + self.layerOffset[1] - piv[1]*self.gridSze
         ]
         self.UnscaledPos = [
-            self.data['px'][0] / self.gridSze,
-            self.data['px'][1] / self.gridSze
+            self.data['px'][0] / self.gridSze - piv[0],
+            self.data['px'][1] / self.gridSze - piv[1]
         ]
     
     def scale_pos(self, pos):
@@ -187,8 +188,13 @@ class layer:
         if self.tiles is None:
             self.loadTileSheet()
         for i in self.tiles:
-            end.blit(self.tileset.getTile(i), i.pos)
+            t = self.tileset.getTile(i)
+            end.blit(t, self.add_offset((i.pos[0]+self.pxOffset[0], i.pos[1]-self.layerDef['tilePivotY']), t.get_size()))
         return end
+    
+    def add_offset(self, pos, sze):
+        return (pos[0] + self.pxOffset[0]-self.layerDef['tilePivotX']*sze[0]+self.gridSize*self.layerDef['tilePivotX'], 
+                pos[1] + self.pxOffset[1]-self.layerDef['tilePivotY']*sze[1]+self.gridSize*self.layerDef['tilePivotY'])
 
 class IntGridCSV:
     def __init__(self, intgrid, cwid, chei=None, offsets=[0, 0], gridsize=1):

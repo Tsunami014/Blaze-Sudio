@@ -55,12 +55,12 @@ def wrapWorld(world):
                         col = pixels[int(width * angle / math.pi) % width, height - distance - 1]
                         a = alpha[int(width * angle / math.pi) % width, height - distance - 1]
                         if outlining:
-                            if a == 3:
-                                col = (0, 0, 0)
-                                a = 255
-                            else:
+                            if a == 255:
                                 col = (255, 255, 255)
                                 a = 255
+                            else:
+                                col = (0, 0, 0)
+                                a = 0
                         cir[int(y)][int(x)] = (*col, a)
                         y = Ro + i
                         angle = math.atan2(y - Ro, x - Ro) / 2
@@ -71,12 +71,12 @@ def wrapWorld(world):
                         col = pixels[int(width * angle / math.pi) % width, height - distance - 1]
                         a = alpha[int(width * angle / math.pi) % width, height - distance - 1]
                         if outlining:
-                            if a == 3:
-                                col = (0, 0, 0)
-                                a = 255
-                            else:
+                            if a == 255:
                                 col = (255, 255, 255)
                                 a = 255
+                            else:
+                                col = (0, 0, 0)
+                                a = 0
                         cir[int(y)][int(x)] = (*col, a)
             imgs[outlining].append(cir)
     return imgs, szes
