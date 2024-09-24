@@ -237,7 +237,7 @@ class Ldtklevel:
         Args:
             layerid (str): The layer identifier to get the entities from
             processor (Callable, optional): This is a function that will process the entities. It takes in an Entity object and outputs anything. \
-The outputs will be combined as the return list. This defaults to `lambda e: e`.
+The outputs will be combined as the return list. This defaults to `lambda e: e`. Returning None in this will ignore that entity.
             forceRefreshCache (bool, optional): Force rebuild the cache. Defaults to False.
 
         Returns:
@@ -245,9 +245,11 @@ The outputs will be combined as the return list. This defaults to `lambda e: e`.
         """
         if layerid not in self.getCache[0] or forceRefreshCache:
             self.getCache[0][layerid] = []
-            for e in self.currentLvl.entities:
+            for e in self.entities:
                 if e.layerId == layerid:
-                    self.getCache[0][layerid].append(processor(e, e.identifier))
+                    resp = processor(e)
+                    if resp is not None:
+                        self.getCache[0][layerid].append(resp)
         return self.getCache[0][layerid]
 
     def GetEntitiesByID(self, identifier: str, processor: Callable = lambda e: e, forceRefreshCache: bool = False) -> List[Any]:
@@ -257,7 +259,7 @@ The outputs will be combined as the return list. This defaults to `lambda e: e`.
         Args:
             identifier (str): The identifier that will be searched for within all the entities.
             processor (Callable): This is a function that will process the entities. It takes in an Entity object and outputs anything. \
-The outputs will be combined as the return list. This defaults to `lambda e: e`.
+The outputs will be combined as the return list. This defaults to `lambda e: e`. Returning None in this will ignore that entity.
             forceRefreshCache (bool, optional): Force rebuild the cache. Defaults to False.
 
         Returns:
@@ -265,9 +267,11 @@ The outputs will be combined as the return list. This defaults to `lambda e: e`.
         """
         if identifier not in self.getCache[1] or forceRefreshCache:
             self.getCache[1][identifier] = []
-            for e in self.currentLvl.entities:
+            for e in self.entities:
                 if e.identifier == identifier:
-                    self.getCache[1][identifier].append(processor(e))
+                    resp = processor(e)
+                    if resp is not None:
+                        self.getCache[1][identifier].append(resp)
         return self.getCache[1][identifier]
 
 class layer:
