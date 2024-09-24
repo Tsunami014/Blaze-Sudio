@@ -29,7 +29,7 @@ class SkeletonScene:
     def render(self):
         pass
 
-    def renderUI(self, win, offset, midp, scale):
+    def renderUI(self, win, scaleFunc):
         pass
 
 class BaseScene(SkeletonScene):
@@ -37,6 +37,7 @@ class BaseScene(SkeletonScene):
     lvl = 0
     def __init__(self, G, **settings):
         super().__init__(G, **settings)
+        self.sur = None
         self.entities = []
         self.CamBounds = [0, 0, *self.currentLvl.sizePx]
     
@@ -47,6 +48,16 @@ class BaseScene(SkeletonScene):
     @property
     def CamPos(self):
         return [0, 0]
+    
+    def renderMap(self):
+        self.sur = pygame.Surface(self.currentLvl.sizePx)
+        self.sur.fill(self.Game.currentLvL.bgColour)
+        self.sur.blit(self.Game.world.get_pygame(self.lvl), (0, 0))
+    
+    def render(self):
+        if self.sur is None:
+            self.renderMap()
+        return self.sur
     
     def tick(self, keys):
         for e in self.entities:
