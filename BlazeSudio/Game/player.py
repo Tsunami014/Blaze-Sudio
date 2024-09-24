@@ -53,4 +53,7 @@ class Player:
         # Blit the surface considering the camera bounds and diffs
         win.blit(sur, [diff_x, diff_y])
 
-        self.Game.curScene.renderUI(win, (diff_x, diff_y), (mw, mh), scale) # TODO: Make this so much better
+        def scalef(pos):
+            return (pos[0]*scale+diff_x, pos[1]*scale+diff_y)
+
+        self.Game.curScene.renderUI(win, scalef)
