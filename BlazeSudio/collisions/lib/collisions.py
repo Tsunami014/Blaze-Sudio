@@ -1,5 +1,5 @@
 import math
-from typing import Union, Iterable, Any
+from typing import Union, Iterable, Any, Dict
 Number = Union[int, float]
 verboseOutput = Union[Iterable[Any], None]
 pointLike = Iterable[Number]
@@ -335,7 +335,7 @@ class Shapes:
     
     # TODO: Pick one method: either the dict or the list, not both (see below 2 funcs)
 
-    def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> dict[Union[Shape,'Shapes']: bool]:
+    def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> Dict[Union[Shape,'Shapes'], bool]:
         """
         Takes each object and finds whether the input point is on the corner of that object.
 
