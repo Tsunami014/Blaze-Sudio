@@ -1,5 +1,5 @@
 from _typeshed import Incomplete
-from typing import Any, Dict, Iterable
+from typing import Any, Iterable
 
 Number = int | float
 verboseOutput = Iterable[Any] | None
@@ -232,7 +232,7 @@ class Shapes:
         Returns:
             Iterable[pointLike]: All the closest point(s) ON each of these objects
         """
-    def isCorner(self, point: pointLike, precision: Number = ...) -> Dict[Shape | Shapes, bool]:
+    def isCorner(self, point: pointLike, precision: Number = ...) -> dict[Shape | Shapes, bool]:
         """
         Takes each object and finds whether the input point is on the corner of that object.
 
