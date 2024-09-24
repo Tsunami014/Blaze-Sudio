@@ -1,6 +1,4 @@
 import pygame
-import BlazeSudio.graphics.options as GO
-import BlazeSudio.Game.statics as statics
 
 class Player:
     def __init__(self, G, world, Game):

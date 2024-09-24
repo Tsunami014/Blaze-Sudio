@@ -23,7 +23,7 @@ setup(
     long_description=long_description,
     packages=find_packages(),
     include_package_data=True,
-    package_data={'BlazeSudio' :['BlazeSudio/data/*'], 'BlazeSudio.collisions': ['**/*.so', '**/*.pyd']},
+    package_data={'BlazeSudio' :['BlazeSudio/data/*', '**/internal-icons.png'], 'BlazeSudio.collisions': ['**/*.so', '**/*.pyd']},
     author='Tsunami014 (Max)',
     author_email='tsunami014@duck.com',
     install_requires=packages,

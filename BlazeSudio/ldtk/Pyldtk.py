@@ -230,13 +230,14 @@ class Ldtklevel:
     
     # TODO: Get layer by id
 
-    def GetEntitiesByLayer(self, layerid: str, processor: Callable, forceRefreshCache: bool = False) -> List[Any]:
+    def GetEntitiesByLayer(self, layerid: str, processor: Callable = lambda e: e, forceRefreshCache: bool = False) -> List[Any]:
         """
         Gets all the entities by their layer identifier.
 
         Args:
             layerid (str): The layer identifier to get the entities from
-            processor (Callable): This is a function that will process the entities. It takes in an Entity object and outputs anything. The outputs will be combined as the return list.
+            processor (Callable, optional): This is a function that will process the entities. It takes in an Entity object and outputs anything. \
+The outputs will be combined as the return list. This defaults to `lambda e: e`.
             forceRefreshCache (bool, optional): Force rebuild the cache. Defaults to False.
 
         Returns:
@@ -249,13 +250,14 @@ class Ldtklevel:
                     self.getCache[0][layerid].append(processor(e, e.identifier))
         return self.getCache[0][layerid]
 
-    def GetEntitiesByID(self, identifier: str, processor: Callable, forceRefreshCache: bool = False) -> List[Any]:
+    def GetEntitiesByID(self, identifier: str, processor: Callable = lambda e: e, forceRefreshCache: bool = False) -> List[Any]:
         """
         Gets all the entities by their identifier.
 
         Args:
             identifier (str): The identifier that will be searched for within all the entities.
-            processor (Callable): This is a function that will process the entities. It takes in an Entity object and outputs anything. The outputs will be combined as the return list.
+            processor (Callable): This is a function that will process the entities. It takes in an Entity object and outputs anything. \
+The outputs will be combined as the return list. This defaults to `lambda e: e`.
             forceRefreshCache (bool, optional): Force rebuild the cache. Defaults to False.
 
         Returns:

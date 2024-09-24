@@ -1,4 +1,9 @@
 import pygame
+# Only import game if is typing
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from BlazeSudio.Game import Game
+from BlazeSudio.ldtk.Pyldtk import Entity
 
 class IncorrectLevelError(TypeError):
     """For when the level format is incorrect"""
@@ -9,8 +14,8 @@ class IncorrectLevelError(TypeError):
 
 class SkeletonScene:
     useRenderer = True
-    def __init__(self, Game, **settings):
-        self.Game = Game
+    def __init__(self, G, **settings):
+        self.Game: Game = G
         self.CamBounds = [None, None, None, None]
         self.CamDist = 1
     
@@ -30,8 +35,8 @@ class SkeletonScene:
 class BaseScene(SkeletonScene):
     useRenderer = True
     lvl = 0
-    def __init__(self, Game, **settings):
-        super().__init__(Game, **settings)
+    def __init__(self, G, **settings):
+        super().__init__(G, **settings)
         self.entities = []
         self.CamBounds = [0, 0, *self.currentLvl.sizePx]
     
@@ -48,16 +53,16 @@ class BaseScene(SkeletonScene):
             e(keys)
 
 class SkeletonEntity:
-    def __init__(self, Game, entity):
-        self.Game = Game
-        self.entity = entity
+    def __init__(self, G, entity: Entity):
+        self.Game: Game = G
+        self.entity: Entity = entity
     
     def __call__(self, evs):
         pass
 
 class BaseEntity(SkeletonEntity):
-    def __init__(self, Game, entity):
-        super().__init__(Game, entity)
+    def __init__(self, G, entity):
+        super().__init__(G, entity)
         self.pos = [0, 0]
         self.accel = [0, 0]
         self.gravity = [0, 0]
