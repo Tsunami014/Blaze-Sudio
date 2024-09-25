@@ -82,7 +82,7 @@ def wrapWorld(world):
     return imgs, szes
 
 def save(imgs, fname, szes):
-    out = pygame.Surface((max(szes), sum(szes)/2))
+    out = pygame.Surface((max(szes), sum(szes)/2), pygame.SRCALPHA)
     prevh = 0
     for img, sze in zip(imgs, szes):
         new_image = pygame.Surface((len(img[0]), len(img)), pygame.SRCALPHA)
