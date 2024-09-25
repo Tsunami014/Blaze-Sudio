@@ -174,18 +174,18 @@ class Shape:
         """
         return True
     
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
+    def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
-        Finds the tangent on this surface to a point with a given acceleration
+        Finds the tangent on this surface to a point with a given velocity
 
         Args:
             point (pointLike): The point to find the tangent of this surface from
-            accel (pointLike): Which direction the point is moving (useful for example with lines for finding which side of the line the tangent should be of)
+            vel (pointLike): Which direction the point is moving (useful for example with lines for finding which side of the line the tangent should be of)
 
         Returns:
             Number: The tangent of this object at the point. You can -90 to get the normal.
         """
-        return math.degrees(math.atan2(accel[1], accel[0])) % 360
+        return math.degrees(math.atan2(vel[1], vel[0])) % 360
     
     def rect(self) -> Iterable[Number]:
         """
@@ -196,21 +196,21 @@ class Shape:
         """
         return -float('inf'), -float('inf'), float('inf'), float('inf')
     
-    def handleCollisionsPos(self, oldP: 'Shape', newP: 'Shape', objs: Union['Shapes',Iterable['Shape']], accel: pointLike = [0,0], verbose: bool = False) -> tuple['Shape', pointLike, verboseOutput]:
+    def handleCollisionsPos(self, oldP: 'Shape', newP: 'Shape', objs: Union['Shapes',Iterable['Shape']], vel: pointLike = [0,0], verbose: bool = False) -> tuple['Shape', pointLike, verboseOutput]:
         """
         This is called to modify objects' positions to bounce off objects.
         """
         if verbose:
-            return newP, accel, []
-        return newP, accel
+            return newP, vel, []
+        return newP, vel
     
-    def handleCollisionsAccel(self, accel: pointLike, objs: Union['Shapes',Iterable['Shape']], verbose: bool = False) -> tuple['Shape', pointLike, verboseOutput]:
+    def handleCollisionsVel(self, vel: pointLike, objs: Union['Shapes',Iterable['Shape']], verbose: bool = False) -> tuple['Shape', pointLike, verboseOutput]:
         """
-        This is a wrapper for `handleCollisionsPos` to handle acceleration instead of position.
+        This is a wrapper for `handleCollisionsPos` to handle velocity instead of position.
         """
         if verbose:
-            return self, accel, []
-        return self, accel
+            return self, vel, []
+        return self, vel
     
     def copy(self) -> 'Shape':
         """
@@ -351,20 +351,20 @@ class Shapes:
             cs[s] = s.isCorner(point, precision)
         return cs
     
-    def tangent(self, point: pointLike, accel: pointLike) -> Iterable[Number]:
+    def tangent(self, point: pointLike, vel: pointLike) -> Iterable[Number]:
         """
         Finds the tangent on each of these objects for the specified point. -90 = normal.
 
         Args:
             point (pointLike): The point to find the tangent from
-            accel (pointLike): Which direction the point is moving (useful for example with lines for finding which side of the line the tangent should be of)
+            vel (pointLike): Which direction the point is moving (useful for example with lines for finding which side of the line the tangent should be of)
 
         Returns:
             Iterable[Number]: A list of all the tangents to the specified point.
         """
         points = []
         for s in self.shapes:
-            points.append(s.tangent(point, accel))
+            points.append(s.tangent(point, vel))
         return points
     
     # TODO: handleCollisions
@@ -467,29 +467,29 @@ class Point(Shape):
                             oldPoint: Union['Point',pointLike], 
                             newPoint: Union['Point', pointLike], 
                             objs: Union[Shapes, Iterable[Shape]], 
-                            accel: pointLike = [0,0], 
+                            vel: pointLike = [0,0], 
                             replaceSelf: bool = True, 
                             precision: Number = BASEPRECISION, 
                             verbose: bool = False
                            ) -> tuple[pointLike, pointLike, verboseOutput]:
         """
         Handles movement of this point and it bouncing off of other objects.
-        It is recommended you use `.handleCollisionsAccel` instead of this, as it handles velocity instead of raw movement and is easier to use.
+        It is recommended you use `.handleCollisionsVel` instead of this, as it handles velocity instead of raw movement and is easier to use.
 
-        But if you are to use this, remember to still provide the accel param. It will sometimes provide weird results if you don't.
+        But if you are to use this, remember to still provide the vel param. It will sometimes provide weird results if you don't.
         It could even just be the difference in positions, it just needs to be something realistic.
 
         Args:
             oldPoint (Point / pointLike): The old position of this object.
             newPoint (Point / pointLike): The new position of this object.
             objs (Shapes / Iterable[Shape]): The objects this will bounce off.
-            accel (pointLike, optional): The acceleration that this object is going. Defaults to [0, 0].
+            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
             replaceSelf (bool, optional): Whether to replace self.x and self.y with the new position of the object after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[pointLike, pointLike, veboseOutput?]: The new position and accel of this object respectively, and if verbose then the verboseOutput.
+            tuple[pointLike, pointLike, veboseOutput?]: The new position and vel of this object respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             DidReflect (bool): Whether the line reflected off of something
@@ -497,8 +497,8 @@ class Point(Shape):
         mvement = Line(oldPoint, newPoint)
         if not mvement.collides(objs):
             if verbose:
-                return newPoint, accel, [False]
-            return newPoint, accel
+                return newPoint, vel, [False]
+            return newPoint, vel
         points = []
         for o in objs:
             cs = o.whereCollides(mvement)
@@ -511,7 +511,7 @@ class Point(Shape):
         points.sort(key=lambda x: abs(x[0][0]-oldPoint[0])**2+abs(x[0][1]-oldPoint[1])**2)
         closestP = points[0][0]
         closestObj = points[0][1]
-        t = closestObj.tangent(closestP, accel)
+        t = closestObj.tangent(closestP, vel)
         normal = t-90
         dist_left = math.sqrt(abs(newPoint[0]-closestP[0])**2+abs(newPoint[1]-closestP[1])**2) * closestObj.bounciness
         x, y = newPoint[0] - closestP[0], newPoint[1] - closestP[1]
@@ -520,41 +520,41 @@ class Point(Shape):
         if diff > 180:
             diff = diff - 360
         pos = rotate(closestP, [closestP[0], closestP[1]+dist_left], phi-180-diff*2)
-        accel = list(rotateBy0(accel, 180-diff*2))
-        accel = [accel[0]*closestObj.bounciness, accel[1]*closestObj.bounciness]
+        vel = list(rotateBy0(vel, 180-diff*2))
+        vel = [vel[0]*closestObj.bounciness, vel[1]*closestObj.bounciness]
         # HACK
         smallness = rotateBy0([0,AVERYSMALLNUMBER], phi-180-diff*2)
-        out, outaccel = self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, accel, False, precision)
+        out, outvel = self.handleCollisionsPos((closestP[0]+smallness[0], closestP[1]+smallness[1]), pos, objs, vel, False, precision)
         if replaceSelf:
             self.x, self.y = out[0], out[1]
         if verbose:
-            return out, outaccel, [True]
-        return out, outaccel
+            return out, outvel, [True]
+        return out, outvel
 
-    def handleCollisionsAccel(self, 
-                              accel: pointLike, 
+    def handleCollisionsVel(self, 
+                              vel: pointLike, 
                               objs: Union[Shapes,Iterable[Shape]], 
                               replaceSelf: bool = True, 
                               precision: Number = BASEPRECISION, 
                               verbose: bool = False
                              ) -> tuple[pointLike, pointLike, verboseOutput]:
         """
-        Handles movement of this point via acceleration and it bouncing off of other objects.
+        Handles movement of this point via velocity and it bouncing off of other objects.
 
         Args:
-            accel (pointLike): The acceleration of this point
+            vel (pointLike): The velocity of this point
             objs (Shapes / Iterable[Shape]): The objects to bounce off of
             replaceSelf (bool, optional): Whether or not to replace self.x and self.y with the new position. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[pointLike, pointLike, veboseOutput?]: The new position and accel of this object respectively, and if verbose then the verboseOutput.
+            tuple[pointLike, pointLike, veboseOutput?]: The new position and vel of this object respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             DidReflect (bool): Whether the line reflected off of something
         """
-        o = self.handleCollisionsPos(self, (self.x+accel[0], self.y+accel[1]), objs, accel, False, precision, verbose)
+        o = self.handleCollisionsPos(self, (self.x+vel[0], self.y+vel[1]), objs, vel, False, precision, verbose)
         if replaceSelf:
             self.x, self.y = o[0], o[1]
         if verbose:
@@ -787,13 +787,13 @@ class Line(Shape):
             return (round(x[0], precision), round(x[1], precision))
         return rountTuple(self.p1) == rountTuple(point) or rountTuple(self.p2) == rountTuple(point)
     
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
+    def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
-        Finds the tangent on this surface to a point with a given acceleration.
+        Finds the tangent on this surface to a point with a given velocity.
 
         Args:
             point (pointLike): The point to find the tangent of this surface from.
-            accel (pointLike): Which direction the point is moving. In this case (for lines) it is actually very important, so please don't forget it.
+            vel (pointLike): Which direction the point is moving. In this case (for lines) it is actually very important, so please don't forget it.
 
         Returns:
             Number: The tangent of the line at the point. You can -90 to get the normal.
@@ -807,7 +807,7 @@ class Line(Shape):
             if angle > 180:
                 angle = angle - 360
             return abs(angle) # Because we don't need to use this for anything else
-        toDeg = (math.degrees(math.atan2(accel[1], accel[0]))-180) % 360
+        toDeg = (math.degrees(math.atan2(vel[1], vel[0]))-180) % 360
         phi = (math.degrees(math.atan2(self.p2[1] - self.p1[1], self.p2[0] - self.p1[0]))-90)
         tries = [fixangle(phi-toDeg), fixangle(phi-toDeg-180)]
         return [(phi-180)%360, phi % 360][tries.index(min(tries))]
@@ -816,29 +816,29 @@ class Line(Shape):
                             oldLine: 'Line', 
                             newLine: 'Line', 
                             objs: Union[Shapes, Iterable[Shape]], 
-                            accel: pointLike = [0, 0], 
+                            vel: pointLike = [0, 0], 
                             replaceSelf: bool = True, 
                             precision: Number = BASEPRECISION, 
                             verbose: bool = False
                            ) -> tuple['Line', pointLike, verboseOutput]:
         """
         Handles movement of this line and it bouncing off of other objects.
-        It is recommended you use `.handleCollisionsAccel` instead of this, as it handles velocity instead of raw movement and is easier to use.
+        It is recommended you use `.handleCollisionsVel` instead of this, as it handles velocity instead of raw movement and is easier to use.
 
-        But if you are to use this, remember to still provide the accel param. It will provide VERY weird results if you don't.
+        But if you are to use this, remember to still provide the vel param. It will provide VERY weird results if you don't.
         It could even just be the difference in positions, it just needs to be something realistic.
 
         Args:
             oldLine (Line): The old Line object.
             newLine (Line): The new Line object. Should be the exact same as the old one except with the 2 points offset by the same amount.
             objs (Shapes / Iterable[Shape]): The objects this will bounce off.
-            accel (pointLike, optional): The acceleration that this object is going. Defaults to [0, 0].
+            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
             replaceSelf (bool, optional): Whether to move this Line to the new position after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[Line, pointLike, veboseOutput?]: The new Line object and accel of this object respectively, and if verbose then the verboseOutput.
+            tuple[Line, pointLike, veboseOutput?]: The new Line object and vel of this object respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             CollisionType (list[int, ...] / None): The type of collision that occured for each sub-collision (if it ever collided, that is)
@@ -855,13 +855,13 @@ class Line(Shape):
                 ps = o.whereCollides(mvement) + [i for i in o.closestPointTo(oldLine, True) if mvement.collides(Point(*i))]
                 for p in ps:
                     # The rotation is making sure the line crosses the oldLine
-                    cPoint = oldLine.closestPointTo(Line(p, (p[0]-accel[0],p[1]-accel[1])))
+                    cPoint = oldLine.closestPointTo(Line(p, (p[0]-vel[0],p[1]-vel[1])))
                     points.append([p, o, cPoint, abs(p[0]-cPoint[0])**2+abs(p[1]-cPoint[1])**2])
                     #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         if not hit:
             if verbose:
-                return newLine, accel, [None, False]
-            return newLine, accel
+                return newLine, vel, [None, False]
+            return newLine, vel
         # Don't let you move when you're in a wall
         if points == []:
             if verbose:
@@ -871,7 +871,7 @@ class Line(Shape):
         closestP = points[0][0] # Closest point on the OTHER object
         cPoint = points[0][2] # closestP projected onto the oldLine
         closestObj = points[0][1]
-        newPoint = newLine.closestPointTo(Line(closestP, (closestP[0]+accel[0],closestP[1]+accel[1]))) # closestP projected onto the newLine
+        newPoint = newLine.closestPointTo(Line(closestP, (closestP[0]+vel[0],closestP[1]+vel[1]))) # closestP projected onto the newLine
 
         thisNormal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))
         paralell = False
@@ -889,7 +889,7 @@ class Line(Shape):
             sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
             otherLnNormal = math.degrees(math.atan2(sortedOtherLn[0][1]-sortedOtherLn[1][1], sortedOtherLn[0][0]-sortedOtherLn[1][0]))
             paralell = abs(otherLnNormal%360 - thisNormal%360) < precision or abs((otherLnNormal-180)%360 - thisNormal%360) < precision
-        accelDiff = 180
+        velDiff = 180
         if paralell: # Line off line
             collTyp = 3
             # Reflect off the object's normal to the point (but really could be either point; the tangents *should* be the same)
@@ -904,18 +904,18 @@ class Line(Shape):
             elif thisIsOnP and (not otherIsOnP): # Point off line
                 collTyp = 1
                 # Reflect off the other object's normal to the point
-                normal = closestObj.tangent(closestP, accel)-90
+                normal = closestObj.tangent(closestP, vel)-90
                 phi = math.degrees(math.atan2(newPoint[1] - closestP[1], newPoint[0] - closestP[0]))-90 # The angle of incidence
             elif (not thisIsOnP) and otherIsOnP: # Line off point
                 collTyp = 2
                 # Reflect off this line's normal
                 normal = thisNormal-90 # The normal off the line
                 phi = math.degrees(math.atan2(closestP[1] - newPoint[1], closestP[0] - newPoint[0]))-90 # The angle of incidence
-                accelDiff = 0
+                velDiff = 0
             else:
-                raise TypeError(
-                    'Cannot have a line reflecting off of another line when they aren\'t paralell; something bad must have occured!'
-                )
+                #raise TypeError(
+                #    'Cannot have a line reflecting off of another line when they aren\'t paralell; something bad must have occured!'
+                #)
                 collTyp = None
                 normal, phi = 0, 0
 
@@ -925,8 +925,8 @@ class Line(Shape):
         if diff > 180: # Do we even need this?
             diff -= 360
         pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], phi-180-diff*2)
-        accel = list(rotateBy0(accel, accelDiff-diff*2))
-        accel = [accel[0]*closestObj.bounciness, accel[1]*closestObj.bounciness]
+        vel = list(rotateBy0(vel, velDiff-diff*2))
+        vel = [vel[0]*closestObj.bounciness, vel[1]*closestObj.bounciness]
         diff2Point = (closestP[0]-cPoint[0], closestP[1]-cPoint[1])
         odiff = (pos[0]-cPoint[0], pos[1]-cPoint[1])
         # HACK
@@ -935,45 +935,45 @@ class Line(Shape):
         o = self.handleCollisionsPos(
             Line((oldLine.p1[0]+diff2Point[0]+smallness[0], oldLine.p1[1]+diff2Point[1]+smallness[1]), 
                  (oldLine.p2[0]+diff2Point[0]+smallness[0], oldLine.p2[1]+diff2Point[1]+smallness[1])), 
-            Line(newp1, newp2), objs, accel, False, precision, verbose)
-        out, outaccel = o[0], o[1]
+            Line(newp1, newp2), objs, vel, False, precision, verbose)
+        out, outvel = o[0], o[1]
         if replaceSelf:
             self.p1, self.p2 = out.p1, out.p2
         if verbose:
-            return out, outaccel, [collTyp, True]
-        return out, outaccel
+            return out, outvel, [collTyp, True]
+        return out, outvel
 
-    def handleCollisionsAccel(self, 
-                              accel: pointLike, 
+    def handleCollisionsVel(self, 
+                              vel: pointLike, 
                               objs: Union[Shapes, Iterable[Shape]], 
                               replaceSelf: bool = True, 
                               precision: Number = BASEPRECISION, 
                               verbose: bool = False
                              ) -> tuple['Line', pointLike, verboseOutput]:
         """
-        Handles movement of this line via acceleration and it bouncing off of other objects.
+        Handles movement of this line via velocity and it bouncing off of other objects.
 
         Args:
-            accel (pointLike): The acceleration of this line.
+            vel (pointLike): The velocity of this line.
             objs (Shapes / Iterable[Shape]): The objects to bounce off of.
             replaceSelf (bool, optional): Whether to move this Line to the new position after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[Line, pointLike, veboseOutput?]: The new position and accel of this object respectively, and if verbose then the verboseOutput.
+            tuple[Line, pointLike, veboseOutput?]: The new position and vel of this object respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             CollisionType (list[int, ...] / None): The type of collision that occured for each sub-collision (if it ever collided, that is)
             DidReflect (bool): Whether the line reflected off of something
         """
-        o = self.handleCollisionsPos(self, Line((self.p1[0]+accel[0], self.p1[1]+accel[1]), (self.p2[0]+accel[0], self.p2[1]+accel[1])), objs, accel, False, precision, verbose)
-        out, outaccel = o[0], o[1]
+        o = self.handleCollisionsPos(self, Line((self.p1[0]+vel[0], self.p1[1]+vel[1]), (self.p2[0]+vel[0], self.p2[1]+vel[1])), objs, vel, False, precision, verbose)
+        out, outvel = o[0], o[1]
         if replaceSelf:
             self.p1, self.p2 = out.p1, out.p2
         if verbose:
-            return out, outaccel, o[2]
-        return out, outaccel
+            return out, outvel, o[2]
+        return out, outvel
     
     def copy(self) -> 'Line':
         """
@@ -1164,13 +1164,13 @@ class Circle(Shape):
         """
         return False
 
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
+    def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
-        Finds the tangent on this surface to a point with a given acceleration.
+        Finds the tangent on this surface to a point with a given velocity.
 
         Args:
             point (pointLike): The point to find the tangent of this surface from.
-            accel (pointLike): Which direction the point is moving.
+            vel (pointLike): Which direction the point is moving.
 
         Returns:
             Number: The tangent of the circle at the point. You can -90 to get the normal.
@@ -1227,13 +1227,13 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                 points.extend(i._where(othershape))
             return points
     
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
+    def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
-        Finds the tangent on this surface to a point with a given acceleration.
+        Finds the tangent on this surface to a point with a given velocity.
 
         Args:
             point (pointLike): The point to find the tangent of this surface from.
-            accel (pointLike): Which direction the point is moving. In this case (for closed shapes, which are made of lines) it is actually very important, so please don't forget it.
+            vel (pointLike): Which direction the point is moving. In this case (for closed shapes, which are made of lines) it is actually very important, so please don't forget it.
 
         Returns:
             Number: The tangent of the line at the point. You can -90 to get the normal.
@@ -1241,7 +1241,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         # TODO: Make it so the line normals go in the direction facing away from the centre instead of away from the velocity vector 
         p = Point(*point)
         ps = [[i.closestPointTo(p), i] for i in self.toLines()]
-        origps = [[pt[1].tangent(pt[0], accel), pt[0]] for pt in ps]
+        origps = [[pt[1].tangent(pt[0], vel), pt[0]] for pt in ps]
         ps = origps.copy()
         ps.sort(key=lambda x: abs(x[1][0]-point[0])**2+abs(x[1][1]-point[1])**2)
         if ps[0][1] == ps[1][1]:
@@ -1334,29 +1334,29 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                             oldShp: 'ClosedShape', 
                             newShp: 'ClosedShape', 
                             objs: Union[Shapes, Iterable[Shape]], 
-                            accel: pointLike = [0, 0], 
+                            vel: pointLike = [0, 0], 
                             replaceSelf: bool = True, 
                             precision: Number = BASEPRECISION, 
                             verbose: bool = False
                            ) -> tuple['ClosedShape', pointLike, verboseOutput]:
         """
         Handles movement of this closed shape and it bouncing off of other objects.
-        It is recommended you use `.handleCollisionsAccel` instead of this, as it handles velocity instead of raw movement and is easier to use.
+        It is recommended you use `.handleCollisionsVel` instead of this, as it handles velocity instead of raw movement and is easier to use.
 
-        But if you are to use this, remember to still provide the accel param. It will provide VERY weird results if you don't.
+        But if you are to use this, remember to still provide the vel param. It will provide VERY weird results if you don't.
         It could even just be the difference in positions, it just needs to be something realistic.
 
         Args:
             oldShp (ClosedShape): The old object.
             newShp (ClosedShape): The new object. Should be the exact same as the old one except with the points offset by the same amount.
             objs (Shapes / Iterable[Shape]): The objects this will bounce off.
-            accel (pointLike, optional): The acceleration that this object is going. Defaults to [0, 0].
+            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
             replaceSelf (bool, optional): Whether to move this object to the new position after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[ClosedShape, pointLike, veboseOutput?]: The new object and accel respectively, and if verbose then the verboseOutput.
+            tuple[ClosedShape, pointLike, veboseOutput?]: The new object and vel respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             CollisionType (list[int, ...] / None): The type of collision that occured for each sub-collision (if it ever collided, that is)
@@ -1370,8 +1370,8 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                 return oldShp, [0, 0]
             else:
                 if verbose:
-                    return newShp, accel, [None, False]
-                return newShp, accel
+                    return newShp, vel, [None, False]
+                return newShp, vel
         points = []
         hit = False
         for oldLine, newLine in zip(oldShp.toLines(), newShp.toLines()):
@@ -1386,14 +1386,14 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                         if oldShp.collides(Point(*p)):
                             continue
                         # The rotation is making sure the line crosses the oldLine
-                        cPoint = oldLine.closestPointTo(Line(p, (p[0]-accel[0],p[1]-accel[1])))
+                        cPoint = oldLine.closestPointTo(Line(p, (p[0]-vel[0],p[1]-vel[1])))
                         pdists = (oldLine.p1[0]-p[0])**2+(oldLine.p1[1]-p[1])**2 + (oldLine.p2[0]-p[0])**2+(oldLine.p2[1]-p[1])**2
                         points.append([p, o, cPoint, round((p[0]-cPoint[0])**2+(p[1]-cPoint[1])**2, precision), round(pdists, precision), oldLine, newLine])
                         #points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         if not hit:
             if verbose:
-                return newShp, accel, [None, False]
-            return newShp, accel
+                return newShp, vel, [None, False]
+            return newShp, vel
         # Don't let you move when you're in a wall
         if points == []:
             if verbose:
@@ -1405,7 +1405,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         closestP = points[0][0] # Closest point on the OTHER object
         cPoint = points[0][2] # closestP projected onto the oldLine
         closestObj = points[0][1]
-        newPoint = newLine.closestPointTo(Line(closestP, (closestP[0]+accel[0],closestP[1]+accel[1]))) # closestP projected onto the newLine
+        newPoint = newLine.closestPointTo(Line(closestP, (closestP[0]+vel[0],closestP[1]+vel[1]))) # closestP projected onto the newLine
 
         thisNormal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))
         paralell = False
@@ -1424,7 +1424,7 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
                 paralell = abs(otherLnNormal%360 - thisNormal%360) < precision or abs((otherLnNormal-180)%360 - thisNormal%360) < precision
                 if paralell:
                     break
-        accelDiff = 180
+        velDiff = 180
         if paralell: # Line off line
             collTyp = 3
             # Reflect off the object's normal to the point (but really could be either point; the tangents *should* be the same)
@@ -1439,18 +1439,18 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
             elif thisIsOnP and (not otherIsOnP): # Point off line
                 collTyp = 1
                 # Reflect off the other object's normal to the point
-                normal = closestObj.tangent(closestP, accel)-90
+                normal = closestObj.tangent(closestP, vel)-90
                 phi = math.degrees(math.atan2(newPoint[1] - closestP[1], newPoint[0] - closestP[0]))-90 # The angle of incidence
             elif (not thisIsOnP) and otherIsOnP: # Line off point
                 collTyp = 2
                 # Reflect off this line's normal
                 normal = thisNormal-90 # The normal off the line
                 phi = math.degrees(math.atan2(closestP[1] - newPoint[1], closestP[0] - newPoint[0]))-90 # The angle of incidence
-                accelDiff = 0
+                velDiff = 0
             else:
-                raise TypeError(
-                    'Cannot have a line reflecting off of another line when they aren\'t paralell; something bad must have occured!'
-                )
+                #raise TypeError(
+                #    'Cannot have a line reflecting off of another line when they aren\'t paralell; something bad must have occured!'
+                #)
                 collTyp = None
                 normal, phi = 0, 0
 
@@ -1460,8 +1460,8 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         if diff > 180: # Do we even need this?
             diff -= 360
         pos = rotate(closestP, [closestP[0], closestP[1] + dist_left], phi-180-diff*2)
-        accel = list(rotateBy0(accel, accelDiff-diff*2))
-        accel = [accel[0]*closestObj.bounciness, accel[1]*closestObj.bounciness]
+        vel = list(rotateBy0(vel, velDiff-diff*2))
+        vel = [vel[0]*closestObj.bounciness, vel[1]*closestObj.bounciness]
         diff2Point = (closestP[0]-cPoint[0], closestP[1]-cPoint[1])
         odiff = (pos[0]-cPoint[0], pos[1]-cPoint[1])
         # HACK
@@ -1469,47 +1469,47 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         newshp = [(i[0]+odiff[0], i[1]+odiff[1]) for i in oldShp.toPoints()]
         o = self.handleCollisionsPos(
             Polygon(*[(i[0]+diff2Point[0]+smallness[0], i[1]+diff2Point[1]+smallness[1]) for i in oldShp.toPoints()]), 
-            Polygon(*newshp), objs, accel, False, precision, verbose)
-        out, outaccel = o[0], o[1]
+            Polygon(*newshp), objs, vel, False, precision, verbose)
+        out, outvel = o[0], o[1]
         if replaceSelf:
             self.x, self.y = out.x, out.y
         if verbose:
-            return out, outaccel, [collTyp, True]
-        return out, outaccel
+            return out, outvel, [collTyp, True]
+        return out, outvel
 
-    def handleCollisionsAccel(self,
-                              accel: pointLike,
+    def handleCollisionsVel(self,
+                              vel: pointLike,
                               objs: Union[Shapes, Iterable[Shape]],
                               replaceSelf: bool = True,
                               precision: Number = BASEPRECISION,
                               verbose: bool = False
                              ) -> tuple['ClosedShape', pointLike, verboseOutput]:
         """
-        Handles movement of this object via acceleration and it bouncing off of other objects.
+        Handles movement of this object via velocity and it bouncing off of other objects.
 
         Args:
-            accel (pointLike): The acceleration of this object.
+            vel (pointLike): The velocity of this object.
             objs (Shapes / Iterable[Shape]): The objects to bounce off of.
             replaceSelf (bool, optional): Whether to move this object to the new position after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[ClosedShape, pointLike, veboseOutput?]: The new position and accel of this object respectively, and if verbose then the verboseOutput.
+            tuple[ClosedShape, pointLike, veboseOutput?]: The new position and vel of this object respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             CollisionType (list[int, ...] / None): The type of collision that occured for each sub-collision (if it ever collided, that is)
             DidReflect (bool): Whether the line reflected off of something
         """
         n = self.copy()
-        n.x, n.y = n.x+accel[0], n.y+accel[1]
-        o = self.handleCollisionsPos(self, n, objs, accel, False, precision, verbose)
-        out, outaccel = o[0], o[1]
+        n.x, n.y = n.x+vel[0], n.y+vel[1]
+        o = self.handleCollisionsPos(self, n, objs, vel, False, precision, verbose)
+        out, outvel = o[0], o[1]
         if replaceSelf:
             self.x, self.y = out.x, out.y
         if verbose:
-            return out, outaccel, o[2]
-        return out, outaccel
+            return out, outvel, o[2]
+        return out, outvel
     
     def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
         """
@@ -2029,7 +2029,7 @@ class ShapeCombiner:
 # TODO: Options for having func(a, b, c) OR func([a, b, c])
 # TODO: A lot more bounding box checks everywhere
 # TODO: Split functions up into smaller bits and have more sharing of functions (especially with the handleCollisions)
-# TODO: colliding VELOCITY, not accel
+# TODO: colliding VELOCITY, not vel
 # TODO: Ovals, ovaloids and arcs (Ellipse & capsule)
 # TODO: Can also input pointlike, linelike (2 points) and polygon-like iterables into all functions to reduce conversion
 # TODO: Bounciness factor for each object

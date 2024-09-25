@@ -1,5 +1,5 @@
 from _typeshed import Incomplete
-from typing import Any, Iterable
+from typing import Any, Dict, Iterable
 
 Number = int | float
 verboseOutput = Iterable[Any] | None
@@ -121,13 +121,13 @@ class Shape:
         Returns:
             bool: Whether the point is on a corner of this shape
         """
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
+    def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
-        Finds the tangent on this surface to a point with a given acceleration
+        Finds the tangent on this surface to a point with a given velocity
 
         Args:
             point (pointLike): The point to find the tangent of this surface from
-            accel (pointLike): Which direction the point is moving (useful for example with lines for finding which side of the line the tangent should be of)
+            vel (pointLike): Which direction the point is moving (useful for example with lines for finding which side of the line the tangent should be of)
 
         Returns:
             Number: The tangent of this object at the point. You can -90 to get the normal.
@@ -139,13 +139,13 @@ class Shape:
         Returns:
             Iterable[Number]: (min x, min y, max x, max y)
         """
-    def handleCollisionsPos(self, oldP: Shape, newP: Shape, objs: Shapes | Iterable['Shape'], accel: pointLike = [0, 0], verbose: bool = False) -> tuple['Shape', pointLike, verboseOutput]:
+    def handleCollisionsPos(self, oldP: Shape, newP: Shape, objs: Shapes | Iterable['Shape'], vel: pointLike = [0, 0], verbose: bool = False) -> tuple['Shape', pointLike, verboseOutput]:
         """
         This is called to modify objects' positions to bounce off objects.
         """
-    def handleCollisionsAccel(self, accel: pointLike, objs: Shapes | Iterable['Shape'], verbose: bool = False) -> tuple['Shape', pointLike, verboseOutput]:
+    def handleCollisionsVel(self, vel: pointLike, objs: Shapes | Iterable['Shape'], verbose: bool = False) -> tuple['Shape', pointLike, verboseOutput]:
         """
-        This is a wrapper for `handleCollisionsPos` to handle acceleration instead of position.
+        This is a wrapper for `handleCollisionsPos` to handle velocity instead of position.
         """
     def copy(self) -> Shape:
         """
@@ -232,7 +232,7 @@ class Shapes:
         Returns:
             Iterable[pointLike]: All the closest point(s) ON each of these objects
         """
-    def isCorner(self, point: pointLike, precision: Number = ...) -> dict[Shape | Shapes, bool]:
+    def isCorner(self, point: pointLike, precision: Number = ...) -> Dict[Shape | Shapes, bool]:
         """
         Takes each object and finds whether the input point is on the corner of that object.
 
@@ -243,13 +243,13 @@ class Shapes:
         Returns:
             dict[Shape / Shapes: bool]: A dictionary of each object in this and whether the point is a corner on it or not.
         """
-    def tangent(self, point: pointLike, accel: pointLike) -> Iterable[Number]:
+    def tangent(self, point: pointLike, vel: pointLike) -> Iterable[Number]:
         """
         Finds the tangent on each of these objects for the specified point. -90 = normal.
 
         Args:
             point (pointLike): The point to find the tangent from
-            accel (pointLike): Which direction the point is moving (useful for example with lines for finding which side of the line the tangent should be of)
+            vel (pointLike): Which direction the point is moving (useful for example with lines for finding which side of the line the tangent should be of)
 
         Returns:
             Iterable[Number]: A list of all the tangents to the specified point.
@@ -306,42 +306,42 @@ class Point(Shape):
         Gets this object in a tuple format: (x, y).
         Do you get the point?
         """
-    def handleCollisionsPos(self, oldPoint: Point | pointLike, newPoint: Point | pointLike, objs: Shapes | Iterable[Shape], accel: pointLike = [0, 0], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple[pointLike, pointLike, verboseOutput]:
+    def handleCollisionsPos(self, oldPoint: Point | pointLike, newPoint: Point | pointLike, objs: Shapes | Iterable[Shape], vel: pointLike = [0, 0], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple[pointLike, pointLike, verboseOutput]:
         """
         Handles movement of this point and it bouncing off of other objects.
-        It is recommended you use `.handleCollisionsAccel` instead of this, as it handles velocity instead of raw movement and is easier to use.
+        It is recommended you use `.handleCollisionsVel` instead of this, as it handles velocity instead of raw movement and is easier to use.
 
-        But if you are to use this, remember to still provide the accel param. It will sometimes provide weird results if you don't.
+        But if you are to use this, remember to still provide the vel param. It will sometimes provide weird results if you don't.
         It could even just be the difference in positions, it just needs to be something realistic.
 
         Args:
             oldPoint (Point / pointLike): The old position of this object.
             newPoint (Point / pointLike): The new position of this object.
             objs (Shapes / Iterable[Shape]): The objects this will bounce off.
-            accel (pointLike, optional): The acceleration that this object is going. Defaults to [0, 0].
+            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
             replaceSelf (bool, optional): Whether to replace self.x and self.y with the new position of the object after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[pointLike, pointLike, veboseOutput?]: The new position and accel of this object respectively, and if verbose then the verboseOutput.
+            tuple[pointLike, pointLike, veboseOutput?]: The new position and vel of this object respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             DidReflect (bool): Whether the line reflected off of something
         """
-    def handleCollisionsAccel(self, accel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple[pointLike, pointLike, verboseOutput]:
+    def handleCollisionsVel(self, vel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple[pointLike, pointLike, verboseOutput]:
         """
-        Handles movement of this point via acceleration and it bouncing off of other objects.
+        Handles movement of this point via velocity and it bouncing off of other objects.
 
         Args:
-            accel (pointLike): The acceleration of this point
+            vel (pointLike): The velocity of this point
             objs (Shapes / Iterable[Shape]): The objects to bounce off of
             replaceSelf (bool, optional): Whether or not to replace self.x and self.y with the new position. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[pointLike, pointLike, veboseOutput?]: The new position and accel of this object respectively, and if verbose then the verboseOutput.
+            tuple[pointLike, pointLike, veboseOutput?]: The new position and vel of this object respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             DidReflect (bool): Whether the line reflected off of something
@@ -406,54 +406,54 @@ class Line(Shape):
         Returns:
             bool: Whether the point is on a corner of this shape
         """
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
+    def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
-        Finds the tangent on this surface to a point with a given acceleration.
+        Finds the tangent on this surface to a point with a given velocity.
 
         Args:
             point (pointLike): The point to find the tangent of this surface from.
-            accel (pointLike): Which direction the point is moving. In this case (for lines) it is actually very important, so please don't forget it.
+            vel (pointLike): Which direction the point is moving. In this case (for lines) it is actually very important, so please don't forget it.
 
         Returns:
             Number: The tangent of the line at the point. You can -90 to get the normal.
         """
-    def handleCollisionsPos(self, oldLine: Line, newLine: Line, objs: Shapes | Iterable[Shape], accel: pointLike = [0, 0], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
+    def handleCollisionsPos(self, oldLine: Line, newLine: Line, objs: Shapes | Iterable[Shape], vel: pointLike = [0, 0], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
         """
         Handles movement of this line and it bouncing off of other objects.
-        It is recommended you use `.handleCollisionsAccel` instead of this, as it handles velocity instead of raw movement and is easier to use.
+        It is recommended you use `.handleCollisionsVel` instead of this, as it handles velocity instead of raw movement and is easier to use.
 
-        But if you are to use this, remember to still provide the accel param. It will provide VERY weird results if you don't.
+        But if you are to use this, remember to still provide the vel param. It will provide VERY weird results if you don't.
         It could even just be the difference in positions, it just needs to be something realistic.
 
         Args:
             oldLine (Line): The old Line object.
             newLine (Line): The new Line object. Should be the exact same as the old one except with the 2 points offset by the same amount.
             objs (Shapes / Iterable[Shape]): The objects this will bounce off.
-            accel (pointLike, optional): The acceleration that this object is going. Defaults to [0, 0].
+            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
             replaceSelf (bool, optional): Whether to move this Line to the new position after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[Line, pointLike, veboseOutput?]: The new Line object and accel of this object respectively, and if verbose then the verboseOutput.
+            tuple[Line, pointLike, veboseOutput?]: The new Line object and vel of this object respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             CollisionType (list[int, ...] / None): The type of collision that occured for each sub-collision (if it ever collided, that is)
             DidReflect (bool): Whether the line reflected off of something
         """
-    def handleCollisionsAccel(self, accel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
+    def handleCollisionsVel(self, vel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple['Line', pointLike, verboseOutput]:
         """
-        Handles movement of this line via acceleration and it bouncing off of other objects.
+        Handles movement of this line via velocity and it bouncing off of other objects.
 
         Args:
-            accel (pointLike): The acceleration of this line.
+            vel (pointLike): The velocity of this line.
             objs (Shapes / Iterable[Shape]): The objects to bounce off of.
             replaceSelf (bool, optional): Whether to move this Line to the new position after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[Line, pointLike, veboseOutput?]: The new position and accel of this object respectively, and if verbose then the verboseOutput.
+            tuple[Line, pointLike, veboseOutput?]: The new position and vel of this object respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             CollisionType (list[int, ...] / None): The type of collision that occured for each sub-collision (if it ever collided, that is)
@@ -506,13 +506,13 @@ class Circle(Shape):
         Returns:
             bool: Whether the point is on a corner of this shape
         """
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
+    def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
-        Finds the tangent on this surface to a point with a given acceleration.
+        Finds the tangent on this surface to a point with a given velocity.
 
         Args:
             point (pointLike): The point to find the tangent of this surface from.
-            accel (pointLike): Which direction the point is moving.
+            vel (pointLike): Which direction the point is moving.
 
         Returns:
             Number: The tangent of the circle at the point. You can -90 to get the normal.
@@ -528,13 +528,13 @@ class Circle(Shape):
     def __setitem__(self, item: Number, new: Number) -> None: ...
 
 class ClosedShape(Shape):
-    def tangent(self, point: pointLike, accel: pointLike) -> Number:
+    def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
-        Finds the tangent on this surface to a point with a given acceleration.
+        Finds the tangent on this surface to a point with a given velocity.
 
         Args:
             point (pointLike): The point to find the tangent of this surface from.
-            accel (pointLike): Which direction the point is moving. In this case (for closed shapes, which are made of lines) it is actually very important, so please don't forget it.
+            vel (pointLike): Which direction the point is moving. In this case (for closed shapes, which are made of lines) it is actually very important, so please don't forget it.
 
         Returns:
             Number: The tangent of the line at the point. You can -90 to get the normal.
@@ -550,43 +550,43 @@ class ClosedShape(Shape):
         Returns:
             pointLike / Iterable[pointLike]: The closest point(s, depending on returnAll) ON this object TO the othershape
         """
-    def handleCollisionsPos(self, oldShp: ClosedShape, newShp: ClosedShape, objs: Shapes | Iterable[Shape], accel: pointLike = [0, 0], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple['ClosedShape', pointLike, verboseOutput]:
+    def handleCollisionsPos(self, oldShp: ClosedShape, newShp: ClosedShape, objs: Shapes | Iterable[Shape], vel: pointLike = [0, 0], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple['ClosedShape', pointLike, verboseOutput]:
         """
         Handles movement of this closed shape and it bouncing off of other objects.
-        It is recommended you use `.handleCollisionsAccel` instead of this, as it handles velocity instead of raw movement and is easier to use.
+        It is recommended you use `.handleCollisionsVel` instead of this, as it handles velocity instead of raw movement and is easier to use.
 
-        But if you are to use this, remember to still provide the accel param. It will provide VERY weird results if you don't.
+        But if you are to use this, remember to still provide the vel param. It will provide VERY weird results if you don't.
         It could even just be the difference in positions, it just needs to be something realistic.
 
         Args:
             oldShp (ClosedShape): The old object.
             newShp (ClosedShape): The new object. Should be the exact same as the old one except with the points offset by the same amount.
             objs (Shapes / Iterable[Shape]): The objects this will bounce off.
-            accel (pointLike, optional): The acceleration that this object is going. Defaults to [0, 0].
+            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
             replaceSelf (bool, optional): Whether to move this object to the new position after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[ClosedShape, pointLike, veboseOutput?]: The new object and accel respectively, and if verbose then the verboseOutput.
+            tuple[ClosedShape, pointLike, veboseOutput?]: The new object and vel respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             CollisionType (list[int, ...] / None): The type of collision that occured for each sub-collision (if it ever collided, that is)
             DidReflect (bool): Whether the object reflected off of something
         """
-    def handleCollisionsAccel(self, accel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple['ClosedShape', pointLike, verboseOutput]:
+    def handleCollisionsVel(self, vel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple['ClosedShape', pointLike, verboseOutput]:
         """
-        Handles movement of this object via acceleration and it bouncing off of other objects.
+        Handles movement of this object via velocity and it bouncing off of other objects.
 
         Args:
-            accel (pointLike): The acceleration of this object.
+            vel (pointLike): The velocity of this object.
             objs (Shapes / Iterable[Shape]): The objects to bounce off of.
             replaceSelf (bool, optional): Whether to move this object to the new position after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
         Returns:
-            tuple[ClosedShape, pointLike, veboseOutput?]: The new position and accel of this object respectively, and if verbose then the verboseOutput.
+            tuple[ClosedShape, pointLike, veboseOutput?]: The new position and vel of this object respectively, and if verbose then the verboseOutput.
         
         VerboseOutput:
             CollisionType (list[int, ...] / None): The type of collision that occured for each sub-collision (if it ever collided, that is)
