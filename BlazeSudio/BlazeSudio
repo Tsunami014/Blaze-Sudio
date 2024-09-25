@@ -16,7 +16,7 @@ Options:
   --version, -v      Show the version number and exit""")
     sys.exit(0)
 elif '--version' in sys.argv or '-v' in sys.argv:
-    print('BlazeSudio v3.0.1')
+    print('BlazeSudio v3.1.0')
     sys.exit(0)
 
 txt = """

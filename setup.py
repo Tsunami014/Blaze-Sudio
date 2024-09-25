@@ -14,11 +14,11 @@ with codecs.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as fh
 
 setup(
     name='Blaze-Sudio',
-    version='3.0.1',
+    version='3.1.0',
     license='Apache',
     description='This is the really cool game engine!',
     url='https://github.com/Tsunami014/Blaze-Sudio',
-    download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v3.0.1.tar.gz',
+    download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v3.1.0.tar.gz',
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),

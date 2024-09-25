@@ -11,7 +11,7 @@
 [![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]()
 [![v3.0.0 released on Sept 19, 2024](https://badgen.net/badge/v3.0.0%20released:/Sept%2019,%202024?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/releases/tag/v3.0.0)
 
-# ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v3.0.1 (🌿 Kindle)
+# ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v3.1.0 (🌿 Kindle)
 
 <!-- // TODO: Get a better icon (and put it in the banner) -->
 
