@@ -81,15 +81,18 @@ def wrapWorld(world):
             imgs[outlining].append(cir)
     return imgs, szes
 
-def save(imgs, fname, size):
-    height = len(imgs) * len(imgs[0])
-    width = len(imgs[0][0])
-    new_image = pygame.Surface((width, height), pygame.SRCALPHA)
-    for y, row in enumerate(imgs):
-        for x, col in enumerate(row):
-            for i, pixel in enumerate(col):
-                new_image.set_at((x, y * len(col) + i), pixel)
-    new_image = pygame.transform.scale(new_image, (size, size * len(imgs)))
+def save(imgs, fname, szes):
+    out = pygame.Surface((max(szes), sum(szes)/2))
+    prevh = 0
+    for img, sze in zip(imgs, szes):
+        new_image = pygame.Surface((len(img[0]), len(img)), pygame.SRCALPHA)
+        for y, row in enumerate(img):
+            for x, pixel in enumerate(row):
+                new_image.set_at((x, y), pixel)
+        newImg = pygame.transform.scale(new_image, (sze, sze))
+        out.blit(newImg, (0, prevh))
+        prevh += newImg.get_height()
+
     if not os.path.exists(os.path.dirname(fname)):
         os.makedirs(os.path.dirname(fname))
-    pygame.image.save(new_image, fname)
+    pygame.image.save(out, fname)
