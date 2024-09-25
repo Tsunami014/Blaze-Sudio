@@ -74,47 +74,69 @@ class SkeletonEntity:
 class BaseEntity(SkeletonEntity):
     def __init__(self, G, entity):
         super().__init__(G, entity)
-        self.pos = [0, 0]
-        self.accel = [0, 0]
+        self.max_speed = 3  # Maximum speed the entity can reach
+        self.acceleration = 0.5  # Rate of acceleration
+        self.decell = 0.1 # Rate of decelleration
+        self.friction = 0.1  # Friction to slow down the entity
+        self.lerp_factor = 0.1  # Factor for smooth interpolation
+        
+        self.velocity = [0, 0]
+        self.target_velocity = [0, 0] # Modify THIS value.
+        self.position = [0, 0]
         self.gravity = [0, 0]
-        self.friction = [0.05, 0.05]
-        #                   Accel,      decel
-        self.accel_amnt = [[0.5, 0.5], [0.25, 0.25]]
-        self.max_accel = [2, 2]
+    
+    @staticmethod
+    def lerp(start, end, t):
+        """Linearly interpolate between start and end by t."""
+        return start + (end - start) * t
     
     def handle_keys(self):
         keys = pygame.key.get_pressed()
+
+        # Vertical movement
         if keys[pygame.K_UP] ^ keys[pygame.K_DOWN]:
             if keys[pygame.K_UP]:
-                self.accel[1] -= self.accel_amnt[0][1]
+                self.target_velocity[1] -= self.acceleration
             elif keys[pygame.K_DOWN]:
-                self.accel[1] += self.accel_amnt[0][1]
-        else:
-            if self.accel[1] < -self.accel_amnt[1][1]:
-                self.accel[1] += self.accel_amnt[1][1]
-            elif self.accel[1] > self.accel_amnt[1][1]:
-                self.accel[1] -= self.accel_amnt[1][1]
-            else:
-                self.accel[1] = 0
+                self.target_velocity[1] += self.acceleration
+
+        # Horizontal movement
+        if keys[pygame.K_LEFT] ^ keys[pygame.K_RIGHT]:
+            if keys[pygame.K_LEFT]:
+                self.target_velocity[0] -= self.acceleration
+            elif keys[pygame.K_RIGHT]:
+                self.target_velocity[0] += self.acceleration
+    
+    def apply_physics(self):
+        # Cap the speed to max_speed
+        self.target_velocity = [max(-self.max_speed, min(self.target_velocity[0], self.max_speed)),
+                                max(-self.max_speed, min(self.target_velocity[1], self.max_speed))]
         
-        if keys[pygame.K_RIGHT] ^ keys[pygame.K_LEFT]:
-            if keys[pygame.K_RIGHT]:
-                self.accel[0] += self.accel_amnt[0][0]
-            elif keys[pygame.K_LEFT]:
-                self.accel[0] -= self.accel_amnt[0][0]
-        else:
-            if self.accel[0] < -self.accel_amnt[1][0]:
-                self.accel[0] += self.accel_amnt[1][0]
-            elif self.accel[0] > self.accel_amnt[1][0]:
-                self.accel[0] -= self.accel_amnt[1][0]
-            else:
-                self.accel[0] = 0
-    
-    def handle_accel(self):
-        self.accel = [self.accel[0]*(1-self.friction[0]), self.accel[1]*(1-self.friction[1])]
-        self.accel = [round(min(max(self.accel[0]+self.gravity[0], -self.max_accel[0]), self.max_accel[0]), 3), round(min(max(self.accel[1]+self.gravity[1], -self.max_accel[1]), self.max_accel[1]), 3)]
-    
+        self.target_velocity = [self.target_velocity[0] * (1-self.decell),
+                                self.target_velocity[1] * (1-self.decell)]
+        
+        # Interpolate towards the target velocity for smooth acceleration and deceleration
+        self.velocity[0] = self.lerp(self.velocity[0], self.target_velocity[0], self.lerp_factor)
+        self.velocity[1] = self.lerp(self.velocity[1], self.target_velocity[1], self.lerp_factor)
+
+        # Add gravity
+        self.velocity = [
+            self.velocity[0]+self.gravity[0],
+            self.velocity[1]+self.gravity[1]
+        ]
+
+        # Apply friction to gradually slow down when not accelerating
+        if self.target_velocity[0] == 0:
+            self.velocity[0] *= (1 - self.friction)
+        if self.target_velocity[1] == 0:
+            self.velocity[1] *= (1 - self.friction)
+        
+        # Cap the speed to max_speed
+        self.velocity = [max(-self.max_speed, min(self.velocity[0], self.max_speed)),
+                         max(-self.max_speed, min(self.velocity[1], self.max_speed))]
+
     def __call__(self, evs):
         self.handle_keys()
-        self.handle_accel()
-        self.pos = [self.pos[0] + self.accel[0], self.pos[1] + self.accel[1]]
+        self.apply_physics()
+        self.position[0] += self.velocity[0]
+        self.position[1] += self.velocity[1]
