@@ -97,7 +97,7 @@ class Tileset:
             pygame.Surface: The image of the tile.
         """
         end = pygame.transform.flip(self.tileSet.subsurface(pygame.Rect(tile.src[0], tile.src[1], self.tileGridSize, self.tileGridSize)), *tile.flip)
-        return pygame.transform.scale(end, (self.tileGridSize, self.tileGridSize))
+        return end
 
 class Entity:
     def __init__(self, layer: Dict, data: Dict, tilesets: Dict[int, Tileset]):
@@ -242,6 +242,24 @@ class Ldtklevel:
             if i.identifier == layerid:
                 return i
         raise ValueError(f"Layer with identifier {layerid} not found.")
+    
+    def GetAllEntities(self, processor: Callable = lambda e: e) -> List[Any]:
+        """
+        Get all the entities in the level. Does not use caching, unlike the other get entities functions.
+
+        Args:
+            processor (Callable, optional): This is a function that will process the entities. It takes in an Entity object and outputs anything. \
+The outputs will be combined as the return list. This defaults to `lambda e: e`. Returning None in this will ignore that entity.
+        
+        Returns:
+            List[Any]: All the entities in the level, passed through the `processor` func.
+        """
+        o = []
+        for e in self.entities:
+            resp = processor(e)
+            if resp is not None:
+                o.append(resp)
+        return o
 
     def GetEntitiesByLayer(self, layerid: str, processor: Callable = lambda e: e, forceRefreshCache: bool = False) -> List[Any]:
         """
@@ -343,7 +361,7 @@ class layer:
         end.fill((255, 255, 255, 1))
         if not self.data['visible']:
             return end
-        # TODO: Auto layer support
+        # TODO: Autotile layer support
         if self.tileset is None:
             if self.type == 'IntGrid':
                 vals = [i['value'] for i in self.intGridValues]
@@ -467,10 +485,10 @@ class tile:
         self.a: float = self.data['a']
         # what is self.data['d']???
 
-        self.pos: List[int] = [self.px[0] + self.layer.pxOffset[0], self.px[1] + self.layer.pxOffset[1]]
+        self.pos: Tuple[int] = (self.px[0] + self.layer.pxOffset[0], self.px[1] + self.layer.pxOffset[1])
         # self.src = self.src
         
-        self.flip: List[int] = [self.data['f'] in [1, 3], self.data['f'] in [2, 3]]
+        self.flip: Tuple[int] = (self.data['f'] in [1, 3], self.data['f'] in [2, 3])
         
         # THINGS TO KNOW:
         # self.data['f'] = flip: 0=no flip, 1=flip x, 2=flip y, 3=flip both
