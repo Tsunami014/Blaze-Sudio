@@ -420,6 +420,7 @@ class IntGridCSV:
         self.offsets: List[int|float] = offsets
         self.gridsze: int = gridsize
         self.intgrid: List[List[int]] = [intgrid[cwid*i:cwid*(i+1)] for i in range(chei)]
+        self.allValues: List[int] = list(set(intgrid))
         self.rects: Dict[int, colls.Rect] = None
     
     def getRects(self, matches: List[int]) -> colls.Shapes:
