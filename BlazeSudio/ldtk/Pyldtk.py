@@ -228,7 +228,20 @@ class Ldtklevel:
                 self.layers.append(layer(lay, self))
         self.layers.reverse() 
     
-    # TODO: Get layer by id
+    def GetLayerById(self, layerid: str) -> 'layer':
+        """
+        Get a layer by it's identifier.
+
+        Args:
+            layerid (str): The layer identifier.
+
+        Returns:
+            layer: The layer object.
+        """
+        for i in self.layers:
+            if i.identifier == layerid:
+                return i
+        raise ValueError(f"Layer with identifier {layerid} not found.")
 
     def GetEntitiesByLayer(self, layerid: str, processor: Callable = lambda e: e, forceRefreshCache: bool = False) -> List[Any]:
         """
