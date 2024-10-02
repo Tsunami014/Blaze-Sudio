@@ -187,6 +187,20 @@ class Shape:
         """
         return math.degrees(math.atan2(vel[1], vel[0])) % 360
     
+    def toLines(self) -> Iterable['Line']:
+        """
+        Returns:
+            Iterable[Line]: Get a list of all the Lines that make up this object. For anything under a ClosedShape, this will most likely be empty.
+        """
+        return []
+    
+    def toPoints(self) -> Iterable[pointLike]:
+        """
+        Returns:
+            Iterable[pointLike]: Get a list of all the Points that make up this object. For Circles and Shape's, this will be empty.
+        """
+        return []
+    
     def rect(self) -> Iterable[Number]:
         """
         Returns the rectangle bounding box surrounding this object.
@@ -369,6 +383,8 @@ class Shapes:
     
     # TODO: handleCollisions
 
+    # TODO: to_points and to_lines
+
     def rect(self) -> Iterable[Number]:
         """
         Returns the rectangle bounding box surrounding every one of these objects.
@@ -430,6 +446,13 @@ class Point(Shape):
             Iterable[Number]: (min x, min y, max x, max y)
         """
         return self.x, self.y, self.x, self.y
+    
+    def toPoints(self) -> Iterable[pointLike]:
+        """
+        Returns:
+            Iterable[pointLike]: Get a list of all the Points that make up this object; i.e. just this one point.
+        """
+        return [self]
     
     def _collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
@@ -648,6 +671,20 @@ class Line(Shape):
             Iterable[Number]: (min x, min y, max x, max y)
         """
         return min(self.p1[0], self.p2[0]), min(self.p1[1], self.p2[1]), max(self.p1[0], self.p2[0]), max(self.p1[1], self.p2[1])
+    
+    def toLines(self) -> Iterable['Line']:
+        """
+        Returns:
+            Iterable[Line]: Get a list of all the Lines that make up this object; i.e. just this one line.
+        """
+        return [self]
+    
+    def toPoints(self) -> Iterable[pointLike]:
+        """
+        Returns:
+            Iterable[pointLike]: Get a list of all the Points that make up this object.
+        """
+        return [self.p1, self.p2]
     
     def _collides(self, othershape: Shape) -> bool:
         if isinstance(othershape, Point):
