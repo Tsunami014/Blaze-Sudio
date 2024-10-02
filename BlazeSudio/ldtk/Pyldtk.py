@@ -352,6 +352,12 @@ class layer:
             self.tiles = [tile(t, self) for t in self.data['gridTiles']]
     
     def getTileRects(self) -> colls.Shapes:
+        """
+        Gets all the tiles (if there are any) as collisions.Rect objects.
+
+        Returns:
+            colls.Shapes: The list of all the tiles as collisions.Rect objects.
+        """
         if self.tiles is None:
             self.loadTileSheet()
         if self.tiles is None:
