@@ -65,6 +65,11 @@ def save(imgs, fname, szes):
     out = pygame.Surface((max(szes), sum(szes)), pygame.SRCALPHA)
     prevh = 0
     for img, sze in zip(imgs, szes):
+        if isinstance(img, pygame.Surface):
+            newImg = pygame.transform.scale(img, (sze, sze))
+            out.blit(newImg, (0, prevh))
+            prevh += newImg.get_height()
+            continue
         new_image = pygame.Surface((len(img[0]), len(img)), pygame.SRCALPHA)
         for y, row in enumerate(img):
             for x, pixel in enumerate(row):
