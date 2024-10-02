@@ -10,6 +10,7 @@ from typing import Any, Callable, Dict, Iterable, List, Tuple
 # TODO: fieldinstance class WITH DEFAULTS
 # TODO: make the data, etc. 'private' (i.e. _data or __data)
 # TODO: Consistent naming
+# TODO: Literal["a", "b"]
 
 class LdtkJSON:
     def __init__(self, jsoninf: Dict[str, str], fileloc: str = ''): ## It takes in JSON
@@ -361,7 +362,7 @@ class layer:
         end.fill((255, 255, 255, 1))
         if not self.data['visible']:
             return end
-        # TODO: Autotile layer support
+        # TODO: Autotile layer support, but does it even need it???
         if self.tileset is None:
             if self.type == 'IntGrid':
                 vals = [i['value'] for i in self.intGridValues]
