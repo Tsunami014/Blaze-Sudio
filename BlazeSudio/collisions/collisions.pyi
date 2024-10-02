@@ -132,6 +132,16 @@ class Shape:
         Returns:
             Number: The tangent of this object at the point. You can -90 to get the normal.
         """
+    def toLines(self) -> Iterable['Line']:
+        """
+        Returns:
+            Iterable[Line]: Get a list of all the Lines that make up this object. For anything under a ClosedShape, this will most likely be empty.
+        """
+    def toPoints(self) -> Iterable[pointLike]:
+        """
+        Returns:
+            Iterable[pointLike]: Get a list of all the Points that make up this object. For Circles and Shape's, this will be empty.
+        """
     def rect(self) -> Iterable[Number]:
         """
         Returns the rectangle bounding box surrounding this object.
@@ -290,6 +300,11 @@ class Point(Shape):
         Returns:
             Iterable[Number]: (min x, min y, max x, max y)
         """
+    def toPoints(self) -> Iterable[pointLike]:
+        """
+        Returns:
+            Iterable[pointLike]: Get a list of all the Points that make up this object; i.e. just this one point.
+        """
     def closestPointTo(self, othershape: Shape, returnAll: bool = False) -> pointLike | Iterable[pointLike]:
         """
         Finds the closest point ON this object TO the other shape
@@ -383,6 +398,16 @@ class Line(Shape):
 
         Returns:
             Iterable[Number]: (min x, min y, max x, max y)
+        """
+    def toLines(self) -> Iterable['Line']:
+        """
+        Returns:
+            Iterable[Line]: Get a list of all the Lines that make up this object; i.e. just this one line.
+        """
+    def toPoints(self) -> Iterable[pointLike]:
+        """
+        Returns:
+            Iterable[pointLike]: Get a list of all the Points that make up this object.
         """
     def closestPointTo(self, othershape: Shape, returnAll: bool = False) -> pointLike | Iterable[pointLike]:
         """
