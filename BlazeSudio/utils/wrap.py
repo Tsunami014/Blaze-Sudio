@@ -4,10 +4,10 @@ import math
 
 # Thanks to https://stackoverflow.com/questions/38745020/wrap-image-around-a-circle !!
 
-def wrapLevel(world, lvl, Ro=50.0, Ri=1.0):
+def wrapLevel(world, lvl, Ro=50.0, Ri=1.0, quality=1.0):
     imgs = []
     for outlining in (False, True):
-        cir = [[(0, 0, 0, 0) for x in range(int(Ro * 2))] for y in range(int(Ro * 2))]
+        cir = [[(0, 0, 0, 0) for x in range(int(Ro * 2 * quality))] for y in range(int(Ro * 2 * quality))]
 
         if outlining:
             for i in world.get_level(lvl).layers:
@@ -17,19 +17,19 @@ def wrapLevel(world, lvl, Ro=50.0, Ri=1.0):
         pixels = pygame.surfarray.pixels3d(pg)
         alpha = pygame.surfarray.pixels_alpha(pg)
 
-        for i in range(int(Ro)):
-            outer_radius = math.sqrt(Ro * Ro - i * i)
-            for j in range(-int(outer_radius), int(outer_radius)):
-                if i < Ri:
-                    inner_radius = math.sqrt(Ri * Ri - i * i)
+        for i in range(int(Ro * quality)):
+            outer_radius = math.sqrt(Ro * Ro - (i / quality) * (i / quality))
+            for j in range(-int(outer_radius * quality), int(outer_radius * quality)):
+                if i < Ri * quality:
+                    inner_radius = math.sqrt(Ri * Ri - (i / quality) * (i / quality))
                 else:
                     inner_radius = -1
-                if j < -inner_radius or j > inner_radius:
-                    x = Ro + j
-                    y = Ro - i
-                    angle = math.atan2(y - Ro, x - Ro) / 2
-                    distance = math.sqrt((y - Ro) * (y - Ro) + (x - Ro) * (x - Ro))
-                    distance = math.floor((distance - Ri + 1) * (height - 1) / (Ro - Ri))
+                if j < -inner_radius * quality or j > inner_radius * quality:
+                    x = Ro * quality + j
+                    y = Ro * quality - i
+                    angle = math.atan2(y - Ro * quality, x - Ro * quality) / 2
+                    distance = math.sqrt((y - Ro * quality) * (y - Ro * quality) + (x - Ro * quality) * (x - Ro * quality))
+                    distance = math.floor((distance / quality - Ri + 1) * (height - 1) / (Ro - Ri))
                     if distance >= height:
                         distance = height - 1
                     col = pixels[int(width * angle / math.pi) % width, height - distance - 1]
@@ -42,10 +42,10 @@ def wrapLevel(world, lvl, Ro=50.0, Ri=1.0):
                             col = (0, 0, 0)
                             a = 0
                     cir[int(y)][int(x)] = (*col, a)
-                    y = Ro + i
-                    angle = math.atan2(y - Ro, x - Ro) / 2
-                    distance = math.sqrt((y - Ro) * (y - Ro) + (x - Ro) * (x - Ro))
-                    distance = math.floor((distance - Ri + 1) * (height - 1) / (Ro - Ri))
+                    y = Ro * quality + i
+                    angle = math.atan2(y - Ro * quality, x - Ro * quality) / 2
+                    distance = math.sqrt((y - Ro * quality) * (y - Ro * quality) + (x - Ro * quality) * (x - Ro * quality))
+                    distance = math.floor((distance / quality - Ri + 1) * (height - 1) / (Ro - Ri))
                     if distance >= height:
                         distance = height - 1
                     col = pixels[int(width * angle / math.pi) % width, height - distance - 1]
