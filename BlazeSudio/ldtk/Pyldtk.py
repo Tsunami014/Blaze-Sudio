@@ -351,6 +351,13 @@ class layer:
         else:
             self.tiles = [tile(t, self) for t in self.data['gridTiles']]
     
+    def getTileRects(self) -> colls.Shapes:
+        if self.tiles is None:
+            self.loadTileSheet()
+        if self.tiles is None:
+            return colls.Shapes()
+        return colls.Shapes(*[colls.Rect(i.pos[0], i.pos[1], self.gridSize, self.gridSize) for i in self.tiles])
+    
     def getImg(self) -> pygame.Surface:
         """
         Gets the whole layer as a pygame surface.
