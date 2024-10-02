@@ -343,6 +343,7 @@ class layer:
         end.fill((255, 255, 255, 1))
         if not self.data['visible']:
             return end
+        # TODO: Auto layer support
         if self.tileset is None:
             if self.type == 'IntGrid':
                 vals = [i['value'] for i in self.intGridValues]
@@ -355,6 +356,11 @@ class layer:
                             h = self.intGridValues[vals.index(self.intgrid[y, x])]['color'].lstrip('#')
                             col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
                         end.blit(col, (x*self.gridSize, y*self.gridSize))
+            elif self.type == 'Tiles':
+                noneTile = pygame.Surface((self.gridSize, self.gridSize))
+                noneTile.fill((0, 0, 0))
+                for i in self.tiles:
+                    end.blit(noneTile, i.pos)
             return end
         if self.tiles is None:
             self.loadTileSheet()
