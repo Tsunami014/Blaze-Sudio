@@ -1,5 +1,5 @@
 from shapely import concave_hull
-from shapely.geometry import MultiPoint
+from shapely.geometry import MultiPoint, LineString
 import BlazeSudio.collisions as colls
 
 def approximate_polygon(surface, tolerance=3, ratio=0.1):
@@ -38,5 +38,8 @@ def approximate_polygon(surface, tolerance=3, ratio=0.1):
         return
 
     hull = concave_hull(MultiPoint(polygon_points), ratio=ratio)
+
+    if isinstance(hull, LineString):
+        return colls.Line(*list(zip(*[list(i) for i in hull.coords.xy])))
 
     return colls.Polygon(*list(zip(*[list(i) for i in hull.exterior.coords.xy])))
