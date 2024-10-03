@@ -215,7 +215,7 @@ class Ldtklevel:
         self.sizePx: List[int] = [self.data['pxWid'], self.data['pxHei']]
         self.neighbours: List[Dict] = self.data['__neighbours']
 
-        self.getCache: List[Dict] = [{}, {}]
+        self.getCache: List[Dict] = [{}, {}, {}]
         
         # ids = [i['identifier'] for i in defs['layers']]
         
@@ -223,8 +223,8 @@ class Ldtklevel:
         self.layers: List[layer] = []
         for lay in self.data['layerInstances']:
             if lay['__type'] == 'Entities':
-                l = layer(lay, self)
-                self.entities.extend([Entity(l, i, self.tilesets) for i in lay['entityInstances']])
+                lay = layer(lay, self)
+                self.entities.extend([Entity(lay, i, self.tilesets) for i in lay['entityInstances']])
             else:
                 self.layers.append(layer(lay, self))
         self.layers.reverse() 
@@ -264,7 +264,7 @@ The outputs will be combined as the return list. This defaults to `lambda e: e`.
 
     def GetEntitiesByLayer(self, layerid: str, processor: Callable = lambda e: e, forceRefreshCache: bool = False) -> List[Any]:
         """
-        Gets all the entities by their layer identifier.
+        Gets all the entities by their layer identifier. It also caches the results, so if you change the processor you will need to forceRefreshCache.
 
         Args:
             layerid (str): The layer identifier to get the entities from
@@ -286,7 +286,7 @@ The outputs will be combined as the return list. This defaults to `lambda e: e`.
 
     def GetEntitiesByID(self, identifier: str, processor: Callable = lambda e: e, forceRefreshCache: bool = False) -> List[Any]:
         """
-        Gets all the entities by their identifier.
+        Gets all the entities by their identifier. It also caches the results, so if you change the processor you will need to forceRefreshCache.
 
         Args:
             identifier (str): The identifier that will be searched for within all the entities.
@@ -305,6 +305,28 @@ The outputs will be combined as the return list. This defaults to `lambda e: e`.
                     if resp is not None:
                         self.getCache[1][identifier].append(resp)
         return self.getCache[1][identifier]
+    
+    def GetEntitiesByUID(self, uid: int, processor: Callable = lambda e: e, forceRefreshCache: bool = False) -> List[Any]:
+        """
+        Gets all the entities by their UID. It also caches the results, so if you change the processor you will need to forceRefreshCache.
+
+        Args:
+            uid (int): The UID that will be searched for within all the entities.
+            processor (Callable): This is a function that will process the entities. It takes in an Entity object and outputs anything. \
+The outputs will be combined as the return list. This defaults to `lambda e: e`. Returning None in this will ignore that entity.
+            forceRefreshCache (bool, optional): Force rebuild the cache. Defaults to False.
+        
+        Returns:
+            List[Any]: All the entities which have a UID of `uid`, passed through the `processor` func.
+        """
+        if uid not in self.getCache[1] or forceRefreshCache:
+            self.getCache[1][uid] = []
+            for e in self.entities:
+                if e.defUid == uid:
+                    resp = processor(e)
+                    if resp is not None:
+                        self.getCache[1][uid].append(resp)
+        return self.getCache[1][uid]
 
 class layer:
     def __init__(self, data: Dict, level: Ldtklevel):
