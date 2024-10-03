@@ -75,6 +75,27 @@ def pointOnUnitCircle(angle: Number, strength: Number=1) -> pointLike:
     """
     return math.cos(angle)*strength, math.sin(angle)*strength
 
+def pointsToShape(points: Iterable[pointLike], bounciness: float = BASEBOUNCINESS) -> 'Shape':
+    """
+    Converts a list of points to a shape object.
+    If there is only one point, it will return a Point object, if there are two it will return a Line object, and if there are more \
+it will return a Polygon object.
+
+    Args:
+        points (Iterable[pointLike]): The points to convert to a shape.
+        bounciness (float, optional): The bounciness of the shape. Defaults to 0.7.
+
+    Returns:
+        Shape: The shape object made from the points
+    """
+    if len(points) == 0:
+        return
+    elif len(points) == 1:
+        return Point(*points[0], bounciness)
+    if len(points) == 2:
+        return Line(*points, bounciness)
+    return Polygon(*points, bounciness=bounciness)
+
 class Shape:
     # This class always collides; so *can* be used as an infinite plane, but why?
     x: Number = 0
