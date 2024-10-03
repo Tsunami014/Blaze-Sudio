@@ -223,8 +223,8 @@ class Ldtklevel:
         self.layers: List[layer] = []
         for lay in self.data['layerInstances']:
             if lay['__type'] == 'Entities':
-                lay = layer(lay, self)
-                self.entities.extend([Entity(lay, i, self.tilesets) for i in lay['entityInstances']])
+                layobj = layer(lay, self)
+                self.entities.extend([Entity(layobj, i, self.tilesets) for i in lay['entityInstances']])
             else:
                 self.layers.append(layer(lay, self))
         self.layers.reverse() 
