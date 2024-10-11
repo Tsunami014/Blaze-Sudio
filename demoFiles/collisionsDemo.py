@@ -317,7 +317,7 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
                 return x - fric
             return 0
         accel = [fric_eff(accel[0], friction[0]), fric_eff(accel[1], friction[1])]
-        _, accel = curObj.handleCollisionsAccel(accel, objs)
+        _, accel = curObj.handleCollisionsVel(accel, objs)
 
     else:
         pos = pygame.mouse.get_pos()
