@@ -199,27 +199,6 @@ def testCollisions():
     # |  |
     # +--+
 
-def testCombine():
-    def testCombine(testName, shapes, expected):
-        out = collisions.combine(*shapes)
-        if out != expected:
-            debug( # TODO: Make better
-                ['Shape 1', 'Shape 2'],
-                [str(shapes[0]), str(shapes[1])],
-                [str(out), str(expected)],
-                [str(expected), str(expected)],
-                lambda li: li,
-                [0, 0],
-                [0, 1]
-            )
-            raise AssertionError(f'Test {testName} failed: Expected {expected}, got {out}')
-    
-    # This is stupidly hard to wrap my head around for making test cases. 
-    #testCombine('2 squares', 
-    #            [collisions.Rect(0, 0, 1, 1), collisions.Rect(0.5, 0.5, 1, 1)]\
-    #            [collisions.Polygon([(0, 0), (1, 0), (1, 0.5), (1.5, 0.5), (1.5, 1.5), (0.5, 1.5),])]
-    #)
-
 def timeStuff():
     shp1 = collisions.RotatedRect(0, 0, 1, 1, 45)
     shp2 = collisions.Polygon((0.5, 0), (1, 0.5), (0.5, 1), (0, 0.5))
