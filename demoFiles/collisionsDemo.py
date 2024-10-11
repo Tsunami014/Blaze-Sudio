@@ -17,12 +17,12 @@ highlightTyps = {
             2: (collisions.Shape)
         }
 typ = 0
-curObj = collisions.Point(0, 0)
+curObj: collisions.Shape = collisions.Point(0, 0)
 objs = collisions.Shapes()
 dir = [0, 0, 0]
 combineTyp = 0
 pos = [0, 0]
-accel = [0, 0]
+vel = [0, 0]
 maxcombinetyps = 3
 combineCache = [None, None]
 
@@ -266,13 +266,13 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
         dir[2] += 5
     
     if btns[pygame.K_w]:
-        accel[1] -= 1
+        vel[1] -= 1
     if btns[pygame.K_s]:
-        accel[1] += 1
+        vel[1] += 1
     if btns[pygame.K_a]:
-        accel[0] -= 1
+        vel[0] -= 1
     if btns[pygame.K_d]:
-        accel[0] += 1
+        vel[0] += 1
     
     if btns[pygame.K_LEFTBRACKET]:
         curObj.bounciness = max(0.1, curObj.bounciness-0.05)
@@ -306,9 +306,9 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
                 gravity = [0, 0.2]
         else:
             gravity = [0, 0]
-        accel = [accel[0] + gravity[0], accel[1] + gravity[1]]
-        accellLimits = [10, 10]
-        accel = [min(max(accel[0], -accellLimits[0]), accellLimits[0]), min(max(accel[1], -accellLimits[1]), accellLimits[1])]
+        vel = [vel[0] + gravity[0], vel[1] + gravity[1]]
+        vellLimits = [10, 10]
+        vel = [min(max(vel[0], -vellLimits[0]), vellLimits[0]), min(max(vel[1], -vellLimits[1]), vellLimits[1])]
         friction = [0.02, 0.02]
         def fric_eff(x, fric):
             if x < -fric:
@@ -316,12 +316,12 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
             if x > fric:
                 return x - fric
             return 0
-        accel = [fric_eff(accel[0], friction[0]), fric_eff(accel[1], friction[1])]
-        _, accel = curObj.handleCollisionsVel(accel, objs)
+        vel = [fric_eff(vel[0], friction[0]), fric_eff(vel[1], friction[1])]
+        _, vel = curObj.handleCollisionsVel(vel, objs)
 
     else:
         pos = pygame.mouse.get_pos()
-        accel = [0, 0]
+        vel = [0, 0]
         curObj = moveCurObj(curObj)
     
     for i in objs:
