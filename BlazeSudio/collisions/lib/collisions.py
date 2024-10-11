@@ -600,7 +600,7 @@ class Point(Shape):
         """
         o = self.handleCollisionsPos(self, (self.x+vel[0], self.y+vel[1]), objs, vel, False, precision, verbose)
         if replaceSelf:
-            self.x, self.y = o[0], o[1]
+            self.x, self.y = o[0]
         if verbose:
             return o[0], o[1], o[2]
         return o[0], o[1]
