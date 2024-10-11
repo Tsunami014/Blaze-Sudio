@@ -1,12 +1,11 @@
 from _typeshed import Incomplete
 from typing import Any, Iterable
 
+__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnUnitCircle', 'pointsToShape', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'ClosedShape', 'Rect', 'RotatedRect', 'Polygon']
+
 Number = int | float
 verboseOutput = Iterable[Any] | None
 pointLike = Iterable[Number]
-AVERYSMALLNUMBER: Number
-BASEPRECISION: Number
-BASEBOUNCINESS: Number
 
 def rotate(origin: pointLike, point: pointLike, angle: Number) -> pointLike:
     """
@@ -75,6 +74,7 @@ class Shape:
     def __init__(self, bounciness: float = ...) -> None:
         """
         The base Shape class. This defaults to always collide.
+        This class always collides; so *can* be used as an infinite plane, but why?
 
         Args:
             bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
@@ -175,6 +175,14 @@ class Shape:
         """
     def __getitem__(self) -> None: ...
     def __setitem__(self) -> None: ...
+
+class NoShape(Shape):
+    def __init__(self) -> None:
+        """
+        A class to represent no shape. This is useful for when you want to have a shape that doesn't collide with anything.
+        """
+    def copy(self) -> NoShape:
+        """Make a copy of this non-existant shape"""
 
 class Shapes:
     shapes: Incomplete
@@ -381,6 +389,7 @@ class Point(Shape):
     x: Incomplete
     y: Incomplete
     def __setitem__(self, item: Number, new: Number) -> None: ...
+    def __iter__(self): ...
 
 class Line(Shape):
     def __init__(self, p1: pointLike, p2: pointLike, bounciness: float = ...) -> None:
@@ -770,37 +779,3 @@ class Polygon(ClosedShape):
         And then he lifted his arms and said, 'LET THERE BE ANOTHER!'
         """
     def __setitem__(self, item: Number, new: pointLike) -> None: ...
-
-class ShapeCombiner:
-    @classmethod
-    def bounding_box(cls, *shapes: Rect) -> Shapes:
-        """
-        Makes a new shape which is the bounding box of all the shapes combined.
-
-        Returns:
-            Shapes: A Shapes object containing one rectangle (if there are any shapes in shapes; else nothing) which is the bounding box around every input shape.
-        """
-    @classmethod
-    def to_rects(cls, *shapes: Rect) -> Shapes:
-        """
-        Combines adjacent rectangles.
-        What this means is if you have 2 rectangles exactly touching they will combine to one
-        ```
-        +-+-+      +---+
-        | | |  ->  |   |
-        +-+-+      +---+
-        ```
-        This will only work if the combination would exactly encompass each shape without any room for air and would be a rectangle.
-        For a more general combination, try using `.to_polygons()` instead.
-
-        Returns:
-            Shapes: A Shapes object with the rectangles from the input shapes combined
-        """
-    @classmethod
-    def to_polygons(cls, *shapes: Shape) -> Shapes:
-        """
-        Combine all the input shapes with a unary union.
-
-        Returns:
-            Shapes: The union of all the shapes.
-        """
