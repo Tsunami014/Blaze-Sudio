@@ -345,5 +345,11 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
             for o in objs:
                 p = o.closestPointTo(curObj)
                 pygame.draw.circle(win, ((230, 50, 250) if o.isCorner(p) else (230, 250, 50)), (p[0], p[1]), 8)
+        sur = pygame.Surface(win.get_size(), pygame.SRCALPHA)
+        for p in curObj.toLines():
+            pygame.draw.line(sur, (10, 50, 50, 100), (p[0][0], p[0][1]), (p[1][0], p[1][1]), 6)
+        for p in curObj.toPoints():
+            pygame.draw.circle(sur, (255, 255, 255, 100), (p[0], p[1]), 4)
+        win.blit(sur, (0, 0))
     pygame.display.update()
     clock.tick(60)
