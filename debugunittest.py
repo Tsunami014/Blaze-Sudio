@@ -1,8 +1,11 @@
-# Contrary to the fact that this is unittest.py, we will not use the unittest library.
+# Contrary to the fact that this is debugunittest.py, we will not use the unittest library.
 # This is intended for development, not practical use.
 
 # This is the debug statement. If you wanted to use the compiled class, run `import BlazeSudio.collisions` instead.
-from BlazeSudio.collisions.lib import collisions
+from BlazeSudio.collisions.lib import collisions # Use this more because it is the exact latest version
+# from BlazeSudio.collisions import collisions # Use this if you want to use the compiled version
+from BlazeSudio.collisions import collisions as compiledcolls # Use this for things that aren't compiled
+import time
 
 def debug(names, ins, outs, expecteds, formatter, offsets, highlights=None):
     sins = [str(i) for i in ins]
@@ -35,6 +38,29 @@ def debug(names, ins, outs, expecteds, formatter, offsets, highlights=None):
     else:
         print()
 
+def timeit(func, *args, **kwargs):
+    start = time.time()
+    func(*args, **kwargs)
+    print(f'Time taken: {(time.time() - start)*1000} ms.')
+
+def compareTimes(func1, func2, *args, **kwargs):
+    start = time.time()
+    func1(*args, **kwargs)
+    f1Time = time.time() - start
+    start = time.time()
+    func2(*args, **kwargs)
+    f2Time = time.time() - start
+    f1Time *= 1000
+    f2Time *= 1000
+    print(f'Time taken for func1: {f1Time} ms, time taken for func2: {f2Time} ms.')
+    print(f'Difference: {abs(f1Time - f2Time)} ms.')
+    if f1Time == 0 or f2Time == 0:
+        return
+    if f1Time > f2Time:
+        print(f'Func1 is {f2Time/f1Time} times faster than func2.')
+    else:
+        print(f'Func2 is {f1Time/f2Time} times faster than func1.')
+
 def roundTuple(t):
     return tuple(round(x, 2) for x in t)
 
@@ -42,7 +68,7 @@ def testCollisions():
     assert collisions.rotate([0, 0], [123, 456], 127.001) == collisions.rotateBy0([123, 456], 127.001)
     assert roundTuple(collisions.rotate([1, 0], [1, -1], 90)) == (2, 0)
     
-    outpos, outaccel = collisions.Point(2, 0).handleCollisionsAccel([0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)))
+    outpos, outaccel = collisions.Point(2, 0).handleCollisionsVel([0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)))
     assert roundTuple(outpos) == (2, 0) # It rebounded perfectly and now is exactly where it started
     assert roundTuple(outaccel) == (0, -2) # It is now going the opposite direction
     # . = current pos, N = new pos
@@ -51,7 +77,7 @@ def testCollisions():
     #| N|
     #|  |
     #+--+
-    outpos, outaccel = collisions.Point(0, 2).handleCollisionsAccel([2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4, 1)))
+    outpos, outaccel = collisions.Point(0, 2).handleCollisionsVel([2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4, 1)))
     assert roundTuple(outpos) == (0, 2) # It rebounded perfectly and now is exactly where it started
     assert roundTuple(outaccel) == (-2, 0) # It is now going the opposite direction
     # . = current pos, N = new pos
@@ -59,7 +85,7 @@ def testCollisions():
     # |  |
     #.|N |
     # +--+
-    outpos, outaccel = collisions.Point(0, 0).handleCollisionsAccel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)))
+    outpos, outaccel = collisions.Point(0, 0).handleCollisionsVel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)))
     assert roundTuple(outpos) == (2, 0) # It rebounded like a v shape
     assert roundTuple(outaccel) == (2, -2)
     # . = current pos, N = new pos
@@ -70,7 +96,7 @@ def testCollisions():
     #+--+
 
     def testLine(testName, line, accel, shapes, expectedp1, expectedp2, expectedaccel, expectedtype):
-        outLine, outaccel, v = collisions.Line(*line).handleCollisionsAccel(accel, collisions.Shapes(*shapes), verbose=True)
+        outLine, outaccel, v = collisions.Line(*line).handleCollisionsVel(accel, collisions.Shapes(*shapes), verbose=True)
         errors = []
         errortxts = []
         if roundTuple(outLine[0]) != expectedp1:
@@ -194,6 +220,12 @@ def testCombine():
     #            [collisions.Polygon([(0, 0), (1, 0), (1, 0.5), (1.5, 0.5), (1.5, 1.5), (0.5, 1.5),])]
     #)
 
+def timeStuff():
+    shp1 = collisions.RotatedRect(0, 0, 1, 1, 45)
+    shp2 = collisions.Polygon((0.5, 0), (1, 0.5), (0.5, 1), (0, 0.5))
+    compareTimes(shp1.handleCollisionsVel, shp2.handleCollisionsVel, [1, 1], collisions.Shapes(collisions.Rect(-99, 0, 10, 19)))
+
 if __name__ == "__main__":
     testCollisions()
     print('IT ALL WORKS YAY')
+    timeStuff()
