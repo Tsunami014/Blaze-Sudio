@@ -89,20 +89,30 @@ it will return a Polygon object.
         Shape: The shape object made from the points
     """
     if len(points) == 0:
-        return
+        return NoShape()
     elif len(points) == 1:
         return Point(*points[0], bounciness)
     if len(points) == 2:
         return Line(*points, bounciness)
+
+    if len(points) == 4:
+        x_vals = {p[0] for p in points}
+        y_vals = {p[1] for p in points}
+
+        # To form a rectangle, we should have exactly two unique x-values and two unique y-values
+        if len(x_vals) == 2 and len(y_vals) == 2:
+            x_min, y_min = min(x_vals), min(y_vals)
+            return Rect(x_min, y_min, max(x_vals)-x_min, max(y_vals)-y_min)
+    
     return Polygon(*points, bounciness=bounciness)
 
 class Shape:
-    # This class always collides; so *can* be used as an infinite plane, but why?
     x: Number = 0
     y: Number = 0
     def __init__(self, bounciness: float = BASEBOUNCINESS):
         """
         The base Shape class. This defaults to always collide.
+        This class always collides; so *can* be used as an infinite plane, but why?
 
         Args:
             bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
@@ -261,6 +271,26 @@ class Shape:
     
     def __str__(self):
         return '<Shape>'
+
+class NoShape(Shape):
+    def __init__(self):
+        """
+        A class to represent no shape. This is useful for when you want to have a shape that doesn't collide with anything.
+        """
+        super().__init__(0)
+    
+    def _collides(self, othershape: Shape) -> bool:
+        return False
+    
+    def _where(self, othershape: Shape) -> Iterable[pointLike]:
+        return []
+    
+    def copy(self) -> 'NoShape':
+        """Make a copy of this non-existant shape"""
+        return NoShape()
+    
+    def __str__(self):
+        return '<NoShape>'
 
 class Shapes:
     def __init__(self, *shapes: Shape):
@@ -630,6 +660,9 @@ class Point(Shape):
             raise IndexError(
                 'List index out of range! Must be 0-1, found: '+str(item)
             )
+
+    def __iter__(self):
+        return iter([self.x, self.y])
     
     def __str__(self):
         return f'<Point @ ({self.x}, {self.y})>'
@@ -1522,12 +1555,12 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         vel = [vel[0]*closestObj.bounciness, vel[1]*closestObj.bounciness]
         diff2Point = (closestP[0]-cPoint[0], closestP[1]-cPoint[1])
         odiff = (pos[0]-cPoint[0], pos[1]-cPoint[1])
-        # HACK
-        smallness = rotateBy0([0, AVERYSMALLNUMBER], phi-180-diff*2)
-        newshp = [(i[0]+odiff[0], i[1]+odiff[1]) for i in oldShp.toPoints()]
-        o = self.handleCollisionsPos(
-            Polygon(*[(i[0]+diff2Point[0]+smallness[0], i[1]+diff2Point[1]+smallness[1]) for i in oldShp.toPoints()]), 
-            Polygon(*newshp), objs, vel, False, precision, verbose)
+        smallness = rotateBy0([0, AVERYSMALLNUMBER], phi-180-diff*2) # HACK
+        newobj = self.copy()
+        newobj.x, newobj.y = newobj.x+odiff[0], newobj.y+odiff[1]
+        intermediateObj = self.copy()
+        intermediateObj.x, intermediateObj.y = oldShp.x+diff2Point[0]+smallness[0], oldShp.y+diff2Point[1]+smallness[1]
+        o = self.handleCollisionsPos(intermediateObj, newobj, objs, vel, False, precision, verbose)
         out, outvel = o[0], o[1]
         if replaceSelf:
             self.x, self.y = out.x, out.y
@@ -1700,7 +1733,7 @@ class Rect(ClosedShape):
     def __str__(self):
         return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h}>'
 
-class RotatedRect(ClosedShape): # TODO: Fix movement physics on a rotated rect
+class RotatedRect(ClosedShape):
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number, bounciness: float = BASEBOUNCINESS):
         """
         A rectangle...... That is rotated.
