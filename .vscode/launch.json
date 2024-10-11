@@ -13,7 +13,7 @@
             "justMyCode": false
         },
         {
-            "name": "Run Feature Demos",
+            "name": "Run Demos",
             "type": "debugpy",
             "request": "launch",
             "program": "demos.py",

@@ -555,46 +555,72 @@ def OCollisionsDemo(debug=False):
     from demoFiles import collisionsDemo
 
 if __name__ == '__main__':
-    opts = {}
-    def add_opt(name, cmd):
-        idx = len(opts)
-        print(f"{idx}: {name}")
-        opts[str(idx)] = cmd
-    print('Type one of the numbers to run that command. Type anything but them to quit.\nPlease keep in mind most of these probably won\'t work or will re removed in the future.')
-        
-    print('Node stuff:') # Nodes
-    add_opt('Node Editor Demo',        NNodeEditorDemo                 )
-    add_opt('Node Parser Demo',        NNodeParserDemo                 )
-
-    print('Graphics stuff:') # BlazeSudio.graphics
-    add_opt('Graphics Demo',           GGraphicsDemo                   )
-    add_opt('Loading Demo',            GLoadingDemo                    )
-    add_opt('Toast Demo',              GToastDemo                      )
-    add_opt('Switch Demo',             GSwitchDemo                     )
-    add_opt('Colour Picker Demo',      GColourPickDemo                 )
-    add_opt('Input Box Demo',          GInputBoxDemo                   )
-    add_opt('Scrollable Demo',         GScrollableDemo                 )
-    add_opt('Dropdown Demo',           GDropdownDemo                   )
-    add_opt('Other Graphics Demo',     GOtherGraphicsDemo              )
-
-    print('Generation stuff:') # Terrain
-    add_opt('Generate World Demo',     TWorldsDemo                     )
-    add_opt('Generate Terrain Demo',   TTerrainGenDemo                 )
-
-    print('AI stuff:') # Ai
-    add_opt('TinyLLM Demo',            ATinyLLMDemo                    )
-    add_opt('Test LLM Demo',           ATestLLMDemo                    )
-    add_opt('Rate AIs Demo',           ARateAIsDemo                    )
+    try:
+        import tkinter as Tk
+        has_tk = True
+        root = Tk.Tk()
+    except ImportError:
+        print("You don't have tkinter installed. Using the command line instead.\n")
+        has_tk = False
     
-    print('Other stuff:') # Other
-    add_opt('Overlays Demo',           OOverlaysDemo,                  )
-    add_opt('LDtk app Demo',           OLDtkAPPDemo,                   )
-    add_opt('Collisions Demo',         OCollisionsDemo,                )
-    add_opt('DEBUG Collisions Demo',   lambda: OCollisionsDemo(True)   )
-    add_opt('Conversation Parse Demo', OConversationParserDemo         )
-    i = input("> ")
-    if i in opts:
-        print('Loading demo...')
-        opts[i]()
+    cmds = []
+
+    def label(text):
+        if has_tk:
+            Tk.Label(root, text=text).pack()
+        else:
+            print('\n'+text)
+
+    def button(text, command):
+        def cmd(cmdd):
+            if has_tk:
+                root.destroy()
+            print('loading demo %s...'%text)
+            cmdd()
+        if has_tk:
+            Tk.Button(root, text=text, command=lambda: cmd(command)).pack()
+        else:
+            print(f'{len(cmds)}: {text}')
+            cmds.append(command)
+    
+    label('Node stuff:') # Nodes
+    button('Node Editor Demo',           NNodeEditorDemo              )
+    button('Node Parser Demo',           NNodeParserDemo              )
+
+    label('Graphics stuff:') # Graphics
+    button('Graphics Demo',              GGraphicsDemo                )
+    button('Loading Demo',               GLoadingDemo                 )
+    button('Toast Demo',                 GToastDemo                   )
+    button('Switch Demo',                GSwitchDemo                  )
+    button('Colour Picker Demo',         GColourPickDemo              )
+    button('Input Box Demo',             GInputBoxDemo                )
+    button('Scrollable Demo',            GScrollableDemo              )
+    button('Dropdown Demo',              GDropdownDemo                )
+    button('Other Graphics Demo',        GOtherGraphicsDemo           )
+
+    label('Generation stuff:') # Terrain
+    button('Generate World Demo',        TWorldsDemo                  )
+    button('Generate Terrain Demo',      TTerrainGenDemo              )
+
+    label('AI stuff:') # Ai
+    button('TinyLLM Demo',               ATinyLLMDemo                 )
+    button('Test LLM Demo',              ATestLLMDemo                 )
+    button('Rate AIs Demo',              ARateAIsDemo                 )
+    
+    label('Other stuff:') # Other
+    button('Overlays Demo',              OOverlaysDemo                )
+    button('LDtk app Demo',              OLDtkAPPDemo                 )
+    button('Collisions Demo',            OCollisionsDemo              )
+    button('DEBUG Collisions Demo',      lambda: OCollisionsDemo(True))
+    button('Conversation Parse Demo',    OConversationParserDemo      )
+    
+    if has_tk:
+        root.after(1, lambda: root.attributes('-topmost', True))
+        root.mainloop()
     else:
-        print('Could not find demo! Quitting...')
+        try:
+            cmds[int(input('Enter the number of the demo you want to run > '))]()
+        except ValueError:
+            print('You entered an invalid number. Exiting...')
+        except IndexError:
+            print('You entered a number that is not in the list. Exiting...')
