@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 import codecs
 import os
 import re
+import sys
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -12,6 +13,12 @@ with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
 with codecs.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as fh:
     packages = [i for i in fh.readlines() if i]
 
+# Check if 'debug' is in the extras
+if any('debug' in arg for arg in sys.argv):
+    packages = find_packages()
+else:
+    packages = find_packages(exclude=('BlazeSudio.collisions.lib', 'BlazeSudio.debug'))
+
 setup(
     name='Blaze-Sudio',
     version='3.1.0',
@@ -21,7 +28,7 @@ setup(
     download_url='https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v3.1.0.tar.gz',
     long_description_content_type="text/markdown",
     long_description=long_description,
-    packages=find_packages(),
+    packages=packages,
     include_package_data=True,
     package_data={'BlazeSudio' :['BlazeSudio/data/*', '**/internal-icons.png'], 'BlazeSudio.collisions': ['**/*.so', '**/*.pyd']},
     author='Tsunami014 (Max)',

@@ -2,9 +2,9 @@
 # This is intended for development, not practical use.
 
 # This is the debug statement. If you wanted to use the compiled class, run `import BlazeSudio.collisions` instead.
-from BlazeSudio.collisions.lib import collisions # Use this more because it is the exact latest version
-# from BlazeSudio.collisions import collisions # Use this if you want to use the compiled version
-from BlazeSudio.collisions import collisions as compiledcolls # Use this for things that aren't compiled
+from BlazeSudio.debug import collisions # Use this more because it is the exact latest version
+# from BlazeSudio import collisions # Use this if you want to use the compiled version
+import BlazeSudio.collisions as compiledcolls # Use this for things that aren't compiled
 import time
 
 def debug(names, ins, outs, expecteds, formatter, offsets, highlights=None):
