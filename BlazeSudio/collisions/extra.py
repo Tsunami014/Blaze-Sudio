@@ -18,7 +18,8 @@ from typing import TYPE_CHECKING as _TYPE_CHECKING
 from typing import Union
 Number = Union[int, float]
 if _TYPE_CHECKING:
-    from BlazeSudio.collisions.collisions import (
+    # from BlazeSudio.collisions.lib.collisions import (
+    from BlazeSudio.collisions.generated.collisions import (
         pointsToShape,
         Shape,
         Shapes,
@@ -93,9 +94,9 @@ def drawShape(surface: _pygame.Surface, shape: Shape, color: tuple[int, int, int
     if isinstance(shape, Point):
         _pygame.draw.circle(surface, color, (int(shape.x), int(shape.y)), width)
     elif isinstance(shape, Line):
-        _pygame.draw.line(surface, color, (int(shape.p1.x), int(shape.p1.y)), (int(shape.p2.x), int(shape.p2.y)), width)
+        _pygame.draw.line(surface, color, (int(shape.p1[0]), int(shape.p1[1])), (int(shape.p2[0]), int(shape.p2[1])), width)
     elif isinstance(shape, Circle):
-        _pygame.draw.circle(surface, color, (int(shape.x), int(shape.y)), int(shape.radius), width)
+        _pygame.draw.circle(surface, color, (int(shape.x), int(shape.y)), int(shape.r), width)
     elif isinstance(shape, ClosedShape):
         _pygame.draw.polygon(surface, color, shape.toPoints(), width)
     elif isinstance(shape, Shapes):

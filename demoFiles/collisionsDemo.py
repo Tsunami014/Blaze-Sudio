@@ -73,26 +73,9 @@ def drawObj(obj, t, col): # TODO: Work off of type(obj), not t.
             drawObj(o, types.index(type(o)), (255, 110, 60))
         for o in combined:
             drawObj(o, types.index(type(o)), (244, 194, 194, 0.8))
-    
-    if t in (0, 6):
-        pygame.draw.circle(win, ((255, 255, 255) if t == 6 else col), (obj.x, obj.y), 8)
-    elif t == 1:
-        drawLine(obj, col)
-    elif t == 2:
-        pygame.draw.circle(win, col, (obj.x, obj.y), obj.r, 8)
-    elif t in (3, 7):
-        drawRect(obj, col)
-    elif t == 4:
-        for line in obj.toLines():
-            pygame.draw.line(win, col, line.p1, line.p2, 8)
-    elif t == 5:
-        if isinstance(obj, collisions.Point):
-            pygame.draw.circle(win, col, (obj.x, obj.y), 8)
-        elif isinstance(obj, collisions.Line):
-            pygame.draw.line(win, col, obj.p1, obj.p2, 8)
-        else:
-            for line in obj.toLines():
-                pygame.draw.line(win, col, line.p1, line.p2, 8)
+    if t == 6:
+        col = (255, 255, 255)
+    collisions.drawShape(win, obj, col, 8)
 
 def moveCurObj(curObj):
     if typ == 1:
