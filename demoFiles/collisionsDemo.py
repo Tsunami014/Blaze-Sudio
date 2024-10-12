@@ -1,6 +1,6 @@
 import os
 if 'debug' in os.environ:
-    from BlazeSudio.collisions.lib import collisions
+    from BlazeSudio.debug import collisions
 else:
     from BlazeSudio import collisions
 from BlazeSudio.graphics.options import CRAINBOWCOLOURS, FFONT

@@ -1,7 +1,7 @@
 # How to use
 Regular: `from BlazeSudio import collisions`
 
-To debug (will probably be very very much slower): `from BlazeSudio.collisions.lib import collisions`
+To debug (will be very very much slower): `from BlazeSudio.debug import collisions`. **BUT** this means you need to have the debug version of the library installed. You can get this through 2 ways; don't pip install it and just run code in the root directory (so the module is there) with the code freshly off of github, or you can download the repo, `cd` into it's directory and then `pip install .[debug]`.
 
 Also with the debug statement it *will* get **very** annoyed at you if you have half your code using the regular and the other half with the debug. It *can* tell the difference between the two and will not rest until they are the same, causing an infinite loop.
 # TO BUILD THIS FOR YOUR DEVICE:
