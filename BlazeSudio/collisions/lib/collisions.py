@@ -19,6 +19,7 @@ __all__ = [
     'Point',
     'Line',
     'Circle',
+    'Arc',
     'ClosedShape',
     'Rect',
     'RotatedRect',
@@ -247,7 +248,7 @@ class Shape:
     def toPoints(self) -> Iterable[pointLike]:
         """
         Returns:
-            Iterable[pointLike]: Get a list of all the Points that make up this object. For Circles and Shape's, this will be empty.
+            Iterable[pointLike]: Get a list of all the Points that make up this object. For Circles, Arcs and Shape's, this will be empty.
         """
         return []
     
@@ -1322,6 +1323,201 @@ class Circle(Shape):
     def __str__(self):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
 
+class Arc(Circle):
+    def __init__(self, 
+                 x: Number, 
+                 y: Number, 
+                 rad: Number, 
+                 startAngle: Number, 
+                 endAngle: Number, 
+                 bounciness: float = BASEBOUNCINESS
+                ):
+        """
+        A section of a circle's circumfrance.
+
+        Args:
+            x (Number): The x position of this arc's centre.
+            y (Number): The y position of this arc's centre.
+            rad (Number): The radius of the circle.
+            startAngle (Number): The starting angle to take the portion of the circumfrance of. Wraps around.
+            endAngle (Number): The ending angle to take the portion of the circumfrance of. Wraps around.
+            bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
+        """
+        self.x, self.y, self.r = x, y, rad
+        self.startAng, self.endAng = startAngle, endAngle
+        self.bounciness = bounciness
+    
+    def _collides(self, othershape: Shape) -> bool:
+        if isinstance(othershape, Point):
+            px, py = othershape
+            cx, cy = self.x, self.y
+
+            # Angle of the point relative to the arc's center
+            angle = math.atan2(py - cy, px - cx)
+            angle = math.degrees(angle)  # Convert to degrees
+
+            # Normalize angle to [0, 360)
+            if angle < 0:
+                angle += 360
+
+            # Normalize start and end angles
+            start = self.startAng % 360
+            end = self.endAng % 360
+
+            # Clockwise case
+            if start <= end:
+                return start <= angle <= end
+            else:
+                return angle >= start or angle <= end
+        if isinstance(othershape, Line):
+            intersections = Circle(self.x, self.y, self.r).whereCollides(othershape)
+
+            # Step 2: Filter intersections to see if they lie within the angular range of the arc
+            valid_intersections = [pt for pt in intersections if self.collides(Point(*pt))]
+
+            return valid_intersections != []
+        if isinstance(othershape, Circle):
+            """Check if this arc collides with a given circle."""
+            # Calculate the distance between the centers
+            dx = othershape.x - self.x
+            dy = othershape.y - self.y
+            distance = math.sqrt(dx**2 + dy**2)
+
+            # Check if the distance is less than the sum of the radii
+            if distance > self.r + othershape.r:
+                return False
+
+            # Calculate the angle of the line connecting the centers
+            angle = math.degrees(math.atan2(dy, dx))
+
+            # Check if this angle is within the arc's angle range
+            return self.angleInRange(angle)
+        if isinstance(othershape, Arc):
+            return False
+        if isinstance(othershape, Rect):
+            return any([self.collides(i) for i in othershape.toLines()])
+        return othershape._collides(self)
+
+    def flip(self):
+        """
+        Flips the portion taken to make the arc; so an arc covering 90 degrees of the circle will now cover 270, and vice versa.
+        """
+        self.startAng, self.endAng = self.endAng, self.startAng
+    
+    def _where(self, othershape: Shape) -> Iterable[pointLike]:
+        return []
+    
+    def closestPointTo(self, othershape: Shape, returnAll: bool = False) -> pointLike|Iterable[pointLike]:
+        """
+        Finds the closest point ON THIS OBJECT **TO** the other object
+
+        Args:
+            othershape (Shape): The other shape to find the closest point to
+            returnAll (bool, optional): Whether to return *all* the potential closest points sorted in order of closeness or just **the** closest. Defaults to False (only the closest).
+
+        Returns:
+            pointLike|Iterable[pointLike]: The closest point(s) on this object to the other object. Whether this is an iterable or not depends on the `returnAll` parameter.
+        """
+        if returnAll:
+            return [(0, 0)]
+        return (0, 0)
+
+
+    def angleInRange(self, angle: Number) -> bool:
+        """
+        Check to see if an angle is in the range of this arc.
+
+        Args:
+            angle (Number): The angle to check if it is in range of this arc or not.
+
+        Returns:
+            bool: Whether or not the angle is in the range of this arc.
+        """
+        if self.startAng < self.endAng:
+            return self.startAng <= angle <= self.endAng
+        else:
+            return self.startAng <= angle or angle <= self.endAng
+    
+    def endPoints(self) -> Iterable[pointLike]:
+        """
+        Gets the end points of the arc
+
+        Returns:
+            Iterable[pointLike]: The endpoints of the arc
+        """
+        startAng = math.radians(self.startAng)
+        endAng = math.radians(self.endAng)
+        return (self.x + self.r * math.cos(startAng), self.y + self.r * math.sin(startAng)), \
+               (self.x + self.r * math.cos(endAng), self.y + self.r * math.sin(endAng))
+
+    def rect(self) -> Iterable[Number]:
+        """
+        Returns the rectangle bounding box surrounding this object.
+
+        Returns:
+            Iterable[Number]: (min x, min y, max x, max y)
+        """
+        eps = self.endPoints()
+        
+        if self.angleInRange(270):
+            N = self.y-self.r
+        else:
+            N = min(eps[0][1], eps[1][1])
+        if self.angleInRange(180):
+            E = self.x-self.r
+        else:
+            E = min(eps[0][0], eps[1][0])
+        if self.angleInRange(90):
+            S = self.y+self.r
+        else:
+            S = max(eps[0][1], eps[1][1])
+        if self.angleInRange(0):
+            W = self.x+self.r
+        else:
+            W = max(eps[0][0], eps[1][0])
+        return E, N, W, S
+    
+    def copy(self) -> 'Arc':
+        """
+        And then there were two.
+        """
+        return Arc(self.x, self.y, self.r, self.startAng, self.endAng, self.bounciness)
+    
+    def __getitem__(self, item: Number) -> Union[Number, pointLike]:
+        if item == 0:
+            return self.x
+        elif item == 1:
+            return self.y
+        elif item == 2:
+            return self.r
+        elif item == 3:
+            return self.startAng
+        elif item == 4:
+            return self.endAng
+        else:
+            raise IndexError(
+                'List index out of range! Must be 0-4, found: '+str(item)
+            )
+    
+    def __setitem__(self, item: Number, new: Union[Number, pointLike]) -> None:
+        if item == 0:
+            self.x = new
+        elif item == 1:
+            self.y = new
+        elif item == 2:
+            self.r = new
+        elif item == 3:
+            self.startAng = new
+        elif item == 4:
+            self.endAng = new
+        else:
+            raise IndexError(
+                'List index out of range! Must be 0-4, found: '+str(item)
+            )
+    
+    def __str__(self):
+        return '<Arc>'
+
 class ClosedShape(Shape): # I.e. rect, polygon, etc.
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
         if not self.check_rects(othershape):
@@ -1700,6 +1896,10 @@ class Rect(ClosedShape):
                    ((x - othershape.x)**2 + ((my) - othershape.y)**2 < othershape.r**2) or \
                    (((mx) - othershape.x)**2 + ((my) - othershape.y)**2 < othershape.r**2)
             )
+        if isinstance(othershape, Arc):
+            for i in self.toLines():
+                if othershape.collides(i):
+                    return True
         if isinstance(othershape, Rect):
             ox, oy, omx, omy = othershape.rect()
             return x <= omx and mx >= ox and y <= omy and my >= oy
@@ -1832,6 +2032,10 @@ class RotatedRect(ClosedShape):
                 if li.collides(othershape):
                     return True
             return False
+        if isinstance(othershape, Arc):
+            for i in self.toLines():
+                if othershape.collides(i):
+                    return True
         if isinstance(othershape, Rect) or isinstance(othershape, RotatedRect):
             for li in self.toLines():
                 if li.collides(othershape):
@@ -1948,6 +2152,10 @@ class Polygon(ClosedShape):
                 if li.collides(othershape):
                     return True
             return False
+        if isinstance(othershape, Arc):
+            for i in self.toLines():
+                if othershape.collides(i):
+                    return True
         if isinstance(othershape, Rect) or isinstance(othershape, RotatedRect):
             for li in self.toLines():
                 if li.collides(othershape):
