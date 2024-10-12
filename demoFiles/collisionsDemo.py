@@ -9,8 +9,8 @@ import math
 pygame.init()
 win = pygame.display.set_mode()
 run = True
-header_opts = ['point', 'line', 'circle', 'rect', 'rotated rect', 'polygon', 'eraser', 'combiner', 'help']
-types = [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.Polygon]
+header_opts = ['point', 'line', 'arc', 'circle', 'rect', 'rotated rect', 'polygon', 'eraser', 'combiner', 'help']
+types = [collisions.Point, collisions.Line, collisions.Arc, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.Polygon]
 font = pygame.font.Font(None, 36)
 header_sze = 50
 typ = 0
@@ -48,32 +48,16 @@ def findCombinedOutput():
         combineCache = [cacheCheck, ret]
         return ret
 
-def drawRect(obj, col):
-    if obj.w == 0 and obj.h == 0:
-        pygame.draw.circle(win, col, (obj.x, obj.y), 4)
-    elif obj.w == 0:
-        pygame.draw.line(win, col, (obj.x, obj.y), (obj.x, obj.y+obj.h), 3)
-    elif obj.h == 0:
-        pygame.draw.line(win, col, (obj.x, obj.y), (obj.x+obj.w, obj.y), 3)
-    minx = min(obj.x, obj.x+obj.w)
-    miny = min(obj.y, obj.y+obj.h)
-    pygame.draw.rect(win, col, (minx, miny, abs(obj.w), abs(obj.h)), 8)
-
-def drawLine(obj, col):
-    if obj.p1 == obj.p2:
-        pygame.draw.circle(win, col, obj.p1, 8)
-    pygame.draw.line(win, col, obj.p1, obj.p2, 8)
-
-def drawObj(obj, t, col): # TODO: Work off of type(obj), not t.
-    if t == 7: # As well as drawing the point, outline the shapes to be combined
+def drawObj(obj, t, col):
+    if t == 8: # As well as drawing the point, outline the shapes to be combined
         combined, objsToCombine = findCombinedOutput()
         if isinstance(combined, collisions.Shape):
-            combined = collisions.Shapes(combined)
+            combined = [combined]
         for o in objsToCombine:
             drawObj(o, types.index(type(o)), (255, 110, 60))
         for o in combined:
-            drawObj(o, types.index(type(o)), (244, 194, 194, 0.8))
-    if t == 6:
+            drawObj(o, types.index(type(o)), (244, 194, 194, 200))
+    if t == 7:
         col = (255, 255, 255)
     collisions.drawShape(win, obj, col, 8)
 
@@ -81,7 +65,7 @@ def moveCurObj(curObj):
     if typ == 1:
         curObj.p1 = pos
         curObj.p2 = (curObj.p1[0]+dir[0], curObj.p1[1]+dir[1])
-    elif typ == 5:
+    elif typ == 6:
         moveAll = pygame.key.get_pressed()[pygame.K_PERIOD] or playMode
         if isinstance(curObj, collisions.Point):
             curObj.x, curObj.y = pos
@@ -97,12 +81,15 @@ def moveCurObj(curObj):
                 curObj.points[-1] = pos
     else:
         curObj.x, curObj.y = pos
-        if typ == 2:
+        if typ in (2, 3):
             curObj.r = dir[1]
-        elif typ in (4, 3, 7):
+        elif typ in (4, 5, 8):
             curObj.w, curObj.h = dir[0], dir[1]
-            if typ == 4:
+            if typ == 5:
                 curObj.rot = dir[2]
+        if typ == 2:
+            dir[0], dir[2] = dir[0] % 360, dir[2] % 360
+            curObj.startAng, curObj.endAng = dir[0], dir[2]
     return curObj
 
 def offsetColour(obj, col):
@@ -159,30 +146,30 @@ while run:
                 run = False
                 break
             elif event.key == pygame.K_SPACE:
-                if typ == 6:
+                if typ == 7:
                     for i in objs.copy_leave_shapes():
                         if i.collides(curObj):
                             objs.remove_shape(i)
-                elif typ == 7:
+                elif typ == 8:
                     new, toRemove = findCombinedOutput()
                     objs.remove_shapes(*toRemove)
                     objs.add_shapes(*new)
                 else:
                     objs.add_shape(curObj)
-                    if typ == 5:
+                    if typ == 6:
                         curObj = curObj = collisions.Point(*pygame.mouse.get_pos())
                     else:
                         curObj = curObj.copy()
-            elif event.key == pygame.K_COMMA and typ == 5:
+            elif event.key == pygame.K_COMMA and typ == 6:
                 if isinstance(curObj, collisions.Point):
                     curObj = collisions.Line(curObj.getTuple(), pygame.mouse.get_pos())
                 elif isinstance(curObj, collisions.Line):
                     curObj = collisions.Polygon(curObj.p1, curObj.p2, pygame.mouse.get_pos())
                 else:
                     curObj.points += [pygame.mouse.get_pos()]
-            elif event.key == pygame.K_COMMA and typ == 7:
+            elif event.key == pygame.K_COMMA and typ == 8:
                 combineTyp = (combineTyp + 1) % len(combineFs)
-            elif event.key == pygame.K_PERIOD and typ == 7:
+            elif event.key == pygame.K_PERIOD and typ == 8:
                 combineTyp = (combineTyp - 1) % len(combineFs)
             elif event.key == pygame.K_r:
                 objs = collisions.Shapes()
@@ -206,19 +193,22 @@ while run:
                     curObj = collisions.Line((0, 0), (10, 10))
                     dir = [50, 100, 0]
                 elif typ == 2:
+                    curObj = collisions.Arc(*event.pos, 100, -135, -45)
+                    dir = [-135, 100, -45]
+                elif typ == 3:
                     curObj = collisions.Circle(*event.pos, 100)
                     dir = [0, 100, 0]
-                elif typ == 3:
+                elif typ == 4:
                     curObj = collisions.Rect(*event.pos, 100, 100)
                     dir = [100, 100, 0]
-                elif typ == 4:
+                elif typ == 5:
                     curObj = collisions.RotatedRect(*event.pos, 100, 100, 45)
                     dir = [100, 100, 45]
-                elif typ == 5:
-                    curObj = collisions.Point(*event.pos)
                 elif typ == 6:
                     curObj = collisions.Point(*event.pos)
                 elif typ == 7:
+                    curObj = collisions.Point(*event.pos)
+                elif typ == 8:
                     curObj = collisions.Rect(*event.pos, 0, 0)
                     dir = [0, 0, 0]
                 else: # Last item in list - help menu
@@ -340,7 +330,7 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
         for p in curObj.toPoints():
             pygame.draw.circle(sur, (255, 255, 255, 100), (p[0], p[1]), 4)
         win.blit(sur, (0, 0))
-    if typ == 7:
+    if typ == 8:
         win.blit(font.render(list(combineFs.keys())[combineTyp], 1, (255, 255, 255)), (0, header_sze+2))
     pygame.display.update()
     clock.tick(60)

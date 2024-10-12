@@ -13,6 +13,7 @@ import pygame as _pygame
 import shapely as _shapely
 import shapely.geometry as _shapelyGeom
 import shapely.ops as _shapelyOps
+from math import radians as _toRadians
 
 from typing import TYPE_CHECKING as _TYPE_CHECKING
 from typing import Union
@@ -25,6 +26,7 @@ if _TYPE_CHECKING:
         Shapes,
         Point,
         Line,
+        Arc,
         Circle,
         ClosedShape,
         Polygon,
@@ -81,27 +83,47 @@ def collToShapely(collShape: Shape) -> _shapelyGeom.base.BaseGeometry:
     else:
         raise ValueError(f'Cannot convert BlazeSudio shape of type {type(collShape)} to shapely shape')
 
-def drawShape(surface: _pygame.Surface, shape: Shape, color: tuple[int, int, int], width: int = 0):
+def drawShape(surface: _pygame.Surface, shape: Shape, colour: tuple[int, int, int], width: int = 0):
     """
     Draws a BlazeSudio shape to a Pygame surface.
 
     Args:
         surface (pygame.Surface): The surface to draw the shape on.
         shape (Shape): The shape to draw.
-        color (tuple[int, int, int]): The color to draw the shape in.
+        colour (tuple[int, int, int]): The colour to draw the shape in.
         width (int, optional): The width of the lines to draw. Defaults to 0.
     """
     if isinstance(shape, Point):
-        _pygame.draw.circle(surface, color, (int(shape.x), int(shape.y)), width)
+        _pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), width)
     elif isinstance(shape, Line):
-        _pygame.draw.line(surface, color, (int(shape.p1[0]), int(shape.p1[1])), (int(shape.p2[0]), int(shape.p2[1])), width)
+        if tuple(shape.p1) == tuple(shape.p2):
+            _pygame.draw.circle(surface, colour, (int(shape.p1[0]), int(shape.p1[1])), int(width/2))
+        _pygame.draw.line(surface, colour, (int(shape.p1[0]), int(shape.p1[1])), 
+                                           (int(shape.p2[0]), int(shape.p2[1])), width)
+    elif isinstance(shape, Arc):
+        _pygame.draw.arc(surface, colour, 
+                         (int(shape.x)-int(shape.r), int(shape.y)-int(shape.r), int(shape.r*2), int(shape.r*2)), 
+                         _toRadians(-shape.endAng), _toRadians(-shape.startAng), width)
     elif isinstance(shape, Circle):
-        _pygame.draw.circle(surface, color, (int(shape.x), int(shape.y)), int(shape.r), width)
+        _pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), int(shape.r), width)
     elif isinstance(shape, ClosedShape):
-        _pygame.draw.polygon(surface, color, shape.toPoints(), width)
+        ps = shape.toPoints()
+        psset = {tuple(i) for i in ps}
+        if len(psset) == 0:
+            return
+        elif len(psset) == 1:
+            fst = psset.pop()
+            _pygame.draw.circle(surface, colour, (int(fst[0]), int(fst[1])), int(width/2))
+        elif len(psset) == 2:
+            fst = psset.pop()
+            snd = psset.pop()
+            _pygame.draw.line(surface, colour, 
+                              (int(fst[0]), int(fst[1])), 
+                              (int(snd[0]), int(snd[1])), int(width/4*3))
+        _pygame.draw.polygon(surface, colour, ps, width)
     elif isinstance(shape, Shapes):
         for i in shape.shapes:
-            drawShape(surface, i, color, width)
+            drawShape(surface, i, colour, width)
     else:
         raise ValueError(f'Cannot draw BlazeSudio shape of type {type(shape)}')
 
