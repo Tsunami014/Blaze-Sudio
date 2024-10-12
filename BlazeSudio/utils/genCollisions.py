@@ -6,7 +6,7 @@ def approximate_polygon(surface, tolerance=3, ratio=0.1):
     """
     Returns a concave polygon that approximates the non-transparent area of a Pygame surface.
     :param tolerance: Controls how closely the algorithm will match the shape (lower is more detailed).
-    :param ratio: A number in the range [0, 1]. Higher means fewer verticies
+    :param ratio: A number in the range [0, 1]. Higher means fewer verticies.
     """
     non_transparent_points = []
     width, height = surface.get_size()
@@ -30,16 +30,4 @@ def approximate_polygon(surface, tolerance=3, ratio=0.1):
         ):
             polygon_points.append(point)
     
-    if len(polygon_points) == 2:
-        return colls.Line(polygon_points[0], polygon_points[1])
-    elif len(polygon_points) == 1:
-        return colls.Point(*polygon_points[0])
-    elif len(polygon_points) <= 0:
-        return
-
-    hull = concave_hull(MultiPoint(polygon_points), ratio=ratio)
-
-    if isinstance(hull, LineString):
-        return colls.Line(*list(zip(*[list(i) for i in hull.coords.xy])))
-
-    return colls.Polygon(*list(zip(*[list(i) for i in hull.exterior.coords.xy])))
+    return colls.
