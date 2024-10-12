@@ -1,148 +1,98 @@
 from BlazeSudio.collisions.collisions import *
 
-class ShapeCombiner:
-    @classmethod
-    def bounding_box(cls, *shapes: Rect) -> Shapes:
+import shapely.geometry as _shapelyGeom
+import shapely.ops as _shapelyOps
+
+from typing import TYPE_CHECKING as _TYPE_CHECKING
+from typing import Union
+Number = Union[int, float]
+if _TYPE_CHECKING:
+    from BlazeSudio.collisions.collisions import (
+        Shape,
+        Shapes,
+        Point,
+        Line,
+        Circle,
+        ClosedShape,
+        Polygon,
+        ShapeCombiner,
+    )
+
+def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Shape:
+    """
+    Converts a shapely shape to a BlazeSudio Shape.
+
+    Args:
+        shapelyShape (shapely.geometry.base.BaseGeometry): The shapely shape to convert.
+
+    Returns:
+        Shape: The converted shape.
+    """
+    if isinstance(shapelyShape, _shapelyGeom.Point):
+        return Point(shapelyShape.x, shapelyShape.y)
+    elif isinstance(shapelyShape, _shapelyGeom.LineString):
+        return Line(*shapelyShape.coords.xy)
+    elif isinstance(shapelyShape, _shapelyGeom.Polygon):
+        return Polygon(*shapelyShape.exterior.coords.xy)
+    elif isinstance(shapelyShape, _shapelyGeom.MultiPoint):
+        return Shapes(*[Point(*i) for i in shapelyShape.coords.xy])
+    elif isinstance(shapelyShape, _shapelyGeom.MultiLineString):
+        return Shapes(*[Line(*i) for i in shapelyShape.coords.xy])
+    elif isinstance(shapelyShape, _shapelyGeom.MultiPolygon):
+        return Shapes(*[Polygon(*i.exterior.coords.xy) for i in shapelyShape])
+    else:
+        raise ValueError(f'Cannot convert shapely shape of type {type(shapelyShape)} to BlazeSudio Shape')
+
+def collToShapely(collShape: Shape) -> _shapelyGeom.base.BaseGeometry:
+    """
+    Converts a BlazeSudio Shape to a shapely shape.
+
+    Args:
+        collShape (Shape): The BlazeSudio shape to convert.
+
+    Returns:
+        shapely.geometry.base.BaseGeometry: The converted shape.
+    """
+    if isinstance(collShape, Point):
+        return _shapelyGeom.Point(collShape.x, collShape.y)
+    elif isinstance(collShape, Line):
+        return _shapelyGeom.LineString([(collShape.p1.x, collShape.p1.y), (collShape.p2.x, collShape.p2.y)])
+    elif isinstance(collShape, Circle):
+        return _shapelyGeom.Point(collShape.x, collShape.y).buffer(collShape.radius)
+    elif isinstance(collShape, ClosedShape):
+        return _shapelyGeom.Polygon([(i.x, i.y) for i in collShape.toPoints()])
+    elif isinstance(collShape, Shapes):
+        return _shapelyGeom.GeometryCollection([collToShapely(i) for i in collShape.shapes])
+    else:
+        raise ValueError(f'Cannot convert BlazeSudio shape of type {type(collShape)} to shapely shape')
+
+class ShapeCombiner(ShapeCombiner):
+    @staticmethod
+    def pointsToPoly(*points: list[Point], ratio: Number) -> Union[Shape, Shapes]:
         """
-        Makes a new shape which is the bounding box of all the shapes combined.
+        Converts a list of points to a polygon.
+
+        Args:
+            points (list[Point]): The points to convert to a polygon.
+            ratio (Number): A number in the range [0, 1]. Higher means fewer verticies/less detail.
 
         Returns:
-            Shapes: A Shapes object containing one rectangle (if there are any shapes in shapes; else nothing) which is the bounding box around every input shape.
+            Shape | Shapes: A Shapes object containing one polygon with the points from the input.
         """
-        if not shapes:
-            return Shapes()
-        rs = [s.rect() for s in shapes]
-        mins, maxs = [
-            min(i[0] for i in rs),
-            min(i[1] for i in rs)
-        ], [
-            max(i[2] for i in rs),
-            max(i[3] for i in rs)
-        ]
-        return Shapes(Rect(
-            *mins,
-            maxs[0]-mins[0],
-            maxs[1]-mins[1]
-        ))
+        hull = _shapelyGeom.concave_hull(_shapelyGeom.MultiPoint(points), ratio=ratio)
+        return shapelyToColl(hull)
+    
+    @staticmethod
+    def ShapelyUnion(*shapes: Shape) -> Shape:
+        """
+        Combine all the input shapes with shapely to be a union.
+        If the shapes are not all touching, they will *still* be combined into one shape.
+        If you need to combine shapes but don't like the result of this, try the `ShapeCombiner.Union` method.
 
-    @classmethod
-    def to_rects(cls, *shapes: Rect) -> Shapes:
-        """
-        Combines adjacent rectangles.
-        What this means is if you have 2 rectangles exactly touching they will combine to one
-        ```
-        +-+-+      +---+
-        | | |  ->  |   |
-        +-+-+      +---+
-        ```
-        This will only work if the combination would exactly encompass each shape without any room for air and would be a rectangle.
-        For a more general combination, try using `.to_polygons()` instead.
+        Args:
+            shapes (list[Shape]): The shapes to combine.
 
         Returns:
-            Shapes: A Shapes object with the rectangles from the input shapes combined
+            Shape: A Shape which is the union of all the input shapes.
         """
-        if not shapes:
-            return Shapes()
-        merged = True
-        while merged:
-            merged = False
-            # Sort shapes by x-coordinate
-            shapes = sorted(shapes, key=lambda x: x.x)
-            outshapes1 = []
-            
-            while shapes:
-                rect = shapes.pop(0)
-                for i in shapes:
-                    if rect.y == i.y and rect.h == i.h and (rect.x + rect.w >= i.x):
-                        rect.w = max(rect.x + rect.w, i.x + i.w) - rect.x
-                        shapes.remove(i)
-                        merged = True
-                        break
-                outshapes1.append(rect)
-            
-            # Sort shapes by y-coordinate
-            outshapes1 = sorted(outshapes1, key=lambda x: x.y)
-            outshapes2 = []
-            
-            while outshapes1:
-                rect = outshapes1.pop(0)
-                for i in outshapes1:
-                    if rect.x == i.x and rect.w == i.w and (rect.y + rect.h >= i.y):
-                        rect.h = max(rect.y + rect.h, i.y + i.h) - rect.y
-                        outshapes1.remove(i)
-                        merged = True
-                        break
-                outshapes2.append(rect)
-            
-            shapes = outshapes2
-        
-        return Shapes(*shapes)
-
-    @classmethod
-    def to_polygons(cls, *shapes: Shape) -> Shapes:
-        """
-        Combine all the input shapes with a unary union.
-
-        Returns:
-            Shapes: The union of all the shapes.
-        """
-        if not shapes:
-            return Shapes()
-        def reformat(obj):
-            if isinstance(obj, ClosedShape):
-                return obj
-            elif isinstance(s, Line):
-                return Polygon(obj.p1, obj.p2, obj.p2, obj.p1)
-            # TODO: More
-        reform = [reformat(s) for s in shapes]
-        shapes = [reform[i] for i in range(len(reform)) if reform[i]]
-        outshps = []
-        while shapes:
-            s = shapes.pop(0)
-            colls = [i.collides(s) for i in outshps]
-            if any(colls):
-                for i in range(len(colls)):
-                    if colls[i]:
-                        newpts = []
-                        oshps = [s, outshps[i]]
-                        lns = [j.toLines() for j in oshps]
-                        direc = 1
-                        check = 0
-                        checked = []
-                        # TODO: When objs are covered
-                        ps = [any(k.collides(Point(*j)) for k in oshps if k != s) for j in s.toPoints()]
-                        j = ps.index(False)
-                        while True:
-                            if (check, j) not in checked:
-                                checked.append((check, j))
-                                ln = lns[check][j]
-                                p1 = ln.p1 if direc == 1 else ln.p2
-                                p2 = ln.p2 if direc == 1 else ln.p1
-                                newpts.append(p1)
-                                wheres = []
-                                for other in range(len(oshps)):
-                                    if other != check:
-                                        if ln.collides(oshps[other]):
-                                            for k in range(len(lns[other])):
-                                                if ln.collides(lns[other][k]):
-                                                    ws = ln.whereCollides(lns[other][k])
-                                                    wheres.extend(zip(ws, [(other, k) for _ in range(len(ws))]))
-                                if wheres != []:
-                                    wheres.sort(key=lambda x: (x[0][0]-p1[0])**2+(x[0][1]-p1[1])**2)
-                                    newpts.append(wheres[0][0])
-                                    # Correct direction handling
-                                    if oshps[check].collides(Point(*lns[wheres[0][1][0]][wheres[0][1][1]].p2)):
-                                        direc = -1
-                                    else:
-                                        direc = 1
-                                    check = wheres[0][1][0]
-                                    j = wheres[0][1][1]
-                                else:
-                                    newpts.append(p2)
-                            else:
-                                break
-                            j = (j + direc) % len(lns[check])
-                        outshps[i] = Polygon(*newpts)
-            else:
-                outshps.append(s)
-        return Shapes(*outshps)
+        return shapelyToColl(_shapelyOps.unary_union(collToShapely(Shapes(*shapes))))
