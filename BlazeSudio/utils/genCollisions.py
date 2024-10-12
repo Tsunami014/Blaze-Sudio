@@ -30,4 +30,4 @@ def approximate_polygon(surface, tolerance=3, ratio=0.1):
         ):
             polygon_points.append(point)
     
-    return colls.
+    return colls.ShapeCombiner.pointsToPoly(*polygon_points, ratio=ratio)
