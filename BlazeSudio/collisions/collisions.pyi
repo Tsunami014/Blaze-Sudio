@@ -1,7 +1,7 @@
 from _typeshed import Incomplete
 from typing import Any, Iterable
 
-__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnUnitCircle', 'pointsToShape', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'ClosedShape', 'Rect', 'RotatedRect', 'Polygon']
+__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnUnitCircle', 'pointsToShape', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'ClosedShape', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
 
 Number = int | float
 verboseOutput = Iterable[Any] | None
@@ -779,3 +779,37 @@ class Polygon(ClosedShape):
         And then he lifted his arms and said, 'LET THERE BE ANOTHER!'
         """
     def __setitem__(self, item: Number, new: pointLike) -> None: ...
+
+class ShapeCombiner:
+    @staticmethod
+    def boundingBox(*shapes: Rect) -> Shapes:
+        """
+        Makes a new shape which is the bounding box of all the shapes combined.
+
+        Returns:
+            Shapes: A Shapes object containing one rectangle (if there are any shapes in shapes; else nothing) which is the bounding box around every input shape.
+        """
+    @staticmethod
+    def combineRects(*shapes: Rect) -> Shapes:
+        """
+        Combines adjacent rectangles.
+        What this means is if you have 2 rectangles exactly touching they will combine to one
+        ```
+        +-+-+      +---+
+        | | |  ->  |   |
+        +-+-+      +---+
+        ```
+        This will only work if the combination would exactly encompass each shape without any room for air and would be a rectangle.
+        For a more general combination, try using `.to_polygons()` instead.
+
+        Returns:
+            Shapes: A Shapes object with the rectangles from the input shapes combined
+        """
+    @staticmethod
+    def Union(*shapes: Shape) -> Shapes:
+        """
+        Combine all the input shapes with a unary union. Still in progress and doesn't work too well.
+
+        Returns:
+            Shapes: The union of all the shapes.
+        """
