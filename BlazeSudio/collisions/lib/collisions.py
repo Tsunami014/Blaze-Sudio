@@ -94,14 +94,14 @@ def pointOnUnitCircle(angle: Number, strength: Number=1) -> pointLike:
     """
     return math.cos(angle)*strength, math.sin(angle)*strength
 
-def pointsToShape(points: Iterable[pointLike], bounciness: float = BASEBOUNCINESS) -> 'Shape':
+def pointsToShape(*points: Iterable[pointLike], bounciness: float = BASEBOUNCINESS) -> 'Shape':
     """
     Converts a list of points to a shape object.
     If there is only one point, it will return a Point object, if there are two it will return a Line object, and if there are more \
 it will return a Polygon object.
 
     Args:
-        points (Iterable[pointLike]): The points to convert to a shape.
+        points (pointLike): The points to convert to a shape.
         bounciness (float, optional): The bounciness of the shape. Defaults to 0.7.
 
     Returns:
