@@ -309,7 +309,7 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
 
     if not playMode:
         for i in objs.whereCollides(curObj):
-            pygame.draw.circle(win, (175, 155, 155), i, 8)
+            pygame.draw.circle(win, (175, 155, 155), tuple(i), 8)
         
         if pygame.key.get_mods() & pygame.KMOD_SHIFT:
             mpos = pygame.mouse.get_pos()
