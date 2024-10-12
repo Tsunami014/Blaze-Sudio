@@ -11,11 +11,8 @@ win = pygame.display.set_mode()
 run = True
 header_opts = ['point', 'line', 'circle', 'rect', 'rotated rect', 'polygon', 'eraser', 'combiner', 'help']
 types = [collisions.Point, collisions.Line, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.Polygon]
-highlightTyps = {
-            0: (collisions.Point, collisions.Line, collisions.ClosedShape),
-            1: (collisions.Rect),
-            2: (collisions.Shape)
-        }
+font = pygame.font.Font(None, 36)
+header_sze = 50
 typ = 0
 curObj: collisions.Shape = collisions.Point(0, 0)
 objs = collisions.Shapes()
@@ -23,7 +20,20 @@ dir = [0, 0, 0]
 combineTyp = 0
 pos = [0, 0]
 vel = [0, 0]
-maxcombinetyps = 3
+combineFs = {
+    'CollsUnion': collisions.ShapeCombiner.Union,
+    'ShapelyUnion': collisions.ShapeCombiner.ShapelyUnion,
+    'BoundingBox': collisions.ShapeCombiner.boundingBox,
+    'CombineRects': collisions.ShapeCombiner.combineRects,
+    'PointsToPoly': collisions.ShapeCombiner.pointsToPoly
+}
+highlightTyps = [
+    (collisions.Line, collisions.ClosedShape),
+    (collisions.Shape),
+    (collisions.Shape),
+    (collisions.Rect),
+    (collisions.Point)
+]
 combineCache = [None, None]
 
 def findCombinedOutput():
@@ -33,12 +43,7 @@ def findCombinedOutput():
     if combineCache[0] == cacheCheck:
         return combineCache[1]
     else:
-        if combineTyp == 1:
-            combined = collisions.ShapeCombiner.to_rects(*toCombineObjs)
-        elif combineTyp == 2:
-            combined = collisions.ShapeCombiner.bounding_box(*toCombineObjs)
-        else:
-            combined = collisions.ShapeCombiner.to_polygons(*toCombineObjs)
+        combined = combineFs[list(combineFs.keys())[combineTyp]](*toCombineObjs)
         ret = (combined, toCombineObjs)
         combineCache = [cacheCheck, ret]
         return ret
@@ -62,6 +67,8 @@ def drawLine(obj, col):
 def drawObj(obj, t, col): # TODO: Work off of type(obj), not t.
     if t == 7: # As well as drawing the point, outline the shapes to be combined
         combined, objsToCombine = findCombinedOutput()
+        if isinstance(combined, collisions.Shape):
+            combined = collisions.Shapes(combined)
         for o in objsToCombine:
             drawObj(o, types.index(type(o)), (255, 110, 60))
         for o in combined:
@@ -191,9 +198,9 @@ while run:
                 else:
                     curObj.points += [pygame.mouse.get_pos()]
             elif event.key == pygame.K_COMMA and typ == 7:
-                combineTyp = (combineTyp + 1) % maxcombinetyps
+                combineTyp = (combineTyp + 1) % len(combineFs)
             elif event.key == pygame.K_PERIOD and typ == 7:
-                combineTyp = (combineTyp - 1) % maxcombinetyps
+                combineTyp = (combineTyp - 1) % len(combineFs)
             elif event.key == pygame.K_r:
                 objs = collisions.Shapes()
             elif not playMode:
@@ -207,7 +214,7 @@ while run:
                     dir[0] += 5
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Get the header_opts that got clicked, if any
-            if event.pos[1] < 50:
+            if event.pos[1] < header_sze:
                 oldtyp = typ
                 typ = event.pos[0]//(win.get_width()//len(header_opts))
                 if typ == 0:
@@ -280,11 +287,10 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
         curObj.bounciness = min(1.5, curObj.bounciness+0.05)
         
     win.fill((0, 0, 0) if (not objs.collides(curObj)) or playMode else (250, 50, 50))
-    pygame.draw.rect(win, (255, 255, 255), (0, 0, win.get_width(), 50))
+    pygame.draw.rect(win, (255, 255, 255), (0, 0, win.get_width(), header_sze))
     # Split it up into equal segments and put the text header_opts[i] in the middle of each segment
     for i in range(len(header_opts)):
-        pygame.draw.line(win, (0, 0, 0), (i*win.get_width()//len(header_opts), 0), (i*win.get_width()//len(header_opts), 50))
-        font = pygame.font.Font(None, 36)
+        pygame.draw.line(win, (0, 0, 0), (i*win.get_width()//len(header_opts), 0), (i*win.get_width()//len(header_opts), header_sze))
         text = font.render(header_opts[i], True, (0, 0, 0))
         win.blit(text, (i*win.get_width()//len(header_opts)+10, 10))
     
@@ -351,5 +357,7 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
         for p in curObj.toPoints():
             pygame.draw.circle(sur, (255, 255, 255, 100), (p[0], p[1]), 4)
         win.blit(sur, (0, 0))
+    if typ == 7:
+        win.blit(font.render(list(combineFs.keys())[combineTyp], 1, (255, 255, 255)), (0, header_sze+2))
     pygame.display.update()
     clock.tick(60)

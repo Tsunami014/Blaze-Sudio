@@ -1,5 +1,7 @@
-from BlazeSudio.collisions.collisions import *
+from BlazeSudio.collisions.generated.collisions import *
 
+import pygame as _pygame
+import shapely as _shapely
 import shapely.geometry as _shapelyGeom
 import shapely.ops as _shapelyOps
 
@@ -8,6 +10,7 @@ from typing import Union
 Number = Union[int, float]
 if _TYPE_CHECKING:
     from BlazeSudio.collisions.collisions import (
+        pointsToShape,
         Shape,
         Shapes,
         Point,
@@ -18,7 +21,7 @@ if _TYPE_CHECKING:
         ShapeCombiner,
     )
 
-def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Shape:
+def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Union[Shape, Shapes]:
     """
     Converts a shapely shape to a BlazeSudio Shape.
 
@@ -26,14 +29,16 @@ def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Shape:
         shapelyShape (shapely.geometry.base.BaseGeometry): The shapely shape to convert.
 
     Returns:
-        Shape: The converted shape.
+        Shape | Shapes: The converted shape.
     """
+    if _shapely.is_empty(shapelyShape):
+        return Shapes()
     if isinstance(shapelyShape, _shapelyGeom.Point):
         return Point(shapelyShape.x, shapelyShape.y)
     elif isinstance(shapelyShape, _shapelyGeom.LineString):
-        return Line(*shapelyShape.coords.xy)
+        return pointsToShape(*[i[1] for i in shapelyShape.coords.xy])
     elif isinstance(shapelyShape, _shapelyGeom.Polygon):
-        return Polygon(*shapelyShape.exterior.coords.xy)
+        return pointsToShape(*[i[1] for i in shapelyShape.exterior.coords.xy])
     elif isinstance(shapelyShape, _shapelyGeom.MultiPoint):
         return Shapes(*[Point(*i) for i in shapelyShape.coords.xy])
     elif isinstance(shapelyShape, _shapelyGeom.MultiLineString):
@@ -66,9 +71,33 @@ def collToShapely(collShape: Shape) -> _shapelyGeom.base.BaseGeometry:
     else:
         raise ValueError(f'Cannot convert BlazeSudio shape of type {type(collShape)} to shapely shape')
 
-class ShapeCombiner(ShapeCombiner):
+def drawShape(surface: _pygame.Surface, shape: Shape, color: tuple[int, int, int], width: int = 0):
+    """
+    Draws a BlazeSudio shape to a Pygame surface.
+
+    Args:
+        surface (pygame.Surface): The surface to draw the shape on.
+        shape (Shape): The shape to draw.
+        color (tuple[int, int, int]): The color to draw the shape in.
+        width (int, optional): The width of the lines to draw. Defaults to 0.
+    """
+    if isinstance(shape, Point):
+        _pygame.draw.circle(surface, color, (int(shape.x), int(shape.y)), width)
+    elif isinstance(shape, Line):
+        _pygame.draw.line(surface, color, (int(shape.p1.x), int(shape.p1.y)), (int(shape.p2.x), int(shape.p2.y)), width)
+    elif isinstance(shape, Circle):
+        _pygame.draw.circle(surface, color, (int(shape.x), int(shape.y)), int(shape.radius), width)
+    elif isinstance(shape, ClosedShape):
+        _pygame.draw.polygon(surface, color, shape.toPoints(), width)
+    elif isinstance(shape, Shapes):
+        for i in shape.shapes:
+            drawShape(surface, i, color, width)
+    else:
+        raise ValueError(f'Cannot draw BlazeSudio shape of type {type(shape)}')
+
+class ShapeCombiner(ShapeCombiner): # Override the ShapeCombiner class to add some extra methods that use shapely (so cannot be compiled)
     @staticmethod
-    def pointsToPoly(*points: list[Point], ratio: Number) -> Union[Shape, Shapes]:
+    def pointsToPoly(*points: list[Point], ratio: Number = 0.1) -> Union[Shape, Shapes]:
         """
         Converts a list of points to a polygon.
 
@@ -79,8 +108,7 @@ class ShapeCombiner(ShapeCombiner):
         Returns:
             Shape | Shapes: A Shapes object containing one polygon with the points from the input.
         """
-        hull = _shapelyGeom.concave_hull(_shapelyGeom.MultiPoint(points), ratio=ratio)
-        return shapelyToColl(hull)
+        return shapelyToColl(_shapely.concave_hull(_shapelyGeom.MultiPoint([tuple(i) for i in points]), ratio=ratio))
     
     @staticmethod
     def ShapelyUnion(*shapes: Shape) -> Shape:
