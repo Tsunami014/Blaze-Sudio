@@ -21,8 +21,16 @@ CATEGORYNAMES = {
 # Main STUFF
 
 def MNodeEditorDemo():
-    from BlazeSudio.elementGen import NodeSelector
-    print(NodeSelector(2))
+    try:
+        print('Press cancel to run the demo without saving to any file.')
+        from tkinter.filedialog import asksaveasfilename
+        f = asksaveasfilename(filetypes=[('Element file', '*.elm')], defaultextension='.elm')
+        if not f:
+            f = None
+    except ImportError:
+        f = None
+    from BlazeSudio.elementGen import NodeEditor
+    NodeEditor(f)
 
 def MGraphicsDemo():
     import pygame
