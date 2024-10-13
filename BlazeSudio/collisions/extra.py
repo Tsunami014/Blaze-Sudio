@@ -1,7 +1,7 @@
 try:
     from BlazeSudio.debug.globals import IMPORT_CONFIG as _CNFG
     debug = _CNFG['Debug']
-except:
+except ImportError:
     debug = False
 
 if debug:
@@ -21,14 +21,14 @@ Number = Union[int, float]
 if _TYPE_CHECKING:
     # from BlazeSudio.collisions.lib.collisions import (
     from BlazeSudio.collisions.generated.collisions import (
-        pointsToShape,
         Shape,
         Shapes,
+        checkShpType,
+        ShpGroups,
         Point,
         Line,
         Arc,
         Circle,
-        ClosedShape,
         Polygon,
         ShapeCombiner,
     )
@@ -47,18 +47,17 @@ def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Union[Shape, 
         return Shapes()
     if isinstance(shapelyShape, _shapelyGeom.Point):
         return Point(shapelyShape.x, shapelyShape.y)
-    elif isinstance(shapelyShape, _shapelyGeom.LineString):
-        return pointsToShape(*[i[1] for i in shapelyShape.coords.xy])
-    elif isinstance(shapelyShape, _shapelyGeom.Polygon):
-        return pointsToShape(*[i[1] for i in shapelyShape.exterior.coords.xy])
-    elif isinstance(shapelyShape, _shapelyGeom.MultiPoint):
+    if isinstance(shapelyShape, _shapelyGeom.LineString):
+        return ShapeCombiner.pointsToShape(*[i[1] for i in shapelyShape.coords.xy])
+    if isinstance(shapelyShape, _shapelyGeom.Polygon):
+        return ShapeCombiner.pointsToShape(*[i[1] for i in shapelyShape.exterior.coords.xy])
+    if isinstance(shapelyShape, _shapelyGeom.MultiPoint):
         return Shapes(*[Point(*i) for i in shapelyShape.coords.xy])
-    elif isinstance(shapelyShape, _shapelyGeom.MultiLineString):
+    if isinstance(shapelyShape, _shapelyGeom.MultiLineString):
         return Shapes(*[Line(*i) for i in shapelyShape.coords.xy])
-    elif isinstance(shapelyShape, _shapelyGeom.MultiPolygon):
+    if isinstance(shapelyShape, _shapelyGeom.MultiPolygon):
         return Shapes(*[Polygon(*i.exterior.coords.xy) for i in shapelyShape])
-    else:
-        raise ValueError(f'Cannot convert shapely shape of type {type(shapelyShape)} to BlazeSudio Shape')
+    raise ValueError(f'Cannot convert shapely shape of type {type(shapelyShape)} to BlazeSudio Shape')
 
 def collToShapely(collShape: Shape) -> _shapelyGeom.base.BaseGeometry:
     """
@@ -70,18 +69,17 @@ def collToShapely(collShape: Shape) -> _shapelyGeom.base.BaseGeometry:
     Returns:
         shapely.geometry.base.BaseGeometry: The converted shape.
     """
-    if isinstance(collShape, Point):
+    if checkShpType(collShape, Point):
         return _shapelyGeom.Point(collShape.x, collShape.y)
-    elif isinstance(collShape, Line):
+    if checkShpType(collShape, Line):
         return _shapelyGeom.LineString([(collShape.p1.x, collShape.p1.y), (collShape.p2.x, collShape.p2.y)])
-    elif isinstance(collShape, Circle):
+    if checkShpType(collShape, Circle):
         return _shapelyGeom.Point(collShape.x, collShape.y).buffer(collShape.radius)
-    elif isinstance(collShape, ClosedShape):
+    if checkShpType(collShape, ShpGroups.CLOSED):
         return _shapelyGeom.Polygon([(i.x, i.y) for i in collShape.toPoints()])
-    elif isinstance(collShape, Shapes):
+    if checkShpType(collShape, ShpGroups.GROUP):
         return _shapelyGeom.GeometryCollection([collToShapely(i) for i in collShape.shapes])
-    else:
-        raise ValueError(f'Cannot convert BlazeSudio shape of type {type(collShape)} to shapely shape')
+    raise ValueError(f'Cannot convert BlazeSudio shape of type {type(collShape)} to shapely shape')
 
 def drawShape(surface: _pygame.Surface, shape: Shape, colour: tuple[int, int, int], width: int = 0):
     """
@@ -93,20 +91,20 @@ def drawShape(surface: _pygame.Surface, shape: Shape, colour: tuple[int, int, in
         colour (tuple[int, int, int]): The colour to draw the shape in.
         width (int, optional): The width of the lines to draw. Defaults to 0.
     """
-    if isinstance(shape, Point):
+    if checkShpType(shape, Point):
         _pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), width)
-    elif isinstance(shape, Line):
+    elif checkShpType(shape, Line):
         if tuple(shape.p1) == tuple(shape.p2):
             _pygame.draw.circle(surface, colour, (int(shape.p1[0]), int(shape.p1[1])), int(width/2))
         _pygame.draw.line(surface, colour, (int(shape.p1[0]), int(shape.p1[1])), 
                                            (int(shape.p2[0]), int(shape.p2[1])), width)
-    elif isinstance(shape, Arc):
+    elif checkShpType(shape, Arc):
         _pygame.draw.arc(surface, colour, 
                          (int(shape.x)-int(shape.r), int(shape.y)-int(shape.r), int(shape.r*2), int(shape.r*2)), 
                          _toRadians(-shape.endAng), _toRadians(-shape.startAng), width)
-    elif isinstance(shape, Circle):
+    elif checkShpType(shape, Circle):
         _pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), int(shape.r), width)
-    elif isinstance(shape, ClosedShape):
+    elif checkShpType(shape, ShpGroups.CLOSED):
         ps = shape.toPoints()
         psset = {tuple(i) for i in ps}
         if len(psset) == 0:
@@ -121,7 +119,7 @@ def drawShape(surface: _pygame.Surface, shape: Shape, colour: tuple[int, int, in
                               (int(fst[0]), int(fst[1])), 
                               (int(snd[0]), int(snd[1])), int(width/4*3))
         _pygame.draw.polygon(surface, colour, ps, width)
-    elif isinstance(shape, Shapes):
+    elif checkShpType(shape, ShpGroups.GROUP):
         for i in shape.shapes:
             drawShape(surface, i, colour, width)
     else:
@@ -132,6 +130,8 @@ class ShapeCombiner(ShapeCombiner): # Override the ShapeCombiner class to add so
     def pointsToPoly(*points: list[Point], ratio: Number = 0.1) -> Union[Shape, Shapes]:
         """
         Converts a list of points to a polygon.
+        This differs from `ShapeCombiner.pointsToShape` in that **this** will create a polygon encapsulating all the points, \
+*instead* of connecting them all with lines.
 
         Args:
             points (list[Point]): The points to convert to a polygon.

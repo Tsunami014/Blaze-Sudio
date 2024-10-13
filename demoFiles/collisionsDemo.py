@@ -25,6 +25,7 @@ combineFs = {
     'ShapelyUnion': collisions.ShapeCombiner.ShapelyUnion,
     'BoundingBox': collisions.ShapeCombiner.boundingBox,
     'CombineRects': collisions.ShapeCombiner.combineRects,
+    'PointsToShape': collisions.ShapeCombiner.pointsToShape,
     'PointsToPoly': collisions.ShapeCombiner.pointsToPoly
 }
 highlightTyps = [
