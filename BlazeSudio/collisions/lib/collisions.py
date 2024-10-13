@@ -13,7 +13,6 @@ __all__ = [
     'rotateBy0',
     'direction',
     'pointOnUnitCircle',
-    'pointsToShape',
     'ShpGroups',
     'checkShpType',
     'Shape',
@@ -98,37 +97,6 @@ def pointOnUnitCircle(angle: Number, strength: Number=1) -> pointLike:
     """
     return math.cos(angle)*strength, math.sin(angle)*strength
 
-def pointsToShape(*points: Iterable[pointLike], bounciness: float = BASEBOUNCINESS) -> 'Shape':
-    """
-    Converts a list of points to a shape object.
-    If there is only one point, it will return a Point object, if there are two it will return a Line object, and if there are more \
-it will return a Polygon object.
-
-    Args:
-        points (pointLike): The points to convert to a shape.
-        bounciness (float, optional): The bounciness of the shape. Defaults to 0.7.
-
-    Returns:
-        Shape: The shape object made from the points
-    """
-    if len(points) == 0:
-        return NoShape()
-    elif len(points) == 1:
-        return Point(*points[0], bounciness)
-    if len(points) == 2:
-        return Line(*points, bounciness)
-
-    if len(points) == 4:
-        x_vals = {p[0] for p in points}
-        y_vals = {p[1] for p in points}
-
-        # To form a rectangle, we should have exactly two unique x-values and two unique y-values
-        if len(x_vals) == 2 and len(y_vals) == 2:
-            x_min, y_min = min(x_vals), min(y_vals)
-            return Rect(x_min, y_min, max(x_vals)-x_min, max(y_vals)-y_min)
-    
-    return Polygon(*points, bounciness=bounciness)
-
 class ShpGroups(Enum):
     """
     An enum representing the different groups you can put shapes in.
@@ -161,14 +129,13 @@ def checkShpType(shape: Union['Shape', 'Shapes'], typs: Union[Type, ShpGroups, I
     return False
 
 class Shape:
+    """The base Shape class. This defaults to always collide.
+This class always collides; so *can* be used as an infinite plane, but why?"""
     GROUPS = []
     x: Number = 0
     y: Number = 0
     def __init__(self, bounciness: float = BASEBOUNCINESS):
         """
-        The base Shape class. This defaults to always collide.
-        This class always collides; so *can* be used as an infinite plane, but why?
-
         Args:
             bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
         """
@@ -328,10 +295,8 @@ class Shape:
         return '<Shape>'
 
 class NoShape(Shape):
+    """A class to represent no shape. This is useful for when you want to have a shape that doesn't collide with anything."""
     def __init__(self):
-        """
-        A class to represent no shape. This is useful for when you want to have a shape that doesn't collide with anything.
-        """
         super().__init__(0)
     
     def _collides(self, othershape: Shape) -> bool:
@@ -348,11 +313,10 @@ class NoShape(Shape):
         return '<NoShape>'
 
 class Shapes:
+    """A class which holds multiple shapes and can be used to do things with all of them at once."""
     GROUPS = [ShpGroups.GROUP]
     def __init__(self, *shapes: Shape):
         """
-        A class which holds multiple shapes and can be used to do things with all of them at once.
-
         Args:
             *shapes (Shape): The shapes to start off with in this object.
         
@@ -533,10 +497,9 @@ class Shapes:
 # Also each is kinda in order of complexity.
 
 class Point(Shape):
+    """An infintesimally small point in space defined by an x and y coordinate."""
     def __init__(self, x: Number, y: Number, bounciness: float = BASEBOUNCINESS):
         """
-        An infintesimally small point in space.
-
         Args:
             x (Number): The x ordinate of this object.
             y (Number): The y ordinate of this object.
@@ -724,11 +687,10 @@ class Point(Shape):
         return f'<Point @ ({self.x}, {self.y})>'
 
 class Line(Shape):
+    """A line segment object defined by a start and an end point."""
     GROUPS = [ShpGroups.LINES]
     def __init__(self, p1: pointLike, p2: pointLike, bounciness: float = BASEBOUNCINESS):
         """
-        A line segment object.
-
         Args:
             p1 (pointLike): The start point of this line
             p2 (pointLike): The end point of this line
@@ -1153,11 +1115,12 @@ class Line(Shape):
         return f'<Line from {self.p1} to {self.p2}>'
 
 class Circle(Shape):
+    """A perfect circle. Defined as an x and y centre coordinate of the circle and a radius.
+Please be mindful when checking for this class as it is technically a closed shape, but if you try to run \
+`.toLines()` or `.toPoints()` it will return an empty list; so please check for it *before* closed shapes."""
     GROUPS = [ShpGroups.CLOSED]
     def __init__(self, x: Number, y: Number, r: Number, bounciness: float = BASEBOUNCINESS):
         """
-        A perfect circle.
-
         Args:
             x (Number): The x ordinate of the centre of this circle.
             y (Number): The y ordinate of the centre of this circle.
@@ -1362,6 +1325,8 @@ class Circle(Shape):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
 
 class Arc(Circle):
+    """A section of a circle's circumfrance. This is in the 'lines' group because it can be used as the outer edge of another shape.
+This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take."""
     GROUPS = [ShpGroups.LINES]
     def __init__(self, 
                  x: Number, 
@@ -1373,8 +1338,6 @@ class Arc(Circle):
                  bounciness: float = BASEBOUNCINESS
                 ):
         """
-        A section of a circle's circumfrance.
-
         Args:
             x (Number): The x position of this arc's centre.
             y (Number): The y position of this arc's centre.
@@ -1542,7 +1505,9 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
     def __str__(self):
         return f'<Arc @ ({self.x}, {self.y}) with radius {self.r} and angles between {self.startAng}°-{self.endAng}°>'
 
-class ClosedShape(Shape): # I.e. rect, polygon, etc.
+class ClosedShape(Shape):
+    """These are shapes like rects and polygons; if you split them into a list of lines all the lines join with one another.
+Please do not use this class as it is just a building block for subclasses and to provide them with some basic methods."""
     GROUPS = [ShpGroups.CLOSED]
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
         if not self.check_rects(othershape):
@@ -1879,10 +1844,9 @@ class ClosedShape(Shape): # I.e. rect, polygon, etc.
         return '<Closed Shape>'
 
 class Rect(ClosedShape):
+    """A Rectangle. It is defined with an x, y, width and height."""
     def __init__(self, x: Number, y: Number, w: Number, h: Number, bounciness: float = BASEBOUNCINESS):
         """
-        A Rectangle.
-
         Args:
             x (Number): The x ordinate.
             y (Number): The y ordinate.
@@ -1979,11 +1943,11 @@ class Rect(ClosedShape):
         return f'<Rect @ ({self.x}, {self.y}) with dimensions {self.w}x{self.h}>'
 
 class RotatedRect(ClosedShape):
+    """A rectangle...... That is rotated.
+It is rotated around it's x and y coordinates.
+Defined as an x, y, width, height and rotation."""
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number, bounciness: float = BASEBOUNCINESS):
         """
-        A rectangle...... That is rotated.
-        It is rotated around it's x and y coordinates.
-
         Args:
             x (Number): The x ordinate. Also what it rotates around.
             y (Number): The y ordinate. Also what it rotates around.
@@ -2118,7 +2082,18 @@ class RotatedRect(ClosedShape):
         return f'<RotatedRect @ ({self.x}, {self.y}), with dimensions {self.w}x{self.h}, rotated {self.rot}° to have points {self.toPoints()}>'
 
 class Polygon(ClosedShape):
+    """A convex or concave polygon. It is defined with a list of points."""
     def __init__(self, *points: pointLike, errorOnLT3: bool = True, bounciness: float = BASEBOUNCINESS):
+        """
+        Args:
+            *points (pointLike): The points that make up the polygon.
+            errorOnLT3 (bool, optional): Whether to error if the amount of points making up this polygon is less than 3. \
+If it *is* less than 3, I have no clue what will happen; it will probably get a lot of things wrong - which is why this is in place. Defaults to True.
+            bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
+
+        Raises:
+            ValueError: When you have a polygon with <3 points.
+        """
         super().__init__(bounciness)
         if len(points) < 3 and errorOnLT3:
             raise ValueError(
@@ -2226,6 +2201,8 @@ class Polygon(ClosedShape):
         return f'<Polygon with points {self.points}>'
 
 class ShapeCombiner:
+    """A class to combine shapes together. You do not actually need to create an object of this as all the methods are static.
+Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3)`."""
     @staticmethod
     def boundingBox(*shapes: Rect) -> Shapes:
         """
@@ -2371,6 +2348,45 @@ class ShapeCombiner:
             else:
                 outshps.append(s)
         return Shapes(*outshps)
+
+    @staticmethod
+    def pointsToShape(*points: Iterable[pointLike], bounciness: float = BASEBOUNCINESS) -> Shape:
+        """
+        Converts a list of points to a shape object.
+        
+        No points: NoShape()
+        One point: Point()
+        2 points: Line()
+        4 points and in the shape of a rectangle: Rect()
+        Otherwise: Polygon()
+
+        This differs from `ShapeCombiner.pointsToPoly` in that **this** will connect all the points with lines, \
+*instead* of creating a polygon to envelop them all.
+
+        Args:
+            *points (pointLike): The points to convert to a shape.
+            bounciness (float, optional): The bounciness of the output shape. Defaults to 0.7.
+
+        Returns:
+            Shape: The shape object made from the points
+        """
+        if len(points) == 0:
+            return NoShape()
+        elif len(points) == 1:
+            return Point(*points[0], bounciness)
+        if len(points) == 2:
+            return Line(*points, bounciness)
+
+        if len(points) == 4:
+            x_vals = {p[0] for p in points}
+            y_vals = {p[1] for p in points}
+
+            # To form a rectangle, we should have exactly two unique x-values and two unique y-values
+            if len(x_vals) == 2 and len(y_vals) == 2:
+                x_min, y_min = min(x_vals), min(y_vals)
+                return Rect(x_min, y_min, max(x_vals)-x_min, max(y_vals)-y_min)
+        
+        return Polygon(*points, bounciness=bounciness)
 
 # TODO: Options for having func(a, b, c) OR func([a, b, c])
 # TODO: Split functions up into smaller bits and have more sharing of functions (especially with the handleCollisions)
