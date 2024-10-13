@@ -1,7 +1,8 @@
 from _typeshed import Incomplete
-from typing import Any, Dict, Iterable
+from enum import Enum
+from typing import Any, Iterable
 
-__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnUnitCircle', 'pointsToShape', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'ClosedShape', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
+__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnUnitCircle', 'pointsToShape', 'ShpGroups', 'checkShpType', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'Arc', 'ClosedShape', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
 
 Number = int | float
 verboseOutput = Iterable[Any] | None
@@ -67,7 +68,28 @@ def pointsToShape(*points: Iterable[pointLike], bounciness: float = ...) -> Shap
         Shape: The shape object made from the points
     """
 
+class ShpGroups(Enum):
+    """
+    An enum representing the different groups you can put shapes in.
+    """
+    CLOSED = 0
+    LINES = 1
+    GROUP = 2
+
+def checkShpType(shape: Shape | Shapes, typs: type | ShpGroups | Iterable[type | ShpGroups]) -> bool:
+    """
+    Checks to see if a shape is of a certain type or group.
+
+    Args:
+        shape (Shape or Shapes]): The input shape or shapes to check the type of.
+        typs (ShpTypes, ShpGroups, or an Iterable[ShpTypes or ShpGroups]): The shape type(s) &/or group(s) to check for.
+
+    Returns:
+        bool: Whether the shape is of the specified type(s) or group(s).
+    """
+
 class Shape:
+    GROUPS: Incomplete
     x: Number
     y: Number
     bounciness: Incomplete
@@ -152,7 +174,7 @@ class Shape:
     def toPoints(self) -> Iterable[pointLike]:
         """
         Returns:
-            Iterable[pointLike]: Get a list of all the Points that make up this object. For Circles and Shape's, this will be empty.
+            Iterable[pointLike]: Get a list of all the Points that make up this object. For Circles, Arcs and Shape's, this will be empty.
         """
     def rect(self) -> Iterable[Number]:
         """
@@ -185,6 +207,7 @@ class NoShape(Shape):
         """Make a copy of this non-existant shape"""
 
 class Shapes:
+    GROUPS: Incomplete
     shapes: Incomplete
     def __init__(self, *shapes: Shape) -> None:
         """
@@ -262,7 +285,7 @@ class Shapes:
         Returns:
             Iterable[pointLike]: All the closest point(s) ON each of these objects
         """
-    def isCorner(self, point: pointLike, precision: Number = ...) -> Dict[Shape | Shapes, bool]:
+    def isCorner(self, point: pointLike, precision: Number = ...) -> dict[Shape | Shapes, bool]:
         """
         Takes each object and finds whether the input point is on the corner of that object.
 
@@ -392,6 +415,7 @@ class Point(Shape):
     def __iter__(self): ...
 
 class Line(Shape):
+    GROUPS: Incomplete
     def __init__(self, p1: pointLike, p2: pointLike, bounciness: float = ...) -> None:
         """
         A line segment object.
@@ -513,6 +537,7 @@ class Line(Shape):
     def __setitem__(self, item: Number, new: pointLike) -> None: ...
 
 class Circle(Shape):
+    GROUPS: Incomplete
     def __init__(self, x: Number, y: Number, r: Number, bounciness: float = ...) -> None:
         """
         A perfect circle.
@@ -573,7 +598,76 @@ class Circle(Shape):
     r: Incomplete
     def __setitem__(self, item: Number, new: Number) -> None: ...
 
+class Arc(Circle):
+    GROUPS: Incomplete
+    precision: Incomplete
+    bounciness: Incomplete
+    def __init__(self, x: Number, y: Number, rad: Number, startAngle: Number, endAngle: Number, precision: Number = ..., bounciness: float = ...) -> None:
+        """
+        A section of a circle's circumfrance.
+
+        Args:
+            x (Number): The x position of this arc's centre.
+            y (Number): The y position of this arc's centre.
+            rad (Number): The radius of the circle.
+            startAngle (Number): The starting angle to take the portion of the circumfrance of. Wraps around.
+            endAngle (Number): The ending angle to take the portion of the circumfrance of. Wraps around.
+            precision (Number, optional): The decimal places to round to to check. Defaults to 5. This is needed as almost everything requires a very precise exact check to succeed and sometimes decimal errors occur and you get an equation like `10000.000000000002 == 10000.0` which is False. This is to prevent that.
+            bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
+        """
+    def flip(self) -> None:
+        """
+        Flips the portion taken to make the arc; so an arc covering 90 degrees of the circle will now cover 270, and vice versa.
+        """
+    def closestPointTo(self, othershape: Shape, returnAll: bool = False) -> pointLike | Iterable[pointLike]:
+        """
+        Finds the closest point ON THIS OBJECT **TO** the other object
+
+        Args:
+            othershape (Shape): The other shape to find the closest point to
+            returnAll (bool, optional): Whether to return *all* the potential closest points sorted in order of closeness or just **the** closest. Defaults to False (only the closest).
+
+        Returns:
+            pointLike|Iterable[pointLike]: The closest point(s) on this object to the other object. Whether this is an iterable or not depends on the `returnAll` parameter.
+        """
+    def angleInRange(self, angle: Number) -> bool:
+        """
+        Check to see if an angle is in the range of this arc.
+
+        Args:
+            angle (Number): The angle to check if it is in range of this arc or not.
+
+        Returns:
+            bool: Whether or not the angle is in the range of this arc.
+        """
+    def endPoints(self) -> Iterable[pointLike]:
+        """
+        Gets the end points of the arc
+
+        Returns:
+            Iterable[pointLike]: The endpoints of the arc
+        """
+    def rect(self) -> Iterable[Number]:
+        """
+        Returns the rectangle bounding box surrounding this object.
+
+        Returns:
+            Iterable[Number]: (min x, min y, max x, max y)
+        """
+    def copy(self) -> Arc:
+        """
+        Because Noah's first arc broke, now you need another one.
+        """
+    def __getitem__(self, item: Number) -> Number | pointLike: ...
+    x: Incomplete
+    y: Incomplete
+    r: Incomplete
+    startAng: Incomplete
+    endAng: Incomplete
+    def __setitem__(self, item: Number, new: Number | pointLike) -> None: ...
+
 class ClosedShape(Shape):
+    GROUPS: Incomplete
     def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
         Finds the tangent on this surface to a point with a given velocity.
