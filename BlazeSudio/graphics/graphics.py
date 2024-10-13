@@ -338,11 +338,13 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         """
         def func2(*args, **kwargs):
             stuff = self.Stuff.copy()
+            prevstack = self.stacks.copy()
             prev = GraphicInfo.RUNNINGGRAPHIC
             if self.id is None:
                 idx = None
             else:
                 self.Stuff.clear()
+                self.stacks.clear()
                 idx = GraphicInfo.GRAPHICSPROCESSES[self.id]
                 GraphicInfo.GRAPHICSPROCESSES[self.id] += 1
                 GraphicInfo.RUNNINGGRAPHIC = (self.id, idx)
@@ -380,7 +382,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                             self.Abort()
                         elif ret == GUI.ReturnState.CALL:
                             r = func(GO.EELEMENTCLICK, obj)
-                            if r != None:
+                            if r is not None:
                                 self.run = False
                                 yield [r]
                         elif ret == GUI.ReturnState.TBUTTON:
@@ -408,16 +410,19 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             GraphicInfo.RUNNINGGRAPHIC = prev # Give back the permission to go to the previous graphic screen
             self.ab = False
             self.run = True
+            self.stacks.replaceWith(prevstack)
             self.Stuff = stuff
             yield [ret]
         def func3(*args, **kwargs):
             f = func2(*args, **kwargs)
             while True:
                 y = next(f)
-                if y != None:
+                if y is not None:
                     return y[0]
-        if generator: return func2
-        else: return func3
+        if generator:
+            return func2
+        else:
+            return func3
 
     def Toast(self, text, timeout=120, pos=GO.PCBOTTOM, dist=20, spacing=5, font=GO.FFONT, col=GO.CACTIVE, txtcol=GO.CWHITE):
         """
@@ -839,7 +844,8 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         """
         Reloads the screen, removing all the current things and rerunning the ELOADUI for the current function.
         
-        This is ill-advised, because it is slow if you have many things to load. Instead, try `.set` on the elements you wish to update.
+        You should not run this very often (only when changing a *lot* of things (like exiting from one screen and going into the next)), \
+because it is slow if you have many things to load. Instead, try `.set` on the elements you wish to update.
         """
         self.rel = True
     

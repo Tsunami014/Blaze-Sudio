@@ -6,20 +6,7 @@ from BlazeSudio.graphics import Graphic
 import BlazeSudio.elementGen.node_parser as np
 import BlazeSudio.elementGen.types as Ts
 
-folder = (files('BlazeSudio') / 'data/elements')
-if not folder.exists():
-    folder.mkdir()
-    for i in ['characters', 'events', 'other']:
-        (folder / i).mkdir()
-categories = ['data/elements/'+i.name for i in folder.iterdir() if i.is_dir()]
-
-def modifyCats(func): # Function decorator
-    def func2():
-        global categories
-        oldcats = categories.copy()
-        func(categories)
-        categories = oldcats
-    return func2
+DEFAULTFILECONTENTS = {"idea": "BLANK", "name": "New File", "version": "0.4"}
 
 class Nodes(list):
     def __init__(self, l=[]):
@@ -72,136 +59,42 @@ def mouseDown(button=1):
         yield ((i != r and r), r)
         i = r
 
-def NodeSelector(continue_to_edit=0, G=None):
-    """Makes a Node Selector screen!
-
-    Parameters
-    ----------
-    continue_to_edit : int, optional
-        Whether to, once selected, return (0 & default), run the editor and exit once the editor gets exited (1) OR go back into select dialog when exit (2)
-    G : graphics.Graphic, optional
-        The graphic screen, if not provided will create one!
-    """
-    if G == None:
-        G = Graphic()
-    @G.Graphic
-    def item_select(event, category, element=None, aborted=False):
-        if event == GO.EFIRST:
-            @G.Loading
-            def load(self):
-                self.items = [i for i in (files('BlazeSudio') / category) if i.is_file() and i.name.endswith('.elm')]
-                self.iteminfo = [dill.loads((files('BlazeSudio') / f'{category}/{i.name}').read_bytes()) for i in self.items]
-                self.subs = ['Go back to the previous page', 'Make a new item from scratch'] + [i['idea'] for i in self.iteminfo]
-            cont, res = load()
-            G.Container.res = res
-            G.Container.txt = ''
-            G.Container.prevpresses = []
-            if not cont: G.Abort()
-        elif event == GO.ELOADUI:
-            G.Clear()
-            G.add_text(category[category.rfind('/')+1:] + ' item selection', GO.CBLACK, GO.PCTOP)
-            G.add_text(G.Container.txt, GO.CBLUE, GO.PCTOP)
-            G.add_button('Back', GO.CGREY, GO.PLTOP)
-            G.add_button('New Item', GO.CGREEN, GO.PLTOP)
-            cols = GO.CRAINBOW()
-            G.Container.items = []
-            for i in range(len(G.Container.res.iteminfo)):
-                G.Container.items.append(category+'/'+G.Container.res.items[i].name)
-                G.add_button(G.Container.res.iteminfo[i]['name'], next(cols), GO.PLCENTER)
-        elif event == GO.ETICK:
-            if G.touchingbtns != G.Container.prevpresses:
-                G.Container.prevpresses = G.touchingbtns.copy()
-                try: G.Container.txt = G.Container.res.subs[G.get_idx(G.touchingbtns[0])]
-                except: G.Container.txt = ''
-                G.Reload()
-            return True
-        elif event == GO.EELEMENTCLICK: # Passed 'element'
-            if element == 0: # back
-                return None
-            elif element == 1: # make new world
-                return category+'/NEW'
-            else:
-                return G.Container.items[element.uid-2]
-    @G.Graphic
-    def category_select(event, element=None, aborted=False):
-        if event == GO.ELOADUI:
-            G.Clear()
-            G.add_text('Category selection', GO.CBLACK, GO.PCTOP)
-            G.add_button('Back', GO.CGREY, GO.PLTOP)
-            G.add_button('New Category', GO.CGREEN, GO.PLTOP)
-            G.Container.cats = []
-            cols = GO.CRAINBOW()
-            for i in categories:
-                G.Container.cats.append(i)
-                G.add_button(i[i.rfind('/')+1:], next(cols), GO.PLCENTER)
-        elif event == GO.ETICK:
-            return True
-        elif event == GO.EELEMENTCLICK: # Passed 'element'
-            if element == 0: # back
-                return None
-            elif element == 1: # make new world
-                if continue_to_edit == 1 or continue_to_edit == 2:
-                    NodeEditor('data/elements/NEW/NEW', G)
-                    G.ab = False
-                if continue_to_edit != 2:
-                    return 'NEW/NEW'
-            else:
-                name = G.Container.cats[element.uid-2]
-                r = True
-                while r:
-                    pth = item_select(name)
-                    G.ab = False
-                    if pth != None:
-                        if continue_to_edit == 1 or continue_to_edit == 2:
-                            NodeEditor(pth, G)
-                            G.ab = False
-                            if continue_to_edit == 1:
-                                return pth
-                        if continue_to_edit != 2:
-                            return pth
-                    if pth == None:
-                        r = False
-    return category_select()
-
-# Make delete category/node file
-# As well as a NodeEditor screen have a NodeRenderer screen, which is also used in NodeEditor
-
 def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled=False, docircle=True): # Circle And Text
     t = GO.FFONT.render(txt, GO.CBLACK)
-    sze = GO.FFONT.winSze('a')[1]
-    poschange = t.get_height() - sze
-    sur = pygame.Surface((t.get_width() + sze + 5, t.get_height()+poschange))
+    sze = max(GO.FFONT.linesize, t.get_height())
+    tocenter = (sze - t.get_height()) / 2
+    sur = pygame.Surface((t.get_width() + sze + 5, sze))
     sur.fill(bgcol)
     cir = None
     if not docircle:
-        sur.blit(t, (0, poschange))
+        sur.blit(t, (0, tocenter))
         cir = pygame.Rect(0, 0, 0, 0)
     elif front:
         cir = pygame.Rect(0, 0, sze, sze)
-        pygame.draw.circle(sur, GO.CAWHITE, (sze//2, t.get_height()//2), sze//2-2)
-        pygame.draw.circle(sur, colour, (sze//2, t.get_height()//2), sze//2-2, 5)
+        pygame.draw.circle(sur, GO.CAWHITE, (sze//2, sze//2), sze//2-2)
+        pygame.draw.circle(sur, colour, (sze//2, sze//2), sze//2-2, 5)
         if colour2 is not None:
             csur = pygame.Surface((sze, sze//2))
             csur.fill(GO.CAWHITE)
             pygame.draw.circle(csur, colour2, (sze//2, 0), sze//2-2, 5)
-            sur.blit(csur, (0, t.get_height()//2))
+            sur.blit(csur, (0, sze//2))
         if filled:
-            pygame.draw.circle(sur, GO.CGREY, (sze//2, t.get_height()//2), sze//4)
-        pygame.draw.circle(sur, GO.CBLACK, (sze//2, t.get_height()//2), sze//2, 2)
-        sur.blit(t, (sze + 5, poschange))
+            pygame.draw.circle(sur, GO.CGREY, (sze//2, sze//2), sze//4)
+        pygame.draw.circle(sur, GO.CBLACK, (sze//2, sze//2), sze//2, 2)
+        sur.blit(t, (sze + 5, tocenter))
     else:
         cir = pygame.Rect(t.get_width() + 5, 0, sze, sze)
-        pygame.draw.circle(sur, GO.CAWHITE, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2)
-        pygame.draw.circle(sur, colour, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2, 5)
+        pygame.draw.circle(sur, GO.CAWHITE, (t.get_width() + 5 + sze//2, sze//2), sze//2-2)
+        pygame.draw.circle(sur, colour, (t.get_width() + 5 + sze//2, sze//2), sze//2-2, 5)
         if colour2 is not None:
             csur = pygame.Surface((sze, sze//2))
             csur.fill(GO.CAWHITE)
             pygame.draw.circle(csur, colour2, (sze//2, 0), sze//2-2, 5)
-            sur.blit(csur, (t.get_width() + 5, t.get_height()//2))
+            sur.blit(csur, (t.get_width() + 5, sze//2))
         if filled:
-            pygame.draw.circle(sur, GO.CGREY, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//4)
-        pygame.draw.circle(sur, GO.CBLACK, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2, 2)
-        sur.blit(t, (0, poschange))
+            pygame.draw.circle(sur, GO.CGREY, (t.get_width() + 5 + sze//2, sze//2), sze//4)
+        pygame.draw.circle(sur, GO.CBLACK, (t.get_width() + 5 + sze//2, sze//2), sze//2, 2)
+        sur.blit(t, (0, tocenter))
     return sur, cir
 
 def NodeEditor(path=None, G=None):
@@ -273,17 +166,16 @@ and if it is None then it will not save. Defaults to None.
             G.Container.selecting = None
             G.Container.highlighting = None
             G.Container.DONTDOIT = False
-            default = {"idea": "BLANK", "name": "New File", "version": "0.4"}
             if path is not None:
                 if not path.endswith('.elm'):
                     path = path + '.elm'
                 if not os.path.exists(path):
                     # Version: major.minor
-                    dill.dump(default, path.open('wb+'))
+                    dill.dump(DEFAULTFILECONTENTS, path.open('wb+'))
                 # TODO: version checking and updating (not for versions less than 1.0 which is the liftoff version)
                 G.Container.contents = dill.loads((files('BlazeSudio') / path+'.elm').read_bytes())
             else:
-                G.Container.contents = default
+                G.Container.contents = DEFAULTFILECONTENTS
             if 'nodes' in G.Container.contents:
                 G.Container.nodes = G.Container.contents['nodes']
             else:
@@ -300,7 +192,9 @@ and if it is None then it will not save. Defaults to None.
         elif event == GO.EELEMENTCLICK: # This is going to be the only button that was created
             @G.Graphic
             def settings(event, element=None, aborted=False):
-                if event == GO.ELOADUI:
+                if event == GO.EFIRST:
+                    G.Container.doApply = False
+                elif event == GO.ELOADUI:
                     CBOT = GO.PNEW((1, 0), GO.PCBOTTOM.func)
                     RTOP = GO.PNEW((0, 1), GO.PRTOP.func)
                     LTOP = GO.PNEW((0, 1), GO.PLTOP.func)
@@ -311,21 +205,20 @@ and if it is None then it will not save. Defaults to None.
                     G.add_empty_space(CBOT, -20, 0)
                     G.Container.go = G.add_button('Apply!', GO.CGREEN, CBOT)
                     G.Container.exit = G.add_button('Cancel', GO.CGREY, CBOT)
-                elif event == GO.ETICK: return True
+                elif event == GO.ETICK:
+                    return True
                 elif event == GO.EELEMENTCLICK:
                     if element == G.Container.go:
-                        G.Container.went = True
+                        G.Container.doApply = True
                         G.Abort()
                     elif element == G.Container.exit:
-                        G.Container.went = False
                         G.Abort()
                 elif event == GO.ELAST:
-                    if G.Container.went: # Not cancelled
+                    if G.Container.doApply:
                         res = G.uids[G.Container.inpname].text
                         if res != '':
                             G.Container.name = res
                             G.Container.contents['name'] = res
-                        pass # Whatever you return here will be returned by the function
             settings()
         elif event == GO.ETICK:
             lf, l = next(G.Container.md[0])
