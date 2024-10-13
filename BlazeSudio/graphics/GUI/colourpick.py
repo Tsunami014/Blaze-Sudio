@@ -6,7 +6,7 @@ from BlazeSudio.graphics import options as GO # TODO: Replace more values in her
 # Too big to go in another file
 
 class ValuePicker:
-    def __init__(self, x, y, w, h, default=0, type=0, border=False):
+    def __init__(self, x, y, w, h, parenth, default=0, type=0, border=False):
         self.size = (w, h)
         self.type = type
         self.border = border
@@ -14,8 +14,8 @@ class ValuePicker:
         self.rad = h//2
         self.pwidth = w-self.rad*2
         self.rect = pygame.Rect(x, y, w, h)
-        self.imrect = pygame.Rect(x+h//2, y+h//3, self.pwidth, h-2*h//3)
-        self.image = pygame.Surface((self.pwidth, h-2*h//3))
+        self.pos = (x+h//2, y+h//3)
+        self.image = pygame.Surface((self.pwidth, self.pwidth))
         self.image.fill((255, 255, 255))
         for i in range(self.pwidth):
             colour = pygame.Color(0)
@@ -23,25 +23,28 @@ class ValuePicker:
             hsla[self.type] = int(self.bounds*i/self.pwidth)
             colour.hsla = tuple(hsla)
             pygame.draw.rect(self.image, colour, (i, 0, 1, h-2*h//3))
-        try: self.p = (1/self.bounds)*default
-        except: self.p = 0
-        self.twod = pygame.Surface((self.pwidth, self.pwidth))
+        try:
+            self.p = (1/self.bounds)*default
+        except:
+            self.p = 0
+        self.twod = pygame.Surface((self.pwidth, parenth))
         self.twod.fill((255, 255, 255))
         for i in range(self.pwidth):
-            for j in range(self.pwidth):
+            for j in range(parenth):
                 try:
                     colour = pygame.Color(0)
-                    hsla = [360, 100, 100-int((100/self.pwidth)*j*2*(100/self.pwidth)), 100]
+                    hsla = [360, 100, 100-int((100/parenth)*j*2*(100/parenth)), 100]
                     hsla[self.type] = 0
                     colour.hsla = tuple(hsla)
                     pygame.draw.rect(self.twod, colour, (i, j, 1, 1))
-                except: pass
+                except:
+                    pass
         self.p = (max(0, min(self.p, 1)))
     
     def set_position(self, x, y):
         h = self.size[1]
         self.rect = pygame.Rect(x, y, *self.size)
-        self.imrect = pygame.Rect(x+h//2, y+h//3, self.pwidth, h-2*h//3)
+        self.pos = (x+h//2, y+h//3)
     
     def get_twod(self, w, h):
         s = self.twod.copy()
@@ -66,8 +69,9 @@ class ValuePicker:
     def draw(self, surf):
         if not self.border:
             pygame.draw.rect(surf, (255, 255, 255), self.rect)
-        else: pygame.draw.rect(surf, (255, 255, 255), self.rect, border_radius=8, border_top_left_radius=0, border_top_right_radius=0)
-        surf.blit(self.image, self.imrect)
+        else:
+            pygame.draw.rect(surf, (255, 255, 255), self.rect, border_radius=8, border_top_left_radius=0, border_top_right_radius=0)
+        surf.blit(self.image, self.pos)
         center = self.rect.left + self.rad + self.p * self.pwidth, self.rect.centery
         pygame.draw.circle(surf, self.get_colour(), center, self.rect.height // 2)
 
@@ -75,7 +79,7 @@ class ColourPicker:
     def __init__(self, x, y, border=5, values=[1], w=100, h=None):
         self.pwidth = w
         self.pheight = h or w
-        self.values = [ValuePicker(x-border, y+self.pheight+border+i*50, w+border*2, 50, [0, 100, 50, 100][values[i]], values[i], i==len(values)-1) for i in range(len(values))]
+        self.values = [ValuePicker(x-border, y+self.pheight+border+i*50, w+border*2, 50, self.pheight, [0, 100, 50, 100][values[i]], values[i], i==len(values)-1) for i in range(len(values))]
         self.rect = pygame.Rect(x-border, y-border, self.pwidth+border*2, self.pheight+border*2)
         self.imrect = pygame.Rect(x, y, self.pwidth, self.pheight)
         self.border = border
@@ -87,7 +91,8 @@ class ColourPicker:
                     colour = pygame.Color(0)
                     colour.hsla = (int((360/self.pwidth)*i/2*(360/self.pwidth)), 100, 100-int((100/self.pheight)*j*2*(100/self.pheight)), 100)
                     pygame.draw.rect(self.image, colour, (i, j, 1, 1))
-                except: pass
+                except:
+                    pass
         self.p = (0, 0)
     
     def set_position(self, x, y):
@@ -113,7 +118,8 @@ class ColourPicker:
     def update(self, mousePos):
         mouse_buttons = pygame.mouse.get_pressed()
         up = False
-        for i in self.values: up = up or i.update(mousePos)
+        for i in self.values:
+            up = up or i.update(mousePos)
         if mouse_buttons[0] and self.rect.collidepoint(mousePos) and not up:
             self.p = ((mousePos[0] - self.imrect.left) / self.pwidth, (mousePos[1] - self.imrect.top) / self.pheight)
             self.p = ((max(0, min(self.p[0], 1))), (max(0, min(self.p[1], 1))))
@@ -121,14 +127,17 @@ class ColourPicker:
     def draw(self, surf):
         if self.values != []:
             pygame.draw.rect(surf, (255, 255, 255), self.rect, border_radius=8, border_bottom_left_radius=0, border_bottom_right_radius=0)
-        else: pygame.draw.rect(surf, (255, 255, 255), self.rect, border_radius=8)
+        else:
+            pygame.draw.rect(surf, (255, 255, 255), self.rect, border_radius=8)
         surf.blit(self.image, self.imrect)
         for i in self.values:
             surf.blit(i.get_twod(self.pwidth, self.pheight), self.imrect)
         center = self.imrect.left + self.p[0] * self.pwidth, self.imrect.top + self.p[1] * self.pheight
-        for i in self.values: i.draw(surf)
+        for i in self.values:
+            i.draw(surf)
         h = self.rect.height
-        for i in self.values: h += i.rect.height
+        for i in self.values:
+            h += i.rect.height
         pygame.draw.rect(surf, (155, 155, 155), (self.rect.left-4, self.rect.top-4, self.rect.width+8, h+8), border_radius=8, width=8)
         pygame.draw.circle(surf, self.get_colour(), center, 25)
 
