@@ -168,7 +168,7 @@ def NodeSelector(continue_to_edit=0, G=None):
 
 def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled=False, docircle=True): # Circle And Text
     t = GO.FFONT.render(txt, GO.CBLACK)
-    sze = GO.FFONT.size('a')[1]
+    sze = GO.FFONT.winSze('a')[1]
     poschange = t.get_height() - sze
     sur = pygame.Surface((t.get_width() + sze + 5, t.get_height()+poschange))
     sur.fill(bgcol)
@@ -180,39 +180,40 @@ def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled
         cir = pygame.Rect(0, 0, sze, sze)
         pygame.draw.circle(sur, GO.CAWHITE, (sze//2, t.get_height()//2), sze//2-2)
         pygame.draw.circle(sur, colour, (sze//2, t.get_height()//2), sze//2-2, 5)
-        if colour2 != None:
+        if colour2 is not None:
             csur = pygame.Surface((sze, sze//2))
             csur.fill(GO.CAWHITE)
             pygame.draw.circle(csur, colour2, (sze//2, 0), sze//2-2, 5)
             sur.blit(csur, (0, t.get_height()//2))
-        if filled: pygame.draw.circle(sur, GO.CGREY, (sze//2, t.get_height()//2), sze//4)
+        if filled:
+            pygame.draw.circle(sur, GO.CGREY, (sze//2, t.get_height()//2), sze//4)
         pygame.draw.circle(sur, GO.CBLACK, (sze//2, t.get_height()//2), sze//2, 2)
         sur.blit(t, (sze + 5, poschange))
     else:
         cir = pygame.Rect(t.get_width() + 5, 0, sze, sze)
         pygame.draw.circle(sur, GO.CAWHITE, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2)
         pygame.draw.circle(sur, colour, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2-2, 5)
-        if colour2 != None:
+        if colour2 is not None:
             csur = pygame.Surface((sze, sze//2))
             csur.fill(GO.CAWHITE)
             pygame.draw.circle(csur, colour2, (sze//2, 0), sze//2-2, 5)
             sur.blit(csur, (t.get_width() + 5, t.get_height()//2))
-        if filled: pygame.draw.circle(sur, GO.CGREY, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//4)
+        if filled:
+            pygame.draw.circle(sur, GO.CGREY, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//4)
         pygame.draw.circle(sur, GO.CBLACK, (t.get_width() + 5 + sze//2, t.get_height()//2), sze//2, 2)
         sur.blit(t, (0, poschange))
     return sur, cir
 
-def NodeEditor(path, G=None):
-    """Makes a Node Editor screen!
-
-    Parameters
-    ----------
-    path : str
-        The path to the currently editing Node. e.g. 'Other/niceness'
-    G : graphics.Graphic, optional
-        The Graphic screen, if not provided will make one
+def NodeEditor(path=None, G=None):
     """
-    if G == None:
+    Go edit some nodes!!!
+
+    Args:
+        path (str, optional): The path to the currently editing Node file. If it does not exist, it will be created; \
+and if it is None then it will not save. Defaults to None.
+        G (graphics.Graphic, optional): The Graphic screen, if not provided will make one. Defaults to None.
+    """
+    if G is None:
         G = Graphic()
     def dropdown():
         p = pygame.mouse.get_pos()
@@ -224,12 +225,15 @@ def NodeEditor(path, G=None):
                     if resp2 != 0:
                         G.Container.nodes.append((p, nodes[resp].getall()[resp2-1].copy()))
                         return True
-                else: return False
-            else: return False
+                else:
+                    return False
+            else:
+                return False
     
     def parse(i, l, lf, rd):
         if not l and isinstance(G.Container.selecting, tuple) and i.isntsimilar(G.Container.selecting[0]):
-            if not G.Container.DONTDOIT: G.Container.highlighting = None
+            if not G.Container.DONTDOIT:
+                G.Container.highlighting = None
             if i.rect.collidepoint(pygame.mouse.get_pos()):
                 d = False
                 for j in range(len(G.Container.connections)):
@@ -249,12 +253,13 @@ def NodeEditor(path, G=None):
         elif not l and isinstance(G.Container.selecting, list) and G.Container.selecting[2] == pygame.mouse.get_pos():
             # did not move, so select
             G.Container.highlighting = G.Container.selecting[3]
-        elif G.Container.selecting == None or (isinstance(G.Container.selecting, tuple) and i.isntsimilar(G.Container.selecting[0])):
+        elif G.Container.selecting is None or (isinstance(G.Container.selecting, tuple) and i.isntsimilar(G.Container.selecting[0])):
             if i.rect.collidepoint(pygame.mouse.get_pos()):
                 rd.append((i.rect.topleft[0]+5, i.rect.topleft[1]+7))
                 if lf:
                     G.Container.selecting = (i, (i.rect.center[0]+5, i.rect.center[1]+7))
-                    if not G.Container.DONTDOIT: G.Container.highlighting = None
+                    if not G.Container.DONTDOIT:
+                        G.Container.highlighting = None
         return rd
     
     @G.Graphic
@@ -268,13 +273,17 @@ def NodeEditor(path, G=None):
             G.Container.selecting = None
             G.Container.highlighting = None
             G.Container.DONTDOIT = False
-            if path.endswith('.elm'):
-                path = path[:-4]
-            if not (files('BlazeSudio') / (path+'.elm')).exists():
-                # Version: major.minor
-                dill.dump({"idea": "BLANK", "name": "New File", "version": "0.4"}, (files('BlazeSudio') / (path+'.elm')).open('wb+'))
-            # TODO: version checking and updating (not for versions less than 1.0 which is the liftoff version)
-            G.Container.contents = dill.loads((files('BlazeSudio') / path+'.elm').read_bytes())
+            default = {"idea": "BLANK", "name": "New File", "version": "0.4"}
+            if path is not None:
+                if not path.endswith('.elm'):
+                    path = path + '.elm'
+                if not os.path.exists(path):
+                    # Version: major.minor
+                    dill.dump(default, path.open('wb+'))
+                # TODO: version checking and updating (not for versions less than 1.0 which is the liftoff version)
+                G.Container.contents = dill.loads((files('BlazeSudio') / path+'.elm').read_bytes())
+            else:
+                G.Container.contents = default
             if 'nodes' in G.Container.contents:
                 G.Container.nodes = G.Container.contents['nodes']
             else:
@@ -344,21 +353,28 @@ def NodeEditor(path, G=None):
                 mx = txt.get_width()
                 for n in node.inputs:
                     name = n.name
-                    if 'Remove' in node.data and n.name in node.data['Remove']: continue
+                    if 'Remove' in node.data and n.name in node.data['Remove']:
+                        continue
                     if n.connectedto is not None:
                         gotten = n.get_CT(G.Container.nodes).get_P(G.Container.nodes).get(G.Container.nodes)
                     if n.connectedto is not None and \
                         n.get_CT(G.Container.nodes).name in gotten and \
                             gotten[n.get_CT(G.Container.nodes).name] != Ts.defaults[Ts.strtypes[n.get_CT(G.Container.nodes).type]]:
                                 name += '='+str(gotten[n.get_CT(G.Container.nodes).name])
-                    elif n.value != Ts.defaults[Ts.strtypes[n.type]] or n.type == bool: name += ':'+str(n.value)
+                    elif n.value != Ts.defaults[Ts.strtypes[n.type]] or n.type is bool:
+                        name += ':'+str(n.value)
                     rmn = True
-                    try: rmn = n.name not in node.data['KeepName']
-                    except: pass
-                    if rmn and name != n.name: name = name[len(n.name)+1:]
+                    try:
+                        rmn = n.name not in node.data['KeepName']
+                    except:
+                        pass
+                    if rmn and name != n.name:
+                        name = name[len(n.name)+1:]
                     dc = True
-                    try: dc = n.name not in node.data['RMInp']
-                    except: pass
+                    try:
+                        dc = n.name not in node.data['RMInp']
+                    except:
+                        pass
                     s, c = CAT(name, bgcol=col, docircle=dc)
                     c.move_ip(0+p[0], i+p[1])
                     node.cirs[n] = c
@@ -374,14 +390,20 @@ def NodeEditor(path, G=None):
                     if 'Remove' in node.data and n.name in node.data['Remove']: continue
                     name = n.name
                     rmn = True
-                    try: rmn = n.name not in node.data['KeepName']
-                    except: pass
+                    try:
+                        rmn = n.name not in node.data['KeepName']
+                    except:
+                        pass
                     if n.name in g:
-                        if rmn: name = str(g[n.name])
-                        else: name += ':'+str(g[n.name])
+                        if rmn:
+                            name = str(g[n.name])
+                        else:
+                            name += ':'+str(g[n.name])
                     dc = True
-                    try: dc = n.name not in node.data['RMInp']
-                    except: pass
+                    try:
+                        dc = n.name not in node.data['RMInp']
+                    except:
+                        pass
                     s, c = CAT(name, front=False, bgcol=col, docircle=dc)
                     c.move_ip(mx+p[0], i2+p[1])
                     node.cirs[n] = c
@@ -397,23 +419,15 @@ def NodeEditor(path, G=None):
                 pygame.draw.rect(G.WIN, col, r, border_radius=8)
                 if G.Container.highlighting == node:
                     pygame.draw.rect(G.WIN, GO.CACTIVE, pygame.Rect(p[0]-15, p[1]-15, mx2+40, max(i, i2)+40), width=10, border_radius=8)
-                if G.Container.selecting == None and lf and r.collidepoint(pygame.mouse.get_pos()):
-                    if not G.Container.DONTDOIT:  G.Container.highlighting = None
+                if G.Container.selecting is None and lf and r.collidepoint(pygame.mouse.get_pos()):
+                    if not G.Container.DONTDOIT:
+                        G.Container.highlighting = None
                     G.Container.selecting = [G.Container.nodes.index((p, node)), (pygame.mouse.get_pos()[0]-p[0], pygame.mouse.get_pos()[1]-p[1]), pygame.mouse.get_pos(), node]
                 G.WIN.blit(sur2, (p[0]+5, p[1]+5))
             for i in rd:
                 G.WIN.blit(CAT('', filled=True, bgcol=col)[0], i)
             
-            if not l and G.Container.selecting != None:
-                #if not conned:# and G.Container.selecting[2]:
-                #    for i in range(len(G.Container.connections)):
-                #        if G.Container.selecting[1] in G.Container.connections[i]:
-                #            if dropdown() == False:
-                #                del G.Container.connections[i]
-                #                del G.Container.connectionsinfo[i]
-                #                break
-                del G.Container.connections[i]
-                del G.Container.connectionsinfo[i]
+            if not l and G.Container.selecting is not None:
                 G.Container.selecting = None
             
             if isinstance(G.Container.selecting, tuple):
@@ -429,13 +443,13 @@ def NodeEditor(path, G=None):
                     (i[0].rect.center[0]+5, i[0].rect.center[1]+7), \
                     (i[1].rect.center[0]+5, i[1].rect.center[1]+7), 10)
             
-            if G.Container.highlighting != None:
+            if G.Container.highlighting is not None:
                 w, h = G.size[0] / 8 * 3, G.size[1] / 8 * 3
                 pygame.draw.rect(G.WIN, GO.CNEW('light grey'), rec, border_radius=8)
                 node = G.Container.highlighting
                 txt = GO.FFONT.render(str(node), GO.CBLACK)
                 G.WIN.blit(txt, ((w - txt.get_width())/2+8, G.size[1]-h+10))
-                if G.scrollsables == []:
+                if G.Stuff['scrollsables'] == []:
                     pos = GO.PSTATIC(12, G.size[1]-h+10+txt.get_height()+2)
                     adds = [[], []]
                     boxes = []
@@ -453,7 +467,8 @@ def NodeEditor(path, G=None):
                         adds[1].append((w-r.get_width()-10, sum([i[2].get_height()+10 for i in adds[1]]), r))
                     size = max(getsize(), sum([i[2].get_height()+10 for i in adds[1]]))
                     size = max(size, h-(txt.get_height()+30)+1)
-                    _, scr = G.add_Scrollable(pos, (w-8, h-(txt.get_height()+30)), (w-8, size), 2, True)
+                    _, scrObj = G.add_Scrollable(pos, (w-8, h-(txt.get_height()+30)), (w-8, size), 2, True)
+                    scr = scrObj.newG
                     scr.bgcol = GO.CNEW('light grey')
                     scr.Container.outs = []
                     scr.Container.adds = [adds[0], []]
@@ -461,7 +476,7 @@ def NodeEditor(path, G=None):
                         scr.add_surface(i[2], GO.PSTATIC(i[0], i[1]))
                     for i in adds[1]:
                         scr.add_surface(i[2], GO.PSTATIC(i[0], i[1]))
-                        scr.Container.outs.append(scr.statics[-1])
+                        scr.Container.outs.append(scr.Stuff['statics'][-1])
                     for i in boxes:
                         if i[3] == 'int':
                             scr.add_num_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=10, start=i[4])
@@ -472,23 +487,25 @@ def NodeEditor(path, G=None):
                         elif i[3] == 'any':
                             scr.add_input(GO.PSTATIC(i[0], i[1]), font=GO.FFONT, width=GO.FFONT.size('c'*10)[0], start=str(i[4]))
                 else:
-                    scr = G.scrollsables[0].G
+                    scr = G.Stuff['scrollsables'][0].newG
                     adds = scr.Container.adds
                     getsize = lambda: sum([max(adds[0][i][2].get_height(),boxes[i][2][1])+10 for i in range(len(adds[0]))])
-                    inps = scr.uids
+                    inps = scr.Stuff.getall()
                     for i in range(len(node.inputs)):
                         node.inputs[i].value = inps[i].get()
-                    for i in scr.Container.outs: scr.statics.remove(i)
+                    for i in scr.Container.outs:
+                        scr.Stuff['statics'].remove(i)
                     scr.Container.outs = []
                     g = node.get(G.Container.nodes)
                     for i in node.outputs:
                         name = i.name
-                        if n.name in g: name += ':'+str(g[n.name])
+                        if n.name in g:
+                            name += ':'+str(g[n.name])
                         r = GO.FFONT.render(name, GO.CBLACK)
                         scr.add_surface(r, GO.PSTATIC(w-r.get_width()-10, sum([i[2].get_height()+10 for i in adds[1]])))
-                        scr.Container.outs.append(scr.statics[-1])
-                    outs = G.scrollsables[0].G.statics
-            elif G.scrollsables != []:
+                        scr.Container.outs.append(scr.Stuff['statics'][-1])
+                    #outs = G.Stuff['scrollsables'][0].newG.Stuff['statics']
+            elif G.Stuff['scrollsables'] != []:
                 G.Reload()
             return True
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
@@ -497,28 +514,34 @@ def NodeEditor(path, G=None):
             
             if element.type == pygame.KEYDOWN:
                 if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
-                    G.Toast('Saving...')
-                    if path.endswith('.elm'):
-                        path = path[:-4]
-                    G.Container.contents['nodes'] = G.Container.nodes
-                    G.Container.contents['connections'] = G.Container.connections
-                    dill.dump(G.Container.contents, (files('BlazeSudio') / (path+'.elm')).open('wb+')) # Save
-                    G.Container.saved = True
-                    G.toasts = []
-                    G.Toast('Saved!')
+                    if path is None:
+                        G.Toast('Cannot save file as file location wasn\'t specified!!')
+                    else:
+                        G.Toast('Saving...')
+                        G.Container.contents['nodes'] = G.Container.nodes
+                        G.Container.contents['connections'] = G.Container.connections
+                        if not path.endswith('.elm'):
+                            path = path + '.elm'
+                        dill.dump(G.Container.contents, open(path, 'wb+'))
+                        G.Container.saved = True
+                        G.toasts = []
+                        G.Toast('Saved!')
                 elif element.key == pygame.K_DELETE:
-                    if G.Container.highlighting != None:
+                    if G.Container.highlighting is not None:
                         n = G.Container.nodes[
                                 [i[1] for i in G.Container.nodes].index(G.Container.highlighting)
                             ][1]
                         cs = n.inputs + n.outputs
                         for i in cs:
                             ct = i.get_CT(G.Container.nodes)
-                            if ct != None: ct.connectedto = None
+                            if ct is not None:
+                                ct.connectedto = None
                         delL = []
                         for i in G.Container.connections:
-                            if i[0] in cs or i[1] in cs: delL.append(i)
-                        for i in delL: G.Container.connections.remove(i)
+                            if i[0] in cs or i[1] in cs:
+                                delL.append(i)
+                        for i in delL:
+                            G.Container.connections.remove(i)
                         del G.Container.nodes[
                             [i[1] for i in G.Container.nodes].index(G.Container.highlighting)
                         ]
@@ -526,11 +549,9 @@ def NodeEditor(path, G=None):
             elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
                 dropdown()
         elif event == GO.ELAST:
-            if G.Container.saved:
-                if path.endswith('.elm'):
-                    path = path[:-4]
-                if G.Container.name != path.split('/')[1]:
-                    (files('BlazeSudio') / (path+'.elm')).rmdir()
-                    path = '/'.join(path.split('/')[:-1]) + '/' + G.Container.name
-                    dill.dump(G.Container.contents, (files('BlazeSudio') / (path+'.elm')).open('wb+'))
+            if path is not None:
+                if G.Container.saved:
+                    if not path.endswith('.elm'):
+                        path = path + '.elm'
+                    dill.dump(G.Container.contents, open(path, 'wb+'))
     return editor(path)

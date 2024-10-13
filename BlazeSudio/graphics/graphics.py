@@ -1,4 +1,3 @@
-from copy import copy
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" # Hide the annoying pygame thing
 import pygame
@@ -15,6 +14,8 @@ from BlazeSudio.graphics import stacks as STACKS
 import BlazeSudio.graphics.GUI.elements as GUI
 from BlazeSudio.graphics.GUI import ColourPickerBTN, dropdown, Toast, TextBoxAdv
 from BlazeSudio.graphics.GUI.textboxify.borders import LIGHT
+
+from copy import copy
 
 # TODO: make initial creation of elements faster
 
@@ -180,13 +181,14 @@ class Graphic:
             If it is False then only one graphic window can be open at a time
             Defaults to False
         """
-        if win == None:
+        if win is None:
             if pygame.display.get_active():
                 self.WIN = pygame.display.get_surface()
             else:
                 self.WIN = pygame.display.set_mode()
                 pygame.display.toggle_fullscreen()
-        else: self.WIN = win
+        else:
+            self.WIN = win
         if no_id:
             self.id = None
         else:
@@ -348,7 +350,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                 pidx = GO.PIDX
                 if event == GO.EELEMENTCLICK and element in self.callbacks:
                     ret = self.callbacks[element](element)
-                if slf == None:
+                if slf is None:
                     ret = funcy(event, *args, element=element, aborted=aborted, **kwargs)
                 else:
                     ret = funcy(slf, event, *args, element=element, aborted=aborted, **kwargs)
