@@ -1,184 +1,101 @@
-import re, inspect, ast
-from typing import Any
-from random import random
-from copy import deepcopy
+import re
+import sys
+import os.path
+import importlib.util
+from enum import Enum
 from importlib.resources import files
 
 import BlazeSudio.elementGen.types as Ts
 
 def allCategories():
-    l = [i.name for i in (files('BlazeSudio') / 'data/nodes').iterdir() if i.is_file() and i.name != 'types.json']
-    l.sort()
-    return l
+    cats = [i.name for i in (files('BlazeSudio') / 'data/nodes').iterdir() if i.is_file() and i.name != 'types.json']
+    cats.sort()
+    return cats
 
-def parse_func(funcstr):
-    return dict(zip(re.findall(r'(?<=\@).+?(?=\()', funcstr), \
-                    [ast.literal_eval(i) for i in re.findall(r"@.+?\((.+?)\)\n", funcstr)])), \
-           re.findall(r'(@.+\n)*(((.+)\n?)+)', funcstr)[0][1]
+def getCategoryNodes(category):
+    filepath = os.path.abspath((files('BlazeSudio') / ('data/nodes/'+category)).joinpath())
+    module_name = '0GameIO'
+    spec = importlib.util.spec_from_file_location(module_name, filepath)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return [Node(getattr(module, i)) for i in dir(module) if not i.startswith('_')]
 
-class FakeDict():
-    def __init__(self, func=lambda: None, clearfunc=lambda: None):
-        self.func = func
-        self.clearfunc = clearfunc
-        self.d = {}
-    def __setitem__(self, __key, __value):
-        try:
-            self.func(__key, __value)
-        except AttributeError: pass
-        self.d[__key] = __value
+def getAllNodes():
+    ns = []
+    for cat in allCategories():
+        ns.extend(getCategoryNodes(cat))
+    return ns
+
+class Mods(Enum):
+    """Modifiers for inputs and outputs!"""
+    NoShow = 0
+    """Do not show this input/output on the node, only in the sidebar"""
+
+class InOut:
+    def __init__(self, parent, isinput, name, type, desc, default=None, mods=[]):
+        self.parent = parent
+        self.isinput = isinput
+        self.name = name.strip()
+        self.type = Ts.types[type.strip().lower()]
+        self.strtype = Ts.strtypes[self.type]
+        self.desc = desc.strip()
+        self.mods = mods
+        if default is None:
+            default = Ts.defaults[self.strtype]
+        self.value = default
     
-    def __getitem__(self, __key):
-        return self.d[__key]
-    
-    def __str__(self): return str(self.d)
-    def __repr__(self): return str(self.d)
-
-    def reset(self):
-        for i in self.d:
-            self.clearfunc(i, None)
-        self.d = {}
-
-class Connector:
-    def __init__(self, parentHASH, parentNAME, isinp, name, typ='any'):
-        self.pHASH = parentHASH
-        self.pNAME = parentNAME
-        self.num = random()
-        self.isinp = isinp
-        self.name = name
-        self.type = Ts.types[typ]
-        self.rect = None
-        self.value = Ts.defaults[typ]
-        self.connectedto = None # Relying on externs to generate
-    def get_CT(self, nodeL):
-        '''Get the connected Connector object'''
-        if self.connectedto is None: return None
-        if self.connectedto[1]: return nodeL[self.connectedto[0]][1].inputs[self.connectedto[2]]
-        else: return nodeL[self.connectedto[0]][1].outputs[self.connectedto[2]]
-    def gen_CT(self, nodeL):
-        '''Make a list compatible with being put in anothers' connectedto'''
-        if self.isinp: idx = self.get_P(nodeL).inputs.index(self)
-        else: idx = self.get_P(nodeL).outputs.index(self)
-        return [[i[1] for i in nodeL].index(self.get_P(nodeL)), self.isinp, idx]
-    def get_P(self, nodeL):
-        return nodeL[[i[1].num for i in nodeL].index(self.pHASH)][1]
-    def isntsimilar(self, other):
-        try:
-            return self.pHASH != other.pHASH and self.isinp != other.isinp
-        except: return False
-    def copy(self):
-        c = deepcopy(self)
-        c.num = random()
-        return c
-    def __eq__(self, other):
-        return hash(self) == hash(other)
-        try:
-            A = lambda a: getattr(self, a) == getattr(other, a)
-            return A('isinp') and A('name') and A('type')# and A(.get_P(') # We comment out this as it's annoying as hell to work with
-        except: return False # Didn't have one of the attributes
-    def __str__(self): return f'<Node "{self.name}" ({self.type}), parent: {str(self.pNAME)}, is an {"input" if self.isinp else "output"}>'
-    def __repr__(self): return str(self)
-    def __hash__(self): return hash(self.pHASH) + hash(self.num)
-
-class Names:
-    def __init__(self, func, data):
-        self.num = random()
-        self.rfunc = func.strip(' \n')
-        self.data = data
-        self.name = data['Name']
-        self.inputs = []
-        self.outputs = []
-        self.cirs = FakeDict(self.setter, self.setter) # Relying on externals to generate
-        self.func = func
-        exec(self.func)
-        self.node = eval('node')
-        self.doc = self.node.__doc__
-        for i in inspect.signature(self.node).parameters.items():
-            n = i[1].name
-            if 'ModifyNames' in data and n in data['ModifyNames']:
-                n = data['ModifyNames'][n]
-            self.inputs.append(Connector(self.num, str(self), True, n, Ts.strtypes[i[1].annotation]))
-            if i[1].default != inspect._empty:
-                self.inputs[-1].value = i[1].default
-    def setter(self, key, value):
-        for i in range(len(self.inputs)):
-            if self.inputs[i] == key:
-                self.inputs[i].rect = value
-                return
-        for i in range(len(self.outputs)):
-            if self.outputs[i] == key:
-                self.outputs[i].rect = value
-                return
-        raise IndexError(
-            'Could not find key in list!!'
-        )
-    def copy(self):
-        c = deepcopy(self)
-        c.num = random()
-        for i in c.inputs + c.outputs:
-            i.pHASH = c.num
-        return c
-    def get(self, nodeL):
-        ins = []
-        for i in self.inputs:
-            try:
-                ins.append(i.get_CT(nodeL).get_P(nodeL).get(nodeL)[i.get_CT(nodeL).name])
-            except:
-                ins.append(i.value)
-        try:
-            outs = self(*ins)
-            outnames = [i.name for i in self.outputs]
-            inouts = [i for i in outs.keys() if i in outnames]
-            notinouts = [i for i in outs.keys() if i not in outnames]
-            dels = []
-            for i in self.outputs:
-                if i.name not in inouts: dels.append(i)
-            for i in dels: self.outputs.remove(i)
-            for i in notinouts:
-                self.outputs.append(Connector(self.num, str(self), False, i, Ts.getType(outs[i])))
-                self.outputs[-1].value = outs[i]
-            return outs
-        except:
-            return {}
-    def __call__(self, *args):
-        return self.node(*args)
+    def canAccept(self, otherinout):
+        return self.isinput != otherinout.isinput and self.parent != otherinout.parent
     
     def __str__(self):
-        try:
-            return self.name
-        except AttributeError: return 'A Name object'
+        return f'<{"Input" if self.isinput else "Output"} "{self.name}", of type {type(self.type)} with value {self.value}>'
     def __repr__(self): return str(self)
+
+class Node:
+    NEXTUID = [0]
+    def __init__(self, func):
+        self.uid = self.NEXTUID[0]
+        self.NEXTUID[0] += 1
+        self.func = func
+        doc = [i.strip() for i in func.__doc__.split('\n') if i.strip()]
+        self.name = doc[0]
+        self.desc = '\n'.join(doc[1:doc.index('Args:')])
+        # inspect.signature(func).parameters
+        checkMods = ['@'+i[0] for i in Mods.__members__.items()]
+        # Isn't she beautiful? 🥹
+        checkRegex = '^(.+?)[ \t]*?(?:\\((.*?)\\))?(?::[ \t]*?([^ ].*?))?[ \t]*$'
+        self.inputs = []
+        for i in doc[doc.index('Args:')+1:doc.index('Returns:')]:
+            mods = []
+            for m in checkMods:
+                if m in i:
+                    mods.append(getattr(Mods, m[1:]))
+                    i = i.replace(m, '')
+            self.inputs.append(InOut(self, True, *re.findall(checkRegex, i)[0], None, mods)) # TODO: Default values (i.e. where the None is)
+        self.outputs = []
+        for i in doc[doc.index('Returns:')+1:]:
+            mods = []
+            for m in checkMods:
+                if m in i:
+                    mods.append(getattr(Mods, m[1:]))
+                    i = i.replace(m, '')
+            self.outputs.append(InOut(self, False, *re.findall(checkRegex, i)[0], None, mods))
+    
+    def __call__(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+    
+    def copy(self):
+        return Node(self.func)
+    
+    def __str__(self):
+        return f'<Node {self.name} with {len(self.inputs)} inputs and {len(self.outputs)} outputs>'
+    def __repr__(self): return str(self)
+    
     def __hash__(self):
-        try:
-            return hash(self.num)
-        except AttributeError: return hash(str(self))
-
-class Parse:
-    def __init__(self, category, nodeL):
-        if not category.endswith('.py'): category += '.py'
-        self.category = category
-        self.rfunc = (files('BlazeSudio') / ('data/nodes/'+category)).read_text()
-        self.data = {}
-        spl = self.rfunc.split('\n#======#\n')[1:]
-        self.names = {}
-        for i in spl:
-            i = i.strip(' \n')
-            name = re.findall('(?<=def ).+?(?=\\()', i)[0]
-            i = i.replace(name, 'node', 1)
-            vals, func = parse_func(i)
-            vals['Name'] = name
-            i = Names(func, vals)
-            nodeL.append(i)
-            self.names[vals['Name']] = i
-            self.data[i] = func
-    def __call__(self, funcname, *args):
-        exec(self.data[self.names[funcname]])
-        return eval('node(*args)')
+        return hash((self.uid, self.name, self.desc, self.func))
     
-    def __str__(self): return self.category[:-3].strip('0123456789')
-    def __repr__(self): return str(self)
-    
-    def getall(self):
-        return list(self.data.keys())
-
-def allNodes(category):
-    return Parse(category, []).getall()
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+    def __ne__(self, other):
+        return hash(self) != hash(other)

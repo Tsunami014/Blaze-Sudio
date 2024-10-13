@@ -11,7 +11,7 @@ class Element:
         self.G = G
         self.pos = pos
         self.size = size
-        self.stackP = StackPart(G.stacks, pos, size, G.size)
+        self.stackP = StackPart(self, G.stacks, pos, size, G.size)
         self.uid = self.NEXT_UID[0]
         self.NEXT_UID[0] += 1
     
@@ -22,7 +22,7 @@ class Element:
     def change_pos(self, newPos):
         self.stackP.remove()
         self.pos = newPos
-        self.stackP = StackPart(self.G.stacks, newPos, self.size, self.G.size)
+        self.stackP = StackPart(self, self.G.stacks, newPos, self.size, self.G.size)
     
     # Required subclass functions
     def update(self, mousePos, events):
