@@ -1,38 +1,12 @@
-from linting import *
-#======#
+def Value(Val):
+    """
+    Value
+    Output any specific value.
 
-@Remove(['Val'])
-def Value(Val): # If you don't provide type annotation it will be considered 'any'
-    '''Returns any value you want, useful for testing and stuff'''
-    return {'Out': Val}
+    Args:
+        Val (Any): The value to output. Could be anything! @NoShow
 
-#======#
-
-@Remove(['out'])
-def Output(Out):
-    '''The output for this node'''
-    return {'out': Out}
-
-#======#
-
-@RMInp(['Name'])
-def NumInp(Name: str, Default: int):
-    return {'Out': Default}
-
-#======#
-
-@RMInp(['Name'])
-def TextInp(Name: str, Default: str):
-    return {'Out': Default}
-
-#======#
-
-@RMInp(['Name'])
-def BoolInp(Name: str, Default: bool):
-    return {'Out': Default}
-
-#======#
-
-@RMInp(['Name'])
-def AnyInp(Name: str, Default: Any):
-    return {'Out': Default}
+    Returns:
+        Val (Any): The input value!
+    """
+    return Val

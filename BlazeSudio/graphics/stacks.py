@@ -1,7 +1,7 @@
-
 class StackPart:
     NEXT_UID = [0]
-    def __init__(self, stack, category, size, winSze):
+    def __init__(self, parent, stack, category, size, winSze):
+        self.parent = parent
         self.stack = stack
         self.category = category
         self.stack.add(category, self)
