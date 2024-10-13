@@ -55,5 +55,13 @@ class Stack:
     def __getitem__(self, item):
         return self.alls[item]
     
-    def __setitem(self, item, new):
+    def __setitem__(self, item, new):
         self.alls[item] = new
+    
+    def replaceWith(self, toReplace):
+        self.alls = toReplace.alls
+    
+    def copy(self):
+        s = Stack()
+        s.alls = self.alls.copy()
+        return s

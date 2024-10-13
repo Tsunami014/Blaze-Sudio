@@ -256,7 +256,7 @@ class F___:
     
     @property
     def linesize(self):
-        return max(self.font.get_linesize(), self.emojifont.get_linesize())
+        return self.font.get_linesize() # max(self.font.get_linesize(), self.emojifont.get_linesize())
     
     def winSze(self, txt):
         """
