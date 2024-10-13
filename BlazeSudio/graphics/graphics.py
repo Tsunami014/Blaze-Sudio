@@ -781,7 +781,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         """
         sw = GUI.Switch(self, position, size, speed, default)
         self.Stuff['switches'].append(sw)
-        if callback != None:
+        if callback is not None:
             self.callbacks[sw] = callback
         return sw
 
