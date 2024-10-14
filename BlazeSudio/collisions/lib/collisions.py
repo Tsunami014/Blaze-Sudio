@@ -857,6 +857,8 @@ class Line(Shape):
             return tries[0][0]
         elif checkShpType(othershape, Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
+        elif checkShpType(othershape, Arc):
+            return self.closestPointTo(Point(*othershape.closestPointTo(self)))
         else: # Rects, Rotated rects and polygons
             colls = self.whereCollides(othershape)
             if colls != []:
@@ -1254,11 +1256,19 @@ Please be mindful when checking for this class as it is technically a closed sha
             if self._collides(othershape):
                 wheres = self._where(othershape)
                 if wheres != []:
+                    if returnAll:
+                        return wheres
                     return wheres[0]
-                return min(othershape.p1, othershape.p2, key=lambda p: abs(self.r**2-((self.x-p[0])**2+(self.y-p[1])**2)))
+                sort = sorted([othershape.p1, othershape.p2], 
+                              key=lambda p: abs(self.r**2-((self.x-p[0])**2+(self.y-p[1])**2)))
+                if returnAll:
+                    return sort
+                return sort[0]
             return self.closestPointTo(Point(*othershape.closestPointTo(Point(self.x, self.y))), returnAll)
         elif checkShpType(othershape, Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
+        elif checkShpType(othershape, Arc):
+            return self.closestPointTo(Point(*othershape.closestPointTo(self)), returnAll)
         else:
             ps = []
             for ln in othershape.toLines():
@@ -1445,6 +1455,8 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
             if Circle(self.x, self.y, self.r)._collides(othershape):
                 wheres = self._where(othershape)
                 if wheres != []:
+                    if returnAll:
+                        return wheres
                     return wheres[0]
                 def findDist(p):
                     closestP = self.closestPointTo(Point(*p))
@@ -1452,12 +1464,23 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
                 ps = [findDist(othershape.p1), findDist(othershape.p2)] + [
                     findDist(i) for i in Circle(self.x, self.y, self.r)._where(othershape)
                 ]
+                if returnAll:
+                    return [i[0] for i in sorted(ps, key=lambda x: x[1])]
                 return min(ps, key=lambda x: x[1])[0]
             return self.closestPointTo(Point(*othershape.closestPointTo(Point(self.x, self.y))), returnAll)
         elif checkShpType(othershape, Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
         elif checkShpType(othershape, Arc):
-            pass # TODO FOR ALL
+            ps = [ # TODO: Fix
+                *self.closestPointTo(Point(othershape.x, othershape.y), True),
+                *[self.closestPointTo(Point(*i)) for i in othershape.closestPointTo(Point(self.x, self.y), True)]
+            ]
+            def findDist(p):
+                closestP = othershape.closestPointTo(Point(*p))
+                return ((p[0]-closestP[0])**2+(p[1]-closestP[1])**2)
+            if returnAll:
+                return sorted(ps, key=findDist)
+            return min(ps, key=findDist)
         else:
             ps = []
             for ln in othershape.toLines():
