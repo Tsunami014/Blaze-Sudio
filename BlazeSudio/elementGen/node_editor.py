@@ -1,10 +1,11 @@
-import pygame, dill, json, os
+import pygame
+import dill
+import os
 from importlib.resources import files
 
 import BlazeSudio.graphics.options as GO
 from BlazeSudio.graphics import Graphic
 import BlazeSudio.elementGen.node_parser as np
-import BlazeSudio.elementGen.types as Ts
 
 DEFAULTFILECONTENTS = {"idea": "BLANK", "name": "New File", "version": "0.5"}
 
@@ -75,7 +76,7 @@ and if it is None then it will not save. Defaults to None.
                 if isinstance(resp2, int) and not isinstance(resp, bool):
                     if resp2 != 0:
                         G.Container.nodes.append((p, allnodes[list(allnodes.keys())[resp]][resp2-1].copy()))
-                        next(G.Container.md[0])
+                        next(G.Container.md)
                         return True
                 else:
                     return False
@@ -86,10 +87,7 @@ and if it is None then it will not save. Defaults to None.
     def editor(event, path, element=None, aborted=False):
         if event == GO.EFIRST:
             G.Container.saved = False
-            G.Container.md = [
-                mouseDown(), # Left mouse button
-                mouseDown(3) # Right mouse button
-            ]
+            G.Container.md = mouseDown() # Left mouse button
             G.Container.selecting = None
             G.Container.highlighting = None
             # TODO: Better saving and loading
@@ -110,9 +108,9 @@ and if it is None then it will not save. Defaults to None.
             if 'connections' in G.Container.contents:
                 G.Container.connections = G.Container.contents['connections']
             else:
-                G.Container.connections = []
+                G.Container.connections = {}
             G.Container.name = G.Container.contents['name']
-            G.Container.highlightedIO = {}
+            G.Container.highlightedIO = {"OUTPUTS": []}
         if event == GO.ELOADUI:
             G.Clear()
             G.add_text(G.Container.name, GO.CGREEN, GO.PCTOP, GO.FTITLE)
@@ -147,13 +145,15 @@ and if it is None then it will not save. Defaults to None.
                             G.Container.contents['name'] = res
             settings()
         elif event == GO.ETICK:
-            lf, l = next(G.Container.md[0])
+            lf, l = next(G.Container.md)
             # lf = left mouse button first press, l = left mouse button is being pressed
             
             w, h = G.size[0] / 8 * 3, G.size[1] / 8 * 3
             SideRec = pygame.Rect(8, G.size[1]-h-8, w, h)
             TouchingSide = SideRec.collidepoint(*pygame.mouse.get_pos())
+            dragging = G.Container.selecting is not None and G.Container.selecting[0]
             filleds = []
+            nodePoss = {}
             if lf and not TouchingSide:
                 G.Container.highlighting = None
             for p, node in G.Container.nodes:
@@ -166,7 +166,7 @@ and if it is None then it will not save. Defaults to None.
                 mx = txt.get_width()
                 for n in node.inputs:
                     name = n.name
-                    if np.Mods.NoShow in n.mods:
+                    if np.Mods.NoNode in n.mods:
                         continue
                     # if n.connectedto is not None and \
                     #     n.get_CT(G.Container.nodes).name in gotten and \
@@ -176,8 +176,11 @@ and if it is None then it will not save. Defaults to None.
                     #     name += ':'+str(n.value)
                     s, c = CAT(name, bgcol=col)
                     c.move_ip((p[0], i+p[1]))
-                    if c.collidepoint(pygame.mouse.get_pos()):
-                        filleds.append(c)
+                    nodePoss[(node, n)] = c
+                    if (not dragging) and c.collidepoint(pygame.mouse.get_pos()):
+                        filleds.append((c, n))
+                        if lf:
+                            G.Container.selecting = [False, n, node, c]
                     sur.blit(s, (p[0], i+p[1]))
                     mx = max(mx, s.get_width())
                     i += s.get_height() + 2
@@ -186,23 +189,31 @@ and if it is None then it will not save. Defaults to None.
                     mx += 20
                 i2 = start
                 mx2 = 0
+                outs = node.run(G.Container.connections)
+                idx = 0
                 for n in node.outputs:
                     name = n.name
-                    if np.Mods.NoShow in n.mods:
+                    if np.Mods.NoNode in n.mods:
                         continue
-                    # if n.connectedto is not None and \
-                    #     n.get_CT(G.Container.nodes).name in gotten and \
-                    #         gotten[n.get_CT(G.Container.nodes).name] != Ts.defaults[Ts.strtypes[n.get_CT(G.Container.nodes).type]]:
-                    #             name += '='+str(gotten[n.get_CT(G.Container.nodes).name])
-                    # elif n.value != Ts.defaults[n.strtype] or n.type is bool:
-                    #     name += ':'+str(n.value)
+                    if outs[idx] and np.Mods.LeaveName not in n.mods:
+                        if np.Mods.ShowEqual in n.mods:
+                            name = f'{name}: {outs[idx]}'
+                        else:
+                            if isinstance(outs[idx], float) and int(outs[idx]) == float(outs[idx]):
+                                name = str(int(outs[idx]))
+                            else:
+                                name = str(outs[idx])
                     s, c = CAT(name, bgcol=col, front=False)
                     c.move_ip((p[0]+mx, i2+p[1]))
-                    if c.collidepoint(pygame.mouse.get_pos()):
-                        filleds.append(c)
+                    nodePoss[(node, n)] = c
+                    if (not dragging) and c.collidepoint(pygame.mouse.get_pos()):
+                        filleds.append((c, n))
+                        if lf:
+                            G.Container.selecting = [False, n, node, c]
                     sur.blit(s, (p[0]+mx, i2+p[1]))
                     mx2 = max(mx2, s.get_width())
                     i2 += s.get_height() + 2
+                    idx += 1
                 mx2 += mx
                 mxhei = max(i, i2)
                 r = pygame.Rect(*p, mx2+10, mxhei+10)
@@ -212,53 +223,64 @@ and if it is None then it will not save. Defaults to None.
                 if G.Container.selecting is None and lf and r.collidepoint(pygame.mouse.get_pos()):
                     if not TouchingSide:
                         G.Container.highlighting = None
-                    G.Container.selecting = [G.Container.nodes.index((p, node)), pygame.mouse.get_pos(), True, node]
+                    G.Container.selecting = [True, G.Container.nodes.index((p, node)), pygame.mouse.get_pos(), True, node]
                 G.WIN.blit(sur, (0, 0))
             for i in filleds:
-                G.WIN.blit(CAT('', filled=True, bgcol=col)[0], i)
+                G.WIN.blit(CAT('', filled=True, bgcol=col)[0], i[0])
             
             if not l and G.Container.selecting is not None:
-                if G.Container.selecting[2]:
-                    G.Container.highlighting = G.Container.selecting[3]
+                if G.Container.selecting[0]:
+                    if G.Container.selecting[3]:
+                        G.Container.highlighting = G.Container.selecting[4]
+                else:
+                    if filleds != []:
+                        top = filleds[0]
+                        G.Container.connections[(top[1].parent, top[1])] = (G.Container.selecting[2], G.Container.selecting[1])
+                        G.Container.connections[(G.Container.selecting[2], G.Container.selecting[1])] = (top[1].parent, top[1])
                 G.Container.selecting = None
             
-            if G.Container.selecting is not None:
-                if pygame.mouse.get_pos() != G.Container.selecting[1]:
-                    G.Container.selecting[2] = False
-                    G.Container.nodes[G.Container.selecting[0]] = (
+            if G.Container.selecting is not None and G.Container.selecting[0]:
+                if pygame.mouse.get_pos() != G.Container.selecting[2]:
+                    G.Container.selecting[3] = False
+                    G.Container.nodes[G.Container.selecting[1]] = (
                         (
-                            (pygame.mouse.get_pos()[0]-G.Container.selecting[1][0])+G.Container.nodes[G.Container.selecting[0]][0][0],
-                            (pygame.mouse.get_pos()[1]-G.Container.selecting[1][1])+G.Container.nodes[G.Container.selecting[0]][0][1]
-                        ), G.Container.nodes[G.Container.selecting[0]][1]
+                            (pygame.mouse.get_pos()[0]-G.Container.selecting[2][0])+G.Container.nodes[G.Container.selecting[1]][0][0],
+                            (pygame.mouse.get_pos()[1]-G.Container.selecting[2][1])+G.Container.nodes[G.Container.selecting[1]][0][1]
+                        ), G.Container.nodes[G.Container.selecting[1]][1]
                     )
-                    G.Container.selecting[1] = pygame.mouse.get_pos()
+                    G.Container.selecting[2] = pygame.mouse.get_pos()
+            elif G.Container.selecting is not None and not G.Container.selecting[0]:
+                pos1 = G.Container.selecting[3].center
+                pos2 = pygame.mouse.get_pos()
+                pygame.draw.circle(G.WIN, GO.CRED, pos1, 5)
+                pygame.draw.circle(G.WIN, GO.CRED, pos2, 5)
+                pygame.draw.line(G.WIN, GO.CRED, pos1, pos2, 10)
             
-            # if isinstance(G.Container.selecting, tuple):
-            #     pygame.draw.line(G.WIN, GO.CRED, G.Container.selecting[1], pygame.mouse.get_pos(), 10)
-            # elif isinstance(G.Container.selecting, list):
-            #     G.Container.nodes[G.Container.selecting[0]] = (
-            #         (pygame.mouse.get_pos()[0]-G.Container.selecting[1][0],
-            #          pygame.mouse.get_pos()[1]-G.Container.selecting[1][1]), 
-            #         G.Container.nodes[G.Container.selecting[0]][1])
-            
+            dones = []
             for i in G.Container.connections:
-                pygame.draw.line(G.WIN, GO.CNEW('orange'), \
-                    (i[0].rect.center[0]+5, i[0].rect.center[1]+7), \
-                    (i[1].rect.center[0]+5, i[1].rect.center[1]+7), 10)
+                if i not in dones:
+                    dones.append(i)
+                    col = GO.CNEW('orange')
+                    pygame.draw.circle(G.WIN, col, nodePoss[i].center, 5)
+                    pygame.draw.circle(G.WIN, col, nodePoss[G.Container.connections[i]].center, 5)
+                    pygame.draw.line(G.WIN, col, \
+                        nodePoss[i].center, nodePoss[G.Container.connections[i]].center, 10)
             
             if G.Container.highlighting is not None:
                 w, h = G.size[0] / 8 * 3, G.size[1] / 8 * 3
                 node = G.Container.highlighting
+                replaceOuts = False
                 if G.Stuff['scrollsables'] == []:
-                    G.Container.highlightedIO = {}
+                    G.Container.highlightedIO = {"OUTPUTS": []}
                     nopos = GO.PSTATIC(0, 0)
                     scr, scrObj1 = G.add_Scrollable(nopos, (0, 0), (0, 0))
                     h = scr.add_text(node.name, GO.CBLACK, nopos, GO.FTITLE).size[1]
                     for isinput, li in ((True, node.inputs), (False, node.outputs)): # TODO: Put inputs on the left and outputs on the right
-                        if isinput:
-                            h += scr.add_text('INPUTS:', GO.CBLACK, nopos, GO.FTITLE).size[1]
-                        else:
-                            h += scr.add_text('OUTPUTS:', GO.CBLACK, nopos, GO.FTITLE).size[1]
+                        if li:
+                            if isinput:
+                                h += scr.add_text('INPUTS:', GO.CBLACK, nopos, GO.FTITLE).size[1]
+                            else:
+                                h += scr.add_text('OUTPUTS:', GO.CBLACK, nopos, GO.FTITLE).size[1]
                         for n in li:
                             if isinput:
                                 h += scr.add_text(n.name+':', GO.CBLACK, nopos).size[1]
@@ -275,7 +297,10 @@ and if it is None then it will not save. Defaults to None.
                                     h += e.size[1]
                                     G.Container.highlightedIO[n] = e
                             else:
-                                h += scr.add_text(f'{n.name}: {n.value}', GO.CBLACK, nopos).size[1]
+                                replaceOuts = True
+                                e = scr.add_text('HI :)', GO.CBLACK, nopos)
+                                G.Container.highlightedIO["OUTPUTS"].append(e)
+                                h += e.size[1]
                     scr2, scrObj2 = G.add_Scrollable(GO.PSTATIC(SideRec.x, SideRec.y), (SideRec.w-8, SideRec.h), (SideRec.w-8, max(SideRec.h, h)), 2, True)
                     scr2.Stuff = scr.Stuff.copy()
                     scr2.stacks = scr.stacks.copy()
@@ -287,9 +312,24 @@ and if it is None then it will not save. Defaults to None.
                         e.change_pos(LTOP)
                 else:
                     for io, elm in G.Container.highlightedIO.items():
-                        io.value = elm.get()
+                        if io != "OUTPUTS" and io.value != elm.get():
+                            io.value = elm.get()
+                            replaceOuts = True
+                if replaceOuts:
+                    outs = node.run(G.Container.connections)
+                    for i in range(len(G.Container.highlightedIO["OUTPUTS"])):
+                        oio = node.outputs[i]
+                        otxt = G.Container.highlightedIO["OUTPUTS"][i]
+                        if np.Mods.NoSidebar in oio.mods:
+                            otxt.set('')
+                        else:
+                            val = outs[i]
+                            if isinstance(val, float) and int(val) == float(val):
+                                val = int(val)
+                            otxt.set(f'{oio.name}: {val}')
+                        
             elif G.Stuff['scrollsables'] != []:
-                G.Container.highlightedIO = {}
+                G.Container.highlightedIO = {"OUTPUTS": []}
                 G.Reload()
             return True
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event

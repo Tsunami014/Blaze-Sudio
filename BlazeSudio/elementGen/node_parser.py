@@ -29,8 +29,15 @@ def getAllNodes():
 
 class Mods(Enum):
     """Modifiers for inputs and outputs!"""
-    NoShow = 0
+    NoNode = 0
     """Do not show this input/output on the node, only in the sidebar"""
+    NoSidebar = 1
+    """Do not show this input/output in the sidebar, only on the node"""
+    LeaveName = 2
+    """Do not replace the name of the output node with it's actual output"""
+    ShowEqual = 3
+    """Instead of replacing the name of the output node with it's output, include it
+This would look like `Val: abc` instead of just replacing the node name (`Val`) with it's value (`abc`)"""
 
 class InOut:
     def __init__(self, parent, isinput, name, type, desc, default=None, mods=[]):
@@ -51,6 +58,14 @@ class InOut:
     def __str__(self):
         return f'<{"Input" if self.isinput else "Output"} "{self.name}", of type {type(self.type)} with value {self.value}>'
     def __repr__(self): return str(self)
+
+    def __hash__(self):
+        return hash((self.parent, self.isinput, self.name))
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+    def __ne__(self, other):
+        return hash(self) != hash(other)
 
 class Node:
     NEXTUID = [0]
@@ -81,6 +96,16 @@ class Node:
                     mods.append(getattr(Mods, m[1:]))
                     i = i.replace(m, '')
             self.outputs.append(InOut(self, False, *re.findall(checkRegex, i)[0], None, mods))
+    
+    def run(self, conns):
+        ret = self.func(*[
+            i.value if (self, i) not in conns else (
+                conns[(self, i)][0].run(conns)[conns[(self, i)][0].outputs.index(conns[(self, i)][1])]
+            ) for i in self.inputs
+        ])
+        if not isinstance(ret, (list, tuple)):
+            return [ret]
+        return ret
     
     def __call__(self, *args, **kwargs):
         return self.func(*args, **kwargs)
