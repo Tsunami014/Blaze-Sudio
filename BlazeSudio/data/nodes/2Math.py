@@ -11,5 +11,8 @@ def Add(A, B):
     """
     try:
         return float(A) + float(B)
-    except ValueError:
-        return A + B
+    except (TypeError, ValueError):
+        try:
+            return A + B
+        except (TypeError, ValueError):
+            return str(A) + str(B)

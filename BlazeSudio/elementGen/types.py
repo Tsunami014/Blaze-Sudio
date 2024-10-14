@@ -22,7 +22,7 @@ defaults = {
     'number': 0,
     'str': '',
     'bool': False,
-    'any': None
+    'any': ''
 }
 
 def getType(val):
