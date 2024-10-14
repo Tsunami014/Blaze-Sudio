@@ -1361,6 +1361,9 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
             angle = math.degrees(math.atan2(othershape.y - self.y, othershape.x - self.x))
             return self.angleInRange(angle)
         if checkShpType(othershape, (Line, Circle)):
+            if checkShpType(othershape, Circle):
+                if any(othershape._collides(Point(*i)) for i in self.endPoints()):
+                    return True
             intersections = Circle(self.x, self.y, self.r).whereCollides(othershape)
             for pt in intersections:
                 if self._collides(Point(*pt)):
@@ -1407,7 +1410,7 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
         """
         if returnAll:
             return [(0, 0)]
-        return (0, 0)
+        return self.endPoints()#(0, 0)
 
     def angleInRange(self, angle: Number) -> bool:
         """
@@ -1886,10 +1889,12 @@ class Rect(ClosedShape):
                    (((mx) - othershape.x)**2 + ((my) - othershape.y)**2 < othershape.r**2)
             )
         if checkShpType(othershape, Arc):
+            if any(self._collides(Point(*i)) for i in othershape.endPoints()):
+                return True
             for i in self.toLines():
                 if othershape.collides(i):
                     return True
-            return self._collides(Point(othershape.x, othershape.y))
+            return False
         if checkShpType(othershape, Rect):
             ox, oy, omx, omy = othershape.rect()
             return x <= omx and mx >= ox and y <= omy and my >= oy
@@ -2023,10 +2028,12 @@ Defined as an x, y, width, height and rotation."""
                     return True
             return False
         if checkShpType(othershape, Arc):
+            if any(self._collides(Point(*i)) for i in othershape.endPoints()):
+                return True
             for i in self.toLines():
                 if othershape.collides(i):
                     return True
-            return self._collides(Point(othershape.x, othershape.y))
+            return False
         if checkShpType(othershape, Rect) or checkShpType(othershape, RotatedRect):
             for li in self.toLines():
                 if li.collides(othershape):
@@ -2155,10 +2162,12 @@ If it *is* less than 3, I have no clue what will happen; it will probably get a 
                     return True
             return False
         if checkShpType(othershape, Arc):
+            if any(self._collides(Point(*i)) for i in othershape.endPoints()):
+                return True
             for i in self.toLines():
                 if othershape.collides(i):
                     return True
-            return self._collides(Point(othershape.x, othershape.y))
+            return False
         if checkShpType(othershape, Rect) or checkShpType(othershape, RotatedRect):
             for li in self.toLines():
                 if li.collides(othershape):
