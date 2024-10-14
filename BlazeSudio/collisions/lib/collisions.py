@@ -1251,6 +1251,11 @@ Please be mindful when checking for this class as it is technically a closed sha
                 return [[qx, qy]]
             return qx, qy
         elif checkShpType(othershape, Line):
+            if self._collides(othershape):
+                wheres = self._where(othershape)
+                if wheres != []:
+                    return wheres[0]
+                return min(othershape.p1, othershape.p2, key=lambda p: abs(self.r**2-((self.x-p[0])**2+(self.y-p[1])**2)))
             return self.closestPointTo(Point(*othershape.closestPointTo(Point(self.x, self.y))), returnAll)
         elif checkShpType(othershape, Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
@@ -1408,9 +1413,59 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
         Returns:
             pointLike|Iterable[pointLike]: The closest point(s) on this object to the other object. Whether this is an iterable or not depends on the `returnAll` parameter.
         """
-        if returnAll:
-            return [(0, 0)]
-        return self.endPoints()#(0, 0)
+        if checkShpType(othershape, Point):
+            x, y = othershape.x - self.x, othershape.y - self.y
+            #if abs(x)**2 + abs(y)**2 < self.r**2:
+            #    return othershape
+            phi = (math.degrees(math.atan2(y, x))) % 360
+            def angular_distance(a, b):
+                return min(abs(a - b), 360 - abs(a - b))
+            if self.endAng < self.startAng:
+                if phi < self.startAng and phi > self.endAng:
+                    dist_to_start = angular_distance(phi, self.startAng)
+                    dist_to_end = angular_distance(phi, self.endAng)
+                    phi = self.startAng if dist_to_start < dist_to_end else self.endAng
+            else:
+                if phi > self.endAng or phi < self.startAng:
+                    dist_to_start = angular_distance(phi, self.startAng)
+                    dist_to_end = angular_distance(phi, self.endAng)
+                    if dist_to_start < dist_to_end:
+                        phi = self.startAng
+                    else:
+                        phi = self.endAng
+            
+            angle = math.radians(phi-90)
+            
+            qx = self.x - math.sin(angle) * self.r
+            qy = self.y + math.cos(angle) * self.r
+            if returnAll:
+                return [[qx, qy]]
+            return qx, qy
+        elif checkShpType(othershape, Line):
+            if Circle(self.x, self.y, self.r)._collides(othershape):
+                wheres = self._where(othershape)
+                if wheres != []:
+                    return wheres[0]
+                def findDist(p):
+                    closestP = self.closestPointTo(Point(*p))
+                    return closestP, ((p[0]-closestP[0])**2+(p[1]-closestP[1])**2)
+                ps = [findDist(othershape.p1), findDist(othershape.p2)] + [
+                    findDist(i) for i in Circle(self.x, self.y, self.r)._where(othershape)
+                ]
+                return min(ps, key=lambda x: x[1])[0]
+            return self.closestPointTo(Point(*othershape.closestPointTo(Point(self.x, self.y))), returnAll)
+        elif checkShpType(othershape, Circle):
+            return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
+        elif checkShpType(othershape, Arc):
+            pass # TODO FOR ALL
+        else:
+            ps = []
+            for ln in othershape.toLines():
+                ps.append(ln.closestPointTo(self))
+            ps.sort(key=lambda x: (x[0]-self.x)**2+(x[1]-self.y)**2)
+            if returnAll:
+                return [self.closestPointTo(Point(*p)) for p in ps]
+            return self.closestPointTo(Point(*ps[0]))
 
     def angleInRange(self, angle: Number) -> bool:
         """
@@ -1423,10 +1478,10 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
             bool: Whether or not the angle is in the range of this arc.
         """
         self.startAng, self.endAng = self.startAng % 360, self.endAng % 360
-        if self.startAng < self.endAng:
-            return self.startAng <= angle%360 <= self.endAng
+        if self.startAng > self.endAng:
+            return angle%360 >= self.startAng or angle%360 <= self.endAng
         else:
-            return self.startAng <= angle%360 or angle <= self.endAng
+            return self.startAng <= angle%360 <= self.endAng
     
     def endPoints(self) -> Iterable[pointLike]:
         """
