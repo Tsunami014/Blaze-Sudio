@@ -83,6 +83,12 @@ and if it is None then it will not save. Defaults to None.
             else:
                 return False
     
+    def deleteConn(conn):
+        G.Container.connections.pop(conn, None)
+        for c in G.Container.connections.copy():
+            if G.Container.connections[c] == conn:
+                G.Container.connections.pop(c)
+    
     @G.Graphic
     def editor(event, path, element=None, aborted=False):
         if event == GO.EFIRST:
@@ -178,9 +184,11 @@ and if it is None then it will not save. Defaults to None.
                     c.move_ip((p[0], i+p[1]))
                     nodePoss[(node, n)] = c
                     if (not dragging) and c.collidepoint(pygame.mouse.get_pos()):
-                        filleds.append((c, n))
-                        if lf:
-                            G.Container.selecting = [False, n, node, c]
+                        if G.Container.selecting is None or G.Container.selecting[1].canAccept(n):
+                            filleds.append((c, n))
+                            if lf:
+                                deleteConn((node, n))
+                                G.Container.selecting = [False, n, node, c]
                     sur.blit(s, (p[0], i+p[1]))
                     mx = max(mx, s.get_width())
                     i += s.get_height() + 2
@@ -207,9 +215,11 @@ and if it is None then it will not save. Defaults to None.
                     c.move_ip((p[0]+mx, i2+p[1]))
                     nodePoss[(node, n)] = c
                     if (not dragging) and c.collidepoint(pygame.mouse.get_pos()):
-                        filleds.append((c, n))
-                        if lf:
-                            G.Container.selecting = [False, n, node, c]
+                        if G.Container.selecting is None or G.Container.selecting[1].canAccept(n):
+                            filleds.append((c, n))
+                            if lf:
+                                deleteConn((node, n))
+                                G.Container.selecting = [False, n, node, c]
                     sur.blit(s, (p[0]+mx, i2+p[1]))
                     mx2 = max(mx2, s.get_width())
                     i2 += s.get_height() + 2
