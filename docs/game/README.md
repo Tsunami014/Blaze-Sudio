@@ -1,3 +1,5 @@
+# Demo games
+Demo games to see some real examples of games can be found [HERE](https://github.com/Tsunami014/BlazeTests)!
 # HOW TO MAKE A GAME
 ## 1. Get set up
 ```py
@@ -12,6 +14,3 @@ G = Game()
 ```
 
 // TODO: Finish
-
-# Demo games
-Demo games to see some real examples of games can be found [HERE](https://github.com/Tsunami014/BlazeTests)!
