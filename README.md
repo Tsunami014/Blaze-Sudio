@@ -1,4 +1,4 @@
-[![Blaze Sudio Banner](images/BlazeBanner.png)]()
+[![Blaze Sudio Banner](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/BlazeBanner.png)]()
 
 <p style="color: grey" align="center"><i>A game engine for Python lovers! ❤️</i></p>
 
@@ -47,7 +47,7 @@ Also known as:
 [![Worked on since Aug 19, 2023](https://badgen.net/badge/worked%20on%20since/Aug%2019,%202023?color=orange)](https://github.com/Tsunami014/Blaze-Sudio/commit/c90beeb2d2e290ffff4e5fb9d112453840883ea7)
 <small>(But back then it was called AIHub, now that's a different thing; if you want to compare to something compare to when v3.0.0 was released)</small>
 
-[![v3.0.0](https://badgen.net/badge/v3.0.0%20released:/Sept%2019,%202024?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/releases/tag/v3.0.0)
+[![v3.0.0 released: Sept 19, 2024](https://badgen.net/badge/v3.0.0%20released:/Sept%2019,%202024?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/releases/tag/v3.0.0)
 
 This is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! PRs are welcome!
 
@@ -69,6 +69,12 @@ cd Blaze-Sudio
 pip install .
 ```
 ## 📚 Library usage (Demos)
+Demos are avaliable in `demos.py` for any main part of the library.
+### 🧱 The collisions module
+`BlazeSudio.collisions` is something I have spent a very long time on. It contains many different classes and functions for all sorts of shapes; `Points`, `Lines`, `Circles`, `Rects`, `Polygons`, and more. with functions to check for collision, find where the shape is colliding, where the nearest point on that shape is to any other shape, find the tangent off of the shape at a certain point, **but** also there is a function to calculate what happens to the shape once it bounces off any other objects!! It's too exciting for me to be able to explain it here, so make sure you take a look at the `demos.py` and choose the `Collisions demo`.
+### 💻️ The graphics module
+This is a module for having buttons, switches, colour pickers, scrollable screens, you name it - all in Pygame. It has a demo in `demos.py` too.
+### 🎮️ The Game module
 A simple demo is kinda hard because you need an ldtk file to make the levels with, but if you want there are some demo games [here](https://github.com/Tsunami014/BlazeTests).
 But, the docs for making a game would be helpful, and are here: <!-- Pypi ignore -->[Offfine 🖥️](docs/game/README.md) / <!-- End Pypi ignore -->[Online 🌐](https://tsunami014.gitbook.io/blaze-sudios/main-functionality/game)
 
