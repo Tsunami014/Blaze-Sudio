@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Any
 import pygame
+from string import printable
 from BlazeSudio.graphics import options as GO
 from BlazeSudio.graphics.stacks import StackPart
 
@@ -123,6 +124,7 @@ class Switch(Element):
 
 # InputBoxes code modified from https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame 
 
+# TODO: A text cursor
 class InputBox(Element):
     type = GO.TINPUTBOX
     def __init__(self, G, pos, sze, resize=GO.RWIDTH, placeholder='Type here!', font=GO.FSMALL, maxim=None, starting_text=''):
@@ -173,7 +175,8 @@ class InputBox(Element):
                 if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
-                    self.text += event.unicode
+                    if event.unicode in printable:
+                        self.text += event.unicode
                 # Re-render the text.
                 self._render_txt()
                 if event.key == pygame.K_RETURN:
@@ -190,11 +193,8 @@ class InputBox(Element):
         self.G.WIN.blit(self.txt_surface, (x+5, y+5))
         # Blit the rect.
         pygame.draw.rect(self.G.WIN, self.colour, pygame.Rect(x, y, *self.size), 2)
-    
-    def get(self):
-        return self.text
 
-class NumInputBox(InputBox):
+class NumInputBox(InputBox): # TODO: Decimals
     type = GO.TNUMBOX
     def __init__(self, G, pos, sze, resize=GO.RWIDTH, start=0, max=float('inf'), min=float('-inf'), font=GO.FSMALL, placeholder='Type number here!'):
         super().__init__(G, pos, sze, resize, placeholder, font, None, starting_text=str(start))
@@ -224,6 +224,9 @@ class NumInputBox(InputBox):
         if event.type == pygame.KEYDOWN:
             if self.active:
                 if event.key == pygame.K_BACKSPACE:
+                    # if str(self.realnum)[:-1].endswith('.'):
+                    #     self.realnum = int(self.realnum)
+                    # else:
                     try:
                         self.realnum = int(str(self.realnum)[:-1])
                     except:
@@ -231,17 +234,14 @@ class NumInputBox(InputBox):
                 elif event.key == pygame.K_MINUS:
                     self.realnum = self.realnum * -1
                 else:
-                    try:
-                        self.realnum = int(str(self.realnum) + event.unicode)
-                    except:
-                        pass
+                    if event.unicode in '0123456789':
+                        self.realnum = str(str(self.realnum) + event.unicode)
+                    # elif event.unicode == '.':
+                    #     self.realnum = float(self.realnum)
                 self.realnum = max(min(self.realnum, self.limits[0]), self.limits[1])
                 self.text = str(self.realnum)
                 if event.key == pygame.K_RETURN:
                     return False
-    
-    def get(self):
-        return self.realnum
 
 class Scrollable(Element):
     type = GO.TSCROLLABLE
