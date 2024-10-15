@@ -129,10 +129,15 @@ and if it is None then it will not save. Defaults to None.
                         G.Abort()
                 elif event == GO.ELAST:
                     if G.Container.doApply:
-                        res = G.uids[G.Container.inpname].text
-                        if res != '':
-                            G.Container.name = res
-            settings()
+                        returns = []
+                        res = G.Container.inpname.get()
+                        returns.append(res)
+                        return returns
+            rets = settings()
+            if rets is not None:
+                if rets[0]:
+                    G.Container.name = rets[0]
+            G.Reload()
         elif event == GO.ETICK:
             lf, l = next(G.Container.md)
             # lf = left mouse button first press, l = left mouse button is being pressed
@@ -228,8 +233,11 @@ and if it is None then it will not save. Defaults to None.
                 else:
                     if filleds != []:
                         top = filleds[0]
-                        G.Container.connections[(top[1].parent, top[1])] = (G.Container.selecting[2], G.Container.selecting[1])
-                        G.Container.connections[(G.Container.selecting[2], G.Container.selecting[1])] = (top[1].parent, top[1])
+                        connFrom = (top[1].parent, top[1])
+                        connTo = (G.Container.selecting[2], G.Container.selecting[1])
+                        if not G.Container.selecting[1].isinput:
+                            connFrom, connTo = connTo, connFrom
+                        G.Container.connections[connTo] = connFrom
                 G.Container.selecting = None
             
             if G.Container.selecting is not None and G.Container.selecting[0]:
