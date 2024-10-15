@@ -1427,8 +1427,7 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
             x, y = othershape.x - self.x, othershape.y - self.y
             #if abs(x)**2 + abs(y)**2 < self.r**2:
             #    return othershape
-            phi = (math.degrees(math.atan2(y, x))) % 360
-            self.constrainAng(phi)
+            phi = self.constrainAng(math.degrees(math.atan2(y, x)))
             
             angle = math.radians(phi-90)
             
@@ -1438,22 +1437,25 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
                 return [[qx, qy]]
             return qx, qy
         elif checkShpType(othershape, Line):
-            if Circle(self.x, self.y, self.r)._collides(othershape):
-                wheres = self._where(othershape)
-                if wheres != []:
-                    if returnAll:
-                        return wheres
-                    return wheres[0]
-                def findDist(p):
-                    closestP = self.closestPointTo(Point(*p))
-                    return closestP, ((p[0]-closestP[0])**2+(p[1]-closestP[1])**2)
-                ps = [findDist(othershape.p1), findDist(othershape.p2)] + [
-                    findDist(i) for i in Circle(self.x, self.y, self.r)._where(othershape)
+            cirO = Circle(self.x, self.y, self.r)
+            if cirO.collides(othershape):
+                def checkP(p, this):
+                    if not this:
+                        p = self.closestPointTo(Point(*p))
+                    op = othershape.closestPointTo(Point(*p))
+                    return (p, (op[0]-p[0])**2+(op[1]-p[1])**2)
+                alls = [
+                    checkP(i, True) for i in self.endPoints()
+                ] + [
+                    checkP(i, False) for i in othershape.toPoints()
+                ] + [
+                    checkP(i, False) for i in cirO.whereCollides(othershape)
                 ]
+                alls.sort(key=lambda i: i[1])
                 if returnAll:
-                    return [i[0] for i in sorted(ps, key=lambda x: x[1])]
-                return min(ps, key=lambda x: x[1])[0]
-            return self.closestPointTo(Point(*othershape.closestPointTo(Point(self.x, self.y))), returnAll)
+                    return [i[0] for i in alls]
+                return alls[0][0]
+            return self.closestPointTo(Point(*cirO.closestPointTo(othershape)), returnAll)
         elif checkShpType(othershape, Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
         elif checkShpType(othershape, Arc):
@@ -1481,15 +1483,20 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
                 return [[qx, qy]]
             return qx, qy
         else:
-            ps = []
+            closests = []
             for ln in othershape.toLines():
-                ps.append(ln.closestPointTo(self))
-            ps.sort(key=lambda x: (x[0]-self.x)**2+(x[1]-self.y)**2)
+                cp = self.closestPointTo(ln)
+                ocp = othershape.closestPointTo(Point(*cp))
+                d = (cp[0]-ocp[0])**2+(cp[1]-ocp[1])**2
+                closests.append((cp, d))
+            closests.sort(key=lambda x: x[1])
             if returnAll:
-                return [self.closestPointTo(Point(*p)) for p in ps]
-            return self.closestPointTo(Point(*ps[0]))
+                return [i[0] for i in closests]
+            return closests[0][0]
     
     def constrainAng(self, phi: Number) -> Number:
+        self.startAng, self.endAng = self.startAng % 360, self.endAng % 360
+        phi = phi % 360
         def angular_distance(a, b):
             return min(abs(a - b), 360 - abs(a - b))
         if self.endAng < self.startAng:
@@ -1697,6 +1704,17 @@ Please do not use this class as it is just a building block for subclasses and t
             return tries[0][0]
         elif checkShpType(othershape, Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
+        elif checkShpType(othershape, Arc):
+            closests = []
+            for ln in self.toLines():
+                cp = othershape.closestPointTo(ln)
+                mycp = self.closestPointTo(Point(*cp))
+                d = (cp[0]-mycp[0])**2+(cp[1]-mycp[1])**2
+                closests.append((mycp, d))
+            closests.sort(key=lambda x: x[1])
+            if returnAll:
+                return [i[0] for i in closests]
+            return closests[0][0]
         else:
             colls = self.whereCollides(othershape)
             if colls != []:
