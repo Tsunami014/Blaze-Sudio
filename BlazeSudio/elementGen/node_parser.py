@@ -120,6 +120,9 @@ class Node:
     def __hash__(self):
         return hash((self.uid, self.name, self.desc, self.func))
     
+    def TypeHash(self):
+        return sum(ord(i) for i in self.name)*sum(ord(i) for i in self.desc)
+    
     def __eq__(self, other):
         return hash(self) == hash(other)
     def __ne__(self, other):

@@ -1,13 +1,10 @@
 import pygame
 import dill
-import os
-from importlib.resources import files
 
 import BlazeSudio.graphics.options as GO
 from BlazeSudio.graphics import Graphic
 import BlazeSudio.elementGen.node_parser as np
-
-DEFAULTFILECONTENTS = {"idea": "BLANK", "name": "New File", "version": "0.5"}
+import BlazeSudio.elementGen.node_file as nf
 
 allnodes = {i: np.getCategoryNodes(i) for i in np.allCategories()}
 
@@ -96,26 +93,13 @@ and if it is None then it will not save. Defaults to None.
             G.Container.md = mouseDown() # Left mouse button
             G.Container.selecting = None
             G.Container.highlighting = None
-            # TODO: Better saving and loading
             if path is not None:
                 if not path.endswith('.elm'):
                     path = path + '.elm'
-                if not os.path.exists(path):
-                    # Version: major.minor
-                    dill.dump(DEFAULTFILECONTENTS, path.open('wb+'))
-                # TODO: version checking and updating (not for versions less than 1.0 which is the liftoff version)
-                G.Container.contents = dill.loads((files('BlazeSudio') / path+'.elm').read_bytes())
-            else:
-                G.Container.contents = DEFAULTFILECONTENTS
-            if 'nodes' in G.Container.contents:
-                G.Container.nodes = G.Container.contents['nodes']
-            else:
-                G.Container.nodes = []
-            if 'connections' in G.Container.contents:
-                G.Container.connections = G.Container.contents['connections']
-            else:
-                G.Container.connections = {}
-            G.Container.name = G.Container.contents['name']
+            G.Container.file = nf.NodeFile(np.getAllNodes(), path)
+            G.Container.nodes = G.Container.file.nodes
+            G.Container.connections = G.Container.file.conns
+            G.Container.name = G.Container.file.name
             G.Container.highlightedIO = {"OUTPUTS": []}
         if event == GO.ELOADUI:
             G.Clear()
@@ -148,7 +132,6 @@ and if it is None then it will not save. Defaults to None.
                         res = G.uids[G.Container.inpname].text
                         if res != '':
                             G.Container.name = res
-                            G.Container.contents['name'] = res
             settings()
         elif event == GO.ETICK:
             lf, l = next(G.Container.md)
@@ -348,12 +331,12 @@ and if it is None then it will not save. Defaults to None.
                     if path is None:
                         G.Toast('Cannot save file as file location wasn\'t specified!!')
                     else:
-                        G.Toast('Saving...')
-                        G.Container.contents['nodes'] = G.Container.nodes
-                        G.Container.contents['connections'] = G.Container.connections
+                        G.Container.file.nodes = G.Container.nodes
+                        G.Container.file.conns = G.Container.connections
+                        G.Container.file.name = G.Container.name
                         if not path.endswith('.elm'):
                             path = path + '.elm'
-                        dill.dump(G.Container.contents, open(path, 'wb+'))
+                        G.Container.file.save(path)
                         G.Container.saved = True
                         G.toasts = []
                         G.Toast('Saved!')
@@ -368,7 +351,10 @@ and if it is None then it will not save. Defaults to None.
         elif event == GO.ELAST:
             if path is not None:
                 if G.Container.saved:
+                    G.Container.file.nodes = G.Container.nodes
+                    G.Container.file.conns = G.Container.connections
+                    G.Container.file.name = G.Container.name
                     if not path.endswith('.elm'):
                         path = path + '.elm'
-                    dill.dump(G.Container.contents, open(path, 'wb+'))
+                    G.Container.file.save(path)
     return editor(path)
