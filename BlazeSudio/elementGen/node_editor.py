@@ -191,7 +191,7 @@ and if it is None then it will not save. Defaults to None.
                     name = n.name
                     if np.Mods.NoNode in n.mods:
                         continue
-                    if outs[idx] and np.Mods.LeaveName not in n.mods:
+                    if outs[idx] and np.Mods.LeaveName not in n.mods or n.type is bool:
                         if np.Mods.ShowEqual in n.mods:
                             name = f'{name}: {outs[idx]}'
                         else:
