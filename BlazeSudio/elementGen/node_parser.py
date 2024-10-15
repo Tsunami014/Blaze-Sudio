@@ -75,27 +75,39 @@ class Node:
         self.func = func
         doc = [i.strip() for i in func.__doc__.split('\n') if i.strip()]
         self.name = doc[0]
-        self.desc = '\n'.join(doc[1:doc.index('Args:')])
+        if 'Args:' in doc:
+            docUpTo = doc.index('Args:')
+        elif 'Returns:' in doc:
+            docUpTo = doc.index('Returns:')
+        else:
+            docUpTo = len(doc)
+        self.desc = '\n'.join(doc[1:docUpTo])
         # inspect.signature(func).parameters
         checkMods = ['@'+i[0] for i in Mods.__members__.items()]
         # Isn't she beautiful? 🥹
         checkRegex = '^(.+?)[ \t]*?(?:\\((.*?)\\))?(?::[ \t]*?([^ ].*?))?[ \t]*$'
+        if 'Returns:' in doc:
+            retIdx = doc.index('Returns:')
+        else:
+            retIdx = len(doc)
         self.inputs = []
-        for i in doc[doc.index('Args:')+1:doc.index('Returns:')]:
-            mods = []
-            for m in checkMods:
-                if m in i:
-                    mods.append(getattr(Mods, m[1:]))
-                    i = i.replace(m, '')
-            self.inputs.append(InOut(self, True, *re.findall(checkRegex, i)[0], None, mods)) # TODO: Default values (i.e. where the None is)
+        if 'Args:' in doc:
+            for i in doc[doc.index('Args:')+1:retIdx]:
+                mods = []
+                for m in checkMods:
+                    if m in i:
+                        mods.append(getattr(Mods, m[1:]))
+                        i = i.replace(m, '')
+                self.inputs.append(InOut(self, True, *re.findall(checkRegex, i)[0], None, mods)) # TODO: Default values (i.e. where the None is)
         self.outputs = []
-        for i in doc[doc.index('Returns:')+1:]:
-            mods = []
-            for m in checkMods:
-                if m in i:
-                    mods.append(getattr(Mods, m[1:]))
-                    i = i.replace(m, '')
-            self.outputs.append(InOut(self, False, *re.findall(checkRegex, i)[0], None, mods))
+        if retIdx != len(doc):
+            for i in doc[retIdx+1:]:
+                mods = []
+                for m in checkMods:
+                    if m in i:
+                        mods.append(getattr(Mods, m[1:]))
+                        i = i.replace(m, '')
+                self.outputs.append(InOut(self, False, *re.findall(checkRegex, i)[0], None, mods))
     
     def run(self, conns):
         ret = self.func(*[
@@ -103,7 +115,7 @@ class Node:
                 conns[(self, i)][0].run(conns)[conns[(self, i)][0].outputs.index(conns[(self, i)][1])]
             ) for i in self.inputs
         ])
-        if not isinstance(ret, (list, tuple)):
+        if not isinstance(ret, list):
             return [ret]
         return ret
     

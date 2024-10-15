@@ -35,6 +35,18 @@ def BoolInput(Val):
     """
     return Val
 
+def ColourInput(Val):
+    """ColourInput
+    Output a colour.
+
+    Args:
+        Val (Colour): The colour to output in RGB! @NoNode
+
+    Returns:
+        Val (Colour): The colour chosen! @NoSidebar
+    """
+    return Val
+
 def Output(Val):
     """Output
     Output any value! Like the return statement for the entire program.

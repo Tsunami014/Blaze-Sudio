@@ -4,6 +4,7 @@ types = {
     'int': float,
     'float': float,
     'number': float,
+    'colour': tuple,
     'str': str,
     'bool': bool,
     'any': Any,
@@ -13,6 +14,7 @@ types = {
 strtypes = {
     int: 'number',
     float: 'number',
+    tuple: 'colour',
     str: 'str',
     bool: 'bool',
     Any: 'any',
@@ -22,15 +24,6 @@ defaults = {
     'number': 0,
     'str': '',
     'bool': False,
+    'colour': (255, 255, 50),
     'any': ''
 }
-
-def getType(val):
-    val = val.lower()
-    if val == 'false' or val == 'true':
-        return 'bool'
-    try:
-        float(val)
-        return 'number'
-    except ValueError:
-        return 'str'

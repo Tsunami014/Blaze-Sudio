@@ -162,12 +162,6 @@ and if it is None then it will not save. Defaults to None.
                     name = n.name
                     if np.Mods.NoNode in n.mods:
                         continue
-                    # if n.connectedto is not None and \
-                    #     n.get_CT(G.Container.nodes).name in gotten and \
-                    #         gotten[n.get_CT(G.Container.nodes).name] != Ts.defaults[Ts.strtypes[n.get_CT(G.Container.nodes).type]]:
-                    #             name += '='+str(gotten[n.get_CT(G.Container.nodes).name])
-                    # elif n.value != Ts.defaults[n.strtype] or n.type is bool:
-                    #     name += ':'+str(n.value)
                     s, c = CAT(name, bgcol=col)
                     c.move_ip((p[0], i+p[1]))
                     nodePoss[(node, n)] = c
@@ -186,21 +180,33 @@ and if it is None then it will not save. Defaults to None.
                 i2 = start
                 mx2 = 0
                 outs = node.run(G.Container.connections)
+                surs = []
                 idx = 0
                 for n in node.outputs:
                     name = n.name
                     if np.Mods.NoNode in n.mods:
                         continue
-                    if outs[idx] and np.Mods.LeaveName not in n.mods or n.type is bool:
-                        if np.Mods.ShowEqual in n.mods:
-                            name = f'{name}: {outs[idx]}'
-                        else:
-                            if isinstance(outs[idx], float) and int(outs[idx]) == float(outs[idx]):
-                                name = str(int(outs[idx]))
+                    if isinstance(outs[idx], tuple):
+                        name = ''
+                    else:
+                        if outs[idx] and np.Mods.LeaveName not in n.mods or n.type is bool:
+                            if np.Mods.ShowEqual in n.mods:
+                                name = f'{name}: {outs[idx]}'
                             else:
-                                name = str(outs[idx])
+                                if isinstance(outs[idx], float) and int(outs[idx]) == float(outs[idx]):
+                                    name = str(int(outs[idx]))
+                                else:
+                                    name = str(outs[idx])
                     s, c = CAT(name, bgcol=col, front=False)
                     c.move_ip((p[0]+mx, i2+p[1]))
+                    if isinstance(outs[idx], tuple):
+                        c2 = c.copy()
+                        c.move_ip(c.width, 0)
+                        cols = pygame.Surface((c2.w*2+5, c2.h), pygame.SRCALPHA)
+                        pygame.draw.rect(cols, outs[idx], (0, 0, c2.w, c2.h), border_radius=8)
+                        pygame.draw.rect(cols, (0, 0, 0), (0, 0, c2.w, c2.h), border_radius=8, width=2)
+                        cols.blit(s, (c2.w, 0))
+                        s = cols
                     nodePoss[(node, n)] = c
                     if (not dragging) and c.collidepoint(pygame.mouse.get_pos()):
                         if G.Container.selecting is None or G.Container.selecting[1].canAccept(n):
@@ -216,6 +222,8 @@ and if it is None then it will not save. Defaults to None.
                 mxhei = max(i, i2)
                 r = pygame.Rect(*p, mx2+10, mxhei+10)
                 pygame.draw.rect(G.WIN, col, r, border_radius=8)
+                for s in surs:
+                    G.WIN.blit(s[0], s[1])
                 if G.Container.highlighting == node:
                     pygame.draw.rect(G.WIN, GO.CACTIVE, pygame.Rect(p[0]-15, p[1]-15, mx2+40, mxhei+40), width=10, border_radius=8)
                 if G.Container.selecting is None and lf and r.collidepoint(pygame.mouse.get_pos()):
@@ -292,6 +300,9 @@ and if it is None then it will not save. Defaults to None.
                                     e = scr.add_input(nopos, font=GO.FFONT, width=GO.FFONT.winSze('c'*10)[0], start=n.value)
                                 elif n.strtype == 'bool':
                                     e = scr.add_switch(nopos, default=n.value)
+                                elif n.strtype == 'colour':
+                                    e = scr.add_colour_pick(nopos)
+                                    e.set(*n.value)
                                 elif n.strtype == 'any':
                                     e = scr.add_input(nopos, font=GO.FFONT, width=GO.FFONT.winSze('c'*10)[0], start=str(n.value or ''))
                                 if e is not None:
