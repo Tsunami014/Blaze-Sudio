@@ -114,6 +114,15 @@ class ColourPicker:
             hsla[i.type] = int(i.bounds * i.p)
         colour.hsla = tuple(hsla)
         return colour
+    
+    def set_colour(self, colour):
+        hsla = colour.hsla
+        self.p = (
+                    (hsla[0] / 360) * self.pwidth / self.pwidth,
+                    (100 - hsla[2]) / 100
+        )
+        for i in self.values:
+            i.p = hsla[i.type] / i.bounds
 
     def update(self, mousePos):
         mouse_buttons = pygame.mouse.get_pressed()
@@ -150,18 +159,14 @@ class ColourPickerBTN(Element):
         self.picker.p = (0, 0.5)
         self.active = False
     
-    def get_colour(self):
-        return self.picker.get_colour()
-    
     def get(self):
         """Get the rgb colour of the picker"""
-        c = self.get_colour()
-        return (c.r, c.b, c.g)
+        c = self.picker.get_colour()
+        return (c.r, c.g, c.b)
     
     def set(self, r, g, b):
         """Set the rgb colour of the picker"""
-        self.picker.p = (r/360, g/100)
-        self.picker.values[2].p = b/100
+        self.picker.set_colour(pygame.Color(r, g, b))
     
     def update(self, mousePos, events):
         if self.G.pause:
@@ -173,11 +178,11 @@ class ColourPickerBTN(Element):
             if mouse_buttons[0] and rect.collidepoint(mousePos):
                 s = self.picker.get_size()
                 if x - s[0] < 0 and y - s[1] < 0:
-                    self.picker.set_position(x+self.size*2, y+self.size*2)
+                    self.picker.set_position(x+self.size[0]*2, y+self.size[1]*2)
                 elif x - s[0] < 0:
-                    self.picker.set_position(x+self.size*2, y-s[1]+20)
+                    self.picker.set_position(x+self.size[0]*2, y-s[1]+20)
                 elif y - s[1] < 0:
-                    self.picker.set_position(x-s[0]+20, y+self.size[0]*2)
+                    self.picker.set_position(x-s[0]+20, y+self.size[1]*2)
                 else:
                     self.picker.set_position(x-s[0]+20, y-s[1]+20)
                 self.active = True
@@ -190,4 +195,4 @@ class ColourPickerBTN(Element):
             self.picker.draw(self.G.WIN)
         pygame.draw.rect(self.G.WIN, (0, 0, 0), (x-2, y-2, self.size[0]+4, self.size[1]+4), border_radius=8)
         pygame.draw.rect(self.G.WIN, (255, 255, 255), pygame.Rect(x, y, *self.size), border_radius=8)
-        pygame.draw.rect(self.G.WIN, self.get_colour(), (x+self.size[0]//4, y+self.size[1]//4, self.size[0]-self.size[0]//2, self.size[1]-self.size[1]//2), border_radius=8)
+        pygame.draw.rect(self.G.WIN, self.get(), (x+self.size[0]//4, y+self.size[1]//4, self.size[0]-self.size[0]//2, self.size[1]-self.size[1]//2), border_radius=8)
