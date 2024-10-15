@@ -1278,6 +1278,125 @@ Please be mindful when checking for this class as it is technically a closed sha
                 return [self.closestPointTo(Point(*p)) for p in ps]
             return self.closestPointTo(Point(*ps[0]))
     
+    def handleCollisionsPos(self, 
+                            oldCir: 'Circle', 
+                            newCir: 'Circle', 
+                            objs: Union[Shapes, Iterable[Shape]], 
+                            vel: pointLike = [0,0], 
+                            replaceSelf: bool = True, 
+                            precision: Number = BASEPRECISION, 
+                            verbose: bool = False
+                           ) -> tuple[pointLike, pointLike, verboseOutput]:
+        """
+        Handles movement of this Circle and it bouncing off of other objects.
+        It is recommended you use `.handleCollisionsVel` instead of this, as it handles velocity instead of raw movement and is easier to use.
+
+        But if you are to use this, remember to still provide the vel param. It will sometimes provide weird results if you don't.
+        It could even just be the difference in positions, it just needs to be something realistic.
+
+        Args:
+            oldCir (Circle): The old position of this object.
+            newCir (Circle): The new position of this object.
+            objs (Shapes / Iterable[Shape]): The objects this will bounce off.
+            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
+            replaceSelf (bool, optional): Whether to replace self.x and self.y with the new position of the object after bouncing or not. Defaults to True.
+            precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
+            verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
+
+        Returns:
+            tuple[pointLike, pointLike, veboseOutput?]: The new position and vel of this object respectively, and if verbose then the verboseOutput.
+        
+        VerboseOutput:
+            DidReflect (bool): Whether the line reflected off of something
+        """ # FIXME
+        velphi = math.degrees(math.atan2(vel[1], vel[0]))-90
+        mvement = Shapes(oldCir, Polygon(
+            (oldCir.x + oldCir.r * math.cos(velphi-90), oldCir.y + oldCir.r * math.sin(velphi-90)),
+            (oldCir.x + oldCir.r * math.cos(velphi+90), oldCir.y + oldCir.r * math.sin(velphi+90)),
+            (newCir.x + newCir.r * math.cos(velphi-90), newCir.y + newCir.r * math.sin(velphi-90)),
+            (newCir.x + newCir.r * math.cos(velphi+90), newCir.y + newCir.r * math.sin(velphi+90))
+        ), newCir)
+        if not mvement.collides(objs):
+            if verbose:
+                return newCir, vel, [False]
+            return newCir, vel
+        points = []
+        for o in objs:
+            cs = o.whereCollides(mvement)
+            if cs != []:
+                cs.extend([i for j in [mvement[0], mvement[2]] for k in o.closestPointTo(j, True) for i in k if Point(*i).collides(mvement)])
+                points.extend(list(zip(cs, [o for _ in range(len(cs))])))
+        # Don't let you move when you're in a wall
+        if points == []:
+            if verbose:
+                return oldCir, [0, 0], [True]
+            return oldCir, [0, 0]
+        points.sort(key=lambda x: abs(x[0][0]-oldCir[0])**2+abs(x[0][1]-oldCir[1])**2)
+        closestP = points[0][0]
+        closestObj = points[0][1]
+        t = closestObj.tangent(closestP, vel)
+        normal = t-90
+        cpoMvemnt = Line((oldCir.x, oldCir.y), (newCir.x, newCir.y)).closestPointTo(Point(*closestP))
+        dist_left = (
+            math.sqrt((oldCir[0]-cpoMvemnt[0])**2+(oldCir[1]-cpoMvemnt[1])**2) - \
+                math.sqrt(round(newCir.r**2, precision)-(
+                        round((cpoMvemnt[0]-closestP[0])**2+(cpoMvemnt[1]-closestP[1])**2, precision)
+                    )
+                )
+        ) * closestObj.bounciness
+        if dist_left == 0:
+            if verbose:
+                return oldCir, [0, 0], [True]
+            return oldCir, [0, 0]
+        ThisClosestP = (oldCir.x + dist_left * math.cos(velphi), oldCir.y + dist_left * math.sin(velphi))
+        x, y = newCir[0] - closestP[0], newCir[1] - closestP[1]
+        phi = math.degrees(math.atan2(y, x))-90
+        diff = (phi-normal) % 360
+        if diff > 180:
+            diff = diff - 360
+        pos = rotate(closestP, [ThisClosestP[0], ThisClosestP[1]+dist_left], phi-180-diff*2)
+        vel = list(rotateBy0(vel, 180-diff*2))
+        vel = [vel[0]*closestObj.bounciness, vel[1]*closestObj.bounciness]
+        # HACK
+        smallness = rotateBy0([0,AVERYSMALLNUMBER], phi-180-diff*2)
+        out, outvel = self.handleCollisionsPos(Circle(ThisClosestP[0]+smallness[0], ThisClosestP[1]+smallness[1], newCir.r), 
+                                               Circle(*pos, oldCir.r), objs, vel, False, precision)
+        if replaceSelf:
+            self.x, self.y = out[0][0], out[0][1]
+        if verbose:
+            return out, outvel, [True]
+        return out, outvel
+
+    def handleCollisionsVel(self, 
+                              vel: pointLike, 
+                              objs: Union[Shapes,Iterable[Shape]], 
+                              replaceSelf: bool = True, 
+                              precision: Number = BASEPRECISION, 
+                              verbose: bool = False
+                             ) -> tuple['Circle', pointLike, verboseOutput]:
+        """
+        Handles movement of this Circle via velocity and it bouncing off of other objects.
+
+        Args:
+            vel (pointLike): The velocity of this Circle
+            objs (Shapes / Iterable[Shape]): The objects to bounce off of
+            replaceSelf (bool, optional): Whether or not to replace self.x and self.y with the new position. Defaults to True.
+            precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
+            verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
+
+        Returns:
+            tuple[Circle, pointLike, veboseOutput?]: The new Circle object and vel of this object respectively, and if verbose then the verboseOutput.
+        
+        VerboseOutput:
+            DidReflect (bool): Whether the line reflected off of something
+        """
+        o = self.handleCollisionsPos(self, Circle(self.x+vel[0], self.y+vel[1], self.r), objs, vel, False, precision, verbose)
+        if replaceSelf:
+            self.x, self.y = o[0][0], o[0][1]
+        if verbose:
+            return o[0], o[1], o[2]
+        return o[0], o[1]
+    
     def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
         """
         Finds whether a point is on a corner of this shape.
