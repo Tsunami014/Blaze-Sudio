@@ -1428,21 +1428,7 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
             #if abs(x)**2 + abs(y)**2 < self.r**2:
             #    return othershape
             phi = (math.degrees(math.atan2(y, x))) % 360
-            def angular_distance(a, b):
-                return min(abs(a - b), 360 - abs(a - b))
-            if self.endAng < self.startAng:
-                if phi < self.startAng and phi > self.endAng:
-                    dist_to_start = angular_distance(phi, self.startAng)
-                    dist_to_end = angular_distance(phi, self.endAng)
-                    phi = self.startAng if dist_to_start < dist_to_end else self.endAng
-            else:
-                if phi > self.endAng or phi < self.startAng:
-                    dist_to_start = angular_distance(phi, self.startAng)
-                    dist_to_end = angular_distance(phi, self.endAng)
-                    if dist_to_start < dist_to_end:
-                        phi = self.startAng
-                    else:
-                        phi = self.endAng
+            self.constrainAng(phi)
             
             angle = math.radians(phi-90)
             
@@ -1471,16 +1457,29 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
         elif checkShpType(othershape, Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
         elif checkShpType(othershape, Arc):
-            ps = [ # TODO: Fix
-                *self.closestPointTo(Point(othershape.x, othershape.y), True),
-                *[self.closestPointTo(Point(*i)) for i in othershape.closestPointTo(Point(self.x, self.y), True)]
-            ]
-            def findDist(p):
-                closestP = othershape.closestPointTo(Point(*p))
-                return ((p[0]-closestP[0])**2+(p[1]-closestP[1])**2)
+            wheres = self.whereCollides(othershape)
+            if wheres != []:
+                if returnAll:
+                    return wheres
+                return wheres[0]
+            x, y = self.x - othershape.x, self.y - othershape.y
+            phi = (math.degrees(math.atan2(y, x)))
+            if Circle(self.x, self.y, self.r).collides(othershape):
+                phi -= 180
+            angle = math.radians(othershape.constrainAng(phi%360)-90)
+            
+            qx = othershape.x - math.sin(angle) * othershape.r
+            qy = othershape.y + math.cos(angle) * othershape.r
+            
+            x, y = qx - self.x, qy - self.y
+            phi = (math.degrees(math.atan2(y, x))) % 360
+            angle = math.radians(self.constrainAng(phi)-90)
+            
+            qx = self.x - math.sin(angle) * self.r
+            qy = self.y + math.cos(angle) * self.r
             if returnAll:
-                return sorted(ps, key=findDist)
-            return min(ps, key=findDist)
+                return [[qx, qy]]
+            return qx, qy
         else:
             ps = []
             for ln in othershape.toLines():
@@ -1489,6 +1488,24 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
             if returnAll:
                 return [self.closestPointTo(Point(*p)) for p in ps]
             return self.closestPointTo(Point(*ps[0]))
+    
+    def constrainAng(self, phi: Number) -> Number:
+        def angular_distance(a, b):
+            return min(abs(a - b), 360 - abs(a - b))
+        if self.endAng < self.startAng:
+            if phi < self.startAng and phi > self.endAng:
+                dist_to_start = angular_distance(phi, self.startAng)
+                dist_to_end = angular_distance(phi, self.endAng)
+                return self.startAng if dist_to_start < dist_to_end else self.endAng
+        else:
+            if phi > self.endAng or phi < self.startAng:
+                dist_to_start = angular_distance(phi, self.startAng)
+                dist_to_end = angular_distance(phi, self.endAng)
+                if dist_to_start < dist_to_end:
+                    return self.startAng
+                else:
+                    return self.endAng
+        return phi
 
     def angleInRange(self, angle: Number) -> bool:
         """
