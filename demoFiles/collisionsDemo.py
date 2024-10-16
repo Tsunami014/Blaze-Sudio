@@ -216,10 +216,12 @@ while run:
                     ratio = 5
                     pygame.draw.rect(win, (155, 155, 155), (win.get_width()//ratio, win.get_height()//ratio, win.get_width()//ratio*(ratio-2), win.get_height()//ratio*(ratio-2)), border_radius=8)
                     win.blit(FFONT.render("""How to use:
-Click on one of the options at the top to change your tool. Pressing space adds it to the board (or applies some function to existing objects). The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too. When not holding alt to be in play mode, wsad does the same as the arrow keys but is more precise.
+Click on one of the options at the top to change your tool. Pressing space adds it to the board (or applies some function to existing objects).\
+The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too. When not holding alt to be in play mode, wsad does the same as the arrow keys but is more precise.
 Holding '[' and ']' changes the bounciness of the object.
 Holding shift in this mode shows the normals, and holding control shows the closest points to the object!
-And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity! And holding '/' while holding shift will... well... I'll let you find that out for yourself.
+And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity!\
+And holding '/' and/or 'L' while holding shift will... well... I'll let you find that out for yourself.
 And pressing 'r' will reset everything without warning.
 
 Press any key/mouse to close this window""",0,allowed_width=win.get_width()//ratio*(ratio-2)-4), (win.get_width()//ratio+2, win.get_height()//ratio+2))
@@ -289,7 +291,10 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
         vel = [vel[0] + gravity[0], vel[1] + gravity[1]]
         vellLimits = [10, 10]
         vel = [min(max(vel[0], -vellLimits[0]), vellLimits[0]), min(max(vel[1], -vellLimits[1]), vellLimits[1])]
-        friction = [0.02, 0.02]
+        if not btns[pygame.K_l]:
+            friction = [0.02, 0.02]
+        else:
+            friction = [0, 0]
         def fric_eff(x, fric):
             if x < -fric:
                 return x + fric
