@@ -8,7 +8,7 @@ from importlib.resources import files
 import BlazeSudio.elementGen.types as Ts
 
 def allCategories():
-    cats = [i.name for i in (files('BlazeSudio') / 'data/nodes').iterdir() if i.is_file() and i.name != 'types.json']
+    cats = [i.name for i in (files('BlazeSudio') / 'data/nodes').iterdir() if i.is_file()]
     cats.sort()
     return cats
 
@@ -74,6 +74,7 @@ class Node:
         self.NEXTUID[0] += 1
         self.func = func
         doc = [i.strip() for i in func.__doc__.split('\n') if i.strip()]
+        self.cache = None
         self.name = doc[0]
         if 'Args:' in doc:
             docUpTo = doc.index('Args:')
@@ -110,7 +111,7 @@ class Node:
                 self.outputs.append(InOut(self, False, *re.findall(checkRegex, i)[0], None, mods))
     
     def run(self, conns):
-        ret = self.func(*[
+        ret = self(*[
             i.value if (self, i) not in conns else (
                 conns[(self, i)][0].run(conns)[conns[(self, i)][0].outputs.index(conns[(self, i)][1])]
             ) for i in self.inputs
@@ -120,7 +121,9 @@ class Node:
         return ret
     
     def __call__(self, *args, **kwargs):
-        return self.func(*args, **kwargs)
+        if self.cache is None or self.cache[1] != (args, kwargs):
+            self.cache = (self.func(*args, **kwargs), (args, kwargs))
+        return self.cache[0]
     
     def copy(self):
         return Node(self.func)

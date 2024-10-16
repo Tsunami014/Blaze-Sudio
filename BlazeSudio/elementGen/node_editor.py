@@ -1,6 +1,6 @@
 import pygame
-import dill
 
+from BlazeSudio.elementGen.image import Image
 import BlazeSudio.graphics.options as GO
 from BlazeSudio.graphics import Graphic
 import BlazeSudio.elementGen.node_parser as np
@@ -186,7 +186,7 @@ and if it is None then it will not save. Defaults to None.
                     name = n.name
                     if np.Mods.NoNode in n.mods:
                         continue
-                    if isinstance(outs[idx], tuple):
+                    if isinstance(outs[idx], (tuple, Image)):
                         name = ''
                     else:
                         if outs[idx] and np.Mods.LeaveName not in n.mods or n.type is bool:
@@ -207,6 +207,13 @@ and if it is None then it will not save. Defaults to None.
                         pygame.draw.rect(cols, (0, 0, 0), (0, 0, c2.w, c2.h), border_radius=8, width=2)
                         cols.blit(s, (c2.w, 0))
                         s = cols
+                    elif isinstance(outs[idx], Image):
+                        c2 = c.copy()
+                        c.move_ip(c.width, 0)
+                        news = pygame.Surface((c2.w*2+5, c2.h), pygame.SRCALPHA)
+                        news.blit(pygame.transform.scale(outs[idx].to_pygame(), (c2.w, c2.h)), (0, 0))
+                        news.blit(s, (c2.w, 0))
+                        s = news
                     nodePoss[(node, n)] = c
                     if (not dragging) and c.collidepoint(pygame.mouse.get_pos()):
                         if G.Container.selecting is None or G.Container.selecting[1].canAccept(n):
@@ -310,7 +317,10 @@ and if it is None then it will not save. Defaults to None.
                                     G.Container.highlightedIO[n] = e
                             else:
                                 replaceOuts = True
-                                e = scr.add_text('HI :)', GO.CBLACK, nopos)
+                                if np.Mods.NoSidebar not in n.mods and n.strtype == 'image':
+                                    e = scr.add_surface(n.value.to_pygame(), nopos)
+                                else:
+                                    e = scr.add_text('HI :)', GO.CBLACK, nopos)
                                 G.Container.highlightedIO["OUTPUTS"].append(e)
                                 h += e.size[1]
                     scr2, scrObj2 = G.add_Scrollable(GO.PSTATIC(SideRec.x, SideRec.y), (SideRec.w-8, SideRec.h), (SideRec.w-8, max(SideRec.h, h)), 2, True)
@@ -336,9 +346,12 @@ and if it is None then it will not save. Defaults to None.
                             otxt.set('')
                         else:
                             val = outs[i]
-                            if isinstance(val, float) and int(val) == float(val):
-                                val = int(val)
-                            otxt.set(f'{oio.name}: {val}')
+                            if isinstance(val, Image):
+                                otxt.set(val.to_pygame())
+                            else:
+                                if isinstance(val, float) and int(val) == float(val):
+                                    val = int(val)
+                                otxt.set(f'{oio.name}: {val}')
                         
             elif G.Stuff['scrollsables'] != []:
                 G.Container.highlightedIO = {"OUTPUTS": []}

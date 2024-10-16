@@ -220,8 +220,8 @@ Click on one of the options at the top to change your tool. Pressing space adds 
 The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too. When not holding alt to be in play mode, wsad does the same as the arrow keys but is more precise.
 Holding '[' and ']' changes the bounciness of the object.
 Holding shift in this mode shows the normals, and holding control shows the closest points to the object!
-And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity!\
-And holding '/' and/or 'L' while holding shift will... well... I'll let you find that out for yourself.
+And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity! Holding 'L' makes you have no friction. \
+And holding '/' while holding shift will... well... I'll let you find that out for yourself.
 And pressing 'r' will reset everything without warning.
 
 Press any key/mouse to close this window""",0,allowed_width=win.get_width()//ratio*(ratio-2)-4), (win.get_width()//ratio+2, win.get_height()//ratio+2))
