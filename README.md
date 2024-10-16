@@ -4,16 +4,12 @@
 
 [![Docs](https://badgen.net/badge/Documentation/tsunami014.gitbook.io?color=orange&icon=wiki)](https://tsunami014.gitbook.io/blaze-sudios/)
 [![Website](https://badgen.net/badge/website/tsunami014.github.io?icon=rss&color=yellow)](https://tsunami014.github.io/Blaze-Sudio/)
-[![PyPi version](https://badgen.net/pypi/v/Blaze-Sudio?label=PyPi%20version&icon=pypi)](https://pypi.org/project/Blaze-Sudio/)
-[![Build collisions status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml)
-[![Publish to PyPI status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml)
-[![Python versions: 3.10, 3.11, 3.12](https://badgen.net/static/Python%20versions/3.10%203.11%203.12/purple)]()
-[![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]()
-[![v3.0.0 released on Sept 19, 2024](https://badgen.net/badge/v3.0.0%20released:/Sept%2019,%202024?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/releases/tag/v3.0.0)
 
 # ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v3.1.0 (🌿 Kindle)
 
 <!-- // TODO: Get a better icon (and put it in the banner) -->
+
+[![Built with ♥️](https://badgen.net/badge/Built%20with/%E2%99%A5/orange)]()
 
 ## 🗂️ Table of contents
 | [🔝 Top](#) |
@@ -30,6 +26,8 @@
 The docs are in progress. If you are working offline, you can look in <!-- Pypi ignore -->[the docs folder of *this* repo (not the built package)](docs/SUMMARY.md) or if you're online, <!-- End Pypi ignore -->[https://tsunami014.gitbook.io/blaze-sudios](https://tsunami014.gitbook.io/blaze-sudios)
 
 # 🚀 About
+[![Powered by Wi-Fi and wild optimism](https://badgen.net/badge/Powered%20by/Wi-Fi%20&%20wild%20optimism/yellow)]()
+
 Blaze Sudio is an open source graphical game creation software.
 
 Thanks to the one and only `@Imzafish` for the name! (Yes, it was originally a typo I decided to incorperate into the idea.)
@@ -39,22 +37,34 @@ Also known as:
  - One piece of code to rule them all!
 
 # 💡 Things to note
+| Version stuff |
+|---------------|
+[![PyPi version](https://badgen.net/pypi/v/Blaze-Sudio?label=PyPi%20version&icon=pypi)](https://pypi.org/project/Blaze-Sudio/)
+[![Python versions: 3.10, 3.11, 3.12](https://badgen.net/static/Python%20versions/3.10%203.11%203.12/purple)]()
+[![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]()
+
+| Statuses |
+|-----------|
+[![Build collisions status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml)
+[![Doesn't contain tree nuts](https://badgen.net/badge/Doesn't%20contain/Tree%20nuts/grey)]()
+[![Publish to PyPI status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml)
+
+| Stats |
+|-------|
 [![I've done a crap ton of commits](https://badgen.net/github/commits/Tsunami014/Blaze-Sudio?color=green&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/commits/)
 [![I've also done a ton of releases too](https://badgen.net/github/releases/Tsunami014/Blaze-Sudio?color=purple&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/releases)
-[![Open Issues](https://badgen.net/github/open-issues/Tsunami014/Blaze-Sudio?color=red&label=open%20issues&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/issues)
-[![Contributers](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=grey&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors)
-
-[![Worked on since Aug 19, 2023](https://badgen.net/badge/worked%20on%20since/Aug%2019,%202023?color=orange)](https://github.com/Tsunami014/Blaze-Sudio/commit/c90beeb2d2e290ffff4e5fb9d112453840883ea7)
-<small>(But back then it was called AIHub, now that's a different thing; if you want to compare to something compare to when v3.0.0 was released)</small>
-
+[![Contributers](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=grey&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors) <small>([But really I did all the work](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors))</small>
 [![v3.0.0 released: Sept 19, 2024](https://badgen.net/badge/v3.0.0%20released:/Sept%2019,%202024?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/releases/tag/v3.0.0)
+[![Worked on since Aug 19, 2023](https://badgen.net/badge/Worked%20on%20since/Aug%2019,%202023?color=orange)](https://github.com/Tsunami014/Blaze-Sudio/commit/c90beeb2d2e290ffff4e5fb9d112453840883ea7) <small>(But back then it was called AIHub, now that's a different thing; if you want to compare to something compare to when v3.0.0 was released)</small>
 
 This is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! PRs are welcome!
 
-This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix) (I don't know whether I still need this or not...), [Pyldtk](https://github.com/LGgameLAB/pyLdtk) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). For pyLDtk, this is because I have edited it so much it barely resembles the original library (slight exaggeration, but still). And for the others, it was for similar reasons (and also installation problems and other things too)
+This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix) (I don't know whether I still need this or not...), [Pyldtk](https://github.com/LGgameLAB/pyLdtk) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). For pyLDtk, this is because I have edited it so much it barely resembles the original library <small>(*slight* exageration, but still)</small>. And for the others, it was for similar reasons.
 
 # 📔 How to use
 ## 🛠️ Installation
+[![Works on my machine](https://badgen.net/badge/Works%20on/my%20machine/green)]()
+
 Are you ready? This is the most complicated installation process of any python library that exists ever, even Tensorflow (yes, I know!) But, follow the instructions and you'll probably be ok. Remember to [join the discord server](https://discord.gg/xr3phyEZtv) if you need any help.
 
 1. Run `pip install Blaze-Sudio`
