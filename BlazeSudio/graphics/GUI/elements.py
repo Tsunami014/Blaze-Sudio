@@ -235,7 +235,7 @@ class NumInputBox(InputBox): # TODO: Decimals
                     self.realnum = self.realnum * -1
                 else:
                     if event.unicode in '0123456789':
-                        self.realnum = str(str(self.realnum) + event.unicode)
+                        self.realnum = int(str(self.realnum) + event.unicode)
                     # elif event.unicode == '.':
                     #     self.realnum = float(self.realnum)
                 self.realnum = max(min(self.realnum, self.limits[0]), self.limits[1])

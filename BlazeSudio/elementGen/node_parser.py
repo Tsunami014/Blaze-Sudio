@@ -40,7 +40,7 @@ class Mods(Enum):
 This would look like `Val: abc` instead of just replacing the node name (`Val`) with it's value (`abc`)"""
 
 class InOut:
-    def __init__(self, parent, isinput, name, type, desc, default=None, mods=[]):
+    def __init__(self, parent, isinput, name, type, desc, default='', mods=[]):
         self.parent = parent
         self.isinput = isinput
         self.name = name.strip()
@@ -48,7 +48,7 @@ class InOut:
         self.strtype = Ts.strtypes[self.type]
         self.desc = desc.strip()
         self.mods = mods
-        if default is None:
+        if default == '':
             default = Ts.defaults[self.strtype]
         self.value = default
     
@@ -86,7 +86,7 @@ class Node:
         # inspect.signature(func).parameters
         checkMods = ['@'+i[0] for i in Mods.__members__.items()]
         # Isn't she beautiful? 🥹
-        checkRegex = '^(.+?)[ \t]*?(?:\\((.*?)\\))?(?::[ \t]*?([^ ].*?))?[ \t]*$'
+        checkRegex = '^(.+?)[ \t]*?(?:\\((.*?)\\))?(?::[ \t]*?([^ ].*?))?(?:[ \t:;,]*?(?:[Dd]efaults to (.*?)[.!]?))?[ \t]*$'
         if 'Returns:' in doc:
             retIdx = doc.index('Returns:')
         else:
@@ -99,7 +99,7 @@ class Node:
                     if m in i:
                         mods.append(getattr(Mods, m[1:]))
                         i = i.replace(m, '')
-                self.inputs.append(InOut(self, True, *re.findall(checkRegex, i)[0], None, mods)) # TODO: Default values (i.e. where the None is)
+                self.inputs.append(InOut(self, True, *re.findall(checkRegex, i)[0], mods))
         self.outputs = []
         if retIdx != len(doc):
             for i in doc[retIdx+1:]:
@@ -108,7 +108,7 @@ class Node:
                     if m in i:
                         mods.append(getattr(Mods, m[1:]))
                         i = i.replace(m, '')
-                self.outputs.append(InOut(self, False, *re.findall(checkRegex, i)[0], None, mods))
+                self.outputs.append(InOut(self, False, *re.findall(checkRegex, i)[0], mods))
     
     def run(self, conns):
         ret = self(*[
