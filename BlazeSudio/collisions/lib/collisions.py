@@ -1309,12 +1309,13 @@ Please be mindful when checking for this class as it is technically a closed sha
         VerboseOutput:
             DidReflect (bool): Whether the line reflected off of something
         """ # FIXME
-        velphi = math.degrees(math.atan2(vel[1], vel[0]))-90
+        velphi = math.atan2(vel[1], vel[0])
+        quart = math.pi/2
         mvement = Shapes(oldCir, Polygon(
-            (oldCir.x + oldCir.r * math.cos(velphi-90), oldCir.y + oldCir.r * math.sin(velphi-90)),
-            (oldCir.x + oldCir.r * math.cos(velphi+90), oldCir.y + oldCir.r * math.sin(velphi+90)),
-            (newCir.x + newCir.r * math.cos(velphi-90), newCir.y + newCir.r * math.sin(velphi-90)),
-            (newCir.x + newCir.r * math.cos(velphi+90), newCir.y + newCir.r * math.sin(velphi+90))
+            (oldCir.x + oldCir.r * math.cos(velphi-quart), oldCir.y + oldCir.r * math.sin(velphi-quart)),
+            (oldCir.x + oldCir.r * math.cos(velphi+quart), oldCir.y + oldCir.r * math.sin(velphi+quart)),
+            (newCir.x + newCir.r * math.cos(velphi-quart), newCir.y + newCir.r * math.sin(velphi-quart)),
+            (newCir.x + newCir.r * math.cos(velphi+quart), newCir.y + newCir.r * math.sin(velphi+quart))
         ), newCir)
         if not mvement.collides(objs):
             if verbose:
@@ -1324,7 +1325,7 @@ Please be mindful when checking for this class as it is technically a closed sha
         for o in objs:
             cs = o.whereCollides(mvement)
             if cs != []:
-                cs.extend([i for j in [mvement[0], mvement[2]] for k in o.closestPointTo(j, True) for i in k if Point(*i).collides(mvement)])
+                cs.extend([i for j in [mvement[0], mvement[2]] for i in o.closestPointTo(j, True) if Point(*i).collides(mvement)])
                 points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         # Don't let you move when you're in a wall
         if points == []:
@@ -1796,7 +1797,7 @@ Please do not use this class as it is just a building block for subclasses and t
             ps = [i.closestPointTo(othershape) for i in self.toLines()]
             ps.sort(key=lambda x: abs(x[0]-othershape[0])**2+abs(x[1]-othershape[1])**2)
             if returnAll:
-                return [ps]
+                return ps
             return ps[0]
         elif checkShpType(othershape, Line):
             colls = self.whereCollides(othershape)
