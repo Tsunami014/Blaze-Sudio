@@ -124,6 +124,9 @@ class F___:
             int
                 The amount of lines rendered
         """
+        if isinstance(txt, pygame.Surface):
+            return txt
+        
         if txt.strip() == '':
             if verbose:
                 return pygame.Surface((0, 0)), 0

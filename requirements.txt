@@ -1,7 +1,8 @@
 pygame
 noise
+Pillow
+pyperclip
+shapely
 # Maybe remove the below 2
 scikit-image
 matplotlib
-pyperclip
-shapely

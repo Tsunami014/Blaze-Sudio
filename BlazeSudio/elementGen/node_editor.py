@@ -272,15 +272,12 @@ and if it is None then it will not save. Defaults to None.
                 pygame.draw.circle(G.WIN, GO.CRED, pos2, 5)
                 pygame.draw.line(G.WIN, GO.CRED, pos1, pos2, 10)
             
-            dones = []
+            col = GO.CNEW('orange')
             for i in G.Container.connections:
-                if i not in dones:
-                    dones.append(i)
-                    col = GO.CNEW('orange')
-                    pygame.draw.circle(G.WIN, col, nodePoss[i].center, 5)
-                    pygame.draw.circle(G.WIN, col, nodePoss[G.Container.connections[i]].center, 5)
-                    pygame.draw.line(G.WIN, col, \
-                        nodePoss[i].center, nodePoss[G.Container.connections[i]].center, 10)
+                pygame.draw.circle(G.WIN, col, nodePoss[i].center, 5)
+                pygame.draw.circle(G.WIN, col, nodePoss[G.Container.connections[i]].center, 5)
+                pygame.draw.line(G.WIN, col, \
+                    nodePoss[i].center, nodePoss[G.Container.connections[i]].center, 10)
             
             if G.Container.highlighting is not None:
                 w, h = G.size[0] / 8 * 3, G.size[1] / 8 * 3
@@ -374,6 +371,9 @@ and if it is None then it will not save. Defaults to None.
                         G.Toast('Saved!')
                 elif element.key == pygame.K_DELETE:
                     if G.Container.highlighting is not None:
+                        for c in G.Container.connections.copy():
+                            if G.Container.connections[c][0] == G.Container.highlighting or c[0] == G.Container.highlighting:
+                                G.Container.connections.pop(c)
                         del G.Container.nodes[
                             [i[1] for i in G.Container.nodes].index(G.Container.highlighting)
                         ]

@@ -1,18 +1,55 @@
 import pygame
+from PIL import Image as PILImage
+
+GLOBALSZE = [100, 100]
 
 class Image:
-    def __init__(self, size=(0, 0), data=None):
-        self.size = size
+    def __init__(self, data=None):
         if data is None:
-            self.data = [[(0, 0, 0) for _ in range(size[1])] for _ in range(size[0])]
+            self.data = [[(0, 0, 0)]]
         else:
             self.data = data
     
+    def _toBuffer(self):
+        data = []
+        for i in range(GLOBALSZE[1]):
+            for j in range(GLOBALSZE[0]):
+                data.extend(self.get(i, j))
+        return bytes(data)
+    
+    def get(self, y, x):
+        return self.data[y % len(self.data)][x % len(self.data[0])]
+
     def to_pygame(self):
-        if self.size[0] <= 0 or self.size[1] <= 0:
+        if GLOBALSZE[0] <= 0 or GLOBALSZE[1] <= 0:
             return pygame.Surface((0, 0))
         return pygame.image.frombuffer(
-            bytes([i for j in self.data for k in j for i in k]),
-            self.size,
+            self._toBuffer(),
+            GLOBALSZE,
             'RGB'
         )
+
+    def to_PIL(self):
+        return PILImage.frombytes(
+            'RGB',
+            GLOBALSZE,
+            self._toBuffer()
+        )
+
+    @staticmethod
+    def from_pygame(surf):
+        return Image(
+            [[surf.get_at((i, j)) for j in range(surf.get_height())] for i in range(surf.get_width())]
+        )
+    
+    @staticmethod
+    def from_PIL(img):
+        return Image(
+            [
+                [img.getpixel((i, j)) for i in range(img.width)] for j in range(img.height)
+            ]
+        )
+    
+    def __str__(self):
+        return '<Image>'
+    def __repr__(self): return str(self)
