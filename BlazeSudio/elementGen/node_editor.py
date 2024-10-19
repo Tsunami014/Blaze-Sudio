@@ -294,7 +294,7 @@ and if it is None then it will not save. Defaults to None.
                 node = G.Container.highlighting
                 replaceOuts = False
                 if G['scrollsables'] == []:
-                    scr = GUI.Scrollable(G, GO.PSTATIC(SideRec.x, SideRec.y), (SideRec.w-8, SideRec.h), (0, 0))
+                    scr = GUI.ScrollableFrame(G, GO.PSTATIC(SideRec.x, SideRec.y), (SideRec.w-8, SideRec.h), (0, 0))
                     G['scrollsables'].append(scr)
                     scr.layers[0].add_many([
                         'Inputs',

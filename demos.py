@@ -84,7 +84,7 @@ def MGraphicsDemo():
             G['endElms'].append(G.Container.colour)
 
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
-            S = GUI.Scrollable(G, TOPLEFT, (250, 200), (250, 350))
+            S = GUI.ScrollableFrame(G, TOPLEFT, (250, 200), (250, 350))
             G['scrolls'].append(S)
             # This is another way of setting out your Stuff; having everything under one name.
             S.layers[0].add_many([
