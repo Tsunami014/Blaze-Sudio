@@ -8,10 +8,10 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
     long_description = fh.read()
-    long_description = re.sub(re.escape('<!-- Pypi ignore -->')+'.*'+re.escape('<!-- End Pypi ignore -->'), '', long_description)
+    long_description = re.sub(re.escape('<!-- Pypi ignore -->')+'.*?'+re.escape('<!-- End Pypi ignore -->'), '', long_description)
 
 with codecs.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as fh:
-    packages = [i for i in fh.readlines() if i]
+    installPackages = [i for i in fh.readlines() if ((not i.startswith('#')) and i)]
 
 # Check if 'debug' is in the extras
 if any('debug' in arg for arg in sys.argv):
@@ -31,9 +31,9 @@ setup(
     packages=packages,
     include_package_data=True,
     package_data={'BlazeSudio' :['BlazeSudio/data/*', '**/internal-icons.png'], 'BlazeSudio.collisions': ['**/*.so', '**/*.pyd']},
-    author='Tsunami014 (Max)',
+    author='Tsunami014',
     author_email='tsunami014@duck.com',
-    install_requires=packages,
+    install_requires=installPackages,
     keywords=['Python', 'games', 'engine'],
     scripts=['BlazeSudio/BlazeSudio'],
     classifiers=[
