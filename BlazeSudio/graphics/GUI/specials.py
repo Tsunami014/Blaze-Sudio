@@ -6,7 +6,7 @@ from BlazeSudio.graphics.stuff import Collection
 
 __all__ = [
     'TerminalBar',
-    'Scrollable',
+    'ScrollableFrame',
     'GraphicBase'
 ]
 
@@ -52,7 +52,7 @@ class GraphicBase:
     def layers(self):
         return self.Stuff.layers
 
-class Scrollable(GraphicBase, GUI.Element):
+class ScrollableFrame(GraphicBase, GUI.Element):
     type = GO.TSCROLLABLE
     def __init__(self, 
                  G, 
