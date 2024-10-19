@@ -1,7 +1,13 @@
 from ast import literal_eval
 import os.path
-# Latest version OF THIS FILE TYPE, not of the actual BlazeSudios itself.
 LATESTVER = [1, 0]
+"""
+Latest version OF THIS FILE TYPE, not of the actual BlazeSudios itself.
+
+A minor version of 0 means that the major version is undergoing changes and the file format is not stable.
+
+When BS *does* do an update and this version has changed, remember to also change the version to be x.1 to be stable.
+"""
 
 # TODO: Document this file format
 
@@ -19,14 +25,14 @@ class NodeFile:
             version = f'{fc[0]}.{fc[1]}'
             self.name = dc[2:fc.index(0, 2)]
             toprocess = fc[fc.index(0, 2)+1:]
-            if version == '1.0':
-                self._read_v1_0(toprocess)
+            if version.startswith('1.'):
+                self._read_v1(toprocess)
             else:
                 raise ValueError(
                     f'Version {self.version} is not supported!!'
                 )
     
-    def _read_v1_0(self, dat):
+    def _read_v1(self, dat):
         self.nodes = []
         self.conns = {}
         
