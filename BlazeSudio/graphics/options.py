@@ -31,6 +31,8 @@ CBLUE =   C___((60, 100, 255),  name='BLUE')
 CBLACK =  C___((0, 0, 0),       name='BLACK')
 CYELLOW = C___((255, 200, 50),  name='YELLOW')
 CGREY =   C___((125, 125, 125), name='GREY')
+CMAUVE =  C___((173, 127, 168), name='MAUVE')
+CPURPLE = C___((92, 53, 102),   name='PURPLE')
 def CNEW(name):
     c = pygame.color.Color(name)
     return C___((c.r, c.g, c.b), name=name)
@@ -44,9 +46,8 @@ CRAINBOWCOLOURS = [
     CGREEN,
     CBLUE,
     CNEW('magenta'),
-    CNEW('purple'),
-    CGREY,
-    CACTIVE
+    CMAUVE,
+    CGREY
 ]
 
 def CRAINBOW():
@@ -324,7 +325,7 @@ PFILL =    P___(9, None, None, (0, 0), lambda _, __: (0, 0))
 PIDX = 0 # DO NOT USE UNLESS YOU REALLY KNOW WHAT YOU'RE DOING
 
 def PNEW(stack, func, lmr=None, umd=None, idx=None): # To create new layouts
-    # TODO: Make this able to take PRTOP as func and work out the function itself
+    # TODO: Make this able to take e.g. PRTOP as func and work out the function itself
     global PIDX
     if idx is None:
         idx = PIDX

@@ -1,11 +1,21 @@
 import pygame
 
+__all__ = [
+    'Container',
+    'Thing',
+    'Stuff',
+    'Collection',
+]
+
 # A Thing is a singular object
 # A Stuff is a bunch of Things
 # A Collection is a collection of layers of Stuff
 
 class Container:
-    pass
+    def copy(self):
+        cnt = Container()
+        cnt.__dict__.update(self.__dict__)
+        return cnt
 
 def handle_events():
     evs = pygame.event.get()

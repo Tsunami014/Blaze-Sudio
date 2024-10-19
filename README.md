@@ -59,7 +59,9 @@ Also known as:
 
 This is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! PRs are welcome!
 
-This project comes with 3 python libraries built into it; [pyguix](https://github.com/DarthData410/PyGames-pyguix) (I don't know whether I still need this or not...), [Pyldtk](https://github.com/LGgameLAB/pyLdtk) and [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master). For pyLDtk, this is because I have edited it so much it barely resembles the original library <small>(*slight* exageration, but still)</small>. And for the others, it was for similar reasons.
+This project comes with 2 python libraries built into it;
+ - [Pyldtk](https://github.com/LGgameLAB/pyLdtk) - I edited this library **SO MUCH** you wouldn't understand.
+ - [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master) - I needed to integrate it with my existing Element class
 
 # 📔 How to use
 ## 🛠️ Installation
