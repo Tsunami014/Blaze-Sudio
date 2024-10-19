@@ -1,9 +1,22 @@
 from enum import Enum
-from typing import Any
+from typing import Any, Callable
 import pygame
 from string import printable
 from BlazeSudio.graphics import options as GO
 from BlazeSudio.graphics.stacks import StackPart
+
+__all__ = [
+    'Element',
+    'ReturnState',
+    'ReturnGroup',
+    'Switch',
+    'InputBox',
+    'NumInputBox',
+    'Empty',
+    'Static',
+    'Text',
+    'Button'
+]
 
 class Element:
     NEXT_UID = [0]
@@ -12,7 +25,7 @@ class Element:
         self.G = G
         self.pos = pos
         self.size = size
-        self.stackP = StackPart(self, G.stacks, pos, size, G.size)
+        self.stackP = StackPart(self, G.stacks, pos, size, G.sizeOfScreen)
         self.uid = self.NEXT_UID[0]
         self.NEXT_UID[0] += 1
     
@@ -23,7 +36,7 @@ class Element:
     def change_pos(self, newPos):
         self.stackP.remove()
         self.pos = newPos
-        self.stackP = StackPart(self, self.G.stacks, newPos, self.size, self.G.size)
+        self.stackP = StackPart(self, self.G.stacks, newPos, self.size, self.G.sizeOfScreen)
     
     # Required subclass functions
     def update(self, mousePos, events):
@@ -57,10 +70,10 @@ class ReturnState(Enum):
     """Abort the Graphics screen"""
     
     CALL = 2
-    """Call the function on this"""
+    """Call the main graphic screen function on this"""
     
-    TBUTTON = 3
-    """Add this to the touchingButtons list"""
+    REDRAW = 3
+    """Redraw this element on top of all the others in its layer"""
     
     def __add__(self, otherState):
         if not isinstance(otherState, (ReturnState, ReturnGroup)):
@@ -109,11 +122,12 @@ class Switch(Element):
         pygame.draw.rect(self.G.WIN, (125, 125, 125), pygame.Rect(x+self.btnSze/2, y+self.btnSze/4, self.btnSze, self.btnSze/2), border_radius=self.btnSze)
         pygame.draw.circle(self.G.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (x+self.btnSze/2+self.anim, y+self.btnSze/2), self.btnSze/2)
         for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN and not self.G.pause:
-                if event.button == pygame.BUTTON_LEFT:
-                    if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
-                        self.state = not self.state
-                        return ReturnState.CALL
+            if event.type == pygame.MOUSEBUTTONDOWN and \
+               (not self.G.pause) and \
+               event.button == pygame.BUTTON_LEFT and \
+               pygame.Rect(x, y, *self.size).collidepoint(mousePos):
+                self.state = not self.state
+                return ReturnState.CALL
     
     def get(self):
         """Get the state of the switch (on or off)"""
@@ -127,8 +141,7 @@ class Switch(Element):
 # TODO: A text cursor
 class InputBox(Element):
     type = GO.TINPUTBOX
-    def __init__(self, G, pos, sze, resize=GO.RWIDTH, placeholder='Type here!', font=GO.FSMALL, maxim=None, starting_text=''):
-        super().__init__(G, pos, sze)
+    def __init__(self, G, pos, width, resize=GO.RWIDTH, placeholder='Type here!', font=GO.FSMALL, maxim=None, starting_text=''):
         self.colour = GO.CINACTIVE
         self.text = starting_text
         self.active = False
@@ -137,6 +150,10 @@ class InputBox(Element):
         self.font = font
         self.blanktxt = placeholder
         self.renderdash = True
+
+        self.size = [width+5, font.linesize+5]
+        self._render_txt()
+        super().__init__(G, pos, self.size)
     
     def get(self):
         """Get the text in the inputbox"""
@@ -158,36 +175,34 @@ class InputBox(Element):
             self.size[0] = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
             self.size[1] = self.txt_surface.get_height() + 10
-
-    def _handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # If the user clicked on the input_box rect.
-            if pygame.Rect(*self.stackP(), *self.size).collidepoint(event.pos):
-                # Toggle the active variable.
-                self.active = not self.active
-            else:
-                self.active = False
-            # Change the current colour of the input box.
-            self.colour = GO.CACTIVE if self.active else GO.CINACTIVE
-            self._render_txt()
-        elif event.type == pygame.KEYDOWN:
-            if self.active:
-                if event.key == pygame.K_BACKSPACE:
-                    self.text = self.text[:-1]
-                else:
-                    if event.unicode in printable:
-                        self.text += event.unicode
-                # Re-render the text.
-                self._render_txt()
-                if event.key == pygame.K_RETURN:
-                    return False
+    
+    def _handle_text(self, event):
+        if event.key == pygame.K_BACKSPACE:
+            self.text = self.text[:-1]
+        else:
+            if event.unicode in printable:
+                self.text += event.unicode
     
     def update(self, mousePos, events):
         if not self.G.pause:
             for event in events:
-                if self._handle_event(event) == False:
-                    return ReturnState.CALL
-        self._render_txt()
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
+                    # If the user clicked on the input_box rect.
+                    if pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos):
+                        # Toggle the active variable.
+                        self.active = not self.active
+                    else:
+                        self.active = False
+                    # Change the current colour of the input box.
+                    self.colour = GO.CACTIVE if self.active else GO.CINACTIVE
+                    self._render_txt()
+                elif event.type == pygame.KEYDOWN:
+                    if self.active:
+                        self._handle_text(event)
+                        # Re-render the text.
+                        self._render_txt()
+                        if event.key == pygame.K_RETURN:
+                            return ReturnState.CALL
         # Blit the text.
         x, y = self.stackP()
         self.G.WIN.blit(self.txt_surface, (x+5, y+5))
@@ -196,8 +211,8 @@ class InputBox(Element):
 
 class NumInputBox(InputBox): # TODO: Decimals
     type = GO.TNUMBOX
-    def __init__(self, G, pos, sze, resize=GO.RWIDTH, start=0, max=float('inf'), min=float('-inf'), font=GO.FSMALL, placeholder='Type number here!'):
-        super().__init__(G, pos, sze, resize, placeholder, font, None, starting_text=str(start))
+    def __init__(self, G, pos, width, resize=GO.RWIDTH, font=GO.FSMALL, start=0, max=float('inf'), min=float('-inf'), placeholder='Type number here!'):
+        super().__init__(G, pos, width, resize, placeholder, font, None, starting_text=str(start))
         self.realnum = start
         self.limits = (min, max)
         self.renderdash = False
@@ -210,80 +225,24 @@ class NumInputBox(InputBox): # TODO: Decimals
         """Set the number in the numbox"""
         self.realnum = newNum
 
-    def _handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # If the user clicked on the input_box rect.
-            if pygame.Rect(*self.stackP(), *self.size).collidepoint(event.pos):
-                # Toggle the active variable.
-                self.active = not self.active
-            else:
-                self.active = False
-            # Change the current colour of the input box.
-            self.colour = GO.CACTIVE if self.active else GO.CINACTIVE
-            self._render_txt()
-        if event.type == pygame.KEYDOWN:
-            if self.active:
-                if event.key == pygame.K_BACKSPACE:
-                    # if str(self.realnum)[:-1].endswith('.'):
-                    #     self.realnum = int(self.realnum)
-                    # else:
-                    try:
-                        self.realnum = int(str(self.realnum)[:-1])
-                    except:
-                        self.realnum = 0
-                elif event.key == pygame.K_MINUS:
-                    self.realnum = self.realnum * -1
-                else:
-                    if event.unicode in '0123456789':
-                        self.realnum = int(str(self.realnum) + event.unicode)
-                    # elif event.unicode == '.':
-                    #     self.realnum = float(self.realnum)
-                self.realnum = max(min(self.realnum, self.limits[0]), self.limits[1])
-                self.text = str(self.realnum)
-                if event.key == pygame.K_RETURN:
-                    return False
-
-class Scrollable(Element):
-    type = GO.TSCROLLABLE
-    def __init__(self, G, pos, goalrect, bounds=(0, float('inf')), outline=10, bar=True, outlinecol=(155, 155, 155)):
-        super().__init__(G, pos, goalrect)
-        self.bar = bar
-        self.scroll = 0
-        self.bounds = bounds
-        self.outline = (outline, outlinecol)
-    
-    def get(self):
-        """Get the scroll value"""
-        return self.scroll
-    
-    def set(self, scroll):
-        """Set the scroll value"""
-        self.scroll = scroll
-    
-    def update(self, mousePos, events):
-        for ev in events:
-            if ev.type == pygame.MOUSEWHEEL:
-                y = ev.y - 1
-                if 0 <= y <= 1:
-                    y = 2
-                self.scroll += y * 2
-                self.scroll = -min(max(self.bounds[0], -self.scroll), self.bounds[1])
-        s = pygame.Surface(self.size)
-        s.blit(self.sur, (0, self.scroll))
-        x, y = self.stackP()
-        self.G.WIN.blit(s, (x, y))
-        if self.outline[0] != 0:
-            pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
-        if self.bar:
+    def _handle_text(self, event):
+        if event.key == pygame.K_BACKSPACE:
+            # if str(self.realnum)[:-1].endswith('.'):
+            #     self.realnum = int(self.realnum)
+            # else:
             try:
-                try:
-                    w = self.outline[0]/2
-                except ZeroDivisionError:
-                    w = 0
-                p = (x+self.size[0]-w, y+((-self.scroll) / self.bounds[1])*(self.size[1]-40)+20)
-                pygame.draw.line(self.G.WIN, (200, 50, 50), (p[0], p[1]-20), (p[0], p[1]+20), 10)
+                self.realnum = int(str(self.realnum)[:-1])
             except:
-                pass
+                self.realnum = 0
+        elif event.key == pygame.K_MINUS:
+            self.realnum = self.realnum * -1
+        else:
+            if event.unicode in '0123456789':
+                self.realnum = int(str(self.realnum) + event.unicode)
+            # elif event.unicode == '.':
+            #     self.realnum = float(self.realnum)
+        self.realnum = max(min(self.realnum, self.limits[1]), self.limits[0])
+        self.text = str(self.realnum)
 
 class Empty(Element):
     type = GO.TEMPTY
@@ -318,8 +277,21 @@ class Static(Element):
 
 class Text(Element):
     type = GO.TSTATIC
-    def __init__(self, G, pos, func, txt):
-        self.func = func
+    def __init__(self, G, pos: GO.P___, txt: str, col: GO.C___ = GO.CBLACK, font: GO.F___ = GO.FFONT, **settings):
+        """
+        A Text element.
+
+        Args:
+            G (Graphic): The graphic this element is in.
+            pos (GO.P___): The position of this element.
+            txt (str): The text that will be displayed.
+            col (GO.C___, optional): The colour of the text. Defaults to GO.CBLACK.
+            font (GO.F___, optional): The font of the text. Defaults to GO.FFONT.
+            **settings: The settings for rendering the text. See `GO.F___.render` for more information.
+        """
+        self.font = font
+        self.col = col
+        self.settings = settings
         self.set(txt)
         super().__init__(G, pos, self.size)
     
@@ -327,10 +299,11 @@ class Text(Element):
         """Get the text of this text element"""
         return self.txt
     
-    def set(self, newTxt):
-        """Sets the text of this text element"""
+    def set(self, newTxt, **settings):
+        """Sets the text of this text element, and optionally update the render settings."""
+        self.settings.update(settings)
         self.txt = newTxt
-        self.sur = self.func(self.txt)
+        self.sur = self.font.render(self.txt, self.col, **settings)
         self.size = self.sur.get_size()
     
     def update(self, mpos, events):
@@ -339,23 +312,52 @@ class Text(Element):
 
 class Button(Element):
     type = GO.TBUTTON
-    def __init__(self, G, pos, col, spacing, fontfunc, txt, on_hover_enlarge):
-        self.fontFunc = fontfunc
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 BGcol: GO.C___, 
+                 txt: str, 
+                 TXTcol: GO.C___ = GO.CBLACK, 
+                 font: GO.F___ = GO.FFONT, 
+                 spacing=2, 
+                 on_hover_enlarge=5, 
+                 func: Callable = lambda: None, 
+                 **settings
+                ):
+        """
+        A Button element.
+
+        Args:
+            G (Graphic): The graphic this element is in.
+            pos (GO.P___): The position of this element.
+            BGcol (GO.C___): The background colour of the button.
+            txt (str): The text on the button.
+            TXTcol (GO.C___, optional): The colour of the text. Defaults to GO.CBLACK.
+            font (GO.F___, optional): The font of the text. Defaults to GO.FFONT.
+            spacing (int, optional): The spacing between the outer edge of the button and the inner text. Defaults to 2.
+            on_hover_enlarge (int, optional): The amount to enlarge the outer edge of the button when hovering. Defaults to 5.
+            func (Callable, optional): The function to call when the button is pressed. Defaults to a do nothing func.
+        """
+        self.font = font
         self.spacing = spacing
         self.OHE = on_hover_enlarge
-        self.set(txt) # Sets self.txt and generates self.sur
+        self.settings = settings
+        self.cols = {"BG": BGcol, "TXT": TXTcol}
+        self.func = func
+
+        self.set(txt) # Sets self.txt and generates self.TxtSur
         super().__init__(G, pos, self.size)
-        self.col = col
     
     def get(self):
         """Get the text on the button"""
-        return self.txt
+        return self.textElm.txt
     
-    def set(self, newTxt):
-        """Set the text on the button"""
+    def set(self, newTxt, **settings):
+        """Set the text on the button, and optionally update some text settings settings."""
+        self.settings.update(settings)
         self.txt = newTxt
-        self.sur = self.fontFunc(self.txt)
-        s = self.sur.get_size()
+        self.TxtSur = self.font.render(self.txt, self.cols['TXT'], **self.settings)
+        s = self.TxtSur.get_size()
         self.size = (s[0] + self.OHE*2 + self.spacing*2, s[1] + self.OHE*2 + self.spacing*2)
     
     def update(self, mousePos, events, force_draw=False):
@@ -372,8 +374,9 @@ class Button(Element):
                     r.width += self.OHE*2
                     r.height += self.OHE*2
                 if not force_draw:
-                    if any([i.type == pygame.MOUSEBUTTONDOWN for i in events]):
-                        return ReturnState.CALL + ReturnState.TBUTTON
-                    return ReturnState.TBUTTON
-        pygame.draw.rect(self.G.WIN, self.col, r, border_radius=8)
-        self.G.WIN.blit(self.sur, (r.x + (r.width-self.sur.get_width())/2, r.y + (r.height-self.sur.get_height())/2))
+                    if any([i.type == pygame.MOUSEBUTTONDOWN and i.button == pygame.BUTTON_LEFT for i in events]):
+                        self.func()
+                        return ReturnState.REDRAW + ReturnState.CALL
+                    return ReturnState.REDRAW
+        pygame.draw.rect(self.G.WIN, self.cols['BG'], r, border_radius=8)
+        self.G.WIN.blit(self.TxtSur, (r.x + (r.width-self.TxtSur.get_width())/2, r.y + (r.height-self.TxtSur.get_height())/2))

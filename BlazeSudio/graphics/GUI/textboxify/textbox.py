@@ -13,49 +13,52 @@ borders, backgrounds, portraits, indication symbols and animations.
 
 
 import string
+from typing import Iterable
 
 import pygame
 
+from BlazeSudio.graphics.GUI.textboxify import borders
+
 from . import settings
-from .util import CustomSprite, fix_corners
+from .util import CustomSprite
 
 from BlazeSudio.graphics.GUI.elements import Element, ReturnState
-from BlazeSudio.graphics.options import TTEXTBOX
+import BlazeSudio.graphics.options as GO
 
 class TextBox(Element):
-    type = TTEXTBOX
+    type = GO.TTEXTBOX
     """Class for creating simple text boxes.
 
     Args:
-        G (BlazeGudio.Graphic.Graphic): The graphic screen to be on (required).
-        pos (BlazeSudio.Graphic.P___): The position of the textbox on the screen (required).
-        font (BlazeSudio.Graphic.F___): The font to render the text with (required).
-        dist (int): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
-        padding (tuple): Space between text and edge
-        speeds (tuple): The speeds of the text, in frames: (regular char speed, punctuation char speed).
-        lines (int): Number of printed lines.
-        text (str): Text to print.
-        font_colour (tuple|BlazeSudio.Graphic.C___): Text colour, RGB value.
-        text_wid (tuple): The maximum width of the text.
-        bg_colour (tuple|BlazeSudio.Graphic.C___): Background colour, RGB value.
-        transparent (bool): if the box should be transparent or have a background colour.
+        G (Graphic): The graphic screen to be on (required).
+        pos (GO.P___): The position of the textbox on the screen (required).
+        font (GO.F___, optional): The font to render the text with.
+        dist (int, optional): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
+        padding (Iterable, optional): Space between text and edge
+        speeds (Iterable, optional): The speeds of the text, in frames: (regular char speed, punctuation char speed).
+        lines (int, optional): Number of printed lines.
+        text (str, optional): Text to print.
+        font_colour (GO.C___, optional): Text colour, RGB value.
+        text_wid (Iterable, optional): The maximum width of the text.
+        bg_colour (GO.C___, optional): Background colour, RGB value.
+        transparent (bool, optional): if the box should be transparent or have a background colour.
 
     """
 
     def __init__(
         self,
         G,
-        pos,
-        font,
-        dist=20,
-        padding=(10, 10),
-        speeds=(2, 5),
-        lines=2,
-        text=None,
-        font_colour=(255, 255, 255),
-        text_wid=300,
-        bg_colour=(0, 0, 0),
-        transparent=False,
+        pos: GO.P___,
+        font: GO.F___ = GO.FFONT,
+        dist: int = 20,
+        padding: Iterable = (10, 10),
+        speeds: Iterable = (2, 5),
+        lines: int = 2,
+        text: str = None,
+        font_colour: GO.C___ = GO.CPURPLE,
+        text_wid: Iterable = 300,
+        bg_colour: GO.C___ = GO.CMAUVE,
+        transparent: bool = False,
     ):
 
         self.full = False
@@ -169,39 +172,39 @@ class TextBoxAdv(TextBox):
     """Class for creating customizable dialog boxes.
 
     Args:
-        G (BlazeGudio.Graphic.Graphic): The graphic screen to be on (required).
-        pos (BlazeSudio.Graphic.P___): The position of the textbox on the screen (required).
-        font (BlazeSudio.Graphic.F___): The font to render the text with (required).
-        dist (int): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
-        padding (tuple): The spacing between the border of the box and the text itself.
-        portrait_padding (tuple): The padding between the border and the portrait and the text (border to portrait x, border to portrait y, portrait to text x)
-        speeds (tuple): The speeds of the text, in frames: (regular char speed, punctuation char speed).
-        lines (int): Number of printed lines.
-        text (str): Text to print.
-        font_colour (tuple|BlazeSudio.Graphic.C___): Text colour, RGB value.
-        text_wid (int): Max width of the printed text.
-        bg_colour (tuple|BlazeSudio.Graphic.C___): Background colour, RGB value.
-        border (dict): Border sprite settings.
-        transparent (bool): if the box should be transparent or have a background colour.
+        G (Graphic): The graphic screen to be on (required).
+        pos (GO.P___): The position of the textbox on the screen (required).
+        font (GO.F___, optional): The font to render the text with.
+        dist (int, optional): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
+        padding (Iterable, optional): The spacing between the border of the box and the text itself.
+        portrait_padding (Iterable, optional): The padding between the border and the portrait and the text (border to portrait x, border to portrait y, portrait to text x)
+        speeds (Iterable, optional): The speeds of the text, in frames: (regular char speed, punctuation char speed).
+        lines (int, optional): Number of printed lines.
+        text (str, optional): Text to print.
+        font_colour (GO.C___, optional): Text colour, RGB value.
+        text_wid (int, optional): Max width of the printed text.
+        bg_colour (GO.C___, optional): Background colour, RGB value.
+        border (graphics.GUI.textboxify.borders._____ | dict, optional): Border sprite settings.
+        transparent (bool, optional): if the box should be transparent or have a background colour.
 
     """
 
     def __init__(
         self,
         G,
-        pos,
-        font,
-        dist=20,
-        padding=(10, 10),
-        portrait_padding=(10, 10, 10),
-        speeds=(2, 5),
-        lines=2,
-        text=None,
-        font_colour=(255, 255, 255),
-        text_wid=300,
-        bg_colour=(0, 0, 0),
-        border=None,
-        transparent=False,
+        pos: GO.P___,
+        font: GO.F___ = GO.FFONT,
+        dist: int = 20,
+        padding: Iterable = (10, 10),
+        portrait_padding: Iterable = (10, 10, 10),
+        speeds: Iterable = (2, 5),
+        lines: int = 2,
+        text: str = None,
+        font_colour: GO.C___ = GO.CPURPLE,
+        text_wid: int = 300,
+        bg_colour: GO.C___ = GO.CMAUVE,
+        border: dict = borders.LIGHT,
+        transparent: bool = False,
     ):
         self.portrait_padding = portrait_padding
 
