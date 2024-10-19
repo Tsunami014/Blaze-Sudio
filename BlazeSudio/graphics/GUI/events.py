@@ -1,3 +1,4 @@
+from typing import Iterable, Literal
 import pygame
 from math import sqrt
 from BlazeSudio.graphics.GUI.elements import Element
@@ -5,10 +6,37 @@ import BlazeSudio.graphics.options as GO # TODO: Replace more things in here wit
 
 __all__ = ['dropdown', 'Toast']
 
-def dropdown(G, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 255, 255), selectedcol=(0, 0, 255), mpos=None):
+def dropdown(G, 
+             elms: list[str], 
+             spacing: int = 5, 
+             font: GO.F___ = GO.FFONT, 
+             bgcolour: GO.C___ = GO.CBLACK, 
+             txtcolour: GO.C___ = GO.CWHITE, 
+             selectedcol: GO.C___ = GO.CBLUE, 
+             mpos: Iterable[int] = None
+            ) -> None|Literal[False]|int:
+    """
+    Make a dropdown! A better way to do this is through `Graphic.Dropdown` which is preferrable as it also handles exiting.
+
+    This will stop anything from occuring until the dropdown has finished.
+
+    Args:
+        G (Graphic): The graphic screen to attach to.
+        elms (list[str]): The elements present in the dropdown to choose from.
+        spacing (int, optional): The spacing between the text and the outside of their enclosing rects. Defaults to 5.
+        font (GO.F___, optional): The font to render the text with. Defaults to GO.FFONT.
+        bgcolour (GO.C___, optional): The colour of the background of the dropdown. Defaults to GO.CBLACK.
+        txtcolour (GO.C___, optional): The colour of the text inside the dropdown. Defaults to GO.CWHITE.
+        selectedcol (GO.C___, optional): The colour of the selection highlight. Defaults to GO.CBLUE.
+        mpos (Iterable[int], optional): The place to spawn the dropdown on. Defaults to the current mouse position.
+
+    Returns:
+        None|False|int: 
+         - None if clicked out
+         - False if quit program
+         - int of the idx of the selected element in the input list if selected.
+    """
     win = G.WIN
-    if font is None:
-        font = pygame.font.SysFont(None, 30)
     elements = [font.render(i, txtcolour) for i in elms]
     mx = max([i.get_width() + spacing*2 for i in elements])
     my = sum([i.get_height() + spacing*2 for i in elements])
@@ -45,7 +73,31 @@ def dropdown(G, elms, spacing=5, font=None, bgcolour=(0, 0, 0), txtcolour=(255, 
 
 class Toast(Element):
     type = GO.TTOAST
-    def __init__(self, G, text, BGcol, txtcol=GO.CBLACK, font=GO.FFONT, pos=GO.PCBOTTOM, spacing=5, dist=20, timeout=120):
+    def __init__(self, 
+                 G, 
+                 text: str, 
+                 BGcol: GO.C___, 
+                 txtcol: GO.C___ = GO.CBLACK, 
+                 font: GO.F___ = GO.FFONT, 
+                 pos: GO.P___ = GO.PCBOTTOM, 
+                 spacing: int = 5, 
+                 dist: int = 20, 
+                 timeout: int = 120
+                ):
+        """
+        A Toast; or popup message.
+
+        Args:
+            G (Graphic): The graphic screen to attach to.
+            text (str): The text in the toast.
+            BGcol (GO.C___): The colour of the background of the toast.
+            txtcol (GO.C___, optional): The colour of the text inside the toast. Defaults to GO.CBLACK.
+            font (GO.F___, optional): The font of the toast's text. Defaults to GO.FFONT.
+            pos (GO.P___, optional): The position where the toast is in the screen. Defaults to GO.PCBOTTOM.
+            spacing (int, optional): The spacing between the text and the outer edge of the toast. Defaults to 5.
+            dist (int, optional): The distance inwards to travel from `pos`. Defaults to 20.
+            timeout (int, optional): The amount of time the toast will remain on the screen in frames. Defaults to 120.
+        """
         txt = font.render(text, txtcol)
         sur = pygame.Surface((txt.get_size()[0]+spacing*2, txt.get_size()[1]+spacing*2), pygame.SRCALPHA)
         sur.fill((0, 0, 0, 0))

@@ -119,6 +119,14 @@ class Scrollable(GraphicBase, GUI.Element):
 
 class TerminalBar(GUI.Element):
     def __init__(self, G, spacing=5):
+        """
+        Adds a terminal bar to the bottom of your screen! You can use this for debugging and can run commands using it also for debugging!
+        Or just have it as a feature in your game!
+
+        Args:
+            G (Graphic): The graphic screen to attach to
+            spacing (int, optional): The spacing between the text and the top and bottom of the bar. Defaults to 5.
+        """
         self.G = G
         self.spacing = spacing
         r = GO.FCODEFONT.render('> ', GO.CWHITE)

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 import pygame
 from string import printable
 from BlazeSudio.graphics import options as GO
@@ -21,9 +21,17 @@ __all__ = [
 class Element:
     NEXT_UID = [0]
     type = None
-    def __init__(self, G, pos, size):
+    def __init__(self, G, pos: GO.P___, size: Iterable[int|float]):
+        """
+        Base element class, do not directly use.
+
+        Args:
+            G (Graphic): The graphic screen to put this element on.
+            pos (GO.P___): The position of this element on the screen. 
+            size (Iterable[number, number]): The size of this element.
+        """
         self.G = G
-        self.pos = pos
+        self.pos: GO.P___ = pos
         self.size = size
         self.stackP = StackPart(self, G.stacks, pos, size, G.sizeOfScreen)
         self.uid = self.NEXT_UID[0]
@@ -104,7 +112,17 @@ class ReturnGroup:
 
 class Switch(Element):
     type = GO.TSWITCH
-    def __init__(self, G, pos, size=20, speed=1, default=False):
+    def __init__(self, G, pos: GO.P___, size=20, speed=1, default=False):
+        """
+        A switch that can be either on or off.
+
+        Args:
+            G (Graphic): The graphic screen to attach to.
+            pos (GO.P___): The position of this element in the screen.
+            size (int, optional): The size of this element. Defaults to 20.
+            speed (int, optional): The speed of the toggling of the switch. Defaults to 1.
+            default (bool, optional): Whether the switch is either on or off on creation. Defaults to False.
+        """
         self.btnSze = size
         super().__init__(G, pos, (size*2, size))
         self.anim = 0
@@ -141,7 +159,30 @@ class Switch(Element):
 # TODO: A text cursor
 class InputBox(Element):
     type = GO.TINPUTBOX
-    def __init__(self, G, pos, width, resize=GO.RWIDTH, placeholder='Type here!', font=GO.FSMALL, maxim=None, starting_text=''):
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 width: int, 
+                 resize: GO.R___ = GO.RWIDTH, 
+                 placeholder: str = 'Type here!', 
+                 font: GO.F___ = GO.FSMALL, 
+                 maxim: int = None, 
+                 starting_text: str = ''
+                ):
+        """
+        A box for inputting text.
+
+        Args:
+            G (Graphic): The graphic screen to attach to.
+            pos (GO.P___): The position of this element in the screen.
+            width (int): The width of the box. This will get overridden if using GO.RWIDTH.
+            resize (GO.R___, optional): How to overflow text if the box is too large. Defaults to GO.RWIDTH.
+            placeholder (str, optional): The placeholder text visible when there is no text in the box. Defaults to 'Type here!'.
+            font (GO.F___, optional): The font of the text in the box. Defaults to GO.FSMALL.
+            maxim (int, optional): The maximum number of characters that can be inputted. Defaults to None (infinite).
+            starting_text (str, optional): The text in the box on creation. Defaults to ''.
+        """
+        
         self.colour = GO.CINACTIVE
         self.text = starting_text
         self.active = False
@@ -211,7 +252,32 @@ class InputBox(Element):
 
 class NumInputBox(InputBox): # TODO: Decimals
     type = GO.TNUMBOX
-    def __init__(self, G, pos, width, resize=GO.RWIDTH, font=GO.FSMALL, start=0, max=float('inf'), min=float('-inf'), placeholder='Type number here!'):
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 width: int, 
+                 resize: GO.R___ = GO.RWIDTH, 
+                 font: GO.F___ = GO.FSMALL, 
+                 start: int = 0, 
+                 max: int = float('inf'), 
+                 min: int = float('-inf'), 
+                 placeholder: str = 'Type number here!'
+                ):
+        """
+        A box for inputting numbers.
+
+        Args:
+            G (Graphic): The graphic screen to attach to.
+            pos (GO.P___): The position of this element in the screen.
+            width (int): The width of the box. This will get overridden if using GO.RWIDTH.
+            resize (GO.R___, optional): How to overflow text if the box is too large. Defaults to GO.RWIDTH.
+            font (GO.F___, optional): The font of the text in the box. Defaults to GO.FSMALL.
+            start (int, optional): The number present in the box on creation. Defaults to 0.
+            max (int, optional): The maximum value that can be submitted in this box. Defaults to infinity.
+            min (int, optional): The minimum value that can be submitted in this box. Defaults to -infinity.
+            placeholder (str, optional): The placeholder text visible when there is no text in the box. \
+                Defaults to 'Type number here!'. I don't think this one will be present very much if at all.
+        """
         super().__init__(G, pos, width, resize, placeholder, font, None, starting_text=str(start))
         self.realnum = start
         self.limits = (min, max)
@@ -246,7 +312,15 @@ class NumInputBox(InputBox): # TODO: Decimals
 
 class Empty(Element):
     type = GO.TEMPTY
-    def __init__(self, G, pos, size):
+    def __init__(self, G, pos: GO.P___, size):
+        """
+        Some empty space.
+
+        Args:
+            G (Graphic): The graphic screen to attach to.
+            pos (GO.P___): The position of this element in the screen.
+            size (Iterable[number, number]): The size of the empty space.
+        """
         super().__init__(G, pos, size)
     
     def get(self):
@@ -259,7 +333,15 @@ class Empty(Element):
 
 class Static(Element):
     type = GO.TSTATIC
-    def __init__(self, G, pos, sur):
+    def __init__(self, G, pos: GO.P___, sur: pygame.Surface):
+        """
+        A static surface.
+
+        Args:
+            G (Graphic): The graphic screen to attach to.
+            pos (GO.P___): The position of this element in the screen.
+            sur (pygame.Surface): The surface.
+        """
         self.sur = sur
         super().__init__(G, pos, self.sur.get_size())
     
@@ -277,7 +359,13 @@ class Static(Element):
 
 class Text(Element):
     type = GO.TSTATIC
-    def __init__(self, G, pos: GO.P___, txt: str, col: GO.C___ = GO.CBLACK, font: GO.F___ = GO.FFONT, **settings):
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 txt: str, 
+                 col: GO.C___ = GO.CBLACK, 
+                 font: GO.F___ = GO.FFONT, 
+                 **settings):
         """
         A Text element.
 
