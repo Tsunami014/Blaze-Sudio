@@ -2,7 +2,7 @@ import pygame
 
 from BlazeSudio.elementGen.image import Image
 import BlazeSudio.graphics.options as GO
-from BlazeSudio.graphics import Graphic
+from BlazeSudio.graphics import GUI, Graphic
 import BlazeSudio.elementGen.node_parser as np
 import BlazeSudio.elementGen.node_file as nf
 
@@ -53,17 +53,24 @@ def CAT(txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled
         sur.blit(t, (0, tocenter))
     return sur, cir
 
-def NodeEditor(path=None, G=None):
+def NodeEditor(path=None):
     """
     Go edit some nodes!!!
 
     Args:
         path (str, optional): The path to the currently editing Node file. If it does not exist, it will be created; \
 and if it is None then it will not save. Defaults to None.
-        G (graphics.Graphic, optional): The Graphic screen, if not provided will make one. Defaults to None.
     """
-    if G is None:
-        G = Graphic()
+    G = Graphic()
+    G.layers[0].add_many([
+        'scrollsables',
+        'mainUI',
+        'Toasts',
+
+        'NodeSettings',
+        'EditorSettings',
+        'SettingsBottom'
+    ])
     def dropdown():
         p = pygame.mouse.get_pos()
         while True:
@@ -86,7 +93,7 @@ and if it is None then it will not save. Defaults to None.
             if G.Container.connections[c] == conn:
                 G.Container.connections.pop(c)
     
-    @G.Graphic
+    @G.Screen
     def editor(event, path, element=None, aborted=False):
         if event == GO.EFIRST:
             G.Container.saved = False
@@ -100,13 +107,14 @@ and if it is None then it will not save. Defaults to None.
             G.Container.nodes = G.Container.file.nodes
             G.Container.connections = G.Container.file.conns
             G.Container.name = G.Container.file.name
-            G.Container.highlightedIO = {"OUTPUTS": []}
         if event == GO.ELOADUI:
             G.Clear()
-            G.add_text(G.Container.name, GO.CGREEN, GO.PCTOP, GO.FTITLE)
-            G.add_button('Settings', GO.CGREEN, GO.PRTOP)
+            G['mainUI'].extend([
+                GUI.Text(G, GO.PCTOP, G.Container.name, GO.CGREEN, GO.FTITLE),
+                GUI.Button(G, GO.PRTOP, GO.CGREEN, 'Settings')
+            ])
         elif event == GO.EELEMENTCLICK: # This is going to be the only button that was created
-            @G.Graphic
+            @G.Screen
             def settings(event, element=None, aborted=False):
                 if event == GO.EFIRST:
                     G.Container.doApply = False
@@ -115,28 +123,30 @@ and if it is None then it will not save. Defaults to None.
                     RTOP = GO.PNEW((0, 1), GO.PRTOP.func)
                     LTOP = GO.PNEW((0, 1), GO.PLTOP.func)
                     G.Clear()
-                    G.add_text('SETTINGS FOR NODE "%s":'%G.Container.name, GO.CGREEN, LTOP, GO.FFONT)
-                    G.Container.inpname = G.add_input(LTOP, width=G.size[0]/3, resize=GO.RNONE, placeholder=G.Container.name)
-                    G.add_text('SETTINGS FOR NODE EDITOR:', GO.CBLUE, RTOP, GO.FFONT)
-                    G.add_empty_space(CBOT, -20, 0)
-                    G.Container.go = G.add_button('Apply!', GO.CGREEN, CBOT)
-                    G.Container.exit = G.add_button('Cancel', GO.CGREY, CBOT)
+                    G['NodeSettings'].extend([
+                        GUI.Text(G, LTOP, 'SETTINGS FOR NODE "%s":'%G.Container.name, GO.CGREEN),
+                        GUI.InputBox(G, LTOP, G.size[0]/3, GO.RNONE, starting_text=G.Container.name)
+                    ])
+                    G['EditorSettings'].extend([
+                        GUI.Text(G, RTOP, 'SETTINGS FOR NODE EDITOR:', GO.CBLUE)
+                    ])
+                    G['SettingsBottom'].append(GUI.Empty(G, CBOT, (-20, 0)))
+                    G.Container.ApplyBtn = GUI.Button(G, CBOT, GO.CGREEN, 'Apply!')
+                    G['SettingsBottom'].extend([
+                        G.Container.ApplyBtn,
+                        GUI.Button(G, CBOT, GO.CGREY, 'Cancel'),
+                    ])
                 elif event == GO.EELEMENTCLICK:
-                    if element == G.Container.go:
+                    if element == G.Container.ApplyBtn:
                         G.Container.doApply = True
-                        G.Abort()
-                    elif element == G.Container.exit:
-                        G.Abort()
+                    G.Abort()
                 elif event == GO.ELAST:
                     if G.Container.doApply:
-                        returns = []
-                        res = G.Container.inpname.get()
-                        returns.append(res)
-                        return returns
+                        return [e.get() for e in G['NodeSettings'][1:]], \
+                               [e.get() for e in G['EditorSettings'][1:]]
             rets = settings()
             if rets is not None:
-                if rets[0]:
-                    G.Container.name = rets[0]
+                G.Container.name = rets[0][0]
             G.Reload()
         elif event == GO.ETICK:
             lf, l = next(G.Container.md)
@@ -283,62 +293,66 @@ and if it is None then it will not save. Defaults to None.
                 w, h = G.size[0] / 8 * 3, G.size[1] / 8 * 3
                 node = G.Container.highlighting
                 replaceOuts = False
-                if G.Stuff['scrollsables'] == []:
-                    G.Container.highlightedIO = {"OUTPUTS": []}
-                    nopos = GO.PSTATIC(0, 0)
-                    scr, scrObj1 = G.add_Scrollable(nopos, (0, 0), (0, 0))
-                    h = scr.add_text(node.name, GO.CBLACK, nopos, GO.FTITLE).size[1]
-                    for isinput, li in ((True, node.inputs), (False, node.outputs)): # TODO: Put inputs on the left and outputs on the right
-                        if li:
-                            if isinput:
-                                h += scr.add_text('INPUTS:', GO.CBLACK, nopos, GO.FTITLE).size[1]
-                            else:
-                                h += scr.add_text('OUTPUTS:', GO.CBLACK, nopos, GO.FTITLE).size[1]
-                        for n in li:
-                            if isinput:
-                                h += scr.add_text(n.name+':', GO.CBLACK, nopos).size[1]
-                                e = None
-                                if n.strtype == 'number':
-                                    e = scr.add_num_input(nopos, font=GO.FFONT, width=10, start=n.value)
-                                elif n.strtype == 'str':
-                                    e = scr.add_input(nopos, font=GO.FFONT, width=GO.FFONT.winSze('c'*10)[0], start=n.value)
-                                elif n.strtype == 'bool':
-                                    e = scr.add_switch(nopos, default=n.value)
-                                elif n.strtype == 'colour':
-                                    e = scr.add_colour_pick(nopos)
-                                    e.set(*n.value)
-                                elif n.strtype == 'any':
-                                    e = scr.add_input(nopos, font=GO.FFONT, width=GO.FFONT.winSze('c'*10)[0], start=str(n.value or ''))
-                                if e is not None:
-                                    h += e.size[1]
-                                    G.Container.highlightedIO[n] = e
-                            else:
-                                replaceOuts = True
-                                if np.Mods.NoSidebar not in n.mods and n.strtype == 'image':
-                                    e = scr.add_surface(n.value.to_pygame(), nopos)
-                                else:
-                                    e = scr.add_text('HI :)', GO.CBLACK, nopos)
-                                G.Container.highlightedIO["OUTPUTS"].append(e)
-                                h += e.size[1]
-                    scr2, scrObj2 = G.add_Scrollable(GO.PSTATIC(SideRec.x, SideRec.y), (SideRec.w-8, SideRec.h), (SideRec.w-8, max(SideRec.h, h)), 2, True)
-                    scr2.Stuff = scr.Stuff.copy()
-                    scr2.stacks = scr.stacks.copy()
-                    scrObj1.remove()
+                if G['scrollsables'] == []:
+                    scr = GUI.Scrollable(G, GO.PSTATIC(SideRec.x, SideRec.y), (SideRec.w-8, SideRec.h), (0, 0))
+                    G['scrollsables'].append(scr)
+                    scr.layers[0].add_many([
+                        'Inputs',
+                        'Outputs',
+                        'Titles'
+                    ])
                     LTOP = GO.PNEW([0, 1], GO.PLTOP.func, 0, 0)
-                    for sp in scr2.stacks.alls[nopos].copy():
-                        e = sp.parent
-                        e.G = scr2
-                        e.change_pos(LTOP)
+                    def parseIn(n):
+                        e1 = GUI.Text(scr, LTOP, n.name+':')
+                        e = None
+                        if n.strtype == 'number':
+                            e = GUI.NumInputBox(scr, LTOP, 10, font=GO.FFONT, start=n.value)
+                        elif n.strtype == 'str':
+                            e = GUI.InputBox(scr, LTOP, GO.FFONT.winSze('c'*10)[0], font=GO.FFONT, start=n.value)
+                        elif n.strtype == 'bool':
+                            e = GUI.Switch(scr, LTOP, default=n.value)
+                        elif n.strtype == 'colour':
+                            e = GUI.ColourPickerBTN(scr, LTOP)
+                            e.set(*n.value)
+                        elif n.strtype == 'any':
+                            e = GUI.InputBox(scr, LTOP, GO.FFONT.winSze('c'*10)[0], font=GO.FFONT, starting_text=str(n.value or ''))
+                        if e is None:
+                            return ()
+                        return (e1, e)
+                    def parseOut(n):
+                        if n.strtype == 'image':
+                            return GUI.Static(scr, LTOP, n.value.to_pygame())
+                        else:
+                            return GUI.Text(scr, LTOP, '')
+
+                    # TODO: Put inputs on the left and outputs on the right
+                    scr['Titles'].append(GUI.Empty(scr, LTOP, (10, 10)))
+                    scr['Titles'].append(GUI.Text(scr, LTOP, node.name, font=GO.FTITLE))
+                    ins = [i for i in node.inputs if np.Mods.NoSidebar not in i.mods]
+                    if ins != []:
+                        scr['Titles'].append(GUI.Text(scr, LTOP, 'INPUTS:', font=GO.FTITLE))
+                        scr['Inputs'].extend([
+                            i for n in ins for i in parseIn(n)
+                        ])
+                    os = [i for i in node.outputs if np.Mods.NoSidebar not in i.mods]
+                    if os != []:
+                        scr['Titles'].append(GUI.Text(scr, LTOP, 'OUTPUTS:', font=GO.FTITLE))
+                        replaceOuts = True
+                        scr['Outputs'].extend([
+                            parseOut(n) for n in os
+                        ])
+                    scr.sizeOfScreen = (SideRec.w-8, max(SideRec.h, sum(i.size[1] for i in scr.getAllElms())))
                 else:
-                    for io, elm in G.Container.highlightedIO.items():
-                        if io != "OUTPUTS" and io.value != elm.get():
+                    scr = G['scrollsables'][0]
+                    for elm, io in zip(scr['Inputs'][1::2], node.inputs):
+                        if io.value != elm.get():
                             io.value = elm.get()
                             replaceOuts = True
                 if replaceOuts:
                     outs = node.run(G.Container.connections)
-                    for i in range(len(G.Container.highlightedIO["OUTPUTS"])):
+                    for i in range(len(scr["Outputs"])):
                         oio = node.outputs[i]
-                        otxt = G.Container.highlightedIO["OUTPUTS"][i]
+                        otxt = scr["Outputs"][i]
                         if np.Mods.NoSidebar in oio.mods:
                             otxt.set('')
                         else:
@@ -350,16 +364,15 @@ and if it is None then it will not save. Defaults to None.
                                     val = int(val)
                                 otxt.set(f'{oio.name}: {val}')
                         
-            elif G.Stuff['scrollsables'] != []:
-                G.Container.highlightedIO = {"OUTPUTS": []}
+            elif G['scrollsables'] != []:
                 G.Reload()
-            return True
         elif event == GO.EEVENT: # When something like a button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.KEYDOWN:
                 if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
                     if path is None:
-                        G.Toast('Cannot save file as file location wasn\'t specified!!')
+                        G['Toasts'].append(GUI.Toast(G, 'Cannot save file as file location wasn\'t specified!!', GO.CRED))
                     else:
+                        G['Toasts'].append(GUI.Toast(G, 'Saving...', GO.CNEW('orange')))
                         G.Container.file.nodes = G.Container.nodes
                         G.Container.file.conns = G.Container.connections
                         G.Container.file.name = G.Container.name
@@ -367,8 +380,7 @@ and if it is None then it will not save. Defaults to None.
                             path = path + '.elm'
                         G.Container.file.save(path)
                         G.Container.saved = True
-                        G.toasts = []
-                        G.Toast('Saved!')
+                        G['Toasts'].append(GUI.Toast(G, 'Saved!', GO.CGREEN))
                 elif element.key == pygame.K_DELETE:
                     if G.Container.highlighting is not None:
                         for c in G.Container.connections.copy():

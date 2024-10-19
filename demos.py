@@ -1,15 +1,3 @@
-from os import environ
-environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" # Hide the annoying pygame thing
-from threading import Thread
-
-# TODO: update everything that needs to be updated
-
-# I think that the things need to be by themselves
-# What I mean by that is, let's take BlazeSudio.graphics as an example;
-# With things like the dropdown and the input boxes, they are
-# Implemented in the main BlazeSudio.graphics class, but the demos should test
-# Their individual code, not how they work in a class
-
 # Main STUFF
 
 def MNodeEditorDemo():
@@ -164,7 +152,7 @@ def MCollisionsDemo(debug=False):
     import os
     if debug:
         os.environ['debug'] = 'True'
-    from demoFiles import collisionsDemo
+    from demoFiles import collisionsDemo  # noqa: F401
 
 # GENERATION STUFF
 
@@ -186,7 +174,8 @@ def TTerrainGenDemo():
         map_seed = int(inp)
     useall = input('Type anything here to show all steps in terrain generation, or leave this blank and press enter to just show the finished product. > ') != ''
     m = MapGen()
-    for txt in m.generate(size, map_seed, n, useall=useall, showAtEnd=True): print(txt)
+    for txt in m.generate(size, map_seed, n, useall=useall, showAtEnd=True):
+        print(txt)
     outs, trees = m.outs
     print(outs[0])
     pass

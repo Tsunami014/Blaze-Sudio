@@ -82,6 +82,7 @@ class Toast(Element):
                  pos: GO.P___ = GO.PCBOTTOM, 
                  spacing: int = 5, 
                  dist: int = 20, 
+                 speed: int = 2,
                  timeout: int = 120
                 ):
         """
@@ -96,6 +97,7 @@ class Toast(Element):
             pos (GO.P___, optional): The position where the toast is in the screen. Defaults to GO.PCBOTTOM.
             spacing (int, optional): The spacing between the text and the outer edge of the toast. Defaults to 5.
             dist (int, optional): The distance inwards to travel from `pos`. Defaults to 20.
+            speed (int, optional): How many pixels the toast will move in a frame. Defaults to 2.
             timeout (int, optional): The amount of time the toast will remain on the screen in frames. Defaults to 120.
         """
         txt = font.render(text, txtcol)
@@ -115,6 +117,7 @@ class Toast(Element):
         self.initdist = 255 / self.dist()
         self.timeout = timeout
         self.time = 0
+        self.speed = speed
         self.living = True
     
     def get(self):
@@ -138,16 +141,16 @@ class Toast(Element):
                 ns.set_alpha(self.initdist*self.dist())
             if self.goto[0] != self.curPos[0]:
                 if round(self.curPos[0]) > round(self.goto[0]):
-                    self.curPos[0] -= 1
+                    self.curPos[0] -= self.speed
                 elif round(self.curPos[0]) < round(self.goto[0]):
-                    self.curPos[0] += 1
+                    self.curPos[0] += self.speed
                 else:
                     self.curPos[0] = self.goto[0]
             if self.goto[1] != self.curPos[1]:
                 if round(self.curPos[1]) > round(self.goto[1]):
-                    self.curPos[1] -= 1
+                    self.curPos[1] -= self.speed
                 elif round(self.curPos[1]) < round(self.goto[1]):
-                    self.curPos[1] += 1
+                    self.curPos[1] += self.speed
                 else:
                     self.curPos[1] = self.goto[1]
         else:
