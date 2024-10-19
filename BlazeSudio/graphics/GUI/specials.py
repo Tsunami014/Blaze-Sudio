@@ -12,13 +12,18 @@ __all__ = [
 
 class GraphicBase:
     """This contains all the things an object needs to be a graphic object and is not meant to be used directly."""
+    # Stuff that needs replacing with instance (not class) variables (but have been provided as instants for convenience):
     WIN: pygame.Surface = pygame.Surface((0, 0))
     size: tuple[int, int] = (0, 0)
     stacks: Stack = Stack()
     Stuff: Collection = Collection()
-    layers: list = []
     pause: bool = False
 
+    # Functions that need replacing:
+    def Abort(self):
+        pass
+
+    # Things that don't need replacing:
     def _updateStuff(self, mousepos, evnts, func):
         returns = self.Stuff.update(mousepos, evnts.copy())
         for obj in returns:
@@ -33,6 +38,19 @@ class GraphicBase:
                     func(GO.EELEMENTCLICK, obj)
                 elif ret == GUI.ReturnState.REDRAW:
                     obj.update(mousepos, evnts.copy(), True) # Redraw forcefully on top of everything else
+    
+    def getAllElms(self):
+        return self.Stuff.getall()
+    
+    def __getitem__(self, key):
+        return self.Stuff[key]
+    
+    def __setitem__(self, key, value):
+        self.Stuff[key] = value
+    
+    @property
+    def layers(self):
+        return self.Stuff.layers
 
 class Scrollable(GraphicBase, GUI.Element):
     type = GO.TSCROLLABLE
@@ -62,7 +80,6 @@ class Scrollable(GraphicBase, GUI.Element):
         super().__init__(G, pos, goalrect)
         self.WIN = pygame.Surface(sizeOfScreen)
         self.bgcol = bgcol
-        self.sizeOfScreen = sizeOfScreen
         self.bar = bar
         self.scroll = 0
         self.outline = (outline, outlinecol)
@@ -70,14 +87,14 @@ class Scrollable(GraphicBase, GUI.Element):
         self.Stuff = Collection()
     
     @property
-    def layers(self):
-        return self.Stuff.layers
+    def sizeOfScreen(self):
+        return self.WIN.get_size()
     
-    def __getitem__(self, key):
-        return self.Stuff[key]
-
-    def __setitem__(self, key, value):
-        self.Stuff[key] = value
+    @sizeOfScreen.setter
+    def sizeOfScreen(self, newSze):
+        self.WIN = pygame.Surface(newSze)
+        for elm in self.getAllElms():
+            elm.stackP.winSze = newSze
     
     def get(self):
         """Get the scroll value"""
@@ -98,11 +115,11 @@ class Scrollable(GraphicBase, GUI.Element):
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
         if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
-            mp = (mousePos[0], mousePos[1]-self.scroll)
+            mp = (mousePos[0]-x, mousePos[1]-y-self.scroll)
         else:
             mp = (float('inf'), float('inf'))
         self._updateStuff(mp, events, lambda *args, **kwargs: None)
-        self.G.WIN.blit(self.WIN, (x, y), pygame.Rect(x, y-self.scroll, *self.size))
+        self.G.WIN.blit(self.WIN, (x, y), pygame.Rect(0, -self.scroll, *self.size))
         if self.outline[0] != 0:
             pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
         if self.bar:
@@ -115,6 +132,9 @@ class Scrollable(GraphicBase, GUI.Element):
                 pygame.draw.line(self.G.WIN, (200, 50, 50), (p[0], p[1]-20), (p[0], p[1]+20), 10)
             except:
                 pass
+    
+    def Abort(self):
+        self.G.Abort()
 
 
 class TerminalBar(GUI.Element):

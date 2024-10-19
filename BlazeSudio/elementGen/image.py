@@ -10,6 +10,10 @@ class Image:
         else:
             self.data = data
     
+    @property
+    def size(self):
+        return GLOBALSZE
+    
     def _toBuffer(self):
         data = []
         for i in range(GLOBALSZE[1]):

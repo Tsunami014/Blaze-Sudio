@@ -208,19 +208,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             return ret
         
         return func2
-    
-    def __getitem__(self, key):
-        return self.Stuff[key]
-    
-    def __setitem__(self, key, value):
-        self.Stuff[key] = value
-    
-    @property
-    def layers(self):
-        return self.Stuff.layers
-    
-    def getAllElms(self):
-        return self.Stuff.getall()
 
     def Dropdown(self, 
                  elements: list, 
