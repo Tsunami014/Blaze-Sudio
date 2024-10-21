@@ -22,7 +22,7 @@ from BlazeSudio.graphics.GUI.textboxify import borders
 from . import settings
 from .util import CustomSprite
 
-from BlazeSudio.graphics.GUI.elements import Element, ReturnState
+from BlazeSudio.graphics.GUI.base import Element, ReturnState
 import BlazeSudio.graphics.options as GO
 
 class TextBox(Element):

@@ -486,7 +486,7 @@ class IntGridCSV:
                 else:
                     rs[typ] = [colls.Rect(x*self.gridsze, y*self.gridsze, self.gridsze, self.gridsze)]
         for i in rs:
-            rs[i] = colls.ShapeCombiner.to_rects(*rs[i])
+            rs[i] = colls.ShapeCombiner.combineRects(*rs[i])
         self.rects = rs
         return self.getRects(matches)
     
@@ -505,7 +505,7 @@ class IntGridCSV:
         return self.intgrid[y][x]
 
 class tile:
-    def __init__(self, data: Dict, layer: layer):
+    def __init__(self, data: Dict, lay: layer):
         """
         A single tile from a tile layer.
 
@@ -514,7 +514,7 @@ class tile:
             layer (layer): The parent layer.
         """
         self.data: Dict = data
-        self.layer: layer = layer
+        self.layer: layer = lay
 
         self.px: List[int] = self.data['px']
         self.src: List[int] = self.data['src']

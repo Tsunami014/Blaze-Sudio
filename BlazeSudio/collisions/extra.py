@@ -29,8 +29,8 @@ if _TYPE_CHECKING:
         Line,
         Arc,
         Circle,
-        Polygon,
         ShapeCombiner,
+        NoShape,
     )
 
 def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Union[Shape, Shapes]:
@@ -44,19 +44,15 @@ def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Union[Shape, 
         Shape | Shapes: The converted shape.
     """
     if _shapely.is_empty(shapelyShape):
-        return Shapes()
+        return NoShape()
     if isinstance(shapelyShape, _shapelyGeom.Point):
         return Point(shapelyShape.x, shapelyShape.y)
     if isinstance(shapelyShape, _shapelyGeom.LineString):
-        return ShapeCombiner.pointsToShape(*[i[1] for i in shapelyShape.coords.xy])
+        return ShapeCombiner.pointsToShape(*list(zip(*[list(i) for i in shapelyShape.coords.xy])))
     if isinstance(shapelyShape, _shapelyGeom.Polygon):
-        return ShapeCombiner.pointsToShape(*[i[1] for i in shapelyShape.exterior.coords.xy])
-    if isinstance(shapelyShape, _shapelyGeom.MultiPoint):
-        return Shapes(*[Point(*i) for i in shapelyShape.coords.xy])
-    if isinstance(shapelyShape, _shapelyGeom.MultiLineString):
-        return Shapes(*[Line(*i) for i in shapelyShape.coords.xy])
-    if isinstance(shapelyShape, _shapelyGeom.MultiPolygon):
-        return Shapes(*[Polygon(*i.exterior.coords.xy) for i in shapelyShape])
+        return ShapeCombiner.pointsToShape(*list(zip(*[list(i) for i in shapelyShape.exterior.coords.xy])))
+    if isinstance(shapelyShape, (_shapelyGeom.MultiPoint, _shapelyGeom.MultiLineString, _shapelyGeom.MultiPolygon, _shapelyGeom.GeometryCollection)):
+        return Shapes(*[shapelyToColl(i) for i in shapelyShape.geoms])
     raise ValueError(f'Cannot convert shapely shape of type {type(shapelyShape)} to BlazeSudio Shape')
 
 def collToShapely(collShape: Shape) -> _shapelyGeom.base.BaseGeometry:

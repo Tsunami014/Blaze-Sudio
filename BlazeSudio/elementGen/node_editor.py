@@ -282,7 +282,7 @@ and if it is None then it will not save. Defaults to None.
                 pygame.draw.circle(G.WIN, GO.CRED, pos2, 5)
                 pygame.draw.line(G.WIN, GO.CRED, pos1, pos2, 10)
             
-            col = GO.CNEW('orange')
+            col = GO.CORANGE
             for i in G.Container.connections:
                 pygame.draw.circle(G.WIN, col, nodePoss[i].center, 5)
                 pygame.draw.circle(G.WIN, col, nodePoss[G.Container.connections[i]].center, 5)
@@ -372,7 +372,7 @@ and if it is None then it will not save. Defaults to None.
                     if path is None:
                         G['Toasts'].append(GUI.Toast(G, 'Cannot save file as file location wasn\'t specified!!', GO.CRED))
                     else:
-                        G['Toasts'].append(GUI.Toast(G, 'Saving...', GO.CNEW('orange')))
+                        G['Toasts'].append(GUI.Toast(G, 'Saving...', GO.CORANGE))
                         G.Container.file.nodes = G.Container.nodes
                         G.Container.file.conns = G.Container.connections
                         G.Container.file.name = G.Container.name

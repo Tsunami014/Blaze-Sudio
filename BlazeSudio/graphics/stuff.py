@@ -60,6 +60,8 @@ class Stuff:
         for i in self.categories:
             for j in self.categories[i]:
                 returns[j] = j.update(mousePos, events)
+                if returns[j] and -1 in returns[j]:
+                    return
         return returns
     
     def add(self, _name):
@@ -86,8 +88,11 @@ class Stuff:
         return self.categories[_key]
     
     def __setitem__(self, _key, _value):
+        if _key not in self.categories:
+            raise KeyError(
+                f'Category {_key} does not exist!'
+            )
         self.categories[_key] = _value
-        self.sync()
     
     def __str__(self):
         return '<Stuff with %i objects>'%len(self)
@@ -121,7 +126,10 @@ class Collection:
     def update(self, mousePos, events):
         outs = {}
         for i in self.layers:
-            outs.update(i.update(mousePos, events))
+            ret = i.update(mousePos, events)
+            if ret is None:
+                return {}
+            outs.update(ret)
         return outs
     
     def insert_layer(self, pos=-1):
@@ -136,6 +144,17 @@ class Collection:
         for i in self.layers:
             try:
                 return i[_name]
+            except KeyError:
+                pass
+        raise KeyError(
+            f'Item {_name} does not exist in any layer!'
+        )
+    
+    def __setitem__(self, _name, _value):
+        for i in self.layers:
+            try:
+                i[_name] = _value
+                return
             except KeyError:
                 pass
         raise KeyError(

@@ -204,6 +204,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             self.ab = False
             self.run = True
             self.stacks.replaceWith(prevstack)
+            self.Stuff.clear()
             self.Stuff = stuff
             return ret
         
