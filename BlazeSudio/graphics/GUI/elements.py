@@ -1,14 +1,10 @@
-from enum import Enum
-from typing import Any, Callable, Iterable
 import pygame
+from typing import Callable
 from string import printable
 from BlazeSudio.graphics import options as GO
-from BlazeSudio.graphics.stacks import StackPart
+from BlazeSudio.graphics.GUI.base import Element, ReturnState
 
 __all__ = [
-    'Element',
-    'ReturnState',
-    'ReturnGroup',
     'Switch',
     'InputBox',
     'NumInputBox',
@@ -17,98 +13,6 @@ __all__ = [
     'Text',
     'Button'
 ]
-
-class Element:
-    NEXT_UID = [0]
-    type = None
-    def __init__(self, G, pos: GO.P___, size: Iterable[int|float]):
-        """
-        Base element class, do not directly use.
-
-        Args:
-            G (Graphic): The graphic screen to put this element on.
-            pos (GO.P___): The position of this element on the screen. 
-            size (Iterable[number, number]): The size of this element.
-        """
-        self.G = G
-        self.pos: GO.P___ = pos
-        self.size = size
-        self.stackP = StackPart(self, G.stacks, pos, size, G.sizeOfScreen)
-        self.uid = self.NEXT_UID[0]
-        self.NEXT_UID[0] += 1
-    
-    def remove(self):
-        self.stackP.remove()
-        self.G.Stuff.remove(self)
-    
-    def change_pos(self, newPos):
-        self.stackP.remove()
-        self.pos = newPos
-        self.stackP = StackPart(self, self.G.stacks, newPos, self.size, self.G.sizeOfScreen)
-    
-    # Required subclass functions
-    def update(self, mousePos, events):
-        pass
-    
-    def get(self):
-        pass
-    
-    def set(self):
-        pass
-    
-    # Utility functions
-    def __eq__(self, other):
-        return self.uid == other
-    
-    def __hash__(self):
-        return hash(self.uid)
-    
-    def __setattr__(self, name: str, value: Any) -> None: # TODO: Use @size.setter
-        super().__setattr__(name, value)
-        if name == 'size' and 'stackP' in self.__dict__: # Safeguard against running this before initialisation of stackP
-            self.stackP.setSize(self.size) # Automatically update stackP size whenever you set self.size
-    
-    def __str__(self):
-        return f'<{self.__class__.__name__}({str(self.get())})>'
-    def __repr__(self): return str(self)
-
-class ReturnState(Enum):
-    # If nothing happpens, return None as usual
-    ABORT = 1
-    """Abort the Graphics screen"""
-    
-    CALL = 2
-    """Call the main graphic screen function on this"""
-    
-    REDRAW = 3
-    """Redraw this element on top of all the others in its layer"""
-    
-    def __add__(self, otherState):
-        if not isinstance(otherState, (ReturnState, ReturnGroup)):
-            raise TypeError(
-                'Invalid type for add: %s! Must be a ReturnState or a ReturnGroup!'%str(type(otherState))
-            )
-        if isinstance(otherState, ReturnGroup):
-            otherState.append(self)
-            return otherState
-        return ReturnGroup(self, otherState)
-    def get(self):
-        return [self]
-
-class ReturnGroup:
-    def __init__(self, *states):
-        self.states = list(states)
-    
-    def append(self, otherState):
-        self.states.append(otherState)
-    
-    def get(self):
-        return self.states
-    
-    def __str__(self):
-        return f'<ReturnGroup with states {self.states}>'
-    def __repr__(self): return str(self)
-
 
 class Switch(Element):
     type = GO.TSWITCH
@@ -391,7 +295,7 @@ class Text(Element):
         """Sets the text of this text element, and optionally update the render settings."""
         self.settings.update(settings)
         self.txt = newTxt
-        self.sur = self.font.render(self.txt, self.col, **settings)
+        self.sur = self.font.render(self.txt, self.col, **self.settings)
         self.size = self.sur.get_size()
     
     def update(self, mpos, events):
@@ -463,7 +367,9 @@ class Button(Element):
                     r.height += self.OHE*2
                 if not force_draw:
                     if any([i.type == pygame.MOUSEBUTTONDOWN and i.button == pygame.BUTTON_LEFT for i in events]):
-                        self.func()
+                        ret = self.func()
+                        if ret:
+                            return ReturnState.REDRAW + ReturnState.CALL + ret
                         return ReturnState.REDRAW + ReturnState.CALL
                     return ReturnState.REDRAW
         pygame.draw.rect(self.G.WIN, self.cols['BG'], r, border_radius=8)

@@ -1,7 +1,7 @@
 from typing import Iterable, Literal
 import pygame
 from math import sqrt
-from BlazeSudio.graphics.GUI.elements import Element
+from BlazeSudio.graphics.GUI.base import Element
 import BlazeSudio.graphics.options as GO # TODO: Replace more things in here with GO stuff
 
 __all__ = ['dropdown', 'Toast']
@@ -76,7 +76,7 @@ class Toast(Element):
     def __init__(self, 
                  G, 
                  text: str, 
-                 BGcol: GO.C___, 
+                 BGcol: GO.C___ = GO.CORANGE, 
                  txtcol: GO.C___ = GO.CBLACK, 
                  font: GO.F___ = GO.FFONT, 
                  pos: GO.P___ = GO.PCBOTTOM, 
@@ -91,7 +91,7 @@ class Toast(Element):
         Args:
             G (Graphic): The graphic screen to attach to.
             text (str): The text in the toast.
-            BGcol (GO.C___): The colour of the background of the toast.
+            BGcol (GO.C___, optional): The colour of the background of the toast. Defaults to GO.CORANGE.
             txtcol (GO.C___, optional): The colour of the text inside the toast. Defaults to GO.CBLACK.
             font (GO.F___, optional): The font of the toast's text. Defaults to GO.FFONT.
             pos (GO.P___, optional): The position where the toast is in the screen. Defaults to GO.PCBOTTOM.

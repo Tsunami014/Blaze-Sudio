@@ -285,11 +285,14 @@ This class always collides; so *can* be used as an infinite plane, but why?"""
         """
         return Shape(self.bounciness)
     
-    def __getitem__(self) -> None:
+    def __getitem__(self, it: int) -> None:
+        return 0
+
+    def __setitem__(self, it: int, new: Number) -> None:
         pass
 
-    def __setitem__(self) -> None:
-        pass
+    def __iter__(self):
+        return iter([])
     
     def __str__(self):
         return '<Shape>'
@@ -481,10 +484,10 @@ class Shapes:
     def __iter__(self):
         return iter(self.shapes)
     
-    def __getitem__(self, index: Number) -> Union[Shape,'Shapes']:
+    def __getitem__(self, index: int) -> Union[Shape,'Shapes']:
         return self.shapes[index]
     
-    def __setitem__(self, index: Number, new: Union[Shape,'Shapes']) -> None:
+    def __setitem__(self, index: int, new: Union[Shape,'Shapes']) -> None:
         self.shapes[index] = new
     
     def __repr__(self): return str(self)
@@ -660,7 +663,7 @@ class Point(Shape):
         """
         return Point(self.x, self.y, self.bounciness)
 
-    def __getitem__(self, item: Number) -> Number:
+    def __getitem__(self, item: int) -> Number:
         if item == 0:
             return self.x
         elif item == 1:
@@ -670,7 +673,7 @@ class Point(Shape):
                 'List index out of range! Must be 0-1, found: '+str(item)
             )
     
-    def __setitem__(self, item: Number, new: Number) -> None:
+    def __setitem__(self, item: int, new: Number) -> None:
         if item == 0:
             self.x = new
         elif item == 1:
@@ -1093,7 +1096,7 @@ class Line(Shape):
         """
         return Line(self.p1, self.p2, self.bounciness)
     
-    def __getitem__(self, item: Number) -> pointLike:
+    def __getitem__(self, item: int) -> pointLike:
         if item == 0:
             return self.p1
         elif item == 1:
@@ -1103,7 +1106,7 @@ class Line(Shape):
                 'List index out of range! Must be 0-1, found: '+str(item)
             )
     
-    def __setitem__(self, item: Number, new: pointLike) -> None:
+    def __setitem__(self, item: int, new: pointLike) -> None:
         if item == 0:
             self.p1 = new
         elif item == 1:
@@ -1112,6 +1115,9 @@ class Line(Shape):
             raise IndexError(
                 'List index out of range! Must be 0-1, found: '+str(item)
             )
+    
+    def __iter__(self):
+        return iter((self.p1, self.p2))
     
     def __str__(self):
         return f'<Line from {self.p1} to {self.p2}>'
@@ -1432,7 +1438,7 @@ Please be mindful when checking for this class as it is technically a closed sha
         """
         return Circle(self.x, self.y, self.r, self.bounciness)
     
-    def __getitem__(self, item: Number) -> Number:
+    def __getitem__(self, item: int) -> Number:
         if item == 0:
             return self.x
         elif item == 1:
@@ -1444,7 +1450,7 @@ Please be mindful when checking for this class as it is technically a closed sha
                 'List index out of range! Must be 0-2, found: '+str(item)
             )
     
-    def __setitem__(self, item: Number, new: Number) -> None:
+    def __setitem__(self, item: int, new: Number) -> None:
         if item == 0:
             self.x = new
         elif item == 1:
@@ -1455,6 +1461,9 @@ Please be mindful when checking for this class as it is technically a closed sha
             raise IndexError(
                 'List index out of range! Must be 0-2, found: '+str(item)
             )
+    
+    def __iter__(self):
+        return iter((self.x, self.y, self.r))
 
     def __str__(self):
         return f'<Circle @ ({self.x}, {self.y}) with radius {self.r}>'
@@ -1695,7 +1704,7 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
         """
         return Arc(self.x, self.y, self.r, self.startAng, self.endAng, self.precision, self.bounciness)
     
-    def __getitem__(self, item: Number) -> Union[Number, pointLike]:
+    def __getitem__(self, item: int) -> Union[Number, pointLike]:
         if item == 0:
             return self.x
         elif item == 1:
@@ -1711,7 +1720,7 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
                 'List index out of range! Must be 0-4, found: '+str(item)
             )
     
-    def __setitem__(self, item: Number, new: Union[Number, pointLike]) -> None:
+    def __setitem__(self, item: int, new: Union[Number, pointLike]) -> None:
         if item == 0:
             self.x = new
         elif item == 1:
@@ -1726,6 +1735,9 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
             raise IndexError(
                 'List index out of range! Must be 0-4, found: '+str(item)
             )
+    
+    def __iter__(self):
+        return iter((self.x, self.y, self.r, self.startAng, self.endAng))
     
     def __str__(self):
         return f'<Arc @ ({self.x}, {self.y}) with radius {self.r} and angles between {self.startAng}°-{self.endAng}°>'
@@ -2073,8 +2085,11 @@ Please do not use this class as it is just a building block for subclasses and t
         """
         return []
     
-    def __getitem__(self, item: Number) -> pointLike:
+    def __getitem__(self, item: int) -> pointLike:
         return self.toPoints()[item]
+    
+    def __iter__(self):
+        return iter(self.toPoints())
 
     def __str__(self):
         return '<Closed Shape>'
@@ -2163,7 +2178,7 @@ class Rect(ClosedShape):
         """
         return Rect(self.x, self.y, self.w, self.h, self.bounciness)
     
-    def __setitem__(self, item: Number, new: pointLike) -> None:
+    def __setitem__(self, item: int, new: pointLike) -> None:
         if item == 0:
             self.x, self.y = new[0], new[1]
         elif item == 1:
@@ -2298,7 +2313,7 @@ Defined as an x, y, width, height and rotation."""
         """
         return RotatedRect(self.x, self.y, self.w, self.h, self.rot, self.bounciness)
     
-    def __setitem__(self, item: Number, new: pointLike) -> None:
+    def __setitem__(self, item: int, new: pointLike) -> None:
         def rot(x, y):
             return rotate([self.x, self.y], [x, y], self.rot)
         if item == 0:
@@ -2436,7 +2451,7 @@ If it *is* less than 3, I have no clue what will happen; it will probably get a 
         """
         return Polygon(*self.points, errorOnLT3=False, bounciness=self.bounciness)
     
-    def __setitem__(self, item: Number, new: pointLike) -> None:
+    def __setitem__(self, item: int, new: pointLike) -> None:
         self.points[item] = new
     
     def __str__(self):

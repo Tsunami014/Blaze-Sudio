@@ -134,7 +134,7 @@ if __name__ == '__main__':
                                             G.Clear()
                                             G.add_text(ret, GO.CBLACK, GO.PCTOP, GO.FTITLE)
                                             G.add_button('Back', GO.CGREY, GO.PCBOTTOM)
-                                            G.add_button('Back to editor', GO.CNEW('orange'), GO.PCBOTTOM)
+                                            G.add_button('Back to editor', GO.CORANGE, GO.PCBOTTOM)
                                             # TODO: copy/move to/from world-specific nodes
                                             G.add_button('Edit', GO.CGREEN, GO.PCCENTER)
                                             G.add_button('Apply', GO.CYELLOW, GO.PCCENTER)
@@ -212,7 +212,7 @@ if __name__ == '__main__':
                     ng.add_button('Close', GO.CBLUE, LTOP, callback=close)
                     ng.add_empty_space(GO.PLCENTER, 20, 0)
                     ng.add_button('Play', GO.CGREEN, GO.PLCENTER, callback=play)
-                    ng.add_button('Edit', GO.CNEW('orange'), GO.PCCENTER, callback=edit)
+                    ng.add_button('Edit', GO.CORANGE, GO.PCCENTER, callback=edit)
                     ng.add_empty_space(GO.PRCENTER, 20, 0)
                     ng.add_button('Delete', GO.CRED, GO.PRCENTER, callback=still_in_progress)
                     ng.add_empty_space(RBOT, 20, 20)

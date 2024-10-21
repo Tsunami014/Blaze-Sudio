@@ -1,6 +1,7 @@
 from typing import Iterable
 import pygame
-from BlazeSudio.graphics import GUI, options as GO
+from BlazeSudio.graphics import options as GO
+from BlazeSudio.graphics.GUI.base import Element, ReturnState
 from BlazeSudio.graphics.stacks import Stack
 from BlazeSudio.graphics.stuff import Collection
 
@@ -32,11 +33,11 @@ class GraphicBase:
                 continue
             
             for ret in retValue.get():
-                if ret == GUI.ReturnState.ABORT:
+                if ret == ReturnState.ABORT:
                     self.Abort()
-                elif ret == GUI.ReturnState.CALL:
+                elif ret == ReturnState.CALL:
                     func(GO.EELEMENTCLICK, obj)
-                elif ret == GUI.ReturnState.REDRAW:
+                elif ret == ReturnState.REDRAW:
                     obj.update(mousepos, evnts.copy(), True) # Redraw forcefully on top of everything else
     
     def getAllElms(self):
@@ -52,7 +53,7 @@ class GraphicBase:
     def layers(self):
         return self.Stuff.layers
 
-class ScrollableFrame(GraphicBase, GUI.Element):
+class ScrollableFrame(GraphicBase, Element):
     type = GO.TSCROLLABLE
     def __init__(self, 
                  G, 
@@ -137,7 +138,7 @@ class ScrollableFrame(GraphicBase, GUI.Element):
         self.G.Abort()
 
 
-class TerminalBar(GUI.Element):
+class TerminalBar(Element):
     def __init__(self, G, spacing=5):
         """
         Adds a terminal bar to the bottom of your screen! You can use this for debugging and can run commands using it also for debugging!

@@ -1,5 +1,5 @@
 import pygame
-from BlazeSudio.graphics.GUI.elements import Element
+from BlazeSudio.graphics.GUI.base import Element
 from BlazeSudio.graphics import options as GO # TODO: Replace more values in here with the GO variants
 
 # Thanks to https://stackoverflow.com/questions/73517832/how-to-make-an-color-picker-in-pygame :)

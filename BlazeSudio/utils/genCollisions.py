@@ -1,5 +1,3 @@
-from shapely import concave_hull
-from shapely.geometry import MultiPoint, LineString
 import BlazeSudio.collisions as colls
 
 def approximate_polygon(surface, tolerance=3, ratio=0.1):
@@ -9,16 +7,18 @@ def approximate_polygon(surface, tolerance=3, ratio=0.1):
     :param ratio: A number in the range [0, 1]. Higher means fewer verticies.
     """
     non_transparent_points = []
+    polygon_points = []
     width, height = surface.get_size()
+
+    def check_col(col):
+        return col.a == 255 and (col.r != 0 and col.g != 0 and col.b != 0)
     
     # Scan the surface to find non-transparent points
     for x in range(0, width, tolerance):
         for y in range(0, height, tolerance):
-            color = surface.get_at((x, y))
-            if color.a == 255 and (color.r != 0 and color.g != 0 and color.b != 0):
+            if check_col(surface.get_at((x, y))):
                 non_transparent_points.append((x, y))
     
-    polygon_points = []
     for point in non_transparent_points:
         def check(x, y):
             return (x, y) not in non_transparent_points
@@ -28,6 +28,10 @@ def approximate_polygon(surface, tolerance=3, ratio=0.1):
             check(point[0] - tolerance, point[1]) or
             check(point[0], point[1] - tolerance)
         ):
+            if point[0] == width-width%tolerance:
+                point = (width, point[1])
+            if point[1] == height-height%tolerance:
+                point = (point[0], height)
             polygon_points.append(point)
     
     return colls.ShapeCombiner.pointsToPoly(*polygon_points, ratio=ratio)

@@ -36,12 +36,13 @@ CPURPLE = C___((92, 53, 102),   name='PURPLE')
 def CNEW(name):
     c = pygame.color.Color(name)
     return C___((c.r, c.g, c.b), name=name)
+CORANGE = CNEW('orange')
 CINACTIVE = CNEW('lightskyblue3')
 CACTIVE = CNEW('dodgerblue2')
 
 CRAINBOWCOLOURS = [
     CRED,
-    CNEW('orange'),
+    CORANGE,
     CYELLOW,
     CGREEN,
     CBLUE,
