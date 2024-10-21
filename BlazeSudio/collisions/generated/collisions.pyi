@@ -1,8 +1,8 @@
 from _typeshed import Incomplete
 from enum import Enum
-from typing import Any, Iterable
+from typing import Any, Dict, Iterable, Type
 
-__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnUnitCircle', 'pointsToShape', 'ShpGroups', 'checkShpType', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'Arc', 'ClosedShape', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
+__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnUnitCircle', 'ShpGroups', 'checkShpType', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'Arc', 'ClosedShape', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
 
 Number = int | float
 verboseOutput = Iterable[Any] | None
@@ -55,28 +55,16 @@ def pointOnUnitCircle(angle: Number, strength: Number = 1) -> pointLike:
     Returns:
         pointLike: The point on the unit circle at angle `angle` * strength
     """
-def pointsToShape(*points: Iterable[pointLike], bounciness: float = ...) -> Shape:
-    """
-    Converts a list of points to a shape object.
-    If there is only one point, it will return a Point object, if there are two it will return a Line object, and if there are more it will return a Polygon object.
-
-    Args:
-        points (pointLike): The points to convert to a shape.
-        bounciness (float, optional): The bounciness of the shape. Defaults to 0.7.
-
-    Returns:
-        Shape: The shape object made from the points
-    """
 
 class ShpGroups(Enum):
     """
     An enum representing the different groups you can put shapes in.
     """
-    CLOSED = 0
-    LINES = 1
-    GROUP = 2
+    CLOSED: int
+    LINES: int
+    GROUP: int
 
-def checkShpType(shape: Shape | Shapes, typs: type | ShpGroups | Iterable[type | ShpGroups]) -> bool:
+def checkShpType(shape: Shape | Shapes, typs: Type | ShpGroups | Iterable[Type | ShpGroups]) -> bool:
     """
     Checks to see if a shape is of a certain type or group.
 
@@ -89,15 +77,14 @@ def checkShpType(shape: Shape | Shapes, typs: type | ShpGroups | Iterable[type |
     """
 
 class Shape:
+    """The base Shape class. This defaults to always collide.
+This class always collides; so *can* be used as an infinite plane, but why?"""
     GROUPS: Incomplete
     x: Number
     y: Number
     bounciness: Incomplete
     def __init__(self, bounciness: float = ...) -> None:
         """
-        The base Shape class. This defaults to always collide.
-        This class always collides; so *can* be used as an infinite plane, but why?
-
         Args:
             bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
         """
@@ -195,24 +182,22 @@ class Shape:
         """
         Copy this shape to return another with the same properties
         """
-    def __getitem__(self) -> None: ...
-    def __setitem__(self) -> None: ...
+    def __getitem__(self, it: int) -> None: ...
+    def __setitem__(self, it: int, new: Number) -> None: ...
+    def __iter__(self): ...
 
 class NoShape(Shape):
-    def __init__(self) -> None:
-        """
-        A class to represent no shape. This is useful for when you want to have a shape that doesn't collide with anything.
-        """
+    """A class to represent no shape. This is useful for when you want to have a shape that doesn't collide with anything."""
+    def __init__(self) -> None: ...
     def copy(self) -> NoShape:
         """Make a copy of this non-existant shape"""
 
 class Shapes:
+    """A class which holds multiple shapes and can be used to do things with all of them at once."""
     GROUPS: Incomplete
     shapes: Incomplete
     def __init__(self, *shapes: Shape) -> None:
         """
-        A class which holds multiple shapes and can be used to do things with all of them at once.
-
         Args:
             *shapes (Shape): The shapes to start off with in this object.
         
@@ -285,7 +270,7 @@ class Shapes:
         Returns:
             Iterable[pointLike]: All the closest point(s) ON each of these objects
         """
-    def isCorner(self, point: pointLike, precision: Number = ...) -> dict[Shape | Shapes, bool]:
+    def isCorner(self, point: pointLike, precision: Number = ...) -> Dict[Shape | Shapes, bool]:
         """
         Takes each object and finds whether the input point is on the corner of that object.
 
@@ -323,14 +308,13 @@ class Shapes:
         Makes a copy of this class but keeps the same shapes.
         """
     def __iter__(self): ...
-    def __getitem__(self, index: Number) -> Shape | Shapes: ...
-    def __setitem__(self, index: Number, new: Shape | Shapes) -> None: ...
+    def __getitem__(self, index: int) -> Shape | Shapes: ...
+    def __setitem__(self, index: int, new: Shape | Shapes) -> None: ...
 
 class Point(Shape):
+    """An infintesimally small point in space defined by an x and y coordinate."""
     def __init__(self, x: Number, y: Number, bounciness: float = ...) -> None:
         """
-        An infintesimally small point in space.
-
         Args:
             x (Number): The x ordinate of this object.
             y (Number): The y ordinate of this object.
@@ -408,18 +392,17 @@ class Point(Shape):
         """
         Make a brand new Point with the same values!
         """
-    def __getitem__(self, item: Number) -> Number: ...
+    def __getitem__(self, item: int) -> Number: ...
     x: Incomplete
     y: Incomplete
-    def __setitem__(self, item: Number, new: Number) -> None: ...
+    def __setitem__(self, item: int, new: Number) -> None: ...
     def __iter__(self): ...
 
 class Line(Shape):
+    """A line segment object defined by a start and an end point."""
     GROUPS: Incomplete
     def __init__(self, p1: pointLike, p2: pointLike, bounciness: float = ...) -> None:
         """
-        A line segment object.
-
         Args:
             p1 (pointLike): The start point of this line
             p2 (pointLike): The end point of this line
@@ -533,15 +516,16 @@ class Line(Shape):
         """
         Make a copy of the Line with the same values!
         """
-    def __getitem__(self, item: Number) -> pointLike: ...
-    def __setitem__(self, item: Number, new: pointLike) -> None: ...
+    def __getitem__(self, item: int) -> pointLike: ...
+    def __setitem__(self, item: int, new: pointLike) -> None: ...
+    def __iter__(self): ...
 
 class Circle(Shape):
+    """A perfect circle. Defined as an x and y centre coordinate of the circle and a radius.
+Please be mindful when checking for this class as it is technically a closed shape, but if you try to run `.toLines()` or `.toPoints()` it will return an empty list; so please check for it *before* closed shapes."""
     GROUPS: Incomplete
     def __init__(self, x: Number, y: Number, r: Number, bounciness: float = ...) -> None:
         """
-        A perfect circle.
-
         Args:
             x (Number): The x ordinate of the centre of this circle.
             y (Number): The y ordinate of the centre of this circle.
@@ -565,6 +549,48 @@ class Circle(Shape):
 
         Returns:
             pointLike / Iterable[pointLike]: The closest point(s, depending on returnAll) ON this object TO the othershape
+        """
+    def handleCollisionsPos(self, oldCir: Circle, newCir: Circle, objs: Shapes | Iterable[Shape], vel: pointLike = [0, 0], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple[pointLike, pointLike, verboseOutput]:
+        """
+        Handles movement of this Circle and it bouncing off of other objects.
+        It is recommended you use `.handleCollisionsVel` instead of this, as it handles velocity instead of raw movement and is easier to use.
+
+        But if you are to use this, remember to still provide the vel param. It will sometimes provide weird results if you don't.
+        It could even just be the difference in positions, it just needs to be something realistic.
+
+        FIXME; This is currently broken plz do not use until I fix it
+
+        Args:
+            oldCir (Circle): The old position of this object.
+            newCir (Circle): The new position of this object.
+            objs (Shapes / Iterable[Shape]): The objects this will bounce off.
+            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
+            replaceSelf (bool, optional): Whether to replace self.x and self.y with the new position of the object after bouncing or not. Defaults to True.
+            precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
+            verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
+
+        Returns:
+            tuple[pointLike, pointLike, veboseOutput?]: The new position and vel of this object respectively, and if verbose then the verboseOutput.
+        
+        VerboseOutput:
+            DidReflect (bool): Whether the line reflected off of something
+        """
+    def handleCollisionsVel(self, vel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple['Circle', pointLike, verboseOutput]:
+        """
+        Handles movement of this Circle via velocity and it bouncing off of other objects.
+
+        Args:
+            vel (pointLike): The velocity of this Circle
+            objs (Shapes / Iterable[Shape]): The objects to bounce off of
+            replaceSelf (bool, optional): Whether or not to replace self.x and self.y with the new position. Defaults to True.
+            precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
+            verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
+
+        Returns:
+            tuple[Circle, pointLike, veboseOutput?]: The new Circle object and vel of this object respectively, and if verbose then the verboseOutput.
+        
+        VerboseOutput:
+            DidReflect (bool): Whether the line reflected off of something
         """
     def isCorner(self, point: pointLike, precision: Number = ...) -> bool:
         """
@@ -592,20 +618,21 @@ class Circle(Shape):
         """
         Make a replica of this object with the same object.
         """
-    def __getitem__(self, item: Number) -> Number: ...
+    def __getitem__(self, item: int) -> Number: ...
     x: Incomplete
     y: Incomplete
     r: Incomplete
-    def __setitem__(self, item: Number, new: Number) -> None: ...
+    def __setitem__(self, item: int, new: Number) -> None: ...
+    def __iter__(self): ...
 
 class Arc(Circle):
+    """A section of a circle's circumfrance. This is in the 'lines' group because it can be used as the outer edge of another shape.
+This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take."""
     GROUPS: Incomplete
     precision: Incomplete
     bounciness: Incomplete
     def __init__(self, x: Number, y: Number, rad: Number, startAngle: Number, endAngle: Number, precision: Number = ..., bounciness: float = ...) -> None:
         """
-        A section of a circle's circumfrance.
-
         Args:
             x (Number): The x position of this arc's centre.
             y (Number): The y position of this arc's centre.
@@ -630,6 +657,7 @@ class Arc(Circle):
         Returns:
             pointLike|Iterable[pointLike]: The closest point(s) on this object to the other object. Whether this is an iterable or not depends on the `returnAll` parameter.
         """
+    def constrainAng(self, phi: Number) -> Number: ...
     def angleInRange(self, angle: Number) -> bool:
         """
         Check to see if an angle is in the range of this arc.
@@ -658,15 +686,18 @@ class Arc(Circle):
         """
         Because Noah's first arc broke, now you need another one.
         """
-    def __getitem__(self, item: Number) -> Number | pointLike: ...
+    def __getitem__(self, item: int) -> Number | pointLike: ...
     x: Incomplete
     y: Incomplete
     r: Incomplete
     startAng: Incomplete
     endAng: Incomplete
-    def __setitem__(self, item: Number, new: Number | pointLike) -> None: ...
+    def __setitem__(self, item: int, new: Number | pointLike) -> None: ...
+    def __iter__(self): ...
 
 class ClosedShape(Shape):
+    """These are shapes like rects and polygons; if you split them into a list of lines all the lines join with one another.
+Please do not use this class as it is just a building block for subclasses and to provide them with some basic methods."""
     GROUPS: Incomplete
     def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
@@ -753,13 +784,13 @@ class ClosedShape(Shape):
         Returns:
             Iterable[pointLike]: Get a list of all the Points that make up this object
         """
-    def __getitem__(self, item: Number) -> pointLike: ...
+    def __getitem__(self, item: int) -> pointLike: ...
+    def __iter__(self): ...
 
 class Rect(ClosedShape):
+    """A Rectangle. It is defined with an x, y, width and height."""
     def __init__(self, x: Number, y: Number, w: Number, h: Number, bounciness: float = ...) -> None:
         """
-        A Rectangle.
-
         Args:
             x (Number): The x ordinate.
             y (Number): The y ordinate.
@@ -788,16 +819,16 @@ class Rect(ClosedShape):
         """
         Clone this object using the latest cloning technology.
         """
-    def __setitem__(self, item: Number, new: pointLike) -> None: ...
+    def __setitem__(self, item: int, new: pointLike) -> None: ...
 
 class RotatedRect(ClosedShape):
+    """A rectangle...... That is rotated.
+It is rotated around it's x and y coordinates.
+Defined as an x, y, width, height and rotation."""
     cachedPoints: Incomplete
     cacheRequirements: Incomplete
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number, bounciness: float = ...) -> None:
         """
-        A rectangle...... That is rotated.
-        It is rotated around it's x and y coordinates.
-
         Args:
             x (Number): The x ordinate. Also what it rotates around.
             y (Number): The y ordinate. Also what it rotates around.
@@ -836,11 +867,21 @@ class RotatedRect(ClosedShape):
         """
         Spawn in a duplicate object
         """
-    def __setitem__(self, item: Number, new: pointLike) -> None: ...
+    def __setitem__(self, item: int, new: pointLike) -> None: ...
 
 class Polygon(ClosedShape):
+    """A convex or concave polygon. It is defined with a list of points."""
     points: Incomplete
-    def __init__(self, *points: pointLike, errorOnLT3: bool = True, bounciness: float = ...) -> None: ...
+    def __init__(self, *points: pointLike, errorOnLT3: bool = True, bounciness: float = ...) -> None:
+        """
+        Args:
+            *points (pointLike): The points that make up the polygon.
+            errorOnLT3 (bool, optional): Whether to error if the amount of points making up this polygon is less than 3. If it *is* less than 3, I have no clue what will happen; it will probably get a lot of things wrong - which is why this is in place. Defaults to True.
+            bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
+
+        Raises:
+            ValueError: When you have a polygon with <3 points.
+        """
     @property
     def x(self):
         """One of this object's points' x value. Changing this will move the other points by the difference!"""
@@ -872,9 +913,11 @@ class Polygon(ClosedShape):
         """
         And then he lifted his arms and said, 'LET THERE BE ANOTHER!'
         """
-    def __setitem__(self, item: Number, new: pointLike) -> None: ...
+    def __setitem__(self, item: int, new: pointLike) -> None: ...
 
 class ShapeCombiner:
+    """A class to combine shapes together. You do not actually need to create an object of this as all the methods are static.
+Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3)`."""
     @staticmethod
     def boundingBox(*shapes: Rect) -> Shapes:
         """
@@ -906,4 +949,24 @@ class ShapeCombiner:
 
         Returns:
             Shapes: The union of all the shapes.
+        """
+    @staticmethod
+    def pointsToShape(*points: Iterable[pointLike], bounciness: float = ...) -> Shape:
+        """
+        Converts a list of points to a shape object.
+        
+        No points: NoShape()
+        One point: Point()
+        2 points: Line()
+        4 points and in the shape of a rectangle: Rect()
+        Otherwise: Polygon()
+
+        This differs from `ShapeCombiner.pointsToPoly` in that **this** will connect all the points with lines, *instead* of creating a polygon to envelop them all.
+
+        Args:
+            *points (pointLike): The points to convert to a shape.
+            bounciness (float, optional): The bounciness of the output shape. Defaults to 0.7.
+
+        Returns:
+            Shape: The shape object made from the points
         """
