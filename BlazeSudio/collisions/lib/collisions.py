@@ -610,8 +610,8 @@ class Point(Shape):
         t = closestObj.tangent(closestP, vel)
         normal = t-90
         dist_left = math.sqrt(abs(newPoint[0]-closestP[0])**2+abs(newPoint[1]-closestP[1])**2) * closestObj.bounciness
-        x, y = newPoint[0] - closestP[0], newPoint[1] - closestP[1]
-        phi = math.degrees(math.atan2(y, x))-90
+        x, y = oldPoint[0] - closestP[0], oldPoint[1] - closestP[1]
+        phi = math.degrees(math.atan2(y, x))+90 # Because we have to -90 due to issues and then +180 so it becomes +90
         diff = (phi-normal) % 360
         if diff > 180:
             diff = diff - 360
@@ -1300,6 +1300,8 @@ Please be mindful when checking for this class as it is technically a closed sha
         But if you are to use this, remember to still provide the vel param. It will sometimes provide weird results if you don't.
         It could even just be the difference in positions, it just needs to be something realistic.
 
+        FIXME; This is currently broken plz do not use until I fix it
+
         Args:
             oldCir (Circle): The old position of this object.
             newCir (Circle): The new position of this object.
@@ -1314,7 +1316,7 @@ Please be mindful when checking for this class as it is technically a closed sha
         
         VerboseOutput:
             DidReflect (bool): Whether the line reflected off of something
-        """ # FIXME
+        """
         velphi = math.atan2(vel[1], vel[0])
         quart = math.pi/2
         mvement = Shapes(oldCir, Polygon(
@@ -1343,25 +1345,28 @@ Please be mindful when checking for this class as it is technically a closed sha
         closestObj = points[0][1]
         t = closestObj.tangent(closestP, vel)
         normal = t-90
-        cpoMvemnt = Line((oldCir.x, oldCir.y), (newCir.x, newCir.y)).closestPointTo(Point(*closestP))
+        cpoMvemnt = Line((oldCir.x + oldCir.r * math.cos(velphi-math.pi), oldCir.y + oldCir.r * math.sin(velphi-math.pi)),
+                         (newCir.x + newCir.r * math.cos(velphi), newCir.y + newCir.r * math.sin(velphi))
+                        ).closestPointTo(Point(*closestP))
         dist_left = (
             math.sqrt((oldCir[0]-cpoMvemnt[0])**2+(oldCir[1]-cpoMvemnt[1])**2) - \
-                math.sqrt(round(newCir.r**2, precision)-(
-                        round((cpoMvemnt[0]-closestP[0])**2+(cpoMvemnt[1]-closestP[1])**2, precision)
+                math.sqrt(round(newCir.r**2, precision)-( # math.sqrt(max(0, newCir.r**2 - ((cpoMvemnt[0] - closestP[0])**2 + (cpoMvemnt[1] - closestP[1])**2)))????
+                        round(math.sqrt((cpoMvemnt[0]-closestP[0])**2+(cpoMvemnt[1]-closestP[1])**2), precision)
                     )
                 )
         ) * closestObj.bounciness
+        dist_to = math.sqrt(vel[0]**2+vel[1]**2)-dist_left
         if dist_left == 0:
             if verbose:
                 return oldCir, [0, 0], [True]
             return oldCir, [0, 0]
-        ThisClosestP = (oldCir.x + dist_left * math.cos(velphi), oldCir.y + dist_left * math.sin(velphi))
-        x, y = newCir[0] - closestP[0], newCir[1] - closestP[1]
-        phi = math.degrees(math.atan2(y, x))-90
+        ThisClosestP = (oldCir.x + dist_to * math.cos(velphi), oldCir.y + dist_to * math.sin(velphi))
+        x, y = oldCir[0] - ThisClosestP[0], oldCir[1] - ThisClosestP[1]
+        phi = math.degrees(math.atan2(y, x))+90
         diff = (phi-normal) % 360
         if diff > 180:
             diff = diff - 360
-        pos = rotate(closestP, [ThisClosestP[0], ThisClosestP[1]+dist_left], phi-180-diff*2)
+        pos = rotate(ThisClosestP, [ThisClosestP[0], ThisClosestP[1]+dist_left], phi-180-diff*2)
         vel = list(rotateBy0(vel, 180-diff*2))
         vel = [vel[0]*closestObj.bounciness, vel[1]*closestObj.bounciness]
         # HACK

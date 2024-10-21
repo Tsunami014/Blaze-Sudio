@@ -1,6 +1,3 @@
-from os import environ
-environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" # Hide the annoying pygame thing
-
 if __name__ == '__main__':
     from multiprocessing import freeze_support
     freeze_support()
