@@ -1,13 +1,15 @@
 # Contrary to the fact that this is debugunittest.py, we will not use the unittest library.
 # This is intended for development, not practical use.
 
-# This is the debug statement. If you wanted to use the compiled class, run `import BlazeSudio.collisions` instead.
 from BlazeSudio.debug import collisions # Use this more because it is the exact latest version
-# from BlazeSudio import collisions # Use this if you want to use the compiled version
-import BlazeSudio.collisions as compiledcolls # Use this for things that aren't compiled
+# from BlazeSudio import collisions # Use this **instead** if you want to use the compiled version
 import time
+print()
 
-def debug(names, ins, outs, expecteds, formatter, offsets, highlights=None):
+def Debug(names, ins, outs, expecteds, formatter, highlights=None):
+    if len(ins) != len(outs) or len(outs) != len(expecteds) or len(expecteds) != len(names):
+        raise ValueError('All inputs must be the same length.')
+    
     sins = [str(i) for i in ins]
     souts = [str(i) for i in outs]
     sxpecteds = [str(i) for i in expecteds]
@@ -26,24 +28,53 @@ def debug(names, ins, outs, expecteds, formatter, offsets, highlights=None):
     print('Expected: '+formatter(expecteds))
     
     if highlights is not None:
-        # Calculate the position of the highlight
-        highlight_positions = [sum(max_lens[:i]) + 2 * i + 1 for i in range(len(ins))]
-        highlight_line = ' ' * 11  # Initial spaces for alignment
+        highlight_line = ' ' * 10  # Initial spaces for alignment
         prevlns = 0
+        # HACK: This won't be a problem unless you have a stupid amount of inputs
+        ln = formatter([chr(i) * max_lens[i] for i in range(len(ins))])  # Call formatter to get the max length of the line
         for h in highlights:
-            new = ' ' * (highlight_positions[h]+offsets[h]-prevlns) + '^' * max_lens[h]
+            new = ' ' * (ln.index(chr(h))-prevlns) + '^' * max_lens[h]
             highlight_line += new
             prevlns += len(new)
         print(highlight_line)
     else:
         print()
 
-def timeit(func, *args, **kwargs):
+def RoundAny(t):
+    if isinstance(t, (tuple, list)):
+        return type(t)(RoundAny(x) for x in t)
+    return round(t, 2)
+
+def Check(testName, names, ins, outs, expecteds, formatter):
+        if len(ins) != len(outs) or len(outs) != len(expecteds) or len(expecteds) != len(names):
+            raise ValueError('All inputs must be the same length.')
+        
+        errors = []
+        errortxts = []
+        for i in range(len(ins)):
+            if RoundAny(outs[i]) != expecteds[i]:
+                errors.append(i)
+                errortxts.append(f'In {names[i]}: expected {expecteds[i]}, got {outs[i]}')
+        if errors != []:
+            print(f'TEST {testName} FAILED:')
+            Debug(
+                names,
+                ins,
+                outs,
+                expecteds,
+                formatter,
+                errors
+            )
+            raise AssertionError(
+                ' &\n'.join(errortxts)
+            )
+
+def Timeit(func, *args, **kwargs):
     start = time.time()
     func(*args, **kwargs)
     print(f'Time taken: {(time.time() - start)*1000} ms.')
 
-def compareTimes(func1, func2, *args, **kwargs):
+def CompareTimes(func1, func2, *args, **kwargs):
     start = time.time()
     func1(*args, **kwargs)
     f1Time = time.time() - start
@@ -61,33 +92,81 @@ def compareTimes(func1, func2, *args, **kwargs):
     else:
         print(f'Func2 is {f1Time/f2Time} times faster than func1.')
 
-def roundTuple(t):
-    return tuple(round(x, 2) for x in t)
-
-def testCollisions():
+def testAll():
+    # If these fail there is a big issue
     assert collisions.rotate([0, 0], [123, 456], 127.001) == collisions.rotateBy0([123, 456], 127.001)
-    assert roundTuple(collisions.rotate([1, 0], [1, -1], 90)) == (2, 0)
+    assert RoundAny(collisions.rotate([1, 0], [1, -1], 90)) == (2, 0)
+
+    # Test points and circles
+    def testPoint(testName, outs, expected1, expected2, ins):
+        Check(testName, 
+            ['x', 'y', 'accelx', 'accely'], 
+            ins, 
+            [outs[0][0], outs[0][1], outs[1][0], outs[1][1]], 
+            [*expected1, *expected2], 
+            lambda li: f'({li[0]}, {li[1]}), [{li[2]}, {li[3]}]'
+        )
     
-    outpos, outaccel = collisions.Point(2, 0).handleCollisionsVel([0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)))
-    assert roundTuple(outpos) == (2, 0) # It rebounded perfectly and now is exactly where it started
-    assert roundTuple(outaccel) == (0, -2) # It is now going the opposite direction
+    testPoint('Perfect rebound',
+            collisions.Point(2, 0).handleCollisionsVel([0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1))), 
+            (2, 0), # It rebounded perfectly and now is exactly where it started
+            (0, -2), # It is now going the opposite direction
+            (2, 0, 0, 2))
     # . = current pos, N = new pos
     #  .
     #+--+
     #| N|
     #|  |
     #+--+
-    outpos, outaccel = collisions.Point(0, 2).handleCollisionsVel([2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4, 1)))
-    assert roundTuple(outpos) == (0, 2) # It rebounded perfectly and now is exactly where it started
-    assert roundTuple(outaccel) == (-2, 0) # It is now going the opposite direction
+    testPoint('Perfect rebound 2 - side',
+            collisions.Point(0, 2).handleCollisionsVel([2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4, 1))),
+            (0, 2), # It rebounded perfectly and now is exactly where it started
+            (-2, 0), # It is now going the opposite direction
+            (0, 2, 2, 0))
     # . = current pos, N = new pos
     # +--+
     # |  |
     #.|N |
     # +--+
-    outpos, outaccel = collisions.Point(0, 0).handleCollisionsVel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1)))
-    assert roundTuple(outpos) == (2, 0) # It rebounded like a v shape
-    assert roundTuple(outaccel) == (2, -2)
+    testPoint('v shape',
+            collisions.Point(0, 0).handleCollisionsVel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1))),
+            (2, 0), # It rebounded like a v shape
+            (2, -2),
+            (0, 0, 2, 2))
+    # . = current pos, N = new pos
+    #.
+    #+--+
+    #| N|
+    #|  |
+    #+--+
+    
+    testPoint('Rebound top',
+            collisions.Circle(2, 0, 1).handleCollisionsVel([0, 2], collisions.Shapes(collisions.Rect(0, 2, 4, 4, 1))), 
+            (2, 0),
+            (0, -2), # It is now going the opposite direction
+            (2, 0, 0, 2))
+    # . = current pos, N = new pos
+    #  .
+    #+--+
+    #| N|
+    #|  |
+    #+--+
+    # TODO: More tests
+    # testPoint('Perfect rebound 2 - side',
+    #         collisions.Circle(0, 2).handleCollisionsVel([2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4, 1))),
+    #         (0, 2), # It rebounded perfectly and now is exactly where it started
+    #         (-2, 0), # It is now going the opposite direction
+    #         (0, 2, 2, 0))
+    # . = current pos, N = new pos
+    # +--+
+    # |  |
+    #.|N |
+    # +--+
+    # testPoint('v shape',
+    #         collisions.Circle(0, 0).handleCollisionsVel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1))),
+    #         (2, 0), # It rebounded like a v shape
+    #         (2, -2),
+    #         (0, 0, 2, 2))
     # . = current pos, N = new pos
     #.
     #+--+
@@ -95,36 +174,16 @@ def testCollisions():
     #|  |
     #+--+
 
+    # Test lines
     def testLine(testName, line, accel, shapes, expectedp1, expectedp2, expectedaccel, expectedtype):
         outLine, outaccel, v = collisions.Line(*line).handleCollisionsVel(accel, collisions.Shapes(*shapes), verbose=True)
-        errors = []
-        errortxts = []
-        if roundTuple(outLine[0]) != expectedp1:
-            errors.extend([0, 1])
-            errortxts.append(f'In p1: Expected {expectedp1}, got {outLine[0]}')
-        if roundTuple(outLine[1]) != expectedp2:
-            errors.extend([2, 3])
-            errortxts.append(f'In p2: Expected {expectedp2}, got {outLine[1]}')
-        if roundTuple(outaccel) != expectedaccel:
-            errors.extend([4, 5])
-            errortxts.append(f'In accel: Expected {expectedaccel}, got {outaccel}')
-        if v[0] != expectedtype:
-            errors.append(6)
-            errortxts.append(f'In type: Expected a collision type of {expectedtype}, got {v[0]}')
-        if errors != []:
-            print(f'TEST {testName} FAILED:')
-            debug(
-                ['p1x', 'p1y', 'p2x', 'p2y', 'accelx', 'accely', 'type'],
-                [*line[0], *line[1], *accel, 'N/A'],
-                [*outLine[0], *outLine[1], *outaccel, v[0]],
-                [*expectedp1, *expectedp2, *expectedaccel, expectedtype],
-                lambda li: f'[({li[0]}, {li[1]}), ({li[2]}, {li[3]})], ({li[4]}, {li[5]}), {li[6]}',
-                [0, 0, 2, 2, 5, 5, 6],
-                errors
-            )
-            raise AssertionError(
-                ' &\n'.join(errortxts)
-            )
+        Check(testName, 
+              ['p1x', 'p1y', 'p2x', 'p2y', 'accelx', 'accely', 'type'], 
+              [*line[0], *line[1], *accel, 'N/A'], 
+              [*outLine[0], *outLine[1], *outaccel, v[0]], 
+              [*expectedp1, *expectedp2, *expectedaccel, expectedtype], 
+              lambda li: f'({li[0]}, {li[1]}), ({li[2]}, {li[3]}), ({li[4]}, {li[5]}), {li[6]}'
+        )
     
     # Types of collisions:
     # 0: Point off point collision
@@ -199,12 +258,11 @@ def testCollisions():
     # |  |
     # +--+
 
-def timeStuff():
+    # TIMING
     shp1 = collisions.RotatedRect(0, 0, 1, 1, 45)
     shp2 = collisions.Polygon((0.5, 0), (1, 0.5), (0.5, 1), (0, 0.5))
-    compareTimes(shp1.handleCollisionsVel, shp2.handleCollisionsVel, [1, 1], collisions.Shapes(collisions.Rect(-99, 0, 10, 19)))
+    CompareTimes(shp1.handleCollisionsVel, shp2.handleCollisionsVel, [1, 1], collisions.Shapes(collisions.Rect(-99, 0, 10, 19)))
 
 if __name__ == "__main__":
-    testCollisions()
-    print('IT ALL WORKS YAY')
-    timeStuff()
+    testAll()
+    print('\nIT ALL WORKS YAY')
