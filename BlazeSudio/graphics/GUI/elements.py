@@ -369,8 +369,11 @@ class Button(Element):
                     if any([i.type == pygame.MOUSEBUTTONDOWN and i.button == pygame.BUTTON_LEFT for i in events]):
                         ret = self.func()
                         if ret:
-                            return ReturnState.REDRAW + ReturnState.CALL + ret
-                        return ReturnState.REDRAW + ReturnState.CALL
-                    return ReturnState.REDRAW
+                            if ReturnState.DONTCALL not in ret:
+                                return ReturnState.REDRAW + ReturnState.CALL + ret
+                        else:
+                            return ReturnState.REDRAW + ReturnState.CALL
+                    else:
+                        return ReturnState.REDRAW
         pygame.draw.rect(self.G.WIN, self.cols['BG'], r, border_radius=8)
         self.G.WIN.blit(self.TxtSur, (r.x + (r.width-self.TxtSur.get_width())/2, r.y + (r.height-self.TxtSur.get_height())/2))
