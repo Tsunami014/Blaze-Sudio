@@ -403,21 +403,26 @@ class ImageViewer(Element):
         self.offset[1] *= abs(newscroll) / abs(self.scroll)
         self.scroll = newscroll
     
-    def update(self, mousePos, events):
-        scrolling = any(e.type == pygame.MOUSEWHEEL for e in events)
-        for e in events:
-            if e.type == pygame.MOUSEWHEEL:
-                self.update_scroll(self.scroll + e.y*0.05)
-            
-            elif not scrolling and e.type == pygame.MOUSEBUTTONDOWN:
+    def update(self, mousePos, events, overrideSur=None):
+        if overrideSur is not None:
+            sur = overrideSur
+        else:
+            sur = self.sur
+        if not self.G.pause:
+            scrolling = any(e.type == pygame.MOUSEWHEEL for e in events)
+            for e in events:
+                if e.type == pygame.MOUSEWHEEL:
+                    self.update_scroll(self.scroll + e.y*0.05)
+                
+                elif not scrolling and e.type == pygame.MOUSEBUTTONDOWN:
+                    self.lastMP = mousePos
+            if pygame.mouse.get_pressed()[0]:
+                self.offset[0] -= mousePos[0] - self.lastMP[0]
+                self.offset[1] -= mousePos[1] - self.lastMP[1]
                 self.lastMP = mousePos
-        if pygame.mouse.get_pressed()[0]:
-            self.offset[0] -= mousePos[0] - self.lastMP[0]
-            self.offset[1] -= mousePos[1] - self.lastMP[1]
-            self.lastMP = mousePos
         self.G.WIN.blit(
-            pygame.transform.scale(self.sur, 
-                                   (self.sur.get_width()*abs(self.scroll), self.sur.get_height()*abs(self.scroll))
+            pygame.transform.scale(sur, 
+                                   (sur.get_width()*abs(self.scroll), sur.get_height()*abs(self.scroll))
             ), 
             self.stackP(), 
             (self.offset[0]-self.size[0]/2, self.offset[1]-self.size[1]/2, *self.size)
