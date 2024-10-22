@@ -152,12 +152,29 @@ class ColourPicker:
 
 class ColourPickerBTN(Element):
     type = GO.TCOLOURPICK
-    def __init__(self, G, pos, size=20, sizeofpicker=200):
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 size: int = 20, 
+                 sizeofpicker: int = 200,
+                 default: GO.C___ = (255, 10, 10)
+        ):
+        """
+        A colour picker button :)
+
+        Args:
+            G (Graphic): The graphic screen to attach to
+            pos (GO.P___): The position on the graphic screen this will be positioned in.
+            size (int, optional): The size of the button. Defaults to 20.
+            sizeofpicker (int, optional): The size of the picker window. Defaults to 200.
+            default (GO.C___, optional): The starting colour. Defaults to (255, 10, 10).
+        """
         super().__init__(G, pos, (size, size))
         self.sop = sizeofpicker
         self.picker = ColourPicker(0, 0, border=self.sop//10, w=self.sop)
         self.picker.p = (0, 0.5)
         self.active = False
+        self.set(*default)
     
     def get(self):
         """Get the rgb colour of the picker"""
