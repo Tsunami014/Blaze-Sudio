@@ -11,7 +11,8 @@ __all__ = [
     'Empty',
     'Static',
     'Text',
-    'Button'
+    'Button',
+    'ImageViewer'
 ]
 
 class Switch(Element):
@@ -377,3 +378,35 @@ class Button(Element):
                         return ReturnState.REDRAW
         pygame.draw.rect(self.G.WIN, self.cols['BG'], r, border_radius=8)
         self.G.WIN.blit(self.TxtSur, (r.x + (r.width-self.TxtSur.get_width())/2, r.y + (r.height-self.TxtSur.get_height())/2))
+
+class ImageViewer(Element):
+    def __init__(self, G, pos, sur, size=(300, 300)):
+        super().__init__(G, pos, size)
+        self.sur = sur
+        self.scroll = 1
+        self.offset = [size[0]/2, size[1]/2]
+        self.lastMP = (0, 0)
+    
+    def update(self, mousePos, events):
+        scrolling = any(e.type == pygame.MOUSEWHEEL for e in events)
+        for e in events:
+            if e.type == pygame.MOUSEWHEEL:
+                os = self.scroll
+                self.scroll += e.y*0.05
+
+                self.offset[0] *= abs(self.scroll) / abs(os)
+                self.offset[1] *= abs(self.scroll) / abs(os)
+            elif not scrolling and e.type == pygame.MOUSEBUTTONDOWN:
+                self.lastMP = mousePos
+        if pygame.mouse.get_pressed()[0]:
+            self.offset[0] -= mousePos[0] - self.lastMP[0]
+            self.offset[1] -= mousePos[1] - self.lastMP[1]
+            self.lastMP = mousePos
+        self.G.WIN.blit(
+            pygame.transform.scale(self.sur, 
+                                   (self.sur.get_width()*abs(self.scroll), self.sur.get_height()*abs(self.scroll))
+            ), 
+            self.stackP(), 
+            (self.offset[0]-self.size[0]/2, self.offset[1]-self.size[1]/2, *self.size)
+        )
+        pygame.draw.rect(self.G.WIN, GO.CBLACK, (*self.stackP(), *self.size), 2)
