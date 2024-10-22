@@ -148,6 +148,52 @@ def MGraphicsDemo():
     print(test('Right click or press anything or press ctrl+s!'))
     pygame.quit() # this here for very fast quitting
 
+def MThemeEdDemo():
+    try:
+        from tkinter.filedialog import askopenfilename
+    except ImportError as e:
+        print('Sorry, this demo requires Tkinter and it could not be found.')
+        raise e
+    from BlazeSudio.graphics import Graphic, GUI, options as GO
+    G = Graphic()
+    G.layers[0].add_many([
+        'Main'
+    ])
+
+    @G.Screen
+    def testButton(event, element=None, aborted=False):
+        if event == GO.ELOADUI:
+            G.Clear()
+            LTOP = GO.PNEW([0, 1], GO.PLTOP.func, 0, 0)
+            G.Container.MainBtn = GUI.Button(G, GO.PCCENTER, GO.CRED, 'Hello!')
+            G['Main'].extend([
+                G.Container.MainBtn,
+                GUI.Text(G, LTOP, 'Colour of button'),
+                GUI.ColourPickerBTN(G, LTOP),
+                GUI.Text(G, LTOP, 'Colour of text'),
+                GUI.ColourPickerBTN(G, LTOP, default=(0, 0, 0)),
+                GUI.Text(G, LTOP, 'Text in button'),
+                GUI.InputBox(G, LTOP, 100, GO.RHEIGHT, starting_text='Sample'),
+                GUI.Text(G, LTOP, 'Max width'),
+                GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=0, min=0)
+            ])
+        elif event == GO.ETICK:
+            G.Container.MainBtn.cols = {'BG': G['Main'][2].get(), 'TXT': G['Main'][4].get()}
+            G.Container.MainBtn.set(G['Main'][6].get(), allowed_width=(G['Main'][8].get() or None))
+
+    @G.Screen
+    def test(event, element=None, aborted=False):
+        if event == GO.ELOADUI:
+            G.Clear()
+            G['Main'].append(GUI.Text(G, GO.PCTOP, 'THEME EDITOR', font=GO.FTITLE))
+            rainbow = GO.CRAINBOW()
+            G['Main'].extend([
+                GUI.Button(G, GO.PLTOP, next(rainbow), 'Test button', func=testButton),
+            ])
+
+
+    test()
+
 def MCollisionsDemo(debug=False):
     import os
     if debug:
@@ -212,6 +258,8 @@ if __name__ == '__main__':
     label('Main stuff:') # Nodes
     button('Node Editor Demo',           MNodeEditorDemo              )
     button('Graphics Demo',              MGraphicsDemo                )
+    button('Theme Editor Demo',          MThemeEdDemo                 )
+    # TODO: Sound editor demo
     button('Collisions Demo',            MCollisionsDemo              )
     button('DEBUG Collisions Demo',      lambda: MCollisionsDemo(True))
 
