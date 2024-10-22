@@ -383,19 +383,32 @@ class ImageViewer(Element):
     def __init__(self, G, pos, sur, size=(300, 300)):
         super().__init__(G, pos, size)
         self.sur = sur
-        self.scroll = 1
-        self.offset = [size[0]/2, size[1]/2]
         self.lastMP = (0, 0)
+        self.centre()
+    
+    def reset(self):
+        self.scroll = 1
+        self.offset = [self.size[0]/2, self.size[1]/2]
+    
+    def centre(self):
+        if self.sur.get_size() == (0, 0):
+            self.reset()
+            return
+        self.scroll = 1
+        self.offset = [self.sur.get_width()/2, self.sur.get_height()/2]
+        self.update_scroll(max(self.size) / max(self.sur.get_size()))
+    
+    def update_scroll(self, newscroll):
+        self.offset[0] *= abs(newscroll) / abs(self.scroll)
+        self.offset[1] *= abs(newscroll) / abs(self.scroll)
+        self.scroll = newscroll
     
     def update(self, mousePos, events):
         scrolling = any(e.type == pygame.MOUSEWHEEL for e in events)
         for e in events:
             if e.type == pygame.MOUSEWHEEL:
-                os = self.scroll
-                self.scroll += e.y*0.05
-
-                self.offset[0] *= abs(self.scroll) / abs(os)
-                self.offset[1] *= abs(self.scroll) / abs(os)
+                self.update_scroll(self.scroll + e.y*0.05)
+            
             elif not scrolling and e.type == pygame.MOUSEBUTTONDOWN:
                 self.lastMP = mousePos
         if pygame.mouse.get_pressed()[0]:
