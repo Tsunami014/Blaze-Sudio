@@ -29,8 +29,7 @@ class ImageEditor(GUI.ImageViewer):
             self.sur = part.sur
         if self.lastSur != self.sur:
             self.lastSur = self.sur
-            self.offset = [self.size[0]/2, self.size[1]/2]
-            self.scroll = 1
+            self.centre()
         super().update(mousePos, events)
 
 def changeTheme(position, themePart):
