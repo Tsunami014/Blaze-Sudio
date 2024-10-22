@@ -1,5 +1,5 @@
 import pygame
-from BlazeSudio.graphics.GUI.base import Element
+from BlazeSudio.graphics.GUI.base import Element, ReturnState
 from BlazeSudio.graphics import options as GO # TODO: Replace more values in here with the GO variants
 
 # Thanks to https://stackoverflow.com/questions/73517832/how-to-make-an-color-picker-in-pygame :)
@@ -185,7 +185,7 @@ class ColourPickerBTN(Element):
         """Set the rgb colour of the picker"""
         self.picker.set_colour(pygame.Color(r, g, b))
     
-    def update(self, mousePos, events):
+    def update(self, mousePos, events, force_draw=False):
         if self.G.pause:
             self.active = False
         mouse_buttons = pygame.mouse.get_pressed()
@@ -207,6 +207,8 @@ class ColourPickerBTN(Element):
                 self.active = False
         if self.active:
             self.picker.update(mousePos)
+            if not force_draw:
+                return ReturnState.REDRAW
         
         if self.active:
             self.picker.draw(self.G.WIN)
