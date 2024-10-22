@@ -72,6 +72,9 @@ class ReturnState(Enum):
     
     REDRAW = 3
     """Redraw this element on top of all the others in its layer"""
+
+    DONTCALL = 3
+    """Don't call the graphic screen function on this element"""
     
     def __add__(self, otherState):
         if not isinstance(otherState, (ReturnState, ReturnGroup)):

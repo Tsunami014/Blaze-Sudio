@@ -217,7 +217,7 @@ class F___:
                 if prtable:
                     parts.append(self.font.render(part, 1, col))
                 else:
-                    parts.append(self.emojifont.render(part, 1, col))
+                    parts.append(pygame.transform.scale(self.emojifont.render(part, 1, col), (self.font.get_linesize(), self.font.get_linesize())))
                 part = ''
                 if i is not None:
                     prtable = isprt
