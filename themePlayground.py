@@ -4,8 +4,9 @@ except ImportError as e:
     print('Sorry, the Theme Playground requires Tkinter and it could not be found.')
     raise e
 from BlazeSudio.graphics import Graphic, GUI, options as GO
-from BlazeSudio.graphics.GUI.base import ReturnState
+from BlazeSudio.graphics.GUI.base import ReturnState, Element
 from threading import Thread
+import pygame
 G = Graphic()
 G.layers[0].add_many([
     'Main',
@@ -13,18 +14,60 @@ G.layers[0].add_many([
     'Right'
 ])
 
+class ImageEditor(Element):
+    def __init__(self, G, pos, themePart, size=(300, 300)):
+        super().__init__(G, pos, size)
+        self.themePart = themePart
+        self.theme = GUI.GLOBALTHEME.THEME
+        self.scroll = 1
+        self.offset = [0, 0]
+        self.lastMP = (0, 0)
+        self.active = False
+    
+    def update(self, mousePos, events):
+        if not self.active:
+            return
+        part = getattr(self.theme, self.themePart)
+        if part is None:
+            return
+        img = part.sur
+        scrolling = any(e.type == pygame.MOUSEWHEEL for e in events)
+        for e in events:
+            if e.type == pygame.MOUSEWHEEL:
+                # Calculate the position of the image center before zooming
+                img_center_x = (img.get_width() * abs(self.scroll)) / 2
+                img_center_y = (img.get_height() * abs(self.scroll)) / 2
+
+                self.scroll += e.y*0.05
+
+                # Calculate the new offset to keep the image centered after zooming
+                self.offset[0] += (img.get_width() * abs(self.scroll)) / 2 - img_center_x
+                self.offset[1] += (img.get_height() * abs(self.scroll)) / 2 - img_center_y
+            elif not scrolling and e.type == pygame.MOUSEBUTTONDOWN:
+                self.lastMP = mousePos
+        if pygame.mouse.get_pressed()[0]:
+            self.offset[0] -= mousePos[0] - self.lastMP[0]
+            self.offset[1] -= mousePos[1] - self.lastMP[1]
+            self.lastMP = mousePos
+        self.G.WIN.blit(pygame.transform.scale(img, (img.get_width()*abs(self.scroll), img.get_height()*abs(self.scroll))), self.stackP(), (*self.offset, *self.size))
+        pygame.draw.rect(self.G.WIN, GO.CBLACK, (*self.stackP(), *self.size), 2)
+
 def changeTheme(position, themePart):
     def change():
         def ask():
+            G.pause = True
             newf = askopenfilename(filetypes=[('Image file', '*.png *.jpg *.jpeg *.bmp *.gif')])
             if newf:
                 setattr(GUI.GLOBALTHEME.THEME, themePart, GUI.Image(newf))
                 t1.set(newf)
+                im.active = True
+            G.pause = False
         Thread(target=ask, daemon=True).start()
         return ReturnState.DONTCALL
     def unset():
         setattr(GUI.GLOBALTHEME.THEME, themePart, None)
         t1.set('None')
+        im.active = False
         return ReturnState.DONTCALL
     b1 = GUI.Button(G, position, GO.CORANGE, 'Change the image source 🔁', func=change, allowed_width=300)
     b2 = GUI.Button(G, position, GO.CRED, 'Unset the image source ❎', func=unset, allowed_width=300)
@@ -34,10 +77,13 @@ def changeTheme(position, themePart):
     else:
         n = n.fname
     t1 = GUI.Text(G, position, n, allowed_width=300)
+    im = ImageEditor(G, position, themePart)
+    im.active = n is not None
     return [
         b1,
         b2,
-        t1
+        t1,
+        im
     ]
 
 @G.Screen
