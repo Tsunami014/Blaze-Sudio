@@ -4,7 +4,7 @@ except ImportError as e:
     print('Sorry, the Theme Playground requires Tkinter and it could not be found.')
     raise e
 from BlazeSudio.graphics import Graphic, GUI, options as GO
-from BlazeSudio.graphics.GUI.base import ReturnState, Element
+from BlazeSudio.graphics.GUI.base import ReturnState
 from threading import Thread
 import pygame
 G = Graphic()
@@ -14,43 +14,24 @@ G.layers[0].add_many([
     'Right'
 ])
 
-class ImageEditor(Element):
+class ImageEditor(GUI.ImageViewer):
     def __init__(self, G, pos, themePart, size=(300, 300)):
-        super().__init__(G, pos, size)
         self.themePart = themePart
         self.theme = GUI.GLOBALTHEME.THEME
-        self.scroll = 1
-        self.offset = [0, 0]
-        self.lastMP = (0, 0)
-        self.active = False
+        self.lastSur = None
+        super().__init__(G, pos, pygame.Surface((0, 0)), size)
     
     def update(self, mousePos, events):
-        if not self.active:
-            return
         part = getattr(self.theme, self.themePart)
         if part is None:
-            return
-        img = part.sur
-        scrolling = any(e.type == pygame.MOUSEWHEEL for e in events)
-        for e in events:
-            if e.type == pygame.MOUSEWHEEL:
-                # Calculate the position of the image center before zooming
-                img_center_x = (img.get_width() * abs(self.scroll)) / 2
-                img_center_y = (img.get_height() * abs(self.scroll)) / 2
-
-                self.scroll += e.y*0.05
-
-                # Calculate the new offset to keep the image centered after zooming
-                self.offset[0] += (img.get_width() * abs(self.scroll)) / 2 - img_center_x
-                self.offset[1] += (img.get_height() * abs(self.scroll)) / 2 - img_center_y
-            elif not scrolling and e.type == pygame.MOUSEBUTTONDOWN:
-                self.lastMP = mousePos
-        if pygame.mouse.get_pressed()[0]:
-            self.offset[0] -= mousePos[0] - self.lastMP[0]
-            self.offset[1] -= mousePos[1] - self.lastMP[1]
-            self.lastMP = mousePos
-        self.G.WIN.blit(pygame.transform.scale(img, (img.get_width()*abs(self.scroll), img.get_height()*abs(self.scroll))), self.stackP(), (*self.offset, *self.size))
-        pygame.draw.rect(self.G.WIN, GO.CBLACK, (*self.stackP(), *self.size), 2)
+            self.sur = pygame.Surface((0, 0))
+        else:
+            self.sur = part.sur
+        if self.lastSur != self.sur:
+            self.lastSur = self.sur
+            self.offset = [self.size[0]/2, self.size[1]/2]
+            self.scroll = 1
+        super().update(mousePos, events)
 
 def changeTheme(position, themePart):
     def change():
