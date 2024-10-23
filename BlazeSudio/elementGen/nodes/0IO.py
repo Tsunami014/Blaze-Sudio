@@ -1,4 +1,3 @@
-
 def AnyInput(Val):
     """AnyInput
     Output any specific value.

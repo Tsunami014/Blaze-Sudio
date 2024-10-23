@@ -55,13 +55,7 @@ class InOut:
     def canAccept(self, otherinout):
         if self.isinput == otherinout.isinput or self.parent == otherinout.parent:
             return False
-        if self.isinput:
-            daIn = self
-            daOut = otherinout
-        else:
-            daIn = otherinout
-            daOut = self
-        return daIn.strtype == 'any' or daOut.strtype == 'any' or daOut.strtype == daIn.strtype
+        return True
     
     def __str__(self):
         return f'<{"Input" if self.isinput else "Output"} "{self.name}", of type {type(self.type)} with value {self.value}>'
