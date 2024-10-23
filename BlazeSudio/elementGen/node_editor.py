@@ -229,7 +229,6 @@ and if it is None then it will not save. Defaults to None.
                         if G.Container.selecting is None or G.Container.selecting[1].canAccept(n):
                             filleds.append((c, n))
                             if lf:
-                                deleteConn((node, n))
                                 G.Container.selecting = [False, n, node, c]
                     sur.blit(s, (p[0]+mx, i2+p[1]))
                     mx2 = max(mx2, s.get_width())

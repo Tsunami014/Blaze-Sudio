@@ -1,4 +1,4 @@
-from BlazeSudio.elementGen import Image as _Image
+from BlazeSudio.elementGen import Image as _Image, types as _Ts
 import PIL.ImageChops as _ImageChops
 
 def Overlay(img1, img2):
@@ -12,4 +12,4 @@ def Overlay(img1, img2):
     Returns:
         Img (Image): The overlayed image.
     """
-    return _Image.from_PIL(_ImageChops.overlay(img1.to_PIL(), img2.to_PIL()))
+    return _Image.from_PIL(_ImageChops.overlay(_Ts.convertTo(img1, _Image).to_PIL(), _Ts.convertTo(img2, _Image).to_PIL()))

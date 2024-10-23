@@ -1,4 +1,5 @@
 from BlazeSudio.elementGen import Image
+from BlazeSudio.graphics import options as GO
 from typing import Any
 
 types = {
@@ -31,3 +32,29 @@ defaults = {
     'image': Image(),
     'any': ''
 }
+
+def convertTo(value, type):
+    valTyp = value.__class__
+    if type in (float, int, str):
+        try:
+            return type(value)
+        except:
+            return type()
+    elif type is tuple:
+        if valTyp is tuple:
+            return value
+        elif valTyp in (int, str):
+            return tuple([value]*3)
+        return defaults['colour']
+    elif type is bool:
+        return bool(value)
+    elif type is Image:
+        if valTyp is Image:
+            return value
+        elif valTyp is tuple:
+            return Image([[value]])
+        elif valTyp in (int, float):
+            return Image([[(value, value, value)]])
+        elif valTyp is str:
+            return Image.from_pygame(GO.FFONT.render(value, GO.CWHITE))
+        return Image()
