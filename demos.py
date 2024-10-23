@@ -137,9 +137,10 @@ def MGraphicsDemo():
                     G['events'].append(GUI.Toast(G, 'Saved! (Don\'t worry - this does nothing)', GO.CGREEN))
             elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
                 opts = ['HI', 'BYE', 'HI AGAIN']
-                resp = G.Dropdown(opts)
-                if isinstance(resp, int):
-                    G.Container.txt.set(opts[resp])
+                def dropdownSelect(resp):
+                    if isinstance(resp, int):
+                        G.Container.txt.set(opts[resp])
+                G['events'].append(GUI.Dropdown(G, pygame.mouse.get_pos(), opts, func=dropdownSelect))
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
             S = G['speshs'][1]

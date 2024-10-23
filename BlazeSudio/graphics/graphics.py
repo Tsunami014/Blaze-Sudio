@@ -209,36 +209,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             return ret
         
         return func2
-
-    def Dropdown(self, 
-                 elements: list, 
-                 spacing: int = 5, 
-                 font: GO.F___=GO.FFONT, 
-                 activecol=GO.CACTIVE, 
-                 bgcol=GO.CBLACK, 
-                 txtcol=GO.CWHITE, 
-                 pos=None):
-        """Spawns a GUI.dropdown!
-        This will pause everything else! You will need to click out of the GUI.dropdown to exit it.
-
-        Args:
-        elements (list): The choices that you can select
-        spacing (int, optional): The spacing between each element, by default 5
-        font (GO.F___, optional): The font of the text. For ease of use default fonts are provided as GO.F___ (e.g. GO.FCODEFONT), by default GO.FFONT
-        activecol (GO.C___, optional): The colour when you hover your mouse over an option, by default GO.CACTIVE
-        bgcol (GO.C___, optional): The colour of the background of the GUI.dropdown, by default GO.CBLACK
-        txtcol (GO.C___, optional): The colour of the text of the GUI.dropdown, by default GO.CWHITE
-        pos (tuple[int, int], optional): The position of the GUI.dropdown, by default the mouse location
-
-        Returns:
-        int/None/False
-            The index of the input elements list that was selected, else None if nothing selected
-            False if you exited from the menu using escape or closing the window. This will also exit the GUI.
-        """
-        d = GUI.dropdown(self, elements, spacing, font, bgcol, txtcol, activecol, pos)
-        if d is False:
-            self.run = False
-        return d
     
     def Reload(self):
         """

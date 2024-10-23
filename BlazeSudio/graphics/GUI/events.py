@@ -1,80 +1,78 @@
-from typing import Iterable, Literal
+from typing import Callable, Iterable, Literal
 import pygame
 from math import sqrt
-from BlazeSudio.graphics.GUI.base import Element
+from BlazeSudio.graphics.GUI.base import Element, ReturnState
 from BlazeSudio.graphics import mouse, options as GO # TODO: Replace more things in here with GO stuff
 
-__all__ = ['dropdown', 'Toast']
+__all__ = ['Dropdown', 'Toast']
 
-# TODO: Make an element
-def dropdown(G, 
-             elms: list[str], 
-             spacing: int = 5, 
-             font: GO.F___ = GO.FFONT, 
-             bgcolour: GO.C___ = GO.CBLACK, 
-             txtcolour: GO.C___ = GO.CWHITE, 
-             selectedcol: GO.C___ = GO.CBLUE, 
-             mpos: Iterable[int] = None
-            ) -> None|Literal[False]|int:
-    """
-    Make a dropdown! A better way to do this is through `Graphic.Dropdown` which is preferrable as it also handles exiting.
+class Dropdown(Element):
+    def __init__(self,
+                 G, 
+                 pos: list[int],
+                 elms: list[str], 
+                 spacing: int = 5, 
+                 font: GO.F___ = GO.FFONT, 
+                 bgcolour: GO.C___ = GO.CBLACK, 
+                 txtcolour: GO.C___ = GO.CWHITE, 
+                 selectedcol: GO.C___ = GO.CBLUE, 
+                 func: Callable = lambda selected: None
+                ):
+        """
+        Make a dropdown!
 
-    This will stop anything from occuring until the dropdown has finished.
-
-    Args:
-        G (Graphic): The graphic screen to attach to.
-        elms (list[str]): The elements present in the dropdown to choose from.
-        spacing (int, optional): The spacing between the text and the outside of their enclosing rects. Defaults to 5.
-        font (GO.F___, optional): The font to render the text with. Defaults to GO.FFONT.
-        bgcolour (GO.C___, optional): The colour of the background of the dropdown. Defaults to GO.CBLACK.
-        txtcolour (GO.C___, optional): The colour of the text inside the dropdown. Defaults to GO.CWHITE.
-        selectedcol (GO.C___, optional): The colour of the selection highlight. Defaults to GO.CBLUE.
-        mpos (Iterable[int], optional): The place to spawn the dropdown on. Defaults to the current mouse position.
-
-    Returns:
-        None|False|int: 
-         - None if clicked out
-         - False if quit program
-         - int of the idx of the selected element in the input list if selected.
-    """
-    win = G.WIN
-    elements = [font.render(i, txtcolour) for i in elms]
-    mx = max([i.get_width() + spacing*2 for i in elements])
-    my = sum([i.get_height() + spacing*2 for i in elements])
-    rects = []
-    if mpos is None:
-        mpos = pygame.mouse.get_pos()
-    pos = mpos
-    for i in elements:
-        sze = i.get_size()
-        sze = (mx, sze[1] + spacing*2)
-        rects.append(pygame.Rect(*pos, *sze))
-        pos = (pos[0], pos[1] + sze[1])
-    sur = win.copy()
-    while True:
-        win.fill((255, 255, 255))
-        win.blit(sur, (0, 0))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                return False
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
-                for i in range(len(rects)):
-                    if rects[i].collidepoint(*pygame.mouse.get_pos()):
-                        return i
-                return None
-        pygame.draw.rect(win, bgcolour, pygame.Rect(*mpos, mx, my), border_radius=8)
-        for i in range(len(rects)):
-            if rects[i].collidepoint(*pygame.mouse.get_pos()):
+        Args:
+            G (Graphic): The graphic screen to attach to.
+            pos (list[int, int]): The position on the screen to spawn this dropdown. Having GO.P___ is kinda weird for this...
+            elms (list[str]): The elements present in the dropdown to choose from.
+            spacing (int, optional): The spacing between the text and the outside of their enclosing rects. Defaults to 5.
+            font (GO.F___, optional): The font to render the text with. Defaults to GO.FFONT.
+            bgcolour (GO.C___, optional): The colour of the background of the dropdown. Defaults to GO.CBLACK.
+            txtcolour (GO.C___, optional): The colour of the text inside the dropdown. Defaults to GO.CWHITE.
+            selectedcol (GO.C___, optional): The colour of the selection highlight. Defaults to GO.CBLUE.
+            func (Callable, optional): The function to call when an option is selected. Defaults to a do nothing func. \
+                Func *must* have an input argument which will be the id of the selected element in the list that was selected or None if nothing was selected.
+        """
+        G.pause = True
+        self.spacing = spacing
+        self.elements = [font.render(i, txtcolour) for i in elms]
+        mx = max([i.get_width() + spacing*2 for i in self.elements])
+        my = sum([i.get_height() + spacing*2 for i in self.elements])
+        self.bgcolour = bgcolour
+        self.selectedcol = selectedcol
+        self.func = func
+        self.rects = []
+        y = 0
+        for i in self.elements:
+            sze = i.get_size()
+            sze = (mx, sze[1] + self.spacing*2)
+            self.rects.append(pygame.Rect(pos[0], pos[1]+y, *sze))
+            y += sze[1]
+        super().__init__(G, GO.PSTATIC(*pos), (mx, my))
+    
+    def update(self, mousePos, events, force_redraw=False):
+        if not force_redraw:
+            return ReturnState.REDRAW
+        
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
+                for i in range(len(self.rects)):
+                    if self.rects[i].collidepoint(*mousePos):
+                        self.func(i)
+                self.G.pause = False
+                self.func(None)
+                self.remove()
+                return
+        pygame.draw.rect(self.G.WIN, self.bgcolour, pygame.Rect(*self.stackP(), *self.size), border_radius=8)
+        for i in range(len(self.rects)):
+            if self.rects[i].collidepoint(*mousePos):
                 if pygame.mouse.get_pressed()[0]:
                     mouse.Mouse.set(mouse.MouseState.CLICKING)
                 else:
                     mouse.Mouse.set(mouse.MouseState.HOVER)
-                pygame.draw.rect(win, selectedcol, rects[i], border_radius=8)
-            p = rects[i].topleft
-            win.blit(elements[i], (p[0] + spacing, p[1] + spacing))
-        pygame.display.update()
+                pygame.draw.rect(self.G.WIN, self.selectedcol, self.rects[i], border_radius=8)
+            p = self.rects[i].topleft
+            self.G.WIN.blit(self.elements[i], (p[0] + self.spacing, p[1] + self.spacing))
 
 class Toast(Element):
     type = GO.TTOAST
