@@ -30,7 +30,10 @@ class ImageEditor(GUI.ImageViewer):
         if self.lastSur != self.sur:
             self.lastSur = self.sur
             self.centre()
-        super().update(mousePos, events)
+        ns = self.sur.copy()
+        #pygame.draw.circle(ns, GO.CBLACK, self.unscale_pos(mousePos), 5)
+        #pygame.draw.line(ns, GO.CBLACK, (0, self.unscale_pos(mousePos)[1]), (ns.get_width(), self.unscale_pos(mousePos)[1]), 5)
+        super().update(mousePos, events, ns)
 
 def changeTheme(position, themePart):
     def change():
