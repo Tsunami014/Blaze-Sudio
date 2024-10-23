@@ -8,6 +8,7 @@ from BlazeSudio.graphics.stuff import Collection
 __all__ = [
     'TerminalBar',
     'ScrollableFrame',
+    'BaseFrame',
     'GraphicBase'
 ]
 
@@ -25,20 +26,26 @@ class GraphicBase:
         pass
 
     # Things that don't need replacing:
-    def _updateStuff(self, mousepos, evnts, func):
+    def _updateStuff(self, mousepos, evnts):
+        calls = []
         returns = self.Stuff.update(mousepos, evnts.copy())
         for obj in returns:
             retValue = returns[obj]
             if retValue is None:
+                continue
+
+            if isinstance(retValue, list):
+                calls.extend(retValue)
                 continue
             
             for ret in retValue.get():
                 if ret == ReturnState.ABORT:
                     self.Abort()
                 elif ret == ReturnState.CALL:
-                    func(GO.EELEMENTCLICK, obj)
+                    calls.append(obj)
                 elif ret == ReturnState.REDRAW:
                     obj.update(mousepos, evnts.copy(), True) # Redraw forcefully on top of everything else
+        return calls
     
     def getAllElms(self):
         return self.Stuff.getall()
@@ -53,7 +60,67 @@ class GraphicBase:
     def layers(self):
         return self.Stuff.layers
 
-class ScrollableFrame(GraphicBase, Element):
+class BaseFrame(GraphicBase, Element):
+    type = GO.TSCROLLABLE
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 size: Iterable[int], 
+                 outline: int = 10, 
+                 outlinecol: GO.C___ = GO.CGREY, 
+                 bgcol: GO.C___ = GO.CWHITE
+                ):
+        """
+        The base Frame object from which many other Frames are made from.
+
+        Args:
+            G (Graphic): The Graphic object to add this to.
+            pos (GO.P___): The position of this object in the Graphic screen.
+            size (Iterable[int]): The size of the screen
+            outline (int, optional): The thickness of the outline of the element. Defaults to 10.
+            outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
+            bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
+        """
+        super().__init__(G, pos, size)
+        self.WIN = pygame.Surface(size)
+        self.bgcol = bgcol
+        self.outline = (outline, outlinecol)
+        self.stacks = Stack()
+        self.Stuff = Collection()
+    
+    @property
+    def sizeOfScreen(self):
+        return self.WIN.get_size()
+    
+    @sizeOfScreen.setter
+    def sizeOfScreen(self, newSze):
+        self.WIN = pygame.Surface(newSze)
+        for elm in self.getAllElms():
+            elm.stackP.winSze = newSze
+    
+    def get(self):
+        """Get all the stuff in the frame"""
+        return self.Stuff
+    
+    def update(self, mousePos, events):
+        x, y = self.stackP()
+        self.WIN.fill(self.bgcol)
+        if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
+            mp = (mousePos[0]-x, mousePos[1]-y)
+        else:
+            mp = (float('inf'), float('inf'))
+        
+        calls = self._updateStuff(mp, events)
+        self.G.WIN.blit(self.WIN, (x, y))
+        if self.outline[0] != 0:
+            pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
+        
+        return calls
+    
+    def Abort(self):
+        self.G.Abort()
+
+class ScrollableFrame(BaseFrame):
     type = GO.TSCROLLABLE
     def __init__(self, 
                  G, 
@@ -78,24 +145,10 @@ class ScrollableFrame(GraphicBase, Element):
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
-        super().__init__(G, pos, goalrect)
+        super().__init__(G, pos, goalrect, outline, outlinecol, bgcol)
         self.WIN = pygame.Surface(sizeOfScreen)
-        self.bgcol = bgcol
         self.bar = bar
         self.scroll = 0
-        self.outline = (outline, outlinecol)
-        self.stacks = Stack()
-        self.Stuff = Collection()
-    
-    @property
-    def sizeOfScreen(self):
-        return self.WIN.get_size()
-    
-    @sizeOfScreen.setter
-    def sizeOfScreen(self, newSze):
-        self.WIN = pygame.Surface(newSze)
-        for elm in self.getAllElms():
-            elm.stackP.winSze = newSze
     
     def get(self):
         """Get the scroll value"""
@@ -119,7 +172,7 @@ class ScrollableFrame(GraphicBase, Element):
             mp = (mousePos[0]-x, mousePos[1]-y-self.scroll)
         else:
             mp = (float('inf'), float('inf'))
-        self._updateStuff(mp, events, lambda *args, **kwargs: None)
+        calls = self._updateStuff(mp, events)
         self.G.WIN.blit(self.WIN, (x, y), pygame.Rect(0, -self.scroll, *self.size))
         if self.outline[0] != 0:
             pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
@@ -133,10 +186,7 @@ class ScrollableFrame(GraphicBase, Element):
                 pygame.draw.line(self.G.WIN, (200, 50, 50), (p[0], p[1]-20), (p[0], p[1]+20), 10)
             except:
                 pass
-    
-    def Abort(self):
-        self.G.Abort()
-
+        return calls
 
 class TerminalBar(Element):
     def __init__(self, G, spacing=5):
