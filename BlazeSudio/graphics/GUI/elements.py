@@ -425,6 +425,11 @@ class ImageViewer(Element):
         self.offset[1] *= abs(newscroll) / abs(self.scroll)
         self.scroll = newscroll
     
+    def unscale_pos(self, pos):
+        thisP = self.stackP()
+        pos = (pos[0] - thisP[0], pos[1] - thisP[1])
+        return (pos[0] - self.size[0] / 2 + self.offset[0]) / abs(self.scroll), (pos[1] - self.size[1] / 2 + self.offset[1]) / abs(self.scroll)
+    
     def update(self, mousePos, events, overrideSur=None):
         if overrideSur is not None:
             sur = overrideSur
@@ -445,7 +450,7 @@ class ImageViewer(Element):
                 self.offset[1] -= mousePos[1] - self.lastMP[1]
                 self.lastMP = mousePos
         newSur = pygame.Surface((self.size[0]/abs(self.scroll), self.size[1]/abs(self.scroll)), pygame.SRCALPHA)
-        newSur.blit(sur, (self.size[0]/2/abs(self.scroll)-self.offset[0]/abs(self.scroll), self.size[1]/2/abs(self.scroll)-self.offset[1]/abs(self.scroll)))
+        newSur.blit(sur, ((self.size[0]/2-self.offset[0])/abs(self.scroll), (self.size[1]/2-self.offset[1])/abs(self.scroll)))
         self.G.WIN.blit(
             buildTransparencySur(self.size), 
             pos
