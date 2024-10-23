@@ -8,6 +8,7 @@ from BlazeSudio.graphics.stuff import Collection
 __all__ = [
     'TerminalBar',
     'ScrollableFrame',
+    'ScaledFrame',
     'BaseFrame',
     'GraphicBase'
 ]
@@ -94,6 +95,8 @@ class BaseFrame(GraphicBase, Element):
     
     @sizeOfScreen.setter
     def sizeOfScreen(self, newSze):
+        if newSze == self.sizeOfScreen:
+            return
         self.WIN = pygame.Surface(newSze)
         for elm in self.getAllElms():
             elm.stackP.winSze = newSze
@@ -121,7 +124,6 @@ class BaseFrame(GraphicBase, Element):
         self.G.Abort()
 
 class ScrollableFrame(BaseFrame):
-    type = GO.TSCROLLABLE
     def __init__(self, 
                  G, 
                  pos: GO.P___, 
@@ -159,16 +161,18 @@ class ScrollableFrame(BaseFrame):
         self.scroll = scroll
     
     def update(self, mousePos, events):
-        for ev in events:
-            if ev.type == pygame.MOUSEWHEEL:
-                y = ev.y - 1
-                if 0 <= y <= 1:
-                    y = 2
-                self.scroll += y * 2
-                self.scroll = min(max(-self.sizeOfScreen[1]+self.size[1], self.scroll), 0)
+        mouseColliding = pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos)
+        if mouseColliding:
+            for ev in events:
+                if ev.type == pygame.MOUSEWHEEL:
+                    y = ev.y - 1
+                    if 0 <= y <= 1:
+                        y = 2
+                    self.scroll += y * 2
+                    self.scroll = min(max(-self.sizeOfScreen[1]+self.size[1], self.scroll), 0)
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
-        if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
+        if mouseColliding:
             mp = (mousePos[0]-x, mousePos[1]-y-self.scroll)
         else:
             mp = (float('inf'), float('inf'))
@@ -186,6 +190,64 @@ class ScrollableFrame(BaseFrame):
                 pygame.draw.line(self.G.WIN, (200, 50, 50), (p[0], p[1]-20), (p[0], p[1]+20), 10)
             except:
                 pass
+        return calls
+
+class ScaledFrame(BaseFrame):
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 size: Iterable[int], 
+                 scale: int = 2,
+                 outline: int = 10, 
+                 outlinecol: GO.C___ = GO.CGREY, 
+                 bgcol: GO.C___ = GO.CWHITE
+                ):
+        """
+        The base Frame object from which many other Frames are made from.
+
+        Args:
+            G (Graphic): The Graphic object to add this to.
+            pos (GO.P___): The position of this object in the Graphic screen.
+            size (Iterable[int]): The size of the screen.
+            scale (int, optional): The scale of the screen. Defaults to 2.
+            outline (int, optional): The thickness of the outline of the element. Defaults to 10.
+            outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
+            bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
+        """
+        super().__init__(G, pos, size, outline, outlinecol, bgcol)
+        self._scale = None
+        self.scale = scale
+    
+    @property
+    def sizeOfScreen(self):
+        return self.WIN.get_size()
+    
+    @property
+    def scale(self):
+        return self._scale
+    
+    @scale.setter
+    def scale(self, newSze):
+        if newSze == self._scale:
+            return
+        if newSze <= 0:
+            raise ValueError("Scale cannot be less than or equal to 0")
+        self._scale = newSze
+        self.WIN = pygame.Surface((self.size[0]/self._scale, self.size[1]/self._scale))
+        for elm in self.getAllElms():
+            elm.stackP.winSze = self.sizeOfScreen
+    
+    def update(self, mousePos, events):
+        x, y = self.stackP()
+        self.WIN.fill(self.bgcol)
+        if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
+            mp = ((mousePos[0]-x)/self._scale, (mousePos[1]-y)/self._scale)
+        else:
+            mp = (float('inf'), float('inf'))
+        calls = self._updateStuff(mp, events)
+        self.G.WIN.blit(pygame.transform.scale(self.WIN, self.size), (x, y))
+        if self.outline[0] != 0:
+            pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
         return calls
 
 class TerminalBar(Element):
