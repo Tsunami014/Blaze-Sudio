@@ -31,7 +31,7 @@ setup(
     packages=packages,
     include_package_data=True,
     package_data={'BlazeSudio': [
-        'data/**', 
+        'elementGen/nodes/*.py', 
         'ldtk/internal-icons.png',
         'graphics/GUI/textboxify/data/**'
     ], 'BlazeSudio.collisions': ['**/*.so', '**/*.pyd']},
