@@ -90,6 +90,14 @@ class BaseFrame(GraphicBase, Element):
         self.Stuff = Collection()
     
     @property
+    def pause(self):
+        return self.G.pause
+    
+    @pause.setter
+    def pause(self, newpause):
+        self.G.pause = newpause
+    
+    @property
     def sizeOfScreen(self):
         return self.WIN.get_size()
     

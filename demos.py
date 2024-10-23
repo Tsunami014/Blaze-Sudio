@@ -65,6 +65,8 @@ def MGraphicsDemo():
             G['endElms'].append(G.Container.inp)
             G['space'].append(GUI.Empty(G, GO.PCCENTER, (0, 50)))
             G['endElms'].append(GUI.NumInputBox(G, GO.PCCENTER, 100, font=GO.FFONT, min=-255, max=255))
+            G['space'].append(GUI.Empty(G, GO.PCCENTER, (0, 50)))
+            G['endElms'].append(GUI.DropdownButton(G, GO.PCCENTER, ['HI', 'BYE']))
 
             G['space'].append(GUI.Empty(G, LBOT, (0, 20)))
             G['buttons'].append(GUI.Button(G, LBOT, GO.CYELLOW, 'Button 1 :D'))
