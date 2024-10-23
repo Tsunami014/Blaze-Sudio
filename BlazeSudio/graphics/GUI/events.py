@@ -16,6 +16,8 @@ class Dropdown(Element):
                  bgcolour: GO.C___ = GO.CBLACK, 
                  txtcolour: GO.C___ = GO.CWHITE, 
                  selectedcol: GO.C___ = GO.CBLUE, 
+                 pauseG: bool = True,
+                 extraW: int = None,
                  func: Callable = lambda selected: None
                 ):
         """
@@ -30,13 +32,16 @@ class Dropdown(Element):
             bgcolour (GO.C___, optional): The colour of the background of the dropdown. Defaults to GO.CBLACK.
             txtcolour (GO.C___, optional): The colour of the text inside the dropdown. Defaults to GO.CWHITE.
             selectedcol (GO.C___, optional): The colour of the selection highlight. Defaults to GO.CBLUE.
+            pauseG (bool, optional): Whether to pause the graphic screen when the dropdown is active. Defaults to True.
+            extraW (int, optional): Extra width to add to the dropdown. Defaults to None.
             func (Callable, optional): The function to call when an option is selected. Defaults to a do nothing func. \
                 Func *must* have an input argument which will be the id of the selected element in the list that was selected or None if nothing was selected.
         """
-        G.pause = True
+        if pauseG:
+            G.pause = True
         self.spacing = spacing
         self.elements = [font.render(i, txtcolour) for i in elms]
-        mx = max([i.get_width() + spacing*2 for i in self.elements])
+        mx = max([i.get_width() + spacing*2 for i in self.elements]+[extraW or 0])
         my = sum([i.get_height() + spacing*2 for i in self.elements])
         self.bgcolour = bgcolour
         self.selectedcol = selectedcol
@@ -56,11 +61,15 @@ class Dropdown(Element):
         
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
+                self.G.pause = False
+                ran = False
                 for i in range(len(self.rects)):
                     if self.rects[i].collidepoint(*mousePos):
                         self.func(i)
-                self.G.pause = False
-                self.func(None)
+                        ran = True
+                        break
+                if not ran:
+                    self.func(None)
                 self.remove()
                 return
         pygame.draw.rect(self.G.WIN, self.bgcolour, pygame.Rect(*self.stackP(), *self.size), border_radius=8)

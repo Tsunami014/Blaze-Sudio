@@ -4,6 +4,7 @@ from string import printable
 from BlazeSudio.graphics import mouse, options as GO
 from BlazeSudio.graphics.GUI.base import Element, ReturnState
 from BlazeSudio.graphics.GUI.theme import GLOBALTHEME
+from BlazeSudio.graphics.GUI.events import Dropdown
 
 __all__ = [
     'Switch',
@@ -13,6 +14,7 @@ __all__ = [
     'Static',
     'Text',
     'Button',
+    'DropdownButton',
     'ImageViewer'
 ]
 
@@ -390,7 +392,7 @@ class Button(Element):
         self.cols = {"BG": BGcol, "TXT": TXTcol}
         self.func = func
 
-        self.set(txt) # Sets self.txt and generates self.TxtSur
+        self._set_txt(txt) # Sets self.txt and generates self.TxtSur
         super().__init__(G, pos, self.size)
     
     def get(self):
@@ -399,6 +401,9 @@ class Button(Element):
     
     def set(self, newTxt, **settings):
         """Set the text on the button, and optionally update some text settings settings."""
+        self._set_txt(newTxt, **settings)
+
+    def _set_txt(self, newTxt, **settings):
         self.settings.update(settings)
         self.txt = newTxt
         self.TxtSur = self.font.render(self.txt, self.cols['TXT'], **self.settings)
@@ -437,6 +442,78 @@ class Button(Element):
         else:
             self.G.WIN.blit(GLOBALTHEME.THEME.BUTTON.get(), r)
         self.G.WIN.blit(self.TxtSur, (r.x + (r.width-self.TxtSur.get_width())/2, r.y + (r.height-self.TxtSur.get_height())/2))
+
+class DropdownButton(Button): # TODO: Different button and dropdown colours
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 opts: list[str],
+                 BGcol: GO.C___ = GO.CBLACK, 
+                 TXTcol: GO.C___ = GO.CWHITE, 
+                 Selectcol: GO.C___ = GO.CBLUE, 
+                 format: str = '[{0}]',
+                 default: int = 0,
+                 font: GO.F___ = GO.FFONT,
+                 spacing: int = 2,
+                 func: Callable = lambda selected: None,
+                 **settings
+                ):
+        self.opts = opts
+        self._format = format
+        self.actualuserfunc = func
+        self.selected = default
+        self.dropdown = None
+        super().__init__(G, pos, BGcol, self.formatted, TXTcol, font, spacing, 0, self.onclick, **settings)
+        self.cols.update({"SELECT": Selectcol})
+    
+    @property
+    def formatted(self):
+        return self._format.format(self.opts[self.selected])
+    
+    def set(self, num, **settings):
+        """Set the index of the current selected object (None = don't set) in the list of selected objects \
+            and optionally some text render settings."""
+        self.settings.update(settings)
+        self.selected = num or self.get()
+        self._set_txt(self.formatted)
+    
+    def get(self, index=False):
+        """Get the current selected index or object."""
+        if index:
+            return self.selected
+        else:
+            return self.opts[self.selected]
+    
+    def actualfunc(self, resp):
+        self.dropdown = None
+        if resp is not None:
+            self.selected = resp
+            self._set_txt(self.formatted)
+        self.actualuserfunc(resp)
+    
+    def onclick(self):
+        x, y = self.stackP()
+        self.dropdown = Dropdown(self.G, 
+                                 (x, y+self.size[1]), 
+                                 self.opts, 
+                                 self.spacing, 
+                                 self.font, 
+                                 self.cols['BG'], 
+                                 self.cols['TXT'],
+                                 self.cols['SELECT'],
+                                 False,
+                                 self.size[0],
+                                 self.actualfunc
+        )
+
+    def update(self, mousePos, events, force_draw=False):
+        resp = None
+        if self.dropdown is not None:
+            resp = self.dropdown.update(mousePos, events, force_draw)
+        if super().update(mousePos, events, False) is not None:
+            super().update(mousePos, events, True)
+        
+        return resp
 
 def buildTransparencySur(size, squareSize=10):
     # The checked pattern
