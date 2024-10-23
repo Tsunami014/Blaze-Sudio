@@ -379,6 +379,16 @@ class Button(Element):
         pygame.draw.rect(self.G.WIN, self.cols['BG'], r, border_radius=8)
         self.G.WIN.blit(self.TxtSur, (r.x + (r.width-self.TxtSur.get_width())/2, r.y + (r.height-self.TxtSur.get_height())/2))
 
+def buildTransparencySur(size, squareSize=10):
+    # The checked pattern
+    s = pygame.Surface(size)
+    s.fill((100, 100, 100))
+    for x in range(0, size[0], squareSize):
+        for y in range(0, size[1], squareSize):
+            if (x//squareSize + y//squareSize) % 2 == 0:
+                pygame.draw.rect(s, (200, 200, 200), (x, y, squareSize, squareSize))
+    return s
+
 class ImageViewer(Element):
     def __init__(self, G, pos, sur, size=(300, 300)):
         super().__init__(G, pos, size)
@@ -408,7 +418,8 @@ class ImageViewer(Element):
             sur = overrideSur
         else:
             sur = self.sur
-        if not self.G.pause:
+        pos = self.stackP()
+        if not self.G.pause and pygame.Rect(*pos, *self.size).collidepoint(mousePos):
             scrolling = any(e.type == pygame.MOUSEWHEEL for e in events)
             for e in events:
                 if e.type == pygame.MOUSEWHEEL:
@@ -420,11 +431,14 @@ class ImageViewer(Element):
                 self.offset[0] -= mousePos[0] - self.lastMP[0]
                 self.offset[1] -= mousePos[1] - self.lastMP[1]
                 self.lastMP = mousePos
+        newSur = pygame.Surface((self.size[0]/abs(self.scroll), self.size[1]/abs(self.scroll)), pygame.SRCALPHA)
+        newSur.blit(sur, (self.size[0]/2/abs(self.scroll)-self.offset[0]/abs(self.scroll), self.size[1]/2/abs(self.scroll)-self.offset[1]/abs(self.scroll)))
         self.G.WIN.blit(
-            pygame.transform.scale(sur, 
-                                   (sur.get_width()*abs(self.scroll), sur.get_height()*abs(self.scroll))
-            ), 
-            self.stackP(), 
-            (self.offset[0]-self.size[0]/2, self.offset[1]-self.size[1]/2, *self.size)
+            buildTransparencySur(self.size), 
+            pos
         )
-        pygame.draw.rect(self.G.WIN, GO.CBLACK, (*self.stackP(), *self.size), 2)
+        self.G.WIN.blit(
+            pygame.transform.scale(newSur, self.size), 
+            pos
+        )
+        pygame.draw.rect(self.G.WIN, GO.CGREY, (*pos, *self.size), 2)
