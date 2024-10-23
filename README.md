@@ -63,6 +63,8 @@ This project comes with 2 python libraries built into it;
  - [Pyldtk](https://github.com/LGgameLAB/pyLdtk) - I edited this library **SO MUCH** you wouldn't understand.
  - [textboxify](https://github.com/hnrkcode/TextBoxify/tree/master) - I needed to integrate it with my existing Element class
 
+The default theme is entirely taken from the `ThemeWood`, made by [Pixel-boy](https://pixel-boy.itch.io/) and [AAA](https://www.instagram.com/challenger.aaa/?hl=fr); and is freely avaliable [here](https://pixel-boy.itch.io/ninja-adventure-asset-pack). Thanks heaps to them!!
+
 # 📔 How to use
 ## 🛠️ Installation
 [![Works on my machine](https://badgen.net/badge/Works%20on/my%20machine/green)]()
