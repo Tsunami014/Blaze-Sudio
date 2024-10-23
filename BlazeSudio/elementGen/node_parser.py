@@ -8,12 +8,12 @@ from importlib.resources import files
 import BlazeSudio.elementGen.types as Ts
 
 def allCategories():
-    cats = [i.name for i in (files('BlazeSudio') / 'data/nodes').iterdir() if i.is_file()]
+    cats = [i.name for i in (files('BlazeSudio') / 'elementGen/nodes').iterdir() if i.is_file()]
     cats.sort()
     return cats
 
 def getCategoryNodes(category):
-    filepath = os.path.abspath((files('BlazeSudio') / ('data/nodes/'+category)).joinpath())
+    filepath = os.path.abspath((files('BlazeSudio') / ('elementGen/nodes/'+category)).joinpath())
     module_name = '0GameIO'
     spec = importlib.util.spec_from_file_location(module_name, filepath)
     module = importlib.util.module_from_spec(spec)
