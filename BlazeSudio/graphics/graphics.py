@@ -1,6 +1,4 @@
-
 import pygame
-pygame.init()
 
 from BlazeSudio.graphics import stuff as GS
 from BlazeSudio.graphics import options as GO
@@ -9,8 +7,8 @@ from BlazeSudio.graphics.loading import (
     Progressbar
 )
 from BlazeSudio.graphics import stacks as STACKS
-from BlazeSudio.graphics import GUI
-from BlazeSudio.graphics.GUI import dropdown
+from BlazeSudio.graphics import GUI, mouse
+
 
 # TODO: make initial creation of elements faster
 
@@ -179,7 +177,9 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             while self.run and not self.ab:
                 evnts = events()
                 self.WIN.fill(self.bgcol)
+                mouse.Mouse.set(mouse.MouseState.NORMAL)
                 self._updateStuff(mousepos(), evnts, func)
+                mouse.Mouse.update()
                 if self.rel:
                     self.rel = False
                     self.Stuff.clear()
@@ -234,7 +234,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             The index of the input elements list that was selected, else None if nothing selected
             False if you exited from the menu using escape or closing the window. This will also exit the GUI.
         """
-        d = dropdown(self, elements, spacing, font, bgcol, txtcol, activecol, pos)
+        d = GUI.dropdown(self, elements, spacing, font, bgcol, txtcol, activecol, pos)
         if d is False:
             self.run = False
         return d

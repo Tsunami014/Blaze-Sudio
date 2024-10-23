@@ -2,7 +2,7 @@ from typing import Iterable, Literal
 import pygame
 from math import sqrt
 from BlazeSudio.graphics.GUI.base import Element
-import BlazeSudio.graphics.options as GO # TODO: Replace more things in here with GO stuff
+from BlazeSudio.graphics import mouse, options as GO # TODO: Replace more things in here with GO stuff
 
 __all__ = ['dropdown', 'Toast']
 
@@ -66,6 +66,10 @@ def dropdown(G,
         pygame.draw.rect(win, bgcolour, pygame.Rect(*mpos, mx, my), border_radius=8)
         for i in range(len(rects)):
             if rects[i].collidepoint(*pygame.mouse.get_pos()):
+                if pygame.mouse.get_pressed()[0]:
+                    mouse.Mouse.set(mouse.MouseState.CLICKING)
+                else:
+                    mouse.Mouse.set(mouse.MouseState.HOVER)
                 pygame.draw.rect(win, selectedcol, rects[i], border_radius=8)
             p = rects[i].topleft
             win.blit(elements[i], (p[0] + spacing, p[1] + spacing))
