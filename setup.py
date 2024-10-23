@@ -30,7 +30,11 @@ setup(
     long_description=long_description,
     packages=packages,
     include_package_data=True,
-    package_data={'BlazeSudio' :['BlazeSudio/data/*', '**/internal-icons.png'], 'BlazeSudio.collisions': ['**/*.so', '**/*.pyd']},
+    package_data={'BlazeSudio': [
+        'data/**', 
+        'ldtk/internal-icons.png',
+        'graphics/GUI/textboxify/data/**'
+    ], 'BlazeSudio.collisions': ['**/*.so', '**/*.pyd']},
     author='Tsunami014',
     author_email='tsunami014@duck.com',
     install_requires=installPackages,
