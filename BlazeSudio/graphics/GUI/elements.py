@@ -3,6 +3,7 @@ from typing import Callable
 from string import printable
 from BlazeSudio.graphics import mouse, options as GO
 from BlazeSudio.graphics.GUI.base import Element, ReturnState
+from BlazeSudio.graphics.GUI.theme import GLOBALTHEME
 
 __all__ = [
     'Switch',
@@ -388,7 +389,10 @@ class Button(Element):
                             return ReturnState.REDRAW + ReturnState.CALL
                     else:
                         return ReturnState.REDRAW
-        pygame.draw.rect(self.G.WIN, self.cols['BG'], r, border_radius=8)
+        if GLOBALTHEME.THEME.BUTTON is None:
+            pygame.draw.rect(self.G.WIN, self.cols['BG'], r, border_radius=8)
+        else:
+            self.G.WIN.blit(GLOBALTHEME.THEME.BUTTON.get(), r)
         self.G.WIN.blit(self.TxtSur, (r.x + (r.width-self.TxtSur.get_width())/2, r.y + (r.height-self.TxtSur.get_height())/2))
 
 def buildTransparencySur(size, squareSize=10):
