@@ -68,7 +68,7 @@ class Switch(Element):
 # InputBoxes code modified from https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame 
 
 # TODO: A text cursor
-class InputBox(Element):
+class InputBox(Element): # TODO: Change colours
     type = GO.TINPUTBOX
     def __init__(self, 
                  G, 
@@ -102,6 +102,7 @@ class InputBox(Element):
         self.font = font
         self.blanktxt = placeholder
         self.renderdash = True
+        self._force_placeholder_col = False
 
         self.size = [width+5, font.linesize+5]
         self._render_txt()
@@ -121,6 +122,8 @@ class InputBox(Element):
         txt = self.text
         if txt == '':
             txt = self.blanktxt
+            txtcol = GO.CINACTIVE
+        if self._force_placeholder_col:
             txtcol = GO.CINACTIVE
         self.txt_surface = self.font.render(txt, txtcol, allowed_width=(None if self.resize == GO.RWIDTH else self.size[0] - 5), renderdash=self.renderdash)
         if self.resize == GO.RWIDTH:
@@ -175,7 +178,8 @@ class NumInputBox(InputBox): # TODO: Decimals
                  start: int = 0, 
                  max: int = float('inf'), 
                  min: int = float('-inf'), 
-                 placeholder: str = 'Type number here!'
+                 placeholder: str = 'Type number here!',
+                 placeholdOnNum: None|bool|int = False
                 ):
         """
         A box for inputting numbers.
@@ -189,16 +193,34 @@ class NumInputBox(InputBox): # TODO: Decimals
             start (int, optional): The number present in the box on creation. Defaults to 0.
             max (int, optional): The maximum value that can be submitted in this box. Defaults to infinity.
             min (int, optional): The minimum value that can be submitted in this box. Defaults to -infinity.
-            placeholder (str, optional): The placeholder text visible when there is no text in the box. \
-                Defaults to 'Type number here!'. I don't think this one will be present very much if at all.
+            placeholder (str, optional): The placeholder text visible when there is no text in the box. Defaults to 'Type number here!'.
+            placeholdOnNum (bool|int, optional): **True** = show the placeholder on original number, \
+                **False** = only show the placeholder once before you input your first number, \
+                **None** = don't show the placeholder ever \
+                **int** = show the placeholder if the number is equal to this int. Defaults to False.
         """
         super().__init__(G, pos, width, resize, placeholder, font, None, starting_text=str(start))
+        if isinstance(placeholdOnNum, bool):
+            if placeholdOnNum:
+                self.placehold = start
+            else:
+                self.placehold = True
+        elif placeholdOnNum is None:
+            self.placehold = False
+        else:
+            self.placehold = placeholdOnNum
+        self.empty = True
+        self.emptyValue = start
         self.realnum = start
         self.limits = (min, max)
         self.renderdash = False
+        self.fix()
+        self._render_txt()
     
-    def get(self):
-        """Get the number in the numbox"""
+    def get(self, noneIfEmpty=False):
+        """Get the number in the numbox, optionally returning None if the textbox is empty (default False)"""
+        if noneIfEmpty and self.empty:
+            return None
         return self.realnum
 
     def set(self, newNum):
@@ -207,22 +229,43 @@ class NumInputBox(InputBox): # TODO: Decimals
 
     def _handle_text(self, event):
         if event.key == pygame.K_BACKSPACE:
+            if self.empty:
+                return
             # if str(self.realnum)[:-1].endswith('.'):
             #     self.realnum = int(self.realnum)
             # else:
-            try:
-                self.realnum = int(str(self.realnum)[:-1])
-            except:
-                self.realnum = 0
+            if len(str(self.realnum)) == 1:
+                self.realnum = self.emptyValue
+                self.empty = True
+            else:
+                try:
+                    self.realnum = int(str(self.realnum)[:-1])
+                except:
+                    self.realnum = 0
         elif event.key == pygame.K_MINUS:
+            if self.empty:
+                self.empty = False
             self.realnum = self.realnum * -1
         else:
             if event.unicode in '0123456789':
-                self.realnum = int(str(self.realnum) + event.unicode)
+                if self.empty:
+                    self.realnum = int(event.unicode)
+                else:
+                    self.realnum = int(str(self.realnum) + event.unicode)
+                self.empty = False
+                if self.placehold is True:
+                    self.placehold = False
             # elif event.unicode == '.':
             #     self.realnum = float(self.realnum)
+        self.fix()
+    
+    def fix(self):
         self.realnum = max(min(self.realnum, self.limits[1]), self.limits[0])
-        self.text = str(self.realnum)
+        self._force_placeholder_col = self.empty
+        if self.placehold is self.realnum or self.placehold is True:
+            self.text = ''
+        else:
+            self.text = str(self.realnum)
 
 class Empty(Element):
     type = GO.TEMPTY
@@ -352,7 +395,7 @@ class Button(Element):
     
     def get(self):
         """Get the text on the button"""
-        return self.textElm.txt
+        return self.txt
     
     def set(self, newTxt, **settings):
         """Set the text on the button, and optionally update some text settings settings."""

@@ -15,9 +15,9 @@ It will first read the file, then overwrite it when you save.')
     NodeEditor(f)
 
 def MGraphicsDemo():
-    import pygame
     import BlazeSudio.graphics.options as GO
     from BlazeSudio.graphics import Graphic, GUI
+    import pygame
     from time import sleep
     G = Graphic()
     @G.Loading
@@ -38,16 +38,23 @@ def MGraphicsDemo():
                 'space',
                 'buttons',
                 'events',
-                'scrolls',
+                'speshs',
                 'endElms', # These will be the ones I find in the GO.ELAST event
             ])
             # I chose this because you can see the different sections of the screen, but you can do what you want; as long as they end up on the list it's ok.
             G['TB'].append(GUI.TerminalBar(G))
 
-            G['texts'].extend([
-                GUI.Text(G, GO.PRBOTTOM, 'HI', GO.CGREEN, GO.FTITLE),
-                GUI.Text(G, GO.PRBOTTOM, ':)', GO.CBLACK, GO.FTITLE)
+            f = GUI.ScaledFrame(G, GO.PRBOTTOM, (500, 400))
+            G['speshs'].append(f)
+            f.layers[0].add('Alls')
+            LTOP = GO.PNEW((0, 1), GO.PLTOP.func)
+            f['Alls'].extend([
+                GUI.Text(f, LTOP, 'Scaled Frame', GO.CBLUE),
+                GUI.Empty(f, LTOP, (0, 15)),
+                GUI.Text(f, LTOP, 'Change scale:', GO.CGREEN),
             ])
+            G.Container.changeScale = GUI.NumInputBox(f, LTOP, 100, GO.RHEIGHT, start=2, min=1, placeholdOnNum=None)
+            f['Alls'].append(G.Container.changeScale)
 
             G['space'].append(GUI.Empty(G, GO.PCCENTER, (0, -150))) # Yes, you can have negative space. This makes the next things shifted the other direction.
             G['texts'].append(GUI.Text(G, GO.PCCENTER, 'This is a cool thing', GO.CBLUE))
@@ -85,11 +92,9 @@ def MGraphicsDemo():
 
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
             S = GUI.ScrollableFrame(G, TOPLEFT, (250, 200), (250, 350))
-            G['scrolls'].append(S)
+            G['speshs'].append(S)
             # This is another way of setting out your Stuff; having everything under one name.
-            S.layers[0].add_many([
-                'Alls'
-            ])
+            S.layers[0].add('Alls')
             S['Alls'].extend([
                 GUI.Empty(S, GO.PCTOP, (10, 20)),
                 GUI.Text(S, GO.PCTOP, 'Scroll me!', GO.CBLUE),
@@ -101,7 +106,8 @@ def MGraphicsDemo():
                 GUI.Switch(S, GO.PCTOP, speed=0.5)
             ])
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
-            pass # Return False if you want to quit the screen. This is not needed if you never want to do this.
+            # Return False if you want to quit the screen. This is not needed if you never want to do this.
+            G['speshs'][0].scale = G.Container.changeScale.get()
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
             if element.type == GO.TBUTTON:
                 # This gets passed 'element': the element that got clicked.
@@ -136,7 +142,7 @@ def MGraphicsDemo():
                     G.Container.txt.set(opts[resp])
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
-            S = G['scrolls'][0]
+            S = G['speshs'][1]
             return { # Whatever you return here will be returned by the function
                 'Aborted?': aborted, 
                 'endElms': G['endElms']+[
