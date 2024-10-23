@@ -11,6 +11,9 @@ class Image:
         self.fname = fname
         img = pygame.image.load(fname)
         self.sur = img.subsurface((startx, starty, width or img.get_width(), height or img.get_height()))
+    
+    def get(self):
+        return self.sur
 
 
 # TODO: A func to load image with options for where to repeat if want to enlarge image etc.
