@@ -1,7 +1,7 @@
 import pygame
 from typing import Callable
 from string import printable
-from BlazeSudio.graphics import options as GO
+from BlazeSudio.graphics import mouse, options as GO
 from BlazeSudio.graphics.GUI.base import Element, ReturnState
 
 __all__ = [
@@ -44,13 +44,18 @@ class Switch(Element):
         x, y = self.stackP()
         pygame.draw.rect(self.G.WIN, (125, 125, 125), pygame.Rect(x+self.btnSze/2, y+self.btnSze/4, self.btnSze, self.btnSze/2), border_radius=self.btnSze)
         pygame.draw.circle(self.G.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (x+self.btnSze/2+self.anim, y+self.btnSze/2), self.btnSze/2)
-        for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN and \
-               (not self.G.pause) and \
-               event.button == pygame.BUTTON_LEFT and \
-               pygame.Rect(x, y, *self.size).collidepoint(mousePos):
-                self.state = not self.state
-                return ReturnState.CALL
+        mcollides = pygame.Rect(x, y, *self.size).collidepoint(mousePos)
+        if not self.G.pause:
+            if mcollides:
+                if pygame.mouse.get_pressed()[0]:
+                    mouse.Mouse.set(mouse.MouseState.CLICKING)
+                else:
+                    mouse.Mouse.set(mouse.MouseState.HOVER)
+            for event in events:
+                if event.type == pygame.MOUSEBUTTONDOWN and \
+                event.button == pygame.BUTTON_LEFT and mcollides:
+                    self.state = not self.state
+                    return ReturnState.CALL
     
     def get(self):
         """Get the state of the switch (on or off)"""
@@ -131,10 +136,13 @@ class InputBox(Element):
     
     def update(self, mousePos, events):
         if not self.G.pause:
+            mcollide = pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos)
+            if mcollide:
+                mouse.Mouse.set(mouse.MouseState.TEXT)
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
                     # If the user clicked on the input_box rect.
-                    if pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos):
+                    if mcollide:
                         # Toggle the active variable.
                         self.active = not self.active
                     else:
@@ -361,6 +369,10 @@ class Button(Element):
         r.height -= self.OHE
         if not self.G.pause:
             if r.collidepoint(mousePos):
+                if pygame.mouse.get_pressed()[0]:
+                    mouse.Mouse.set(mouse.MouseState.CLICKING)
+                else:
+                    mouse.Mouse.set(mouse.MouseState.HOVER)
                 if self.OHE != -1:
                     r.x -= self.OHE
                     r.y -= self.OHE
@@ -420,6 +432,7 @@ class ImageViewer(Element):
             sur = self.sur
         pos = self.stackP()
         if not self.G.pause and pygame.Rect(*pos, *self.size).collidepoint(mousePos):
+            mouse.Mouse.set(mouse.MouseState.GRAB)
             scrolling = any(e.type == pygame.MOUSEWHEEL for e in events)
             for e in events:
                 if e.type == pygame.MOUSEWHEEL:

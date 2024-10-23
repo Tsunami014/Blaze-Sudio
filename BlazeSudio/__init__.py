@@ -1,2 +1,4 @@
-from os import environ
-environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" # Hide the annoying pygame thing
+from os import environ as _env
+_env['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" # Hide the annoying pygame thing
+import pygame as _pygame
+_pygame.init()

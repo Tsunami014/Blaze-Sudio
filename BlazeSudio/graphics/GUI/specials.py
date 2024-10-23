@@ -1,6 +1,6 @@
 from typing import Iterable
 import pygame
-from BlazeSudio.graphics import options as GO
+from BlazeSudio.graphics import mouse, options as GO
 from BlazeSudio.graphics.GUI.base import Element, ReturnState
 from BlazeSudio.graphics.stacks import Stack
 from BlazeSudio.graphics.stuff import Collection
@@ -185,17 +185,20 @@ class TerminalBar(Element):
             self.active = -1
     
     def update(self, mousePos, events):
-        for event in events:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_F5:
-                    self.toggleactive()
-                    if self.txt == "" and self.active != -1:
-                        self.txt = "/"
-                elif self.active != -1:
-                    self.pressed(event)
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT and not self.G.pause:
-                if event.button == pygame.BUTTON_LEFT:
-                    self.toggleactive(not self.collides(*mousePos))
+        if not self.G.pause:
+            if self.collides(*mousePos):
+                mouse.Mouse.set(mouse.MouseState.TEXT)
+            for event in events:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_F5:
+                        self.toggleactive()
+                        if self.txt == "" and self.active != -1:
+                            self.txt = "/"
+                    elif self.active != -1:
+                        self.pressed(event)
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT and not self.G.pause:
+                    if event.button == pygame.BUTTON_LEFT:
+                        self.toggleactive(not self.collides(*mousePos))
         
         if self.active >= 0:
             self.active -= 1
