@@ -66,6 +66,7 @@ and if it is None then it will not save. Defaults to None.
         'scrollsables',
         'mainUI',
         'Toasts',
+        'Dropdowns',
 
         'NodeSettings',
         'EditorSettings',
@@ -73,19 +74,18 @@ and if it is None then it will not save. Defaults to None.
     ])
     def dropdown():
         p = pygame.mouse.get_pos()
-        while True:
-            resp = G.Dropdown([i[1:-3] for i in allnodes.keys()], pos=p)
-            if isinstance(resp, int) and not isinstance(resp, bool):
-                resp2 = G.Dropdown(['Back']+[i.name for i in allnodes[list(allnodes.keys())[resp]]], pos=p)
-                if isinstance(resp2, int) and not isinstance(resp, bool):
-                    if resp2 != 0:
+        def nxt(resp):
+            def nxt2(resp2):
+                if resp2 is not None:
+                    if resp2 == 0:
+                        dropdown()
+                    else:
                         G.Container.nodes.append((p, allnodes[list(allnodes.keys())[resp]][resp2-1].copy()))
                         next(G.Container.md)
-                        return True
-                else:
-                    return False
-            else:
-                return False
+            if resp is not None:
+                G['Dropdowns'].append(GUI.Dropdown(G, p, ['Back']+[i.name for i in allnodes[list(allnodes.keys())[resp]]], func=nxt2))
+        
+        G['Dropdowns'].append(GUI.Dropdown(G, p, [i[1:-3] for i in allnodes.keys()], func=nxt))
     
     def deleteConn(conn):
         G.Container.connections.pop(conn, None)
