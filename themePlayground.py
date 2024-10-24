@@ -3,6 +3,7 @@ try:
 except ImportError as e:
     print('Sorry, the Theme Playground requires Tkinter and it could not be found.')
     raise e
+from math import ceil, floor
 from BlazeSudio.graphics import Graphic, mouse, GUI, options as GO
 from BlazeSudio.graphics.GUI.base import ReturnState
 from threading import Thread
@@ -20,26 +21,27 @@ class Line:
         self.dir = dir
         self.pos = pos
         self.held = False
-        self.thick = 1
+        self.last_pos = None
     
     def draw(self, win):
         if self.dir == 0:
-            pygame.draw.line(win, GO.CBLACK, (self.pos-self.thick/2, 0), (self.pos-self.thick/2, win.get_height()), self.thick)
+            pygame.draw.rect(win, (125, 125, 125), (self.pos-1, 0, 2, win.get_height()))
         if self.dir == 1:
-            pygame.draw.line(win, GO.CBLACK, (0, self.pos-self.thick/2), (win.get_width(), self.pos-self.thick/2), self.thick)
+            pygame.draw.rect(win, (125, 125, 125), (0, self.pos-1, win.get_width(), 2))
     
     def update(self, mousePos, events):
-        coll = abs(mousePos[self.dir] - self.pos) < self.thick/2+0.5
+        coll = abs(mousePos[self.dir] - self.pos) <= 1
         if coll:
             mouse.Mouse.set(mouse.MouseState.PICK)
         for ev in events:
             if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == pygame.BUTTON_LEFT:
                 if coll:
                     self.held = True
-            if ev.type == pygame.MOUSEBUTTONUP and ev.button == pygame.BUTTON_LEFT:
-                self.held = False
+        if not pygame.mouse.get_pressed()[0]:
+            self.held = False
         if self.held:
-            self.pos = mousePos[self.dir]
+            self.pos += floor(mousePos[self.dir])-self.last_pos
+        self.last_pos = floor(mousePos[self.dir])
 
 class ImageEditor(GUI.ImageViewer):
     def __init__(self, G, pos, themePart, size=(300, 300)):
@@ -72,6 +74,9 @@ class ImageEditor(GUI.ImageViewer):
         endsur.fill((255, 255, 255, 100), special_flags=pygame.BLEND_RGBA_MULT)
         p = (self.lines[0].pos, self.lines[1].pos)
         endsur.blit(ns, p, (*p, self.lines[2].pos-p[0], self.lines[3].pos-p[1]))
+
+        if part is not None:
+            part.crop = (self.lines[0].pos, self.lines[1].pos, self.lines[2].pos-self.lines[0].pos, self.lines[3].pos-self.lines[1].pos)
 
         prevpaused = self.G.pause
         self.G.pause = self.G.pause or any(i.held for i in self.lines)
@@ -131,11 +136,11 @@ def testButton(event, element=None, aborted=False):
             GUI.Text(G, LTOP, 'Text in button'),
             GUI.InputBox(G, LTOP, 100, GO.RHEIGHT, starting_text='Sample'),
             GUI.Text(G, LTOP, 'Allowed width'),
-            GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=0, min=0),
+            GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=0, min=0, placeholdOnNum=None),
             GUI.Text(G, LTOP, 'On hover enlarge'),
-            GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=5, min=0),
+            GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=5, min=0, placeholdOnNum=None),
             GUI.Text(G, LTOP, 'Spacing'),
-            GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=2, min=0),
+            GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=2, min=0, placeholdOnNum=None),
         ])
         RTOP = GO.PNEW([0, 1], GO.PRTOP.func, 0, 0)
         G['Right'].extend([
