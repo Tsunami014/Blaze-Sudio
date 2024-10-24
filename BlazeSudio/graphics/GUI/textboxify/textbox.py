@@ -111,6 +111,7 @@ class TextBox(Element):
         self.forceFull = False
 
     def update(self, mousePos, events):
+        self.G.pause = True
         sur = pygame.Surface(self.size)
         if self._bg_colour[0]:
             sur.fill(self._bg_colour[1])
@@ -150,11 +151,8 @@ class TextBox(Element):
         self.G.WIN.blit(outSur, self._adjust((x + self.padding[0], y + self._dist + self.padding[1])))
         
         for ev in events:
-            if ev.type == pygame.MOUSEBUTTONDOWN or \
-               ev.type == pygame.KEYDOWN and (
-                   ev.key == pygame.K_RETURN or \
-                   ev.key == pygame.K_SPACE
-               ):
+            if (ev.type == pygame.MOUSEBUTTONDOWN and ev.button == pygame.BUTTON_LEFT) or \
+               (ev.type == pygame.KEYDOWN and ev.key in (pygame.K_RETURN, pygame.K_SPACE)):
                 if not self.full:
                     self.forceFull = True
                 else:
