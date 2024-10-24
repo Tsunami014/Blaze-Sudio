@@ -149,7 +149,7 @@ def testButton(event, element=None, aborted=False):
         G.Clear()
         G.Container.MainBtn = GUI.Button(G, GO.PCCENTER, GO.CRED, 'Hello!')
         G['Main'].append(G.Container.MainBtn)
-        LTOP = GO.PNEW([0, 1], GO.PLTOP.func, 0, 0)
+        LTOP = GO.PNEW((0, 0), (0, 1), (False, False))
         G['Left'].extend([
             GUI.Text(G, LTOP, 'Sample button properties', font=GO.FTITLE),
             GUI.Text(G, LTOP, 'Colour of button'),
@@ -165,7 +165,7 @@ def testButton(event, element=None, aborted=False):
             GUI.Text(G, LTOP, 'Spacing'),
             GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=2, min=0, placeholdOnNum=None),
         ])
-        RTOP = GO.PNEW([0, 1], GO.PRTOP.func, 0, 0)
+        RTOP = GO.PNEW((1, 0), (0, 1), (False, False))
         G['Right'].extend([
             GUI.Text(G, RTOP, 'Button theme properties', font=GO.FTITLE),
             *changeTheme(RTOP, 'BUTTON')

@@ -119,9 +119,9 @@ and if it is None then it will not save. Defaults to None.
                 if event == GO.EFIRST:
                     G.Container.doApply = False
                 elif event == GO.ELOADUI:
-                    CBOT = GO.PNEW((1, 0), GO.PCBOTTOM.func)
-                    RTOP = GO.PNEW((0, 1), GO.PRTOP.func)
-                    LTOP = GO.PNEW((0, 1), GO.PLTOP.func)
+                    CBOT = GO.PNEW((0.5, 1), (1, 0), (True, False))
+                    RTOP = GO.PNEW((1, 0), (0, 1), (False, False))
+                    LTOP = GO.PNEW((0, 1), (0, 1), (False, False))
                     G.Clear()
                     G['NodeSettings'].extend([
                         GUI.Text(G, LTOP, 'SETTINGS FOR NODE "%s":'%G.Container.name, GO.CGREEN),
@@ -300,7 +300,7 @@ and if it is None then it will not save. Defaults to None.
                         'Outputs',
                         'Titles'
                     ])
-                    LTOP = GO.PNEW([0, 1], GO.PLTOP.func, 0, 0)
+                    LTOP = GO.PNEW((0, 0), (0, 1), (False, False))
                     def parseIn(n):
                         e1 = GUI.Text(scr, LTOP, n.name+':')
                         e = None

@@ -28,8 +28,8 @@ def MGraphicsDemo():
     @G.Screen
     def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
         if event == GO.ELOADUI: # Load the graphics in!
-            CTOP = GO.PNEW((1, 0), GO.PCTOP.func) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
-            LBOT = GO.PNEW((0, -1), GO.PLBOTTOM.func)
+            CTOP = GO.PNEW((0.5, 0), (1, 0), (True, False)) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
+            LBOT = GO.PNEW((0, 1), (0, -1), (False, False))
             G.Clear()
             G.layers[0].add_many([
                 # You can name these whatever you want, but I like to keep them the same as the type.
@@ -47,7 +47,7 @@ def MGraphicsDemo():
             f = GUI.ScaledFrame(G, GO.PRBOTTOM, (500, 400))
             G['speshs'].append(f)
             f.layers[0].add('Alls')
-            LTOP = GO.PNEW((0, 1), GO.PLTOP.func)
+            LTOP = GO.PNEW((0, 0), (0, 1), (False, False))
             f['Alls'].extend([
                 GUI.Text(f, LTOP, 'Scaled Frame', GO.CBLUE),
                 GUI.Empty(f, LTOP, (0, 15)),
@@ -56,7 +56,6 @@ def MGraphicsDemo():
             G.Container.changeScale = GUI.NumInputBox(f, LTOP, 100, GO.RHEIGHT, start=2, min=1, placeholdOnNum=None)
             f['Alls'].append(G.Container.changeScale)
 
-            G['space'].append(GUI.Empty(G, GO.PCCENTER, (0, -150))) # Yes, you can have negative space. This makes the next things shifted the other direction.
             G['texts'].append(GUI.Text(G, GO.PCCENTER, 'This is a cool thing', GO.CBLUE))
             G['texts'].append(GUI.Text(G, GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED))
             G.Container.txt = GUI.Text(G, GO.PCCENTER, txt, GO.CGREEN)
@@ -98,7 +97,7 @@ def MGraphicsDemo():
             # This is another way of setting out your Stuff; having everything under one name.
             S.layers[0].add('Alls')
             S['Alls'].extend([
-                GUI.Empty(S, GO.PCTOP, (10, 20)),
+                GUI.Empty(S, GO.PCTOP, (0, 5)),
                 GUI.Text(S, GO.PCTOP, 'Scroll me!', GO.CBLUE),
                 GUI.Empty(S, GO.PCTOP, (0, 50)),
                 GUI.InputBox(S, GO.PCTOP, 100, GO.RHEIGHT),
@@ -117,7 +116,7 @@ def MGraphicsDemo():
                     succeeded, ret = test_loading()
                     G.Container.txt.set('Ran for %i seconds%s' % (ret.i+1, (' Successfully! :)' if succeeded else ' And failed :(')))
                 elif element == G.Container.TextboxBtn:
-                    bot = GO.PNEW((0, 0), GO.PCBOTTOM.func, 1)
+                    bot = GO.PNEW((0.5, 1), (0, 0), (True, False))
                     dialog_box = GUI.TextBoxAdv(G, bot, text='HALOOO!!')
                     dialog_box.set_indicator()
                     dialog_box.set_portrait()

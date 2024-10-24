@@ -21,12 +21,7 @@ class StackPart:
         self.size = newSze
     
     def get(self):
-        upTos = self.stack.upTo(self.category, self)
-        sumSze = [0, 0]
-        for i in upTos:
-            p = self.category((0, 0), i.size, sumSze)
-            sumSze = [sumSze[0] + p[0], sumSze[1] + p[1]]
-        return self.category(self.winSze, self.size, (sum([i.size[0] for i in upTos]), sum([i.size[1] for i in upTos])))
+        return self.category(self.winSze, self.size, [i.size for i in self.stack.alls[self.category]], self.stack.alls[self.category].index(self))
 
     def __call__(self): return self.get() # Another method for calling the same function
     

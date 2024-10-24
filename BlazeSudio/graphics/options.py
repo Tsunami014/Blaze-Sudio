@@ -293,52 +293,86 @@ FSMALL =    F___(None, 32)
 @Base(str=False, addhash=False)
 class P___:
     idx: int
-    lmr: int | None # Left(0) Middle(1) Right(2)
-    umd: int | None # Up(0) Middle(1) Down(2)
+    weighting: tuple[int,int]
+    """
+- 0 = left/top of screen
+- 1 = right/bottom of screen
+- any other decimal between is that much through the screen
+    """
     stack: tuple[int,int]
-    func: FunctionType
+    """
+Which direction new elements will be placed. 1 = going right/down, -1 = going left/up, 0 = not going anywhere in that direction.
+    """
+    centre: tuple[bool,bool]
+
+    _staticOverride = None
     
-    def __call__(self, winSze, objSze, sumSze):
-        out = self.func(winSze, objSze)
-        return [out[0] + sumSze[0]*self.stack[0], out[1] + sumSze[1]*self.stack[1]]
+    def __call__(self, winSze, objSze, allSizes, idx):
+        if self._staticOverride is not None:
+            return self._staticOverride
+        if self.weighting[0] == 0:
+            xoff = 0
+        elif self.weighting[0] == 1:
+            xoff = objSze[0]
+        else:
+            xoff = objSze[0]/2
+        if self.centre[0]:
+            if self.stack[0] != 0:
+                xoff = abs(sum(i[0]*self.stack[0] for i in allSizes))/2
+        outx = winSze[0]*self.weighting[0]-xoff + sum(i[0]*self.stack[0] for i in allSizes[:idx])
+
+        if self.weighting[1] == 0:
+            yoff = 0
+        elif self.weighting[1] == 1:
+            yoff = objSze[1]
+        else:
+            yoff = objSze[1]/2
+        if self.centre[1]:
+            if self.stack[1] != 0:
+                yoff = abs(sum(i[1]*self.stack[1] for i in allSizes))/2
+        outy = winSze[1]*self.weighting[1]-yoff + sum(i[1]*self.stack[1] for i in allSizes[:idx])
+        return (round(outx), round(outy))
 
     def copy(self):
-        return PNEW(self.stack, self.func, self.lmr, self.umd)
+        return PNEW(self.weighting, self.stack, self.centre)
     
     def __hash__(self):
-        return hash((self.idx, (self.lmr, self.umd), self.func))
+        return hash((self.idx, self.weighting, self.stack, self.centre))
     
     def __str__(self):
+        if self._staticOverride is not None:
+            return f'<Static Position @{self._staticOverride}>'
         return f'<Position {"None" if self.lmr is None else ["Left", "Middle", "Right"][self.lmr]} {"None" if self.umd is None else ["Up", "Middle", "Down"][self.umd]} stacking {self.stack}>'
     def __repr__(self): return str(self)
 
-PLTOP =    P___(0, 0, 0, (1, 0),  lambda _, __: (0, 0))
-PLCENTER = P___(1, 0, 1, (1, 0),  lambda winSze, objSze: (0, round(winSze[1]/2-objSze[1]/2)))
-PLBOTTOM = P___(2, 0, 2, (1, 0),  lambda winSze, objSze: (0, winSze[1]-objSze[1]))
-PCTOP =    P___(3, 1, 0, (0, 1),  lambda winSze, objSze: (round(winSze[0]/2-objSze[0]/2), 0))
-PCCENTER = P___(4, 1, 1, (0, 1),  lambda winSze, objSze: (round(winSze[0]/2-objSze[0]/2), round(winSze[1]/2-objSze[1]/2)))
-PCBOTTOM = P___(5, 1, 2, (0, 1),  lambda winSze, objSze: (round(winSze[0]/2-objSze[0]/2), winSze[1]-objSze[1]))
-PRTOP =    P___(6, 2, 0, (-1, 0), lambda winSze, objSze: (winSze[0]-objSze[0], 0))
-PRCENTER = P___(7, 2, 1, (-1, 0), lambda winSze, objSze: (winSze[0]-objSze[0], round(winSze[1]/2-objSze[1]/2)))
-PRBOTTOM = P___(8, 2, 2, (-1, 0), lambda winSze, objSze: (winSze[0]-objSze[0], winSze[1]-objSze[1]))
-PFILL =    P___(9, None, None, (0, 0), lambda _, __: (0, 0))
+PLTOP =    P___(0, (0, 0), (1, 0), (False, False))
+PLCENTER = P___(1, (0, 0.5), (1, 0), (False, True))
+PLBOTTOM = P___(2, (0, 1), (1, 0), (False, False))
+PCTOP =    P___(3, (0.5, 0), (0, 1), (True, False))
+PCCENTER = P___(4, (0.5, 0.5), (0, 1), (True, True))
+PCBOTTOM = P___(5, (0.5, 1), (0, -1), (True, False))
+PRTOP =    P___(6, (1, 0), (-1, 0), (False, False))
+PRCENTER = P___(7, (1, 0.5), (-1, 0), (False, True))
+PRBOTTOM = P___(8, (1, 1), (-1, 0), (False, False))
 
 PIDX = 0 # DO NOT USE UNLESS YOU REALLY KNOW WHAT YOU'RE DOING
 
-def PNEW(stack, func, lmr=None, umd=None, idx=None): # To create new layouts
+def PNEW(weighting, stack, centre, idx=None): # To create new layouts
     # TODO: Make this able to take e.g. PRTOP as func and work out the function itself
     global PIDX
     if idx is None:
         idx = PIDX
         PIDX += 1
-    return P___(idx+10, lmr, umd, stack, func)
+    return P___(idx+9, weighting, stack, centre)
 
 def PSTATIC(x, y, idx=None): # To put an element at a specific x and y location
     global PIDX
     if idx is None:
         idx = PIDX
         PIDX += 1
-    return P___(idx+10, None, None, (0, 0), lambda _, __: (x, y))
+    p = P___(idx+9, (0, 0), (0, 0), (False, False))
+    p._staticOverride = (x, y)
+    return p
 
 # Events
 @Base
