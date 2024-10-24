@@ -170,7 +170,7 @@ class ScrollableFrame(BaseFrame):
     
     def update(self, mousePos, events):
         mouseColliding = pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos)
-        if mouseColliding:
+        if mouseColliding and not self.G.pause:
             for ev in events:
                 if ev.type == pygame.MOUSEWHEEL:
                     y = ev.y - 1
