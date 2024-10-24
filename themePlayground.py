@@ -3,7 +3,7 @@ try:
 except ImportError as e:
     print('Sorry, the Theme Playground requires Tkinter and it could not be found.')
     raise e
-from BlazeSudio.graphics import Graphic, GUI, options as GO
+from BlazeSudio.graphics import Graphic, mouse, GUI, options as GO
 from BlazeSudio.graphics.GUI.base import ReturnState
 from threading import Thread
 import pygame
@@ -14,11 +14,39 @@ G.layers[0].add_many([
     'Right'
 ])
 
+class Line:
+    def __init__(self, parentElm, dir, pos):
+        self.parent = parentElm
+        self.dir = dir
+        self.pos = pos
+        self.held = False
+        self.thick = 1
+    
+    def draw(self, win):
+        if self.dir == 0:
+            pygame.draw.line(win, GO.CBLACK, (self.pos-self.thick/2, 0), (self.pos-self.thick/2, win.get_height()), self.thick)
+        if self.dir == 1:
+            pygame.draw.line(win, GO.CBLACK, (0, self.pos-self.thick/2), (win.get_width(), self.pos-self.thick/2), self.thick)
+    
+    def update(self, mousePos, events):
+        coll = abs(mousePos[self.dir] - self.pos) < self.thick/2+0.5
+        if coll:
+            mouse.Mouse.set(mouse.MouseState.PICK)
+        for ev in events:
+            if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == pygame.BUTTON_LEFT:
+                if coll:
+                    self.held = True
+            if ev.type == pygame.MOUSEBUTTONUP and ev.button == pygame.BUTTON_LEFT:
+                self.held = False
+        if self.held:
+            self.pos = mousePos[self.dir]
+
 class ImageEditor(GUI.ImageViewer):
     def __init__(self, G, pos, themePart, size=(300, 300)):
         self.themePart = themePart
         self.theme = GUI.GLOBALTHEME.THEME
         self.lastSur = None
+        self.lines = [Line(self, 0, 0), Line(self, 1, 0), Line(self, 0, 0), Line(self, 1, 0)]
         super().__init__(G, pos, pygame.Surface((0, 0)), size)
     
     def update(self, mousePos, events):
@@ -30,10 +58,28 @@ class ImageEditor(GUI.ImageViewer):
         if self.lastSur != self.sur:
             self.lastSur = self.sur
             self.centre()
+            self.lines[0].pos = 0
+            self.lines[1].pos = 0
+            self.lines[2].pos = self.sur.get_width()
+            self.lines[3].pos = self.sur.get_height()
         ns = self.sur.copy()
-        #pygame.draw.circle(ns, GO.CBLACK, self.unscale_pos(mousePos), 5)
-        #pygame.draw.line(ns, GO.CBLACK, (0, self.unscale_pos(mousePos)[1]), (ns.get_width(), self.unscale_pos(mousePos)[1]), 5)
-        super().update(mousePos, events, ns)
+        newMP = self.unscale_pos(mousePos)
+        for ln in self.lines:
+            ln.draw(ns)
+        
+        endsur = pygame.Surface(ns.get_size(), pygame.SRCALPHA)
+        endsur.blit(ns, (0, 0))
+        endsur.fill((255, 255, 255, 100), special_flags=pygame.BLEND_RGBA_MULT)
+        p = (self.lines[0].pos, self.lines[1].pos)
+        endsur.blit(ns, p, (*p, self.lines[2].pos-p[0], self.lines[3].pos-p[1]))
+
+        prevpaused = self.G.pause
+        self.G.pause = self.G.pause or any(i.held for i in self.lines)
+        super().update(mousePos, events, endsur)
+        self.G.pause = prevpaused
+        if (not self.G.pause) and pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos):
+            for ln in self.lines:
+                ln.update(newMP, events)
 
 def changeTheme(position, themePart):
     def change():
