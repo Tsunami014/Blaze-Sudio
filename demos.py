@@ -92,23 +92,30 @@ def MGraphicsDemo():
             G['endElms'].append(G.Container.colour)
 
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
-            S = GUI.ScrollableFrame(G, TOPLEFT, (250, 200), (250, 350))
+            S = GUI.ScrollableFrame(G, TOPLEFT, (250, 200), (250, 450))
             G['speshs'].append(S)
             # This is another way of setting out your Stuff; having everything under one name.
             S.layers[0].add('Alls')
             S['Alls'].extend([
-                GUI.Empty(S, GO.PCTOP, (0, 5)),
+                GUI.Empty(S, GO.PCTOP, (0, 10)),
                 GUI.Text(S, GO.PCTOP, 'Scroll me!', GO.CBLUE),
                 GUI.Empty(S, GO.PCTOP, (0, 50)),
-                GUI.InputBox(S, GO.PCTOP, 100, GO.RHEIGHT),
+                GUI.InputBox(S, GO.PCTOP, 200, GO.RHEIGHT),
                 GUI.Empty(S, GO.PCTOP, (0, 50)),
                 GUI.Button(S, GO.PCTOP, GO.CGREEN, 'Press me!', func=lambda: G.Container.txt.set('You pressed the button in the Scrollable :)')),
                 GUI.Empty(S, GO.PCTOP, (0, 50)),
+                GUI.Text(S, GO.PCTOP, 'Auto adjust scrollable height', GO.CORANGE, allowed_width=200),
                 GUI.Switch(S, GO.PCTOP, speed=0.5)
             ])
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             # Return False if you want to quit the screen. This is not needed if you never want to do this.
             G['speshs'][0].scale = G.Container.changeScale.get()
+            S = G['speshs'][1]
+            e = S['Alls'][-1]
+            if e.get():
+                S.sizeOfScreen = (S.sizeOfScreen[0], e.stackP()[1]+e.size[1]+30)
+            else:
+                S.sizeOfScreen = (S.sizeOfScreen[0], 450)
         elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
             if element.type == GO.TBUTTON:
                 # This gets passed 'element': the element that got clicked.
