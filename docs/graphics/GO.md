@@ -9,6 +9,7 @@ The graphics options are a bunch of preset things, some of which you can make yo
 You could just go `from graphics import options` but GO (Standing for Graphics Options) is cooler and I use it everywhere and if you use it so much you may as well make it some 2-character thing for ease of typing
 
 ## Table of stuff it has in it
+//TODO: update PNEW
 
 | Category | Description | Character | Examples | Special uses |
 |:---|:---|:---:|---:|:---|
