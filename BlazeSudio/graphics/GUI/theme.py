@@ -9,14 +9,18 @@ __all__ = [
 class Image:
     def __init__(self, fname, startx=0, starty=0, width=None, height=None):
         self.fname = fname
-        img = pygame.image.load(fname)
-        self.sur = img.subsurface((startx, starty, width or img.get_width(), height or img.get_height()))
+        self.sur = pygame.image.load(fname)
+        self.crop = (startx, starty, width, height)
     
     def get(self):
-        return self.sur
+        constrain = lambda x: max(min(x, self.sur.get_width()-1), 0)
+        return self.sur.subsurface((constrain(self.crop[0]), 
+                                    constrain(self.crop[1]), 
+                                    constrain(self.crop[2] or self.sur.get_width()), 
+                                    constrain(self.crop[3] or self.sur.get_height())
+        ))
 
-
-# TODO: A func to load image with options for where to repeat if want to enlarge image etc.
+# TODO: Options for where to repeat if want to enlarge image etc.
 
 class Theme:
     """The basic Theme class. To make a theme you need to derive from this class and then set the global theme to that; e.g.
