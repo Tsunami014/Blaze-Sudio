@@ -7,18 +7,20 @@ __all__ = [
 ]
 
 class Image:
-    def __init__(self, fname, startx=0, starty=0, width=None, height=None):
+    def __init__(self, fname, startx=0, starty=0, width=None, height=None, scale=(1, 1)):
         self.fname = fname
         self.sur = pygame.image.load(fname)
         self.crop = (startx, starty, width, height)
+        self.scale = scale
     
     def get(self):
         constrain = lambda x: max(min(x, self.sur.get_width()-1), 0)
-        return self.sur.subsurface((constrain(self.crop[0]), 
-                                    constrain(self.crop[1]), 
-                                    constrain(self.crop[2] or self.sur.get_width()), 
-                                    constrain(self.crop[3] or self.sur.get_height())
-        ))
+        w, h = constrain(self.crop[2] or self.sur.get_width()), constrain(self.crop[3] or self.sur.get_height())
+        return pygame.transform.scale(
+            self.sur.subsurface((constrain(self.crop[0]), 
+                                 constrain(self.crop[1]), 
+                                 w, h
+            )), (w*self.scale[0], h*self.scale[1]))
 
 # TODO: Options for where to repeat if want to enlarge image etc.
 

@@ -44,11 +44,12 @@ class Line:
         self.last_pos = floor(mousePos[self.dir])
 
 class ImageEditor(GUI.ImageViewer):
-    def __init__(self, G, pos, themePart, size=(300, 300)):
+    def __init__(self, G, pos, themePart, size=(300, 300), defaultLinePoss=(None, None, None, None)):
         self.themePart = themePart
         self.theme = GUI.GLOBALTHEME.THEME
         self.lastSur = None
         self.lines = [Line(self, 0, 0), Line(self, 1, 0), Line(self, 0, 0), Line(self, 1, 0)]
+        self.defLinePs = defaultLinePoss
         super().__init__(G, pos, pygame.Surface((0, 0)), size)
     
     def update(self, mousePos, events):
@@ -60,10 +61,10 @@ class ImageEditor(GUI.ImageViewer):
         if self.lastSur != self.sur:
             self.lastSur = self.sur
             self.centre()
-            self.lines[0].pos = 0
-            self.lines[1].pos = 0
-            self.lines[2].pos = self.sur.get_width()
-            self.lines[3].pos = self.sur.get_height()
+            self.lines[0].pos = self.defLinePs[0] or 0
+            self.lines[1].pos = self.defLinePs[1] or 0
+            self.lines[2].pos = self.defLinePs[2] or self.sur.get_width()
+            self.lines[3].pos = self.defLinePs[3] or self.sur.get_height()
         ns = self.sur.copy()
         newMP = self.unscale_pos(mousePos)
         for ln in self.lines:
@@ -94,6 +95,9 @@ def changeTheme(position, themePart):
             if newf:
                 setattr(GUI.GLOBALTHEME.THEME, themePart, GUI.Image(newf))
                 t1.set(newf)
+                im.defLinePs = (None, None, None, None)
+                G.Container.themeInps[0].set(1)
+                G.Container.themeInps[1].set(1)
                 im.active = True
             G.pause = False
         Thread(target=ask, daemon=True).start()
@@ -105,20 +109,39 @@ def changeTheme(position, themePart):
         return ReturnState.DONTCALL
     b1 = GUI.Button(G, position, GO.CORANGE, 'Change the image source 🔁', func=change, allowed_width=300)
     b2 = GUI.Button(G, position, GO.CRED, 'Unset the image source ❎', func=unset, allowed_width=300)
-    n = getattr(GUI.GLOBALTHEME.THEME, themePart)
-    if n is None:
+    p = getattr(GUI.GLOBALTHEME.THEME, themePart)
+    if p is None:
         n = 'None'
     else:
-        n = n.fname
+        n = p.fname
     t1 = GUI.Text(G, position, n, allowed_width=300)
     im = ImageEditor(G, position, themePart)
     im.active = n is not None
+    if p is None:
+        scales = (1, 1)
+    else:
+        scales = p.scale
+        im.defLinePs = (*p.crop[:2], p.crop[2]-p.crop[0], p.crop[3]-p.crop[1])
+
+    G.Container.themeInps = [
+        GUI.NumInputBox(G, position, 100, start=scales[0], placeholdOnNum=None),
+        GUI.NumInputBox(G, position, 100, start=scales[1], placeholdOnNum=None)
+    ]
     return [
         b1,
         b2,
         t1,
-        im
+        im,
+        *G.Container.themeInps
     ]
+
+def changeThemeTick(themePart):
+    p = getattr(GUI.GLOBALTHEME.THEME, themePart)
+    if p is not None:
+        p.scale = (
+            G.Container.themeInps[0].get() or 1,
+            G.Container.themeInps[1].get() or 1
+        )
 
 @G.Screen
 def testButton(event, element=None, aborted=False):
@@ -152,6 +175,7 @@ def testButton(event, element=None, aborted=False):
         G.Container.MainBtn.set(G['Left'][6].get(), allowed_width=(G['Left'][8].get() or None))
         G.Container.MainBtn.OHE = G['Left'][10].get()
         G.Container.MainBtn.spacing = G['Left'][12].get()
+        changeThemeTick('BUTTON')
     # elif event == GO.EELEMENTCLICK:
     #     GUI.GLOBALTHEME.THEME.BUTTON = element.get()
 
