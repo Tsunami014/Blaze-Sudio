@@ -9,6 +9,7 @@ __all__ = [
     'TerminalBar',
     'ScrollableFrame',
     'ScaledFrame',
+    'PopupFrame',
     'BaseFrame',
     'GraphicBase'
 ]
@@ -28,8 +29,12 @@ class GraphicBase:
 
     # Things that don't need replacing:
     def _updateStuff(self, mousepos, evnts):
+        oldMP = mousepos
+        if any(pygame.Rect(*i.stackP(), *i.size).collidepoint(mousepos) for i in self.getAllElms() if isinstance(i, GraphicBase)):
+            mousepos = (float('inf'), float('inf'))
         calls = []
         returns = self.Stuff.update(mousepos, evnts.copy())
+        redraw_tops = []
         for obj in returns:
             retValue = returns[obj]
             if retValue is None:
@@ -46,6 +51,10 @@ class GraphicBase:
                     calls.append(obj)
                 elif ret == ReturnState.REDRAW:
                     obj.update(mousepos, evnts.copy(), True) # Redraw forcefully on top of everything else
+                elif ret == ReturnState.REDRAW_HIGH:
+                    redraw_tops.append(obj)
+        for obj in redraw_tops:
+            obj.update(oldMP, evnts.copy(), True) # Redraw on top of LITERALLY everything
         return calls
     
     def getAllElms(self):
@@ -113,11 +122,18 @@ class BaseFrame(GraphicBase, Element):
         """Get all the stuff in the frame"""
         return self.Stuff
     
-    def update(self, mousePos, events):
+    def update(self, mousePos, events, force_redraw=False):
+        if force_redraw:
+            return self._update(mousePos, events)
+        else:
+            return ReturnState.REDRAW_HIGH
+    
+    def _update(self, mousePos, events):
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
         if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
             mp = (mousePos[0]-x, mousePos[1]-y)
+            mouse.Mouse.set(mouse.MouseState.NORMAL)
         else:
             mp = (float('inf'), float('inf'))
         
@@ -130,6 +146,28 @@ class BaseFrame(GraphicBase, Element):
     
     def Abort(self):
         self.G.Abort()
+
+class PopupFrame(BaseFrame):
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 size: Iterable[int], 
+                 outline: int = 10, 
+                 outlinecol: GO.C___ = GO.CGREY, 
+                 bgcol: GO.C___ = GO.CWHITE
+        ):
+        """
+        A popup frame.
+
+        Args:
+            G (Graphic): The Graphic object to add this to.
+            pos (GO.P___): The position of this object in the Graphic screen.
+            size (Iterable[int]): The size of the screen
+            outline (int, optional): The thickness of the outline of the element. Defaults to 10.
+            outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
+            bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
+        """
+        super().__init__(G, pos.copy(), size, outline, outlinecol, bgcol)
 
 class ScrollableFrame(BaseFrame):
     def __init__(self, 
@@ -168,7 +206,7 @@ class ScrollableFrame(BaseFrame):
         """Set the scroll value"""
         self.scroll = scroll
     
-    def update(self, mousePos, events):
+    def _update(self, mousePos, events):
         mouseColliding = pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos)
         if mouseColliding and not self.G.pause:
             for ev in events:
@@ -245,7 +283,7 @@ class ScaledFrame(BaseFrame):
         for elm in self.getAllElms():
             elm.stackP.winSze = self.sizeOfScreen
     
-    def update(self, mousePos, events):
+    def _update(self, mousePos, events):
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
         if pygame.Rect(x, y, *self.size).collidepoint(mousePos):

@@ -80,6 +80,7 @@ class InputBox(Element): # TODO: Change colours
                  placeholder: str = 'Type here!', 
                  font: GO.F___ = GO.FSMALL, 
                  maxim: int = None, 
+                 weight: GO.SW__ = GO.SWMID,
                  starting_text: str = ''
                 ):
         """
@@ -93,6 +94,7 @@ class InputBox(Element): # TODO: Change colours
             placeholder (str, optional): The placeholder text visible when there is no text in the box. Defaults to 'Type here!'.
             font (GO.F___, optional): The font of the text in the box. Defaults to GO.FSMALL.
             maxim (int, optional): The maximum number of characters that can be inputted. Defaults to None (infinite).
+            weight (GO.SW__, optional): The weighting of the text left-right. Defaults to GO.SWMID.
             starting_text (str, optional): The text in the box on creation. Defaults to ''.
         """
         
@@ -104,6 +106,7 @@ class InputBox(Element): # TODO: Change colours
         self.font = font
         self.blanktxt = placeholder
         self.renderdash = True
+        self.weight = weight
         self._force_placeholder_col = False
 
         self.size = [width+5, font.linesize+5]
@@ -127,7 +130,7 @@ class InputBox(Element): # TODO: Change colours
             txtcol = GO.CINACTIVE
         if self._force_placeholder_col:
             txtcol = GO.CINACTIVE
-        self.txt_surface = self.font.render(txt, txtcol, allowed_width=(None if self.resize == GO.RWIDTH else self.size[0] - 5), renderdash=self.renderdash)
+        self.txt_surface = self.font.render(txt, txtcol, leftrightweight=self.weight, allowed_width=(None if self.resize == GO.RWIDTH else self.size[0] - 5), renderdash=self.renderdash)
         if self.resize == GO.RWIDTH:
             self.size[0] = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
@@ -165,7 +168,7 @@ class InputBox(Element): # TODO: Change colours
                             return ReturnState.CALL
         # Blit the text.
         x, y = self.stackP()
-        self.G.WIN.blit(self.txt_surface, (x+5, y+5))
+        self.G.WIN.blit(self.txt_surface, (x+5+((self.size[0]-10)-self.txt_surface.get_width())*self.weight.w, y+5))
         # Blit the rect.
         pygame.draw.rect(self.G.WIN, self.colour, pygame.Rect(x, y, *self.size), 2)
 
