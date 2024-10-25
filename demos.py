@@ -29,7 +29,7 @@ def MGraphicsDemo():
     def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
         if event == GO.ELOADUI: # Load the graphics in!
             CTOP = GO.PNEW((0.5, 0), (1, 0), (True, False)) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
-            LBOT = GO.PNEW((0, 1), (0, -1), (False, False))
+            LBOT = GO.PNEW((0, 1), (0, -1))
             G.Clear()
             G.layers[0].add_many([
                 # You can name these whatever you want, but I like to keep them the same as the type.
@@ -47,7 +47,7 @@ def MGraphicsDemo():
             f = GUI.ScaledFrame(G, GO.PRBOTTOM, (500, 400))
             G['speshs'].append(f)
             f.layers[0].add('Alls')
-            LTOP = GO.PNEW((0, 0), (0, 1), (False, False))
+            LTOP = GO.PNEW((0, 0), (0, 1))
             f['Alls'].extend([
                 GUI.Text(f, LTOP, 'Scaled Frame', GO.CBLUE),
                 GUI.Empty(f, LTOP, (0, 15)),
@@ -93,6 +93,15 @@ def MGraphicsDemo():
             G.Container.colour = GUI.ColourPickerBTN(G, GO.PRTOP)
             G['endElms'].append(G.Container.colour)
 
+            L = GUI.BaseLayout(G, GO.PCBOTTOM, (600, 300), outline=5)
+            G['speshs'].append(L)
+            L.grid = [
+                [GUI.Text(L, L.LP, 'HI'), GUI.Text(L, L.LP, 'HELLO'), GUI.Text(L, L.LP, 'BYE')],
+                [GUI.Text(L, L.LP, 'HEHE'), GUI.Text(L, L.LP, 'YES'), GUI.Text(L, L.LP, 'NO')],
+                [GUI.Text(L, L.LP, 'HAVE'), GUI.Text(L, L.LP, 'A'), GUI.Text(L, L.LP, 'NICEDAY')],
+                [None, GUI.Button(L, L.LP, GO.CORANGE, 'Hello!'), None]
+            ]
+
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
             S = GUI.ScrollableFrame(G, TOPLEFT, (250, 200), (250, 450))
             G['speshs'].append(S)
@@ -112,7 +121,7 @@ def MGraphicsDemo():
         elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
             # Return False if you want to quit the screen. This is not needed if you never want to do this.
             G['speshs'][0].scale = G.Container.changeScale.get()
-            S = G['speshs'][1]
+            S = G['speshs'][2]
             e = S['Alls'][-1]
             if e.get():
                 S.sizeOfScreen = (S.sizeOfScreen[0], e.stackP()[1]+e.size[1]+30)
@@ -163,7 +172,7 @@ def MGraphicsDemo():
                 G['events'].append(GUI.Dropdown(G, pygame.mouse.get_pos(), opts, func=dropdownSelect))
         elif event == GO.ELAST:
             # This also gets passed 'aborted': Whether you aborted or exited the screen
-            S = G['speshs'][1]
+            S = G['speshs'][2]
             return { # Whatever you return here will be returned by the function
                 'Aborted?': aborted, 
                 'endElms': G['endElms']+[

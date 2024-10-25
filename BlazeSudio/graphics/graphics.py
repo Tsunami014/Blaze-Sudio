@@ -162,7 +162,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             prevstack = self.stacks.copy()
             self.Stuff.clear()
             self.stacks.clear()
-            pidx = GO.PIDX
             def func(event, element=None, aborted=False):
                 if event == GO.EELEMENTCLICK and element in self.callbacks:
                     ret = self.callbacks[element](element)
@@ -200,7 +199,6 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             ret = func(GO.ELAST, aborted=self.ab)
             # Reset back to whatever it was before
             self.Container = cont
-            GO.PIDX = pidx
             self.ab = False
             self.run = True
             self.stacks.replaceWith(prevstack)
@@ -220,7 +218,6 @@ because it is slow if you have many things to load. Instead, try `.set` on the e
         self.rel = True
     
     def Clear(self, ignores=[]):
-        GO.PIDX = 0
         self.store = {}
         self.pause = False
         self.callbacks = {}

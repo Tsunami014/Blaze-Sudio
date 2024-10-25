@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from types import FunctionType
+from random import random
 import pygame
 import pygame.freetype
 from string import printable
@@ -290,7 +290,8 @@ class F___:
         surs = self.split(txt, (0, 0, 0))
         return (sum([i.get_width() for i in surs]), max([i.get_height() for i in surs]))
 
-class FNEW(F___): pass # Making new fonts
+class FNEW(F___):
+    pass # Making new fonts
 
 FTITLE =    F___('Comic Sans MS', 64, True)
 FCODEFONT = F___('Lucida Sans Typewriter', 16)
@@ -298,9 +299,20 @@ FFONT =     F___(None, 52)
 FSMALL =    F___(None, 32)
 
 # Positions
-@Base(str=False, addhash=False)
+class POverride:
+    """The base class for position overrides. Do not use directly."""
+    def setup(self, element, Graphic):
+        self.elm = element
+        self.G = Graphic
+    
+    def copy(self):
+        return POverride()
+    
+    def __call__(self):
+        return 0, 0
+
+@Base(addhash=False)
 class P___:
-    idx: int
     weighting: tuple[int,int]
     """
 - 0 = left/top of screen
@@ -312,12 +324,8 @@ class P___:
 Which direction new elements will be placed. 1 = going right/down, -1 = going left/up, 0 = not going anywhere in that direction.
     """
     centre: tuple[bool,bool]
-
-    _staticOverride = None
     
     def __call__(self, winSze, objSze, allSizes, idx):
-        if self._staticOverride is not None:
-            return self._staticOverride
         if self.weighting[0] == 0:
             xoff = 0
         elif self.weighting[0] == 1:
@@ -345,42 +353,37 @@ Which direction new elements will be placed. 1 = going right/down, -1 = going le
         return PNEW(self.weighting, self.stack, self.centre)
     
     def __hash__(self):
-        return hash((self.idx, self.weighting, self.stack, self.centre))
+        return hash((id(self), self.weighting, self.stack, self.centre))
+
+PLTOP =    P___((0, 0), (1, 0), (False, False))
+PLCENTER = P___((0, 0.5), (1, 0), (False, True))
+PLBOTTOM = P___((0, 1), (1, 0), (False, False))
+PCTOP =    P___((0.5, 0), (0, 1), (True, False))
+PCCENTER = P___((0.5, 0.5), (0, 1), (True, True))
+PCBOTTOM = P___((0.5, 1), (0, -1), (True, False))
+PRTOP =    P___((1, 0), (-1, 0), (False, False))
+PRCENTER = P___((1, 0.5), (-1, 0), (False, True))
+PRBOTTOM = P___((1, 1), (-1, 0), (False, False))
+
+def PNEW(weighting, stack, centre=(False, False)): # To create new layouts
+    if isinstance(weighting, P___):
+        weighting = weighting.weighting
+    if isinstance(stack, P___):
+        stack = stack.stack
+    if isinstance(centre, P___):
+        centre = centre.centre
     
-    def __str__(self):
-        if self._staticOverride is not None:
-            return f'<Static Position @{self._staticOverride}>'
-        return f'<Position {"None" if self.lmr is None else ["Left", "Middle", "Right"][self.lmr]} {"None" if self.umd is None else ["Up", "Middle", "Down"][self.umd]} stacking {self.stack}>'
-    def __repr__(self): return str(self)
+    return P___(weighting, stack, centre)
 
-PLTOP =    P___(0, (0, 0), (1, 0), (False, False))
-PLCENTER = P___(1, (0, 0.5), (1, 0), (False, True))
-PLBOTTOM = P___(2, (0, 1), (1, 0), (False, False))
-PCTOP =    P___(3, (0.5, 0), (0, 1), (True, False))
-PCCENTER = P___(4, (0.5, 0.5), (0, 1), (True, True))
-PCBOTTOM = P___(5, (0.5, 1), (0, -1), (True, False))
-PRTOP =    P___(6, (1, 0), (-1, 0), (False, False))
-PRCENTER = P___(7, (1, 0.5), (-1, 0), (False, True))
-PRBOTTOM = P___(8, (1, 1), (-1, 0), (False, False))
-
-PIDX = 0 # DO NOT USE UNLESS YOU REALLY KNOW WHAT YOU'RE DOING
-
-def PNEW(weighting, stack, centre, idx=None): # To create new layouts
-    # TODO: Make this able to take e.g. PRTOP as func and work out the function itself
-    global PIDX
-    if idx is None:
-        idx = PIDX
-        PIDX += 1
-    return P___(idx+9, weighting, stack, centre)
-
-def PSTATIC(x, y, idx=None): # To put an element at a specific x and y location
-    global PIDX
-    if idx is None:
-        idx = PIDX
-        PIDX += 1
-    p = P___(idx+9, (0, 0), (0, 0), (False, False))
-    p._staticOverride = (x, y)
-    return p
+class PSTATIC(POverride):
+    def __init__(self, x, y):
+        self.pos = (x, y)
+    
+    def copy(self):
+        return PSTATIC(*self.pos)
+    
+    def __call__(self):
+        return self.pos
 
 # Events
 @Base
@@ -404,16 +407,17 @@ class T___:
     def __repr__(self): return str(self)
     idx: int
     name: str
-TBUTTON =     T___(0, 'Button'    )
-TINPUTBOX =   T___(1, 'Inputbox'  )
-TNUMBOX =     T___(2, 'Numbox'    )
-TTEXTBOX =    T___(3, 'Textbox'   )
-TSWITCH =     T___(4, 'Switch'    )
-TSCROLLABLE = T___(5, 'Scrollable')
-TSTATIC =     T___(6, 'Static'    )
-TCOLOURPICK = T___(7, 'ColourPick')
-TTOAST =      T___(8, 'Toast'     )
-TEMPTY =      T___(9, 'Empty'     )
+TBUTTON =     T___(0,  'Button'    )
+TINPUTBOX =   T___(1,  'Inputbox'  )
+TNUMBOX =     T___(2,  'Numbox'    )
+TTEXTBOX =    T___(3,  'Textbox'   )
+TSWITCH =     T___(4,  'Switch'    )
+TFRAME =      T___(5,  'Frame'     )
+TLAYOUT =     T___(6,  'Layout'    )
+TSTATIC =     T___(7,  'Static'    )
+TCOLOURPICK = T___(8,  'ColourPick')
+TTOAST =      T___(9,  'Toast'     )
+TEMPTY =      T___(10, 'Empty'     )
 
 
 # Resizes

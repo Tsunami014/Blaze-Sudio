@@ -142,8 +142,8 @@ class Game:
                             add_sett(f'"{i[0]}": {i[1]}') for i in self.cmds
                         ])
                         
-                        newG.sizeOfScreen = (G.size[0]/3, max(G.size[1]/2, sum([i.size[1] for i in newG.getAllElms()])))
-                        newG2.sizeOfScreen = (G.size[0]/3, max(G.size[1]/2, sum([i.size[1] for i in newG2.getAllElms()])))
+                        newG.sizeOfScreen = (G.size[0]/3, max(G.size[1]/2, sum([i.size[1] for i in newG.get()])))
+                        newG2.sizeOfScreen = (G.size[0]/3, max(G.size[1]/2, sum([i.size[1] for i in newG2.get()])))
                 
                 @G.Screen
                 def items(event, element=None, aborted=False):
@@ -156,7 +156,7 @@ class Game:
 Please note: If you used the internal icons it will appear blurry and without transparency. You're lucky I even provided you with THAT. PLEASE do not use them in your final game; the creator SPECIFICALLY said not to. I accept NO responsibility for you using this WHATSOEVER.
 """, allowed_width=500))
                         
-                        TOPLEFT = GO.PNEW((0, 0), (0, 1), (False, False))
+                        TOPLEFT = GO.PNEW((0, 0), (0, 1))
                         G['OverlayGUI'].append(GUI.Text(G, TOPLEFT, 'All entities', font=GO.FTITLE))
                         scr = GUI.ScrollableFrame(G, GO.PLCENTER, (G.size[0]/2-260, G.size[1]/3*2), (G.size[0]/2, 0))
                         G['OverlayGUI'].append(scr)
@@ -205,9 +205,9 @@ Please note: If you used the internal icons it will appear blurry and without tr
                                 GUI.Empty(scr, TOPLEFT, (0, e['height'] * scaleby)),
                             ])
                         
-                        scr.sizeOfScreen = (G.size[0]/2-260, max(G.size[1]/2, sum([i.size[1] for i in scr.getAllElms()])))
+                        scr.sizeOfScreen = (G.size[0]/2-260, max(G.size[1]/2, sum([i.size[1] for i in scr.get()])))
                         
-                        TOPRIGHT = GO.PNEW((1, 0), (0, 1), (False, False))
+                        TOPRIGHT = GO.PNEW((1, 0), (0, 1))
                         G['OverlayGUI'].append(GUI.Text(G, TOPRIGHT, 'Entities in this level', font=GO.FTITLE))
                         # TODO
                 

@@ -20,7 +20,11 @@ class Element:
         self.G = G
         self.pos: GO.P___ = pos
         self.size = size
-        self.stackP = StackPart(self, G.stacks, pos, size, G.sizeOfScreen)
+        if isinstance(pos, GO.POverride):
+            self.stackP = pos.copy()
+            self.stackP.setup(self, G)
+        else:
+            self.stackP = StackPart(self, G.stacks, pos, size, G.sizeOfScreen)
         self.uid = self.NEXT_UID[0]
         self.NEXT_UID[0] += 1
     
