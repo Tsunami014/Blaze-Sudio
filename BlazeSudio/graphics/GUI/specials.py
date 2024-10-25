@@ -11,6 +11,8 @@ __all__ = [
     'ScaledFrame',
     'PopupFrame',
     'BaseFrame',
+    'BaseLayout',
+    'LayoutPos',
     'GraphicBase'
 ]
 
@@ -30,11 +32,14 @@ class GraphicBase:
     # Things that don't need replacing:
     def _updateStuff(self, mousepos, evnts):
         oldMP = mousepos
-        if any(pygame.Rect(*i.stackP(), *i.size).collidepoint(mousepos) for i in self.getAllElms() if isinstance(i, GraphicBase)):
-            mousepos = (float('inf'), float('inf'))
+        for i in self.get():
+            if isinstance(i, GraphicBase) and pygame.Rect(*i.stackP(), *i.size).collidepoint(mousepos):
+                mousepos = (float('inf'), float('inf'))
+                break
         calls = []
         returns = self.Stuff.update(mousepos, evnts.copy())
         redraw_tops = []
+        # TODO: Have return states able to be passed down instead of just the calls
         for obj in returns:
             retValue = returns[obj]
             if retValue is None:
@@ -57,7 +62,7 @@ class GraphicBase:
             obj.update(oldMP, evnts.copy(), True) # Redraw on top of LITERALLY everything
         return calls
     
-    def getAllElms(self):
+    def get(self):
         return self.Stuff.getall()
     
     def __getitem__(self, key):
@@ -71,7 +76,7 @@ class GraphicBase:
         return self.Stuff.layers
 
 class BaseFrame(GraphicBase, Element):
-    type = GO.TSCROLLABLE
+    type = GO.TFRAME
     def __init__(self, 
                  G, 
                  pos: GO.P___, 
@@ -115,12 +120,8 @@ class BaseFrame(GraphicBase, Element):
         if newSze == self.sizeOfScreen:
             return
         self.WIN = pygame.Surface(newSze)
-        for elm in self.getAllElms():
+        for elm in self.get():
             elm.stackP.winSze = newSze
-    
-    def get(self):
-        """Get all the stuff in the frame"""
-        return self.Stuff
     
     def update(self, mousePos, events, force_redraw=False):
         if force_redraw:
@@ -198,14 +199,6 @@ class ScrollableFrame(BaseFrame):
         self.bar = bar
         self.scroll = 0
     
-    def get(self):
-        """Get the scroll value"""
-        return self.scroll
-    
-    def set(self, scroll):
-        """Set the scroll value"""
-        self.scroll = scroll
-    
     def _update(self, mousePos, events):
         mouseColliding = pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos)
         if mouseColliding and not self.G.pause:
@@ -280,7 +273,7 @@ class ScaledFrame(BaseFrame):
             raise ValueError("Scale cannot be less than or equal to 0")
         self._scale = newSze
         self.WIN = pygame.Surface((self.size[0]/self._scale, self.size[1]/self._scale))
-        for elm in self.getAllElms():
+        for elm in self.get():
             elm.stackP.winSze = self.sizeOfScreen
     
     def _update(self, mousePos, events):
@@ -295,6 +288,174 @@ class ScaledFrame(BaseFrame):
         if self.outline[0] != 0:
             pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
         return calls
+
+class LayoutPos(GO.POverride):
+    def __init__(self, layout):
+        self.layout = layout
+    
+    @property
+    def idx(self):
+        for i in range(len(self.layout.grid)):
+            if self.elm in self.layout.grid[i]:
+                return (i, self.layout.grid[i].index(self.elm))
+        raise IndexError("Element not found in layout grid!")
+
+    def copy(self):
+        return LayoutPos(self.layout)
+    
+    def __call__(self):
+        idx = self.idx
+        ms = self.layout.max_size
+        return (idx[1]*ms[0]+(ms[0]-self.elm.size[0])/2, idx[0]*ms[1]+(ms[1]-self.elm.size[1])/2)
+
+class BaseLayout(Element):
+    type = GO.TLAYOUT
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 size: Iterable[int], 
+                 gap: int = 5,
+                 outline: int = 0, 
+                 outlinecol: GO.C___ = GO.CGREY, 
+                 bgcol: GO.C___ = GO.CWHITE
+                ):
+        """
+        The base Layout object from which many other Layouts are made from.
+
+        Args:
+            G (Graphic): The Graphic object to add this to.
+            pos (GO.P___): The position of this object in the Graphic screen.
+            size (Iterable[int]): The size of the screen.
+            gap (int, optional): The gap between each element in the layout. Defaults to 5.
+            outline (int, optional): The thickness of the outline of the element. Defaults to 0 (off).
+            outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
+            bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
+        """
+        super().__init__(G, pos, size)
+        self.WIN = pygame.Surface(size)
+        self.bgcol = bgcol
+        self.outline = (outline, outlinecol)
+        self.grid = [[]]
+        self.gap = gap / 2
+        self.LP = LayoutPos(self)
+    
+    @property
+    def pause(self):
+        return self.G.pause
+    
+    @pause.setter
+    def pause(self, newpause):
+        self.G.pause = newpause
+    
+    @property
+    def sizeOfScreen(self):
+        return self.WIN.get_size()
+    
+    @sizeOfScreen.setter
+    def sizeOfScreen(self, newSze):
+        if newSze == self.sizeOfScreen:
+            return
+        self.WIN = pygame.Surface(newSze)
+        for elm in self.get():
+            elm.stackP.winSze = newSze
+    
+    @property
+    def max_size(self):
+        alls = self.get()
+        return max(i.size[0] for i in alls)+self.gap*2, max(i.size[1] for i in alls)+self.gap*2
+    
+    def update(self, mousePos, events, force_redraw=False):
+        if force_redraw:
+            return self._update(mousePos, events)
+        else:
+            return ReturnState.REDRAW_HIGH
+    
+    def _update(self, mousePos, events):
+        x, y = self.stackP()
+        self.WIN.fill(self.bgcol)
+        if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
+            mp = (mousePos[0]-x, mousePos[1]-y)
+            mouse.Mouse.set(mouse.MouseState.NORMAL)
+        else:
+            mp = (float('inf'), float('inf'))
+        
+        calls = self._updateStuff(mp, events)
+        self.G.WIN.blit(self.WIN, (x, y))
+        if self.outline[0] != 0:
+            pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
+        
+        return calls
+    
+    def Abort(self):
+        self.G.Abort()
+
+    def _updateStuff(self, mousepos, evnts):
+        oldMP = mousepos
+        for i in self.get():
+            if isinstance(i, GraphicBase) and pygame.Rect(*i.stackP(), *i.size).collidepoint(mousepos):
+                mousepos = (float('inf'), float('inf'))
+                break
+        calls = []
+        returns = {}
+        for i in self.grid:
+            for j in i:
+                if j is None:
+                    continue
+                returns[j] = j.update(mousepos, evnts)
+                if returns[j] and ReturnState.STOP in returns[j]:
+                    return []
+        redraw_tops = []
+        for obj in returns:
+            retValue = returns[obj]
+            if retValue is None:
+                continue
+
+            if isinstance(retValue, list):
+                calls.extend(retValue)
+                continue
+            
+            for ret in retValue.get():
+                if ret == ReturnState.ABORT:
+                    self.Abort()
+                elif ret == ReturnState.CALL:
+                    calls.append(obj)
+                elif ret == ReturnState.REDRAW:
+                    obj.update(mousepos, evnts.copy(), True) # Redraw forcefully on top of everything else
+                elif ret == ReturnState.REDRAW_HIGH:
+                    redraw_tops.append(obj)
+        for obj in redraw_tops:
+            obj.update(oldMP, evnts.copy(), True) # Redraw on top of LITERALLY everything
+        return calls
+    
+    def get(self):
+        return [j for i in self.grid for j in i if j]
+    
+    def add_row(self, amnt=1):
+        row = [None for _ in range(len(self.grid[0]))]
+        self.grid.extend([row for i in range(amnt)])
+    
+    def add_col(self, amnt=1):
+        xtra = [None for _ in range(amnt)]
+        for i in self.grid:
+            i.extend(xtra)
+    
+    def extend(self, rows, cols):
+        self.add_col(cols)
+        self.add_row(rows)
+    
+    def __len__(self):
+        return len(self.grid)
+
+    def __iter__(self):
+        return iter(self.grid)
+    
+    def __getitem__(self, key):
+        if isinstance(key, (int, slice)):
+            return self.grid[key]
+        return self.grid[key[0]][key[1]]
+    
+    def __setitem__(self, key, value):
+        self.grid[key[0]][key[1]] = value
 
 class TerminalBar(Element):
     def __init__(self, G, spacing=5):

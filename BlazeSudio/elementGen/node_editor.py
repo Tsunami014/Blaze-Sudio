@@ -120,8 +120,8 @@ and if it is None then it will not save. Defaults to None.
                     G.Container.doApply = False
                 elif event == GO.ELOADUI:
                     CBOT = GO.PNEW((0.5, 1), (1, 0), (True, False))
-                    RTOP = GO.PNEW((1, 0), (0, 1), (False, False))
-                    LTOP = GO.PNEW((0, 1), (0, 1), (False, False))
+                    RTOP = GO.PNEW((1, 0), (0, 1))
+                    LTOP = GO.PNEW((0, 1), (0, 1))
                     G.Clear()
                     G['NodeSettings'].extend([
                         GUI.Text(G, LTOP, 'SETTINGS FOR NODE "%s":'%G.Container.name, GO.CGREEN),
@@ -300,7 +300,7 @@ and if it is None then it will not save. Defaults to None.
                         'Outputs',
                         'Titles'
                     ])
-                    LTOP = GO.PNEW((0, 0), (0, 1), (False, False))
+                    LTOP = GO.PNEW((0, 0), (0, 1))
                     def parseIn(n):
                         e1 = GUI.Text(scr, LTOP, n.name+':')
                         e = None
@@ -340,7 +340,7 @@ and if it is None then it will not save. Defaults to None.
                         scr['Outputs'].extend([
                             parseOut(n) for n in os
                         ])
-                    scr.sizeOfScreen = (SideRec.w-8, max(SideRec.h, sum(i.size[1] for i in scr.getAllElms())))
+                    scr.sizeOfScreen = (SideRec.w-8, max(SideRec.h, sum(i.size[1] for i in scr.get())))
                 else:
                     scr = G['scrollsables'][0]
                     for elm, io in zip(scr['Inputs'][1::2], node.inputs):
