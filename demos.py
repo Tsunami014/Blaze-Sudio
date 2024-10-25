@@ -60,7 +60,7 @@ def MGraphicsDemo():
             G['texts'].append(GUI.Text(G, GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED))
             G.Container.txt = GUI.Text(G, GO.PCCENTER, txt, GO.CGREEN)
             G['texts'].append(G.Container.txt)
-            G.Container.inp = GUI.InputBox(G, GO.PCCENTER, 200, font=GO.FFONT, maxim=16)
+            G.Container.inp = GUI.InputBox(G, GO.PCCENTER, 500, GO.RHEIGHT, font=GO.FFONT)
             G['endElms'].append(G.Container.inp)
             G['space'].append(GUI.Empty(G, GO.PCCENTER, (0, 50)))
             G['endElms'].append(GUI.NumInputBox(G, GO.PCCENTER, 100, font=GO.FFONT, min=-255, max=255))
@@ -70,6 +70,8 @@ def MGraphicsDemo():
             G['space'].append(GUI.Empty(G, LBOT, (0, 20)))
             G['buttons'].append(GUI.Button(G, LBOT, GO.CYELLOW, 'Button 1 :D'))
             G['texts'].append(GUI.Text(G, LBOT, 'Buttons above [^] and below [v]', GO.CBLUE))
+            G.Container.PopupBtn = GUI.Button(G, LBOT, GO.CMAUVE, 'Popup test')
+            G['buttons'].append(G.Container.PopupBtn)
             G.Container.TextboxBtn = GUI.Button(G, LBOT, GO.CBLUE, 'Textbox test')
             G['buttons'].append(G.Container.TextboxBtn)
             G.Container.LoadingBtn = GUI.Button(G, LBOT, GO.CGREEN, 'Loading test')
@@ -100,7 +102,7 @@ def MGraphicsDemo():
                 GUI.Empty(S, GO.PCTOP, (0, 10)),
                 GUI.Text(S, GO.PCTOP, 'Scroll me!', GO.CBLUE),
                 GUI.Empty(S, GO.PCTOP, (0, 50)),
-                GUI.InputBox(S, GO.PCTOP, 200, GO.RHEIGHT),
+                GUI.InputBox(S, GO.PCTOP, 200, GO.RHEIGHT, weight=GO.SWLEFT),
                 GUI.Empty(S, GO.PCTOP, (0, 50)),
                 GUI.Button(S, GO.PCTOP, GO.CGREEN, 'Press me!', func=lambda: G.Container.txt.set('You pressed the button in the Scrollable :)')),
                 GUI.Empty(S, GO.PCTOP, (0, 50)),
@@ -129,6 +131,16 @@ def MGraphicsDemo():
                     dialog_box.set_portrait()
                     G['events'].append(dialog_box)
                     G.Container.idx = 0
+                elif element == G.Container.PopupBtn:
+                    pop = GUI.PopupFrame(G, GO.PCCENTER, (300, 250))
+                    pop.layers[0].add('Alls')
+                    pop['Alls'].extend([
+                        GUI.Text(pop, GO.PCTOP, 'Popup', font=GO.FTITLE),
+                        GUI.Text(pop, GO.PCCENTER, 'This is an example of a popup!', allowed_width=250),
+                        GUI.Button(pop, GO.PRTOP, GO.CYELLOW, '❌', func=lambda: pop.remove()),
+                        GUI.InputBox(pop, GO.PCBOTTOM, 250, GO.RNONE, 'Example textbox', maxim=16),
+                    ])
+                    G['events'].append(pop) # I know it's not an event, but o well.
                 else:
                     G.Container.txt.set(element.txt) # put name of button in middle
             elif element.type == GO.TTEXTBOX:

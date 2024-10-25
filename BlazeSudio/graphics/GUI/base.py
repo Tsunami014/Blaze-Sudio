@@ -73,7 +73,10 @@ class ReturnState(Enum):
     REDRAW = 3
     """Redraw this element on top of all the others in its layer"""
 
-    DONTCALL = 3
+    REDRAW_HIGH = 4
+    """Redraws the element after all the other redraws to become the VERY top"""
+
+    DONTCALL = 5
     """Don't call the graphic screen function on this element"""
     
     def __add__(self, otherState):

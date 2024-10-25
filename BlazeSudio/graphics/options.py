@@ -74,22 +74,30 @@ SDLEFTRIGHT = SD__(0)
 SDUPDOWN =    SD__(1)
 
 # Fonts
-ERRORED = False
+FERRORED = False
 class F___:
     def __init__(self, name, size, bold=False, italic=False):
         self.font = pygame.font.SysFont(name, size, bold, italic)
         fonts = pygame.sysfont.get_fonts()
         emojis = [font for font in fonts if "emoji" in font]
         if len(emojis) == 0:
-            global ERRORED
-            if not ERRORED:
+            global FERRORED
+            if not FERRORED:
                 print("Unable to find a font that supports emojis for your system! Using regular fonts instead.")
-                ERRORED = True
+                FERRORED = True
             self.emojifont = self.font
         else:
             self.emojifont = pygame.font.SysFont(emojis[0], size, bold, italic)
     
-    def render(self, txt, col, updownweight=SWMID, leftrightweight=SWMID, allowed_width=None, renderdash=True, verbose=False):
+    def render(self, 
+               txt: str, 
+               col: C___, 
+               updownweight: SW__ = SWMID, 
+               leftrightweight: SW__ = SWMID, 
+               allowed_width: int = None, 
+               renderdash: bool = True, 
+               verbose: bool = False
+        ):
         """
         Renders some text with emoji support!
 
@@ -247,15 +255,15 @@ class F___:
             sze = (sum([i.get_width() for i in surs]), max([i.get_height() for i in surs]))
         else:
             sze = (max([i.get_width() for i in surs]), sum([i.get_height() for i in surs]))
-        sur = pygame.Surface(sze).convert_alpha()
-        sur.fill((255, 255, 255, 1))
+        sur = pygame.Surface(sze, pygame.SRCALPHA)
+        sur.fill((255, 255, 255, 0))
         pos = 0
         for i in surs:
             if dir == SDLEFTRIGHT:
-                sur.blit(i.convert_alpha(), (pos, (sze[1]-i.get_height())*weight.w))
+                sur.blit(i, (pos, (sze[1]-i.get_height())*weight.w))
                 pos += i.get_width()
             else:
-                sur.blit(i.convert_alpha(), ((sze[0]-i.get_width())*weight.w, pos))
+                sur.blit(i, ((sze[0]-i.get_width())*weight.w, pos))
                 pos += i.get_height()
         return sur
     
