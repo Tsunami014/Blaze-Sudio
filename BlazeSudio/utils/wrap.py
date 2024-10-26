@@ -62,7 +62,9 @@ def wrapLevel(world, lvl, Ro=50.0, Ri=1.0, quality=1.0):
     return imgs
 
 def save(imgs, fname, szes):
-    out = pygame.Surface((max(szes), sum(szes)), pygame.SRCALPHA)
+    ms = max(szes)
+    ss = sum(szes)
+    out = pygame.Surface((ms, ss+ss%ms), pygame.SRCALPHA)
     prevh = 0
     for img, sze in zip(imgs, szes):
         if isinstance(img, pygame.Surface):
