@@ -8,12 +8,15 @@ from BlazeSudio.graphics.stuff import Collection
 __all__ = [
     'TerminalBar',
     'ScrollableFrame',
-    'ScaledFrame',
+    'ScaledByFrame',
     'PopupFrame',
+    'GridLayout',
+
     'BaseFrame',
     'BaseLayout',
+    'GraphicBase',
+
     'LayoutPos',
-    'GraphicBase'
 ]
 
 class GraphicBase:
@@ -231,7 +234,7 @@ class ScrollableFrame(BaseFrame):
                 pass
         return calls
 
-class ScaledFrame(BaseFrame):
+class ScaledByFrame(BaseFrame):
     def __init__(self, 
                  G, 
                  pos: GO.P___, 
@@ -242,7 +245,7 @@ class ScaledFrame(BaseFrame):
                  bgcol: GO.C___ = GO.CWHITE
                 ):
         """
-        The base Frame object from which many other Frames are made from.
+        A frame that scales the surface by a certain amount. It dynamically creates a window that is your specified size / scale to put the elements on.
 
         Args:
             G (Graphic): The Graphic object to add this to.
@@ -355,6 +358,7 @@ class BaseLayout(Element):
     def sizeOfScreen(self, newSze):
         if newSze == self.sizeOfScreen:
             return
+        self.size = newSze
         self.WIN = pygame.Surface(newSze)
         for elm in self.get():
             elm.stackP.winSze = newSze
@@ -362,6 +366,8 @@ class BaseLayout(Element):
     @property
     def max_size(self):
         alls = self.get()
+        if alls == []:
+            return 0, 0
         return max(i.size[0] for i in alls)+self.gap*2, max(i.size[1] for i in alls)+self.gap*2
     
     def update(self, mousePos, events, force_redraw=False):
@@ -456,6 +462,47 @@ class BaseLayout(Element):
     
     def __setitem__(self, key, value):
         self.grid[key[0]][key[1]] = value
+
+class GridLayout(BaseLayout):
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 gap: int = 5,
+                 gridSze: Iterable[int] = None,
+                 outline: int = 0, 
+                 outlinecol: GO.C___ = GO.CGREY, 
+                 size: Iterable[int] = None, 
+                 bgcol: GO.C___ = GO.CWHITE
+                ):
+        """
+        A grid layout!
+
+        Args:
+            G (Graphic): The Graphic object to add this to.
+            pos (GO.P___): The position of this object in the Graphic screen.
+            gap (int, optional): The gap between each element in the layout. Defaults to 5.
+            gridSze (Iterable[int], optional): The size of the grid. Defaults to None (auto generate).
+            outline (int, optional): The thickness of the outline of the element. Defaults to 0 (off).
+            outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
+            size (Iterable[int]): The size of the screen, or None to auto adjust the size. Defaults to None.
+            bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
+        """
+        self.autoAdjust = size is None
+        self.gridSze = gridSze
+        super().__init__(G, pos, size or (0, 0), gap, outline, outlinecol, bgcol)
+    
+    @property
+    def max_size(self):
+        return self.gridSze or super().max_size
+    
+    def adjustSize(self):
+        if self.autoAdjust:
+            ms = self.max_size
+            self.sizeOfScreen = (ms[0]*len(self.grid[0]), ms[1]*len(self.grid))
+    
+    def update(self, mousePos, events, force_redraw=False):
+        self.adjustSize()
+        return super().update(mousePos, events, force_redraw)
 
 class TerminalBar(Element):
     def __init__(self, G, spacing=5):
