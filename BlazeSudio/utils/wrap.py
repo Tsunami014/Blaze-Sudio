@@ -68,7 +68,7 @@ def save(imgs, fname, szes):
     prevh = 0
     for img, sze in zip(imgs, szes):
         if isinstance(img, pygame.Surface):
-            newImg = pygame.transform.scale(img, (sze, sze)).convert()
+            newImg = pygame.transform.scale(img, (sze, sze)).convert_alpha()
             out.blit(newImg, (0, prevh))
             prevh += newImg.get_height()
             continue
