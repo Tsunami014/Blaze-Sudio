@@ -44,7 +44,7 @@ def MGraphicsDemo():
             # I chose this because you can see the different sections of the screen, but you can do what you want; as long as they end up on the list it's ok.
             G['TB'].append(GUI.TerminalBar(G))
 
-            f = GUI.ScaledFrame(G, GO.PRBOTTOM, (500, 400))
+            f = GUI.ScaledByFrame(G, GO.PRBOTTOM, (500, 400))
             G['speshs'].append(f)
             f.layers[0].add('Alls')
             LTOP = GO.PNEW((0, 0), (0, 1))
@@ -93,7 +93,7 @@ def MGraphicsDemo():
             G.Container.colour = GUI.ColourPickerBTN(G, GO.PRTOP)
             G['endElms'].append(G.Container.colour)
 
-            L = GUI.BaseLayout(G, GO.PCBOTTOM, (600, 300), outline=5)
+            L = GUI.GridLayout(G, GO.PCBOTTOM, outline=5)
             G['speshs'].append(L)
             L.grid = [
                 [GUI.Text(L, L.LP, 'HI'), GUI.Text(L, L.LP, 'HELLO'), GUI.Text(L, L.LP, 'BYE')],

@@ -301,6 +301,8 @@ FSMALL =    F___(None, 32)
 # Positions
 class POverride:
     """The base class for position overrides. Do not use directly."""
+    winSze = None
+    """Set in some cases, so it is kept here so nothing goes wrong, but never used."""
     def setup(self, element, Graphic):
         self.elm = element
         self.G = Graphic
