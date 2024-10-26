@@ -61,16 +61,20 @@ def wrapLevel(world, lvl, Ro=50.0, Ri=1.0, quality=1.0):
         imgs.append(cir)
     return imgs
 
-def save(imgs, fname, szes):
+def save(imgs, fname, szes, spacing=None):
     ms = max(szes)
     ss = sum(szes)
-    out = pygame.Surface((ms, ss+ss%ms), pygame.SRCALPHA)
+    sp = (spacing or ms)
+    out = pygame.Surface((ms, ss+sp-ss%sp), pygame.SRCALPHA)
     prevh = 0
     for img, sze in zip(imgs, szes):
         if isinstance(img, pygame.Surface):
             newImg = pygame.transform.scale(img, (sze, sze)).convert_alpha()
             out.blit(newImg, (0, prevh))
-            prevh += newImg.get_height()
+            if spacing is None:
+                prevh += newImg.get_height()
+            else:
+                prevh += spacing
             continue
         new_image = pygame.Surface((len(img[0]), len(img)), pygame.SRCALPHA)
         for y, row in enumerate(img):
@@ -78,7 +82,10 @@ def save(imgs, fname, szes):
                 new_image.set_at((x, y), pixel)
         newImg = pygame.transform.scale(new_image, (sze, sze))
         out.blit(newImg, (0, prevh))
-        prevh += newImg.get_height()
+        if spacing is None:
+            prevh += newImg.get_height()
+        else:
+            prevh += spacing
 
     if not os.path.exists(os.path.dirname(fname)):
         os.makedirs(os.path.dirname(fname))
