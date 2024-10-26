@@ -1,6 +1,6 @@
 import BlazeSudio.collisions as colls
 
-def approximate_polygon(surface, tolerance=3, ratio=0.1):
+def approximate_polygon(surface, tolerance=3, ratio=0.1): # TODO: Seriously boost performance
     """
     Returns a concave polygon that approximates the non-transparent area of a Pygame surface.
     :param tolerance: Controls how closely the algorithm will match the shape (lower is more detailed).
@@ -11,13 +11,14 @@ def approximate_polygon(surface, tolerance=3, ratio=0.1):
     width, height = surface.get_size()
 
     def check_col(col):
-        return col.a == 255 and (col.r != 0 and col.g != 0 and col.b != 0)
+        return col.a > 125
     
     # Scan the surface to find non-transparent points
     for x in range(0, width, tolerance):
         for y in range(0, height, tolerance):
             if check_col(surface.get_at((x, y))):
                 non_transparent_points.append((x, y))
+    non_transparent_points = set(non_transparent_points)
     
     for point in non_transparent_points:
         def check(x, y):

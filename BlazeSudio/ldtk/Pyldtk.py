@@ -129,8 +129,8 @@ class Entity:
         self.pivot: List[float] = self.data['__pivot']
         #piv = (self.pivot[0] * self.width, self.pivot[1] * self.height)
         self.ScaledPos: List[float] = [
-            self.data['px'][0] + self.layerOffset[0]-self.pivot[0]*self.width, 
-            self.data['px'][1] + self.layerOffset[1]-self.pivot[1]*self.height
+            self.data['px'][0] + self.layerOffset[0],#-self.pivot[0]*self.width, 
+            self.data['px'][1] + self.layerOffset[1]#-self.pivot[1]*self.height
         ]
         self.UnscaledPos: List[float] = [
             self.data['px'][0] / self.gridSze,

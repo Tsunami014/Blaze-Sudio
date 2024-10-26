@@ -2507,6 +2507,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         """
         if not shapes:
             return Shapes()
+        shapes, others = [i for i in shapes if checkShpType(i, Rect)], [i for i in shapes if not checkShpType(i, Rect)]
         merged = True
         while merged:
             merged = False
@@ -2540,7 +2541,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
             
             shapes = outshapes2
         
-        return Shapes(*shapes)
+        return Shapes(*shapes, *others)
 
     @staticmethod
     def Union(*shapes: Shape) -> Shapes: # FIXME
