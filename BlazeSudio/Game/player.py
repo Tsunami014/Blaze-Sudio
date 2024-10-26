@@ -21,12 +21,11 @@ class Player:
         
         win.fill(self.Game.currentLvL.bgColour)
         sur = rend or pygame.Surface((0, 0))
-        sur = pygame.transform.scale(sur, (sur.get_width() * scale, sur.get_height() * scale))
         
         bounds = self.Game.curScene.CamBounds
         
         # Calculate diff_x
-        if sur.get_width() < sze[0] or (bounds[0] is None and bounds[2] is None):
+        if sur.get_width() * scale < sze[0] or (bounds[0] is None and bounds[2] is None):
             diff_x = realpos[0]
         else:
             if bounds[0] is None:
@@ -37,7 +36,7 @@ class Player:
                 diff_x = max(min(realpos[0], bounds[2]*scale-mw), bounds[0]*scale+mw)
         
         # Calculate diff_y
-        if sur.get_height() < sze[1] or (bounds[1] is None and bounds[3] is None):
+        if sur.get_height() * scale < sze[1] or (bounds[1] is None and bounds[3] is None):
             diff_y = realpos[1]
         else:
             if bounds[1] is None:
@@ -51,7 +50,12 @@ class Player:
         diff_y = mh - diff_y
         
         # Blit the surface considering the camera bounds and diffs
-        win.blit(sur, [diff_x, diff_y])
+        newSur = pygame.Surface((sze[0]/scale, sze[1]/scale), pygame.SRCALPHA)
+        newSur.blit(sur, (diff_x/scale, diff_y/scale))
+        win.blit(
+            pygame.transform.scale(newSur, sze), 
+            (0, 0)
+        )
 
         def scalef(pos):
             return (pos[0]*scale+diff_x, pos[1]*scale+diff_y)

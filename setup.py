@@ -2,7 +2,6 @@ from setuptools import setup, find_packages
 import codecs
 import os
 import re
-import sys
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -13,11 +12,7 @@ with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
 with codecs.open(os.path.join(here, "requirements.txt"), encoding="utf-8") as fh:
     installPackages = [i for i in fh.readlines() if ((not i.startswith('#')) and i)]
 
-# Check if 'debug' is in the extras
-if any('debug' in arg for arg in sys.argv):
-    packages = find_packages()
-else:
-    packages = find_packages(exclude=('BlazeSudio.collisions.lib', 'BlazeSudio.debug'))
+packages = find_packages(exclude=('BlazeSudio.collisions.lib', 'BlazeSudio.debug'))
 
 setup(
     name='Blaze-Sudio',
