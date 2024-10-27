@@ -4,7 +4,7 @@ import os
 import BlazeSudio.collisions as colls
 from math import ceil
 from importlib.resources import files
-from typing import Any, Callable, Dict, Iterable, List, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Literal, Tuple
 
 ## This is object holds all the data for a .ldtk file
 # TODO: fieldinstance class WITH DEFAULTS
@@ -117,7 +117,14 @@ class Entity:
         self.identifier: str = self.data['__identifier']
         self.iid: str = self.data['iid']
         self.defUid: int = self.data['defUid'] # The UID of the entity definition
-        self.tileData: Dict = self.data['__tile']
+        defs = self.layer.level.defs['entities']
+        self.defData: Dict = defs[[i['identifier'] for i in defs].index(self.identifier)]
+
+        self.render: Literal['Rectangle', 'Ellipse', 'Cross', 'Tile'] = self.defData['renderMode']
+        self.tileRender: Literal['FitInside', 'FullSizeUncropped'] = self.defData['tileRenderMode'] # TODO: Add rest of options
+
+        self.UItileData: Dict = self.data['__tile']
+        self.tileData: Dict = self.defData['tileRect']
         self.fieldInstances: List[Dict] = self.data['fieldInstances']
         self.layerId: str = self.layer.identifier
 
@@ -129,8 +136,8 @@ class Entity:
         self.pivot: List[float] = self.data['__pivot']
         #piv = (self.pivot[0] * self.width, self.pivot[1] * self.height)
         self.ScaledPos: List[float] = [
-            self.data['px'][0] + self.layerOffset[0],#-self.pivot[0]*self.width, 
-            self.data['px'][1] + self.layerOffset[1]#-self.pivot[1]*self.height
+            self.data['px'][0] + self.layerOffset[0]-self.pivot[0]*self.width, 
+            self.data['px'][1] + self.layerOffset[1]-self.pivot[1]*self.height
         ]
         self.UnscaledPos: List[float] = [
             self.data['px'][0] / self.gridSze,
@@ -185,12 +192,24 @@ class Entity:
         Returns:
             pygame.Surface: The surface containing the image of the tile.
         """
-        if not self.tileData:
-            return pygame.Surface((self.width, self.height)).convert_alpha()
-        return self.tilesets[self.tileData['tilesetUid']].subsurface(self.tileData['x'], 
-                                                                     self.tileData['y'], 
-                                                                     self.tileData['w'], 
-                                                                     self.tileData['h'])
+        data = self.UItileData if ui else self.tileData
+        if not data:
+            return pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        outsur = self.tilesets[data['tilesetUid']].subsurface(data['x'], 
+                                                              data['y'], 
+                                                              data['w'], 
+                                                              data['h'])
+        if not ui:
+            if self.tileRender == 'FitInside':
+                newsur = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+                s = outsur.get_size()
+                if max(s) == s[0]:
+                    newsur.blit(pygame.transform.scale(outsur, (self.width, int(self.height * s[1] / s[0]))), (0, (self.height - int(self.height * s[1] / s[0])) // 2))
+                else:
+                    newsur.blit(pygame.transform.scale(outsur, (int(self.width * s[0] / s[1]), self.height)), ((self.width - int(self.width * s[0] / s[1])) // 2, 0))
+                outsur = newsur
+        
+        return outsur
 
 class Ldtklevel:
     def __init__(self, data: Dict, tilesets: Dict[int, Tileset], defs: Dict):
