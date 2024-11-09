@@ -22,10 +22,6 @@ This is not recommended. It gets the latest release, which if you get it at the 
     - Go to [the website](https://github.com/Tsunami014/Blaze-Sudio/) and download the repo as a zip file then unzip it.
 2.  Grab your favourite terminal and navigate into the folder (if you used the first option of git cloning, you can just `cd Blaze-Sudio`), then run;
     ```bash
-    pip install -r requirements.txt
-    ```
-3. WHILE STILL THERE (<small>DON'T CLOSE THE TERMINAL YET - THERE'S STILL MORE</small>), run the following command:
-    ```bash
     pip install .
     ```
 You may have to modify some of them to be suited for *your* specific python (i.e. some may need to use `pip3` instead of `pip`, or `python3 -m pip`, or whatever).
