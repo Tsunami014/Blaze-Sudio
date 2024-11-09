@@ -65,6 +65,7 @@ collisions = [
 
 game = [
     "Blaze-Sudio[graphics]",
+    "Blaze-Sudio[collisions]",
     "pyperclip",
 ]
 
