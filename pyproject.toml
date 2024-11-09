@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Blaze-Sudio"
+version = "3.1.0"
+description = "This is a really cool game/physics/application engine written in pygame!"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Tsunami014", email = "tsunami014@duck.com"}
+]
+maintainers = [
+    {name = "Tsunami014", email = "tsunami014@duck.com"}
+]
+keywords = ["Python", "games", "engine"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Build Tools",
+    "Operating System :: Unix",
+    "Operating System :: Microsoft :: Windows"
+]
+# Development Status options: 
+# 1 - Planning
+# 2 - Pre-Alpha
+# 3 - Alpha
+# 4 - Beta
+# 5 - Production/Stable
+# 6 - Mature
+# 7 - Inactive
+
+dependencies = []
+
+requires-python = ">= 3.10"
+
+[project.urls]
+Homepage = "https://github.com/Tsunami014/Blaze-Sudio"
+Download = "https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v3.1.0.tar.gz"
+Documentation = "https://tsunami014.gitbook.io/blaze-sudios/"
+Repository = "https://github.com/Tsunami014/Blaze-Sudio"
+Issues = "https://github.com/Tsunami014/Blaze-Sudio/issues"
+
+[project.scripts]
+BlazeSudio = "BlazeSudio:main"
+
+[project.optional-dependencies]
+graphics = [
+    "pygame",
+]
+
+image = [
+    "noise",
+    "Pillow",
+    # Maybe remove the below 2
+    "scikit-image",
+    "matplotlib"
+]
+
+collisions = [
+    "shapely",
+]
+
+game = [
+    "Blaze-Sudio[graphics]",
+    "pyperclip",
+]
+
+all = [
+    "Blaze-Sudio[image]",
+    "Blaze-Sudio[collisions]",
+    "Blaze-Sudio[game]",
+]
+
+[tool.setuptools.packages.find]
+exclude = ["BlazeSudio.collisions.lib", "BlazeSudio.debug"]
+
+[tool.setuptools.package-data]
+"BlazeSudio" = [
+    "elementGen/nodes/*.py",
+    "ldtk/internal-icons.png",
+    "graphics/defaultTheme/*",
+    "graphics/GUI/textboxify/data/**"
+]
+"BlazeSudio.collisions" = ["**/*.so", "**/*.pyd"]

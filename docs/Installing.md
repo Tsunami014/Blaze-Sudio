@@ -1,6 +1,16 @@
 # How to install
 
-1. Run `pip install Blaze-Sudio`. Done. Wasn't that hard, was it? Or was it? If there was an error please tell me about it by [making a new issue](https://github.com/Tsunami014/Blaze-Sudio/issues) or [joining Discord](https://discord.gg/xr3phyEZtv) and hopefully I'll be onto it soon enough.
+1. Run `pip install Blaze-Sudio[all]`. Done. Wasn't that hard, was it? Or was it? If there was an error please tell me about it by [making a new issue](https://github.com/Tsunami014/Blaze-Sudio/issues) or [joining Discord](https://discord.gg/xr3phyEZtv) and hopefully I'll be onto it soon enough.
+
+## Optional requirements
+You don't need to install *everything*, so here is a list of all the optional requirements and what they do:
+- `Blaze-Sudio[all]` - Installs all of the below.
+- `Blaze-Sudio[game]` - Installs the required dependencies for the **game & graphics** module.
+- `Blaze-Sudio[collisions]` - Installs the required dependencies for the **collisions** module.
+- `Blaze-Sudio[image]` - Installs the required dependencies for the **element Gen** module.
+- `Blaze-Sudio[graphics]` - Installs the required dependencies for the **graphics** module.
+
+You can also install multiple of these at a time like so: `pip install Blaze-Sudio[game,collisions]`.
 
 # How to install the long hard way
 This is not recommended. It gets the latest release, which if you get it at the wrong time may be the time where I committed 'was half way through majorly rewriting the code and it's all broken'. So be careful.
