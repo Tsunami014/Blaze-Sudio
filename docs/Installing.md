@@ -5,7 +5,7 @@
 ## Optional requirements
 You don't need to install *everything*, so here is a list of all the optional requirements and what they do:
 - `Blaze-Sudio[all]` - Installs all of the below.
-- `Blaze-Sudio[game]` - Installs the required dependencies for the **game & graphics** module.
+- `Blaze-Sudio[game]` - Installs the required dependencies for the **game, graphics & collisions** module (everything you need to make a game with).
 - `Blaze-Sudio[collisions]` - Installs the required dependencies for the **collisions** module.
 - `Blaze-Sudio[image]` - Installs the required dependencies for the **element Gen** module.
 - `Blaze-Sudio[graphics]` - Installs the required dependencies for the **graphics** module.
