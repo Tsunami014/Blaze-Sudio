@@ -23,7 +23,7 @@
 | [🔜 Next versions](#-next-versions) |
 | [⭐️ Star History](#️-star-history) |
 
-The docs are in progress. If you are working offline, you can look in <!-- Pypi ignore -->[the docs folder of *this* repo (not the built package)](docs/SUMMARY.md) or if you're online, <!-- End Pypi ignore -->[https://tsunami014.gitbook.io/blaze-sudios](https://tsunami014.gitbook.io/blaze-sudios)
+The docs are in progress. If you are working offline, you can look in [the docs folder of *this* repo (not the built package)](docs/SUMMARY.md) or if you're online, [https://tsunami014.gitbook.io/blaze-sudios](https://tsunami014.gitbook.io/blaze-sudios)
 
 # 🚀 About
 [![Powered by Wi-Fi and wild optimism](https://badgen.net/badge/Powered%20by/Wi-Fi%20&%20wild%20optimism/yellow)]()
@@ -71,7 +71,7 @@ The default theme is entirely taken from the `ThemeWood`, made by [Pixel-boy](ht
 
 Are you ready? This is the most complicated installation process of any python library that exists ever, even Tensorflow (yes, I know!) But, follow the instructions and you'll probably be ok. Remember to [join the discord server](https://discord.gg/xr3phyEZtv) if you need any help.
 
-1. Run `pip install Blaze-Sudio`
+1. Run `pip install Blaze-Sudio[all]`
 2. Rejoice in happiness as your library gets installed, pain-free
 
 <small>Disclaimer: may not actually be pain-free.<br>Disclaimer of the disclaimer: I'll help you if you run into any issues via [github issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose) or [Discord](https://discord.gg/xr3phyEZtv), so it will be mostly pain-free (for you) as a satisfaction guarantee</small>
@@ -80,8 +80,19 @@ Are you ready? This is the most complicated installation process of any python l
 ```bash
 git clone https://github.com/Tsunami014/Blaze-Sudio.git
 cd Blaze-Sudio
-pip install .
+pip install .[all]
 ```
+### 📜 Optional requirements
+## Optional requirements
+You don't need to install *everything*, so here is a list of all the optional requirements and what they do:
+- `Blaze-Sudio[all]` - Installs all of the below.
+- `Blaze-Sudio[game]` - Installs the required dependencies for the **game & graphics** module.
+- `Blaze-Sudio[collisions]` - Installs the required dependencies for the **collisions** module.
+- `Blaze-Sudio[image]` - Installs the required dependencies for the **element Gen** module.
+- `Blaze-Sudio[graphics]` - Installs the required dependencies for the **graphics** module.
+
+You can also install multiple of these at a time like so: `pip install Blaze-Sudio[game,collisions]`.
+
 ## 📚 Library usage (Demos)
 Demos are avaliable in `demos.py` for any main part of the library.
 ### 🧱 The collisions module
@@ -90,7 +101,7 @@ Demos are avaliable in `demos.py` for any main part of the library.
 This is a module for having buttons, switches, colour pickers, scrollable screens, you name it - all in Pygame. It has a demo in `demos.py` too.
 ### 🎮️ The Game module
 A simple demo is kinda hard because you need an ldtk file to make the levels with, but if you want there are some demo games [here](https://github.com/Tsunami014/BlazeTests).
-But, the docs for making a game would be helpful, and are here: <!-- Pypi ignore -->[Offfine 🖥️](docs/game/README.md) / <!-- End Pypi ignore -->[Online 🌐](https://tsunami014.gitbook.io/blaze-sudios/main-functionality/game)
+But, the docs for making a game would be helpful, and are here: [Offfine 🖥️](docs/game/README.md) / [Online 🌐](https://tsunami014.gitbook.io/blaze-sudios/main-functionality/game)
 
 And if you want full, in-depth explanation of each thing Blaze Sudio has to offer and how to use it all, visit [the docs](https://tsunami014.gitbook.io/blaze-sudios/)!
 
