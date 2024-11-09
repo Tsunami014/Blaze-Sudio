@@ -252,6 +252,7 @@ def makeNewProject(where):
         l = list(fileDemos.keys())
         chosen = options('What starter main.py structure would you like?', l, 2)
         f.write(l[chosen])
+    # TODO: Many different options; pyproject.toml, venv, direnv, etc.
     with open(os.path.join(where, 'requirements.txt'), 'w+') as f:
         f.write('Blaze-Sudio\n')
     if usingGit:
