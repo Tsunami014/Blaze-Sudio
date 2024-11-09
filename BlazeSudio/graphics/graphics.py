@@ -136,8 +136,14 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
     
     def Screen(self, funcy, /, *, events=pygame.event.get, mousepos=pygame.mouse.get_pos):
         """
-        @G.Screen
-        @G.Screen(**options)
+        Usages:
+        ```python
+        @G.Screen # OR @G.Screen(**options)
+        def func(event, *args, element=None, aborted=False, **kwargs):
+            ...
+
+        ```
+
         Makes a Graphic Screen!
         TODO: Add more options for here
 
