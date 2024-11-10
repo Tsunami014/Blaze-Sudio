@@ -137,17 +137,21 @@ class F___:
         if isinstance(txt, pygame.Surface):
             return txt
         
-        if txt.strip() == '':
+        txt = txt.replace('\t', '    ')
+        if txt == '':
             if verbose:
                 return pygame.Surface((0, 0)), 0
             return pygame.Surface((0, 0))
         if allowed_width is None:
+            lines = txt.split('\n')
+            combined_lines = [self.combine(self.split(line, col), weight=updownweight) for line in lines if line != '']
+            combined = self.combine(combined_lines, weight=leftrightweight, dir=SDUPDOWN)
             if verbose:
-                return self.combine(self.split(txt, col), weight=updownweight), 1
-            return self.combine(self.split(txt, col), weight=updownweight)
+                return combined, len(lines)
+            return combined
         else:
             masterlines = []
-            for l in txt.strip('\n').split('\n'):
+            for l in txt.split('\n'):
                 # Thanks to https://stackoverflow.com/questions/49432109/how-to-wrap-text-in-pygame-using-pygame-font-font for the font wrapping thing
                 # Split text into words
                 words = l.split(' ')
