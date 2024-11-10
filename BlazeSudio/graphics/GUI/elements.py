@@ -337,7 +337,11 @@ class Text(Element):
             txt (str): The text that will be displayed.
             col (GO.C___, optional): The colour of the text. Defaults to GO.CBLACK.
             font (GO.F___, optional): The font of the text. Defaults to GO.FFONT.
-            **settings: The settings for rendering the text. See `GO.F___.render` for more information.
+            \\*\\*settings: The settings for rendering the text. See `GO.F___.render` for more information.
+        
+        Useful Settings:
+            allowed_width (int): The maximum width of the text. Defaults to None.
+            leftrightweight (GO.SW__): The weighting of the text left-right. Defaults to GO.SWMID.
         """
         self.font = font
         self.col = col
@@ -387,6 +391,10 @@ class Button(Element):
             spacing (int, optional): The spacing between the outer edge of the button and the inner text. Defaults to 2.
             on_hover_enlarge (int, optional): The amount to enlarge the outer edge of the button when hovering. Defaults to 5.
             func (Callable, optional): The function to call when the button is pressed. Defaults to a do nothing func.
+            \\*\\*settings: The settings for rendering the text. See `GUI.Text.__init__` or `GO.F___.render` for more information.
+        
+        Useful Settings:
+            allowed_width (int, optional): The maximum width of the text. Defaults to None.
         """
         self.font = font
         self.spacing = spacing
@@ -461,6 +469,26 @@ class DropdownButton(Button): # TODO: Different button and dropdown colours
                  func: Callable = lambda selected: None,
                  **settings
                 ):
+        """
+        _summary_
+
+        Args:
+            G (Graphic): The graphic this element is in.
+            pos (GO.P___): The position of this element.
+            opts (list[str]): The options in the dropdown.
+            BGcol (GO.C___, optional): The background colour of the button and dropdown. Defaults to GO.CBLACK.
+            TXTcol (GO.C___, optional): The colour of the text and dropdown. Defaults to GO.CWHITE.
+            Selectcol (GO.C___, optional): The colour of selected dropdown elements. Defaults to GO.CBLUE.
+            format (str, optional): The format to display the selected element on on the button, {0} being the currently selected value. Defaults to '[{0}]'.
+            default (int, optional): The default index into the opts list of which element is selected. Defaults to 0.
+            font (GO.F___, optional): The font to use to render the text. Defaults to GO.FFONT.
+            spacing (int, optional): The spacing between the text and the edge of the button/dropdown. Defaults to 2.
+            func (_type_, optional): The function to call when a value is selected. Defaults to a do nothing func.
+            \\*\\*settings: The settings for rendering the text. See `GUI.Button.__init__` or `GUI.Text.__init__` or `GO.F___.render` for more information.
+        
+        Useful Settings:
+            allowed_width (int, optional): The maximum width of the text. Defaults to None.
+        """
         self.opts = opts
         self._format = format
         self.actualuserfunc = func
