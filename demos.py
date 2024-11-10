@@ -103,7 +103,7 @@ def MGraphicsDemo():
             ]
 
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
-            S = GUI.ScrollableFrame(G, TOPLEFT, (250, 200), (250, 450))
+            S = GUI.ScrollableFrame(G, TOPLEFT, (250, 200), (400, 450))
             G['speshs'].append(S)
             # This is another way of setting out your Stuff; having everything under one name.
             S.layers[0].add('Alls')
