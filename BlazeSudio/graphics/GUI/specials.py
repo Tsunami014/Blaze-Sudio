@@ -1,5 +1,6 @@
 from typing import Iterable
 import pygame
+from time import time
 from BlazeSudio.graphics import mouse, options as GO
 from BlazeSudio.graphics.GUI.base import Element, ReturnState
 from BlazeSudio.graphics.stacks import Stack
@@ -182,6 +183,7 @@ class ScrollableFrame(BaseFrame):
                  outline: int = 10, 
                  bar: bool = True, 
                  outlinecol: GO.C___ = GO.CGREY, 
+                 multi: float = 2,
                  decay: float = 0.6,
                  bgcol: GO.C___ = GO.CWHITE
                 ):
@@ -196,6 +198,7 @@ class ScrollableFrame(BaseFrame):
             outline (int, optional): The thickness of the outline of the element. Defaults to 10.
             bar (bool, optional): Whether or not to have a scrollbar down the side. Defaults to True.
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
+            multi (float, optional): The multiplier of the scroll. Defaults to 2.
             decay (float, optional): The decay of the scroll. Defaults to 0.6.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
@@ -205,6 +208,8 @@ class ScrollableFrame(BaseFrame):
         self.scroll = 0
         self.scrollvel = 0
         self.decay = decay
+        self.multi = multi
+        self.lastScroll = None
     
     def _update(self, mousePos, events):
         mouseColliding = pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos)
@@ -214,7 +219,10 @@ class ScrollableFrame(BaseFrame):
                     y = ev.y - 1
                     if 0 <= y <= 1:
                         y = 2
-                    self.scrollvel += y
+                    multi = 1 if self.lastScroll is None else 1-(time() - self.lastScroll)
+                    multi = max(0.1, multi)
+                    self.scrollvel += y * self.multi * multi
+                    self.lastScroll = time()
         self.scroll += self.scrollvel
         self.scrollvel *= self.decay
         self.scroll = min(max(-self.sizeOfScreen[1]+self.size[1], self.scroll), 0)
