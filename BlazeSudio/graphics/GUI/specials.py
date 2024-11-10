@@ -201,6 +201,7 @@ class ScrollableFrame(BaseFrame):
         self.WIN = pygame.Surface(sizeOfScreen)
         self.bar = bar
         self.scroll = 0
+        self.scrollvel = 0
     
     def _update(self, mousePos, events):
         mouseColliding = pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos)
@@ -210,8 +211,10 @@ class ScrollableFrame(BaseFrame):
                     y = ev.y - 1
                     if 0 <= y <= 1:
                         y = 2
-                    self.scroll += y * 2
-                    self.scroll = min(max(-self.sizeOfScreen[1]+self.size[1], self.scroll), 0)
+                    self.scrollvel = y * 20
+        self.scroll += self.scrollvel
+        self.scrollvel *= 0.5
+        self.scroll = min(max(-self.sizeOfScreen[1]+self.size[1], self.scroll), 0)
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
         if mouseColliding:
