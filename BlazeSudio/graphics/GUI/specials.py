@@ -183,7 +183,7 @@ class ScrollableFrame(BaseFrame):
                  outline: int = 10, 
                  bar: bool = True, 
                  outlinecol: GO.C___ = GO.CGREY, 
-                 multi: float = 2,
+                 multi: float = 15,
                  decay: float = 0.6,
                  bgcol: GO.C___ = GO.CWHITE
                 ):
@@ -198,7 +198,7 @@ class ScrollableFrame(BaseFrame):
             outline (int, optional): The thickness of the outline of the element. Defaults to 10.
             bar (bool, optional): Whether or not to have a scrollbar down the side. Defaults to True.
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
-            multi (float, optional): The multiplier of the scroll. Defaults to 2.
+            multi (float, optional): The multiplier of the scroll. Defaults to 15.
             decay (float, optional): The decay of the scroll. Defaults to 0.6.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
