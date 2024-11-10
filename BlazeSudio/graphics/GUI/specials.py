@@ -205,8 +205,8 @@ class ScrollableFrame(BaseFrame):
         super().__init__(G, pos, goalrect, outline, outlinecol, bgcol)
         self.WIN = pygame.Surface(sizeOfScreen)
         self.bar = bar
-        self.scroll = 0
-        self.scrollvel = 0
+        self.scroll = [0, 0]
+        self.scrollvel = [0, 0]
         self.decay = decay
         self.multi = multi
         self.lastScroll = None
@@ -216,36 +216,39 @@ class ScrollableFrame(BaseFrame):
         if mouseColliding and not self.G.pause:
             for ev in events:
                 if ev.type == pygame.MOUSEWHEEL:
-                    y = ev.y - 1
-                    if 0 <= y <= 1:
-                        y = 2
+                    y = ev.y
+                    x = -ev.x
                     multi = 1 if self.lastScroll is None else 1-(time() - self.lastScroll)
                     multi = max(0.1, multi)
-                    self.scrollvel += y * self.multi * multi
+                    self.scrollvel[0] += x * self.multi * multi
+                    self.scrollvel[1] += y * self.multi * multi
                     self.lastScroll = time()
-        self.scroll += self.scrollvel
-        self.scrollvel *= self.decay
-        self.scroll = min(max(-self.sizeOfScreen[1]+self.size[1], self.scroll), 0)
+        self.scroll[0] += self.scrollvel[0]
+        self.scroll[1] += self.scrollvel[1]
+        self.scrollvel[0] *= self.decay
+        self.scrollvel[1] *= self.decay
+        self.scroll[0] = min(max(-self.sizeOfScreen[0]+self.size[0], self.scroll[0]), 0)
+        self.scroll[1] = min(max(-self.sizeOfScreen[1]+self.size[1], self.scroll[1]), 0)
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
         if mouseColliding:
-            mp = (mousePos[0]-x, mousePos[1]-y-self.scroll)
+            mp = (mousePos[0]-x-self.scroll[0], mousePos[1]-y-self.scroll[1])
         else:
             mp = (float('inf'), float('inf'))
         calls = self._updateStuff(mp, events)
-        self.G.WIN.blit(self.WIN, (x, y), pygame.Rect(0, -self.scroll, *self.size))
+        self.G.WIN.blit(self.WIN, (x, y), pygame.Rect(-self.scroll[0], -self.scroll[1], *self.size))
         if self.outline[0] != 0:
             pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
         if self.bar:
-            try:
-                try:
-                    w = self.outline[0]/2
-                except ZeroDivisionError:
-                    w = 0
-                p = (x+self.size[0]-w, y+((-self.scroll) / (self.sizeOfScreen[1]-self.size[1]))*(self.size[1]-40)+20)
-                pygame.draw.line(self.G.WIN, (200, 50, 50), (p[0], p[1]-20), (p[0], p[1]+20), 10)
-            except:
-                pass
+            if self.outline[0] != 0:
+                if self.sizeOfScreen[0] > self.size[0]:
+                    h = (self.size[0] / self.sizeOfScreen[0]) * self.size[0]
+                    p = (x + ((-self.scroll[0]) / self.sizeOfScreen[0]) * self.size[0]+h/2, y + self.size[1] - self.outline[0])
+                    pygame.draw.rect(self.G.WIN, (200, 50, 50), (p[0] - h / 2, p[1], h, self.outline[0]), border_radius=5)
+                if self.sizeOfScreen[1] > self.size[1]:
+                    h = (self.size[1] / self.sizeOfScreen[1]) * self.size[1]
+                    p = (x + self.size[0] - self.outline[0], y + ((-self.scroll[1]) / self.sizeOfScreen[1]) * self.size[1]+h/2)
+                    pygame.draw.rect(self.G.WIN, (200, 50, 50), (p[0], p[1] - h / 2, self.outline[0], h), border_radius=5)
         return calls
 
 class ScaledByFrame(BaseFrame):
