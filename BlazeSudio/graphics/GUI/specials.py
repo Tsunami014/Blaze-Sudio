@@ -182,6 +182,7 @@ class ScrollableFrame(BaseFrame):
                  outline: int = 10, 
                  bar: bool = True, 
                  outlinecol: GO.C___ = GO.CGREY, 
+                 decay: float = 0.6,
                  bgcol: GO.C___ = GO.CWHITE
                 ):
         """
@@ -195,6 +196,7 @@ class ScrollableFrame(BaseFrame):
             outline (int, optional): The thickness of the outline of the element. Defaults to 10.
             bar (bool, optional): Whether or not to have a scrollbar down the side. Defaults to True.
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
+            decay (float, optional): The decay of the scroll. Defaults to 0.6.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
         super().__init__(G, pos, goalrect, outline, outlinecol, bgcol)
@@ -202,6 +204,7 @@ class ScrollableFrame(BaseFrame):
         self.bar = bar
         self.scroll = 0
         self.scrollvel = 0
+        self.decay = decay
     
     def _update(self, mousePos, events):
         mouseColliding = pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos)
@@ -211,9 +214,9 @@ class ScrollableFrame(BaseFrame):
                     y = ev.y - 1
                     if 0 <= y <= 1:
                         y = 2
-                    self.scrollvel = y * 20
+                    self.scrollvel += y
         self.scroll += self.scrollvel
-        self.scrollvel *= 0.5
+        self.scrollvel *= self.decay
         self.scroll = min(max(-self.sizeOfScreen[1]+self.size[1], self.scroll), 0)
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
