@@ -1,6 +1,6 @@
 # Main STUFF
 
-def MNodeEditorDemo():
+def NodeEditorDemo():
     try:
         print('Press cancel to run the demo without saving to any file.\n\
 If you specify an existing file and it asks you are you sure you want to overwrite it, do not fret. \
@@ -14,7 +14,7 @@ It will first read the file, then overwrite it when you save.')
     from BlazeSudio.elementGen import NodeEditor
     NodeEditor(f)
 
-def MGraphicsDemo():
+def GraphicsDemo():
     import BlazeSudio.graphics.options as GO
     from BlazeSudio.graphics import Graphic, GUI
     import pygame
@@ -184,10 +184,30 @@ def MGraphicsDemo():
     print(test('Right click or press anything or press ctrl+s!'))
     pygame.quit() # this here for very fast quitting
 
-def MThemePgDemo():
+def LoremGraphicsDemo():
+    from BlazeSudio.graphics import Graphic, options as GO, GUI
+    G = Graphic()
+    G.layers[0].add('speshs')
+    @G.Screen
+    def test(event, element=None, aborted=False):
+        if event == GO.ELOADUI:
+            @G.Loading
+            def load(slf):
+                S2 = GUI.ScrollableFrame(G, GO.PCCENTER, (900, 700), (2000, 11000))
+                S2.layers[0].add('alls')
+                with open('demoFiles/lorem.txt') as f:
+                    lorem = f.readlines()
+                lorem = "\n".join([i.strip() for i in lorem if i.strip()])
+                S2['alls'].append(GUI.Text(S2, GO.PCTOP, lorem, allowed_width=1900))
+                G['speshs'].append(S2)
+            load()
+
+    test()
+
+def ThemePgDemo():
     import demoFiles.themePlayground as themePlayground
 
-def MCollisionsDemo(debug=False):
+def CollisionsDemo(debug=False):
     import os
     if debug:
         os.environ['debug'] = 'True'
@@ -249,17 +269,22 @@ if __name__ == '__main__':
             print(f'{len(cmds)}: {rtk}{text}')
             cmds.append(command)
     
-    label('Main stuff:') # Nodes
-    button('Node Editor Demo',           MNodeEditorDemo,                   )
-    button('Graphics Demo',              MGraphicsDemo,                     )
-    button('Theme Playground Demo',      MThemePgDemo,                  True)
-    # TODO: Sound editor demo
-    button('Collisions Demo',            MCollisionsDemo,                   )
-    button('DEBUG Collisions Demo',      lambda: MCollisionsDemo(True),     )
+    label('Node generator [image]:')
+    button('Node Editor Demo',           NodeEditorDemo,                   )
 
-    label('Generation stuff:') # Terrain
-    button('Generate World Demo',        TWorldsDemo,                       )
-    button('Generate Terrain Demo',      TTerrainGenDemo,                   )
+    label('Graphics [graphics] / [game]:')
+    button('Graphics Demo',              GraphicsDemo,                     )
+    button('Lorem Ipsum Graphics Demo',  LoremGraphicsDemo,                )
+    button('Theme Playground Demo',      ThemePgDemo,                  True)
+
+    # TODO: Sound editor demo
+    label('Collisions [collisions]:')
+    button('Collisions Demo',            CollisionsDemo,                   )
+    button('DEBUG Collisions Demo',      lambda: CollisionsDemo(True),     )
+
+    # Broken generation stuff
+    #button('Generate World Demo',        TWorldsDemo,                       )
+    #button('Generate Terrain Demo',      TTerrainGenDemo,                   )
     
     if has_tk:
         root.after(1, lambda: root.attributes('-topmost', True))
