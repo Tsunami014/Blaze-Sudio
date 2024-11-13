@@ -196,8 +196,7 @@ def LoremGraphicsDemo():
                 S2 = GUI.ScrollableFrame(G, GO.PCCENTER, (900, 700), (2000, 11000))
                 S2.layers[0].add('alls')
                 with open('demoFiles/lorem.txt') as f:
-                    lorem = f.readlines()
-                lorem = "\n".join([i.strip() for i in lorem if i.strip()])
+                    lorem = f.read()
                 S2['alls'].append(GUI.Text(S2, GO.PCTOP, lorem, allowed_width=1900))
                 G['speshs'].append(S2)
             load()
