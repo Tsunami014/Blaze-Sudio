@@ -559,21 +559,40 @@ def buildTransparencySur(size, squareSize=10):
 class ImageViewer(Element):
     def __init__(self, G, pos, sur, size=(300, 300)):
         super().__init__(G, pos, size)
-        self.sur = sur
+        self._sur = sur
         self.lastMP = (0, 0)
+        self.cache = None
         self.centre()
+    
+    @property
+    def sur(self):
+        return self._sur
+    
+    @sur.setter
+    def sur(self, newsur):
+        self._sur = newsur
+        self.cache = None
     
     def reset(self):
         self.scroll = 1
         self.offset = [self.size[0]/2, self.size[1]/2]
     
+    def modifySur(self, sur):
+        return sur
+    
+    def _modifySur(self, sur):
+        if self.cache is None:
+            self.cache = self.modifySur(sur.copy())
+        return self.cache
+    
     def centre(self):
-        if self.sur.get_size() == (0, 0):
+        sur = self._modifySur(self._sur)
+        if sur.get_size() == (0, 0):
             self.reset()
             return
         self.scroll = 1
-        self.offset = [self.sur.get_width()/2, self.sur.get_height()/2]
-        self.update_scroll(max(self.size) / max(self.sur.get_size()))
+        self.offset = [sur.get_width()/2, sur.get_height()/2]
+        self.update_scroll(max(self.size) / max(sur.get_size()))
     
     def update_scroll(self, newscroll):
         self.offset[0] *= abs(newscroll) / abs(self.scroll)
@@ -585,11 +604,8 @@ class ImageViewer(Element):
         pos = (pos[0] - thisP[0], pos[1] - thisP[1])
         return (pos[0] - self.size[0] / 2 + self.offset[0]) / abs(self.scroll), (pos[1] - self.size[1] / 2 + self.offset[1]) / abs(self.scroll)
     
-    def update(self, mousePos, events, overrideSur=None):
-        if overrideSur is not None:
-            sur = overrideSur
-        else:
-            sur = self.sur
+    def update(self, mousePos, events):
+        sur = self._modifySur(self._sur)
         pos = self.stackP()
         if not self.G.pause and pygame.Rect(*pos, *self.size).collidepoint(mousePos):
             mouse.Mouse.set(mouse.MouseState.GRAB)

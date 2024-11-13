@@ -110,7 +110,9 @@ class TextBox(Element):
         self.full = False
         self.forceFull = False
 
-    def update(self, mousePos, events):
+    def update(self, mousePos, events, force_redraw=False):
+        if not force_redraw:
+            return ReturnState.REDRAW_HIGHEST
         self.G.pause = True
         sur = pygame.Surface(self.size)
         if self._bg_colour[0]:
@@ -306,9 +308,11 @@ class TextBoxAdv(TextBox):
 
         self.size = self._adjust()
 
-    def update(self, mousePos, events):
+    def update(self, mousePos, events, force_redraw=False):
+        if not force_redraw:
+            return ReturnState.REDRAW_HIGHEST
         # Update the text.
-        ret = super().update(mousePos, events)
+        ret = super().update(mousePos, events, True)
         
         x, y = self.stackP()
 

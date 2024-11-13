@@ -75,12 +75,15 @@ class ReturnState(Enum):
     """Call the main graphic screen function on this"""
     
     REDRAW = 3
-    """Redraw this element on top of all the others in its layer"""
+    """Redraw this element on top of all the others in its layer. Used for buttons and such."""
 
     REDRAW_HIGH = 4
-    """Redraws the element after all the other redraws to become the VERY top"""
+    """Redraws the element after all the other redraws to become the VERY top. Used for Frames, Grids and other layouts."""""
 
-    DONTCALL = 5
+    REDRAW_HIGHEST = 5
+    """Redraws the element after all the other higher redraws to become the *VERY VERY* top. Used for events, e.g. dropdowns, toasts and textboxes."""
+
+    DONTCALL = 6
     """Don't call the graphic screen function on this element"""
     
     def __add__(self, otherState):
