@@ -1,7 +1,9 @@
 # Roadmap
  - [ ] Remove all files I don't need (bot, etc.)
- - [ ] Remove demos related to those things
- - [ ] Make Game much easier to use (have all things with each other and not all over the place)
+ - [ ] Finish theme editor
+ - [ ] Finish texture editor
+ - [ ] Procedural generation testing area
+ - [ ] Finish Music/SFX editor/generator
  - Keep adding more features to the main editor, allthewhile doing the below: 
  - [ ] Fix documentation
  - [ ] Look into removing other things (`__main__.py`, `pyguix`, etc.)

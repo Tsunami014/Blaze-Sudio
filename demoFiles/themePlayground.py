@@ -17,21 +17,21 @@ G.layers[0].add_many([
 ])
 
 class Line:
-    def __init__(self, parentElm, dir, pos):
+    def __init__(self, parentElm, dir, pos, offset=0):
         self.parent = parentElm
         self.dir = dir
         self.pos = pos
         self.held = False
-        self.last_pos = None
+        self.offset = offset
     
     def draw(self, win):
         if self.dir == 0:
-            pygame.draw.rect(win, (125, 125, 125), (self.pos-1, 0, 2, win.get_height()))
+            pygame.draw.rect(win, (125, 125, 125), (self.pos+self.offset, 0, 1, win.get_height()))
         if self.dir == 1:
-            pygame.draw.rect(win, (125, 125, 125), (0, self.pos-1, win.get_width(), 2))
+            pygame.draw.rect(win, (125, 125, 125), (0, self.pos+self.offset, win.get_width(), 1))
     
     def update(self, mousePos, events):
-        coll = abs(mousePos[self.dir] - self.pos) <= 1
+        coll = self.pos + self.offset - self.dir == floor(mousePos[self.dir])
         if coll:
             mouse.Mouse.set(mouse.MouseState.PICK)
         for ev in events:
@@ -41,17 +41,33 @@ class Line:
         if not pygame.mouse.get_pressed()[0]:
             self.held = False
         if self.held:
-            self.pos += floor(mousePos[self.dir])-self.last_pos
-        self.last_pos = floor(mousePos[self.dir])
+            self.pos = floor(mousePos[self.dir]) - self.offset + self.dir
 
 class ImageEditor(GUI.ImageViewer):
     def __init__(self, G, pos, themePart, size=(300, 300), defaultLinePoss=(None, None, None, None)):
         self.themePart = themePart
         self.theme = GUI.GLOBALTHEME.THEME
         self.lastSur = None
-        self.lines = [Line(self, 0, 0), Line(self, 1, 0), Line(self, 0, 0), Line(self, 1, 0)]
+        self.lines = [Line(self, 0, 0), Line(self, 1, 0), Line(self, 0, 0, 2), Line(self, 1, 0, 2)]
         self.defLinePs = defaultLinePoss
         super().__init__(G, pos, pygame.Surface((0, 0)), size)
+    
+    def modifySur(self, sur):
+        if sur.get_size() == (0, 0):
+            return sur
+        
+        endsur = pygame.Surface((sur.get_width()+2, sur.get_height()+2), pygame.SRCALPHA)
+        
+        endsur.blit(sur, (1, 1))
+        endsur.fill((255, 255, 255, 100), special_flags=pygame.BLEND_RGBA_MULT)
+
+        for ln in self.lines:
+            ln.draw(endsur)
+
+        p = (self.lines[0].pos, self.lines[1].pos)
+        endsur.blit(sur, (p[0]+1, p[1]+1), (*p, self.lines[2].pos-p[0]+1, self.lines[3].pos-p[1]+1))
+        
+        return endsur
     
     def update(self, mousePos, events):
         part = getattr(self.theme, self.themePart)
@@ -59,98 +75,94 @@ class ImageEditor(GUI.ImageViewer):
             self.sur = pygame.Surface((0, 0))
         else:
             self.sur = part.sur
-        if self.lastSur != self.sur:
+        if (not self.lastSur) or self.lastSur.get_buffer().raw != self.sur.get_buffer().raw: # Because regular != doesn't work for who knows why
             self.lastSur = self.sur
-            self.centre()
             self.lines[0].pos = self.defLinePs[0] or 0
             self.lines[1].pos = self.defLinePs[1] or 0
-            self.lines[2].pos = self.defLinePs[2] or self.sur.get_width()
-            self.lines[3].pos = self.defLinePs[3] or self.sur.get_height()
-        ns = self.sur.copy()
+            self.lines[2].pos = self.defLinePs[2] or self.sur.get_width()-1
+            self.lines[3].pos = self.defLinePs[3] or self.sur.get_height()-1
+            self.centre()
         newMP = self.unscale_pos(mousePos)
-        for ln in self.lines:
-            ln.draw(ns)
-        
-        endsur = pygame.Surface(ns.get_size(), pygame.SRCALPHA)
-        endsur.blit(ns, (0, 0))
-        endsur.fill((255, 255, 255, 100), special_flags=pygame.BLEND_RGBA_MULT)
-        p = (self.lines[0].pos, self.lines[1].pos)
-        endsur.blit(ns, p, (*p, self.lines[2].pos-p[0], self.lines[3].pos-p[1]))
 
         if part is not None:
-            part.crop = (self.lines[0].pos, self.lines[1].pos, self.lines[2].pos-self.lines[0].pos, self.lines[3].pos-self.lines[1].pos)
+            part.crop = (self.lines[0].pos, self.lines[1].pos, self.lines[2].pos-self.lines[0].pos+1, self.lines[3].pos-self.lines[1].pos+1)
 
         prevpaused = self.G.pause
-        self.G.pause = self.G.pause or any(i.held for i in self.lines)
-        super().update(mousePos, events, endsur)
+        linesHeld = any(i.held for i in self.lines)
+        if linesHeld:
+            self.cache = None
+        self.G.pause = self.G.pause or linesHeld
+        super().update(mousePos, events)
         self.G.pause = prevpaused
         if (not self.G.pause) and pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos):
             for ln in self.lines:
                 ln.update(newMP, events)
 
 class ThemeProperties(GUI.PresetFrame):
-    def __init__(self, G, pos: GO.P___):
-        super().__init__(G, pos, 0)
+    def __init__(self, G, pos: GO.P___, themePart):
+        self.themePart = themePart
+        super().__init__(G, pos)
     
     def _init_objects(self):
-            self.layers[0].add('main')
-            self['main'].append(GUI.Text(self, GO.PCTOP, 'HELLO!'))
+        self.layers[0].add('main')
+        PRTOP = GO.PNEW((1, 0), (0, 1))
+        def change():
+            def ask():
+                self.pause = True
+                newf = askopenfilename(filetypes=[('Image file', '*.png *.jpg *.jpeg *.bmp *.gif')])
+                if newf:
+                    setattr(GUI.GLOBALTHEME.THEME, self.themePart, GUI.Image(newf))
+                    t1.set(newf)
+                    im.defLinePs = (None, None, None, None)
+                    self.themeInps[0].set(1)
+                    self.themeInps[1].set(1)
+                    im.active = True
+                    self.fitObjects()
+                self.pause = False
+            Thread(target=ask, daemon=True).start()
+            return ReturnState.DONTCALL
+        def unset():
+            setattr(GUI.GLOBALTHEME.THEME, self.themePart, None)
+            t1.set('None')
+            im.active = False
+            self.fitObjects()
+            return ReturnState.DONTCALL
+        b1 = GUI.Button(self, PRTOP, GO.CORANGE, 'Change the image source 🔁', func=change, allowed_width=300)
+        b2 = GUI.Button(self, PRTOP, GO.CRED, 'Unset the image source ❎', func=unset, allowed_width=300)
+        p = getattr(GUI.GLOBALTHEME.THEME, self.themePart)
+        if p is None:
+            n = 'None'
+        else:
+            n = p.fname
+        t1 = GUI.Text(self, PRTOP, n, allowed_width=300)
+        im = ImageEditor(self, PRTOP, self.themePart)
+        im.active = n is not None
+        if p is None:
+            scales = (1, 1)
+        else:
+            scales = p.scale
+            im.defLinePs = (*p.crop[:2], p.crop[2]-p.crop[0], p.crop[3]-p.crop[1])
 
-def changeTheme(position, themePart):
-    def change():
-        def ask():
-            G.pause = True
-            newf = askopenfilename(filetypes=[('Image file', '*.png *.jpg *.jpeg *.bmp *.gif')])
-            if newf:
-                setattr(GUI.GLOBALTHEME.THEME, themePart, GUI.Image(newf))
-                t1.set(newf)
-                im.defLinePs = (None, None, None, None)
-                G.Container.themeInps[0].set(1)
-                G.Container.themeInps[1].set(1)
-                im.active = True
-            G.pause = False
-        Thread(target=ask, daemon=True).start()
-        return ReturnState.DONTCALL
-    def unset():
-        setattr(GUI.GLOBALTHEME.THEME, themePart, None)
-        t1.set('None')
-        im.active = False
-        return ReturnState.DONTCALL
-    b1 = GUI.Button(G, position, GO.CORANGE, 'Change the image source 🔁', func=change, allowed_width=300)
-    b2 = GUI.Button(G, position, GO.CRED, 'Unset the image source ❎', func=unset, allowed_width=300)
-    p = getattr(GUI.GLOBALTHEME.THEME, themePart)
-    if p is None:
-        n = 'None'
-    else:
-        n = p.fname
-    t1 = GUI.Text(G, position, n, allowed_width=300)
-    im = ImageEditor(G, position, themePart)
-    im.active = n is not None
-    if p is None:
-        scales = (1, 1)
-    else:
-        scales = p.scale
-        im.defLinePs = (*p.crop[:2], p.crop[2]-p.crop[0], p.crop[3]-p.crop[1])
-
-    G.Container.themeInps = [
-        GUI.NumInputBox(G, position, 100, start=scales[0], placeholdOnNum=None),
-        GUI.NumInputBox(G, position, 100, start=scales[1], placeholdOnNum=None)
-    ]
-    return [
-        b1,
-        b2,
-        t1,
-        im,
-        *G.Container.themeInps
-    ]
-
-def changeThemeTick(themePart):
-    p = getattr(GUI.GLOBALTHEME.THEME, themePart)
-    if p is not None:
-        p.scale = (
-            G.Container.themeInps[0].get() or 1,
-            G.Container.themeInps[1].get() or 1
-        )
+        self.themeInps = [
+            GUI.NumInputBox(self, PRTOP, 100, start=scales[0], placeholdOnNum=None),
+            GUI.NumInputBox(self, PRTOP, 100, start=scales[1], placeholdOnNum=None)
+        ]
+        self['main'].extend([
+            b1,
+            b2,
+            t1,
+            im,
+            *self.themeInps
+        ])
+    
+    def _update(self, mousePos, events):
+        p = getattr(GUI.GLOBALTHEME.THEME, self.themePart)
+        if p is not None:
+            p.scale = (
+                self.themeInps[0].get(),
+                self.themeInps[1].get()
+            )
+        return super()._update(mousePos, events)
 
 @G.Screen
 def testButton(event, element=None, aborted=False):
@@ -177,15 +189,13 @@ def testButton(event, element=None, aborted=False):
         RTOP = GO.PNEW((1, 0), (0, 1))
         G['Right'].extend([
             GUI.Text(G, RTOP, 'Button theme properties', font=GO.FTITLE),
-            ThemeProperties(G, RTOP),
-            *changeTheme(RTOP, 'BUTTON')
+            ThemeProperties(G, RTOP, 'BUTTON'),
         ])
     elif event == GO.ETICK:
         G.Container.MainBtn.cols = {'BG': G['Left'][2].get(), 'TXT': G['Left'][4].get()}
         G.Container.MainBtn.set(G['Left'][6].get(), allowed_width=(G['Left'][8].get() or None))
         G.Container.MainBtn.OHE = G['Left'][10].get()
         G.Container.MainBtn.spacing = G['Left'][12].get()
-        changeThemeTick('BUTTON')
     # elif event == GO.EELEMENTCLICK:
     #     GUI.GLOBALTHEME.THEME.BUTTON = element.get()
 

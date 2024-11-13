@@ -14,13 +14,11 @@ class Image:
         self.scale = scale
     
     def get(self):
-        constrain = lambda x: max(min(x, self.sur.get_width()-1), 0)
-        w, h = constrain(self.crop[2] or self.sur.get_width()), constrain(self.crop[3] or self.sur.get_height())
-        return pygame.transform.scale(
-            self.sur.subsurface((constrain(self.crop[0]), 
-                                 constrain(self.crop[1]), 
-                                 w, h
-            )), (w*self.scale[0], h*self.scale[1]))
+        constrainx = lambda x: max(min(x, self.sur.get_width()), 0)
+        constrainy = lambda x: max(min(x, self.sur.get_height()), 0)
+        x, y = constrainx(self.crop[0]), constrainy(self.crop[1])
+        w, h = constrainx(self.crop[2] or self.sur.get_width()), constrainy(self.crop[3] or self.sur.get_height())
+        return pygame.transform.scale(self.sur.subsurface((x, y, w, h)), (w*self.scale[0], h*self.scale[1]))
 
 # TODO: Options for where to repeat if want to enlarge image etc.
 

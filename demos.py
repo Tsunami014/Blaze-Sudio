@@ -1,4 +1,6 @@
 # Main STUFF
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 def NodeEditorDemo():
     try:
@@ -204,7 +206,7 @@ def LoremGraphicsDemo():
     test()
 
 def ThemePgDemo():
-    import demoFiles.themePlayground as themePlayground
+    import demoFiles.themePlayground as themePlayground  # noqa: F401
 
 def CollisionsDemo(debug=False):
     import os

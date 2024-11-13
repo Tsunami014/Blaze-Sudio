@@ -57,7 +57,7 @@ class Dropdown(Element):
     
     def update(self, mousePos, events, force_redraw=False):
         if not force_redraw:
-            return ReturnState.REDRAW
+            return ReturnState.REDRAW_HIGHEST
         
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
@@ -143,7 +143,9 @@ class Toast(Element):
     def dist(self):
         return sqrt((self.goto[0] - self.curPos[0])**2 + (self.goto[1] - self.curPos[1])**2)
     
-    def update(self, mousePos, events):
+    def update(self, mousePos, events, force_redraw=False):
+        if not force_redraw:
+            return ReturnState.REDRAW_HIGHEST
         self.time += 1
         ns = self.surf
         if self.goto != self.curPos:

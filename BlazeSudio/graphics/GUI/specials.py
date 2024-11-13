@@ -43,29 +43,38 @@ class GraphicBase:
                 mousepos = (float('inf'), float('inf'))
                 break
         calls = []
-        returns = self.Stuff.update(mousepos, evnts.copy())
         redraw_tops = []
+        redraw_vtops = []
         # TODO: Have return states able to be passed down instead of just the calls
-        for obj in returns:
-            retValue = returns[obj]
-            if retValue is None:
-                continue
+        def handle_returns(returns, care4Redraw=False):
+            for obj in returns:
+                retValue = returns[obj]
+                if retValue is None:
+                    continue
 
-            if isinstance(retValue, list):
-                calls.extend(retValue)
-                continue
-            
-            for ret in retValue.get():
-                if ret == ReturnState.ABORT:
-                    self.Abort()
-                elif ret == ReturnState.CALL:
-                    calls.append(obj)
-                elif ret == ReturnState.REDRAW:
-                    obj.update(mousepos, evnts.copy(), True) # Redraw forcefully on top of everything else
-                elif ret == ReturnState.REDRAW_HIGH:
-                    redraw_tops.append(obj)
+                if isinstance(retValue, list):
+                    calls.extend(retValue)
+                    continue
+                
+                for ret in retValue.get():
+                    if ret == ReturnState.ABORT:
+                        self.Abort()
+                    elif ret == ReturnState.CALL:
+                        calls.append(obj)
+                    elif care4Redraw:
+                        if ret == ReturnState.REDRAW:
+                            obj.update(mousepos, evnts.copy(), True) # Redraw forcefully on top of everything else
+                        elif ret == ReturnState.REDRAW_HIGH:
+                            redraw_tops.append(obj)
+                        elif ret == ReturnState.REDRAW_HIGHEST:
+                            redraw_vtops.append(obj)
+        handle_returns(self.Stuff.update(mousepos, evnts.copy()), True)
+        moreRets = {}
         for obj in redraw_tops:
-            obj.update(oldMP, evnts.copy(), True) # Redraw on top of LITERALLY everything
+            moreRets[obj] = obj.update(oldMP, evnts.copy(), True) # Redraw on top of everything
+        for obj in redraw_vtops:
+            moreRets[obj] = obj.update(oldMP, evnts.copy(), True) # Redraw on top of LITERALLY everything
+        handle_returns(moreRets)
         return calls
     
     def get(self):
@@ -156,27 +165,41 @@ class BaseFrame(GraphicBase, Element):
 
 class PresetFrame(BaseFrame):
     """
-    A Preset Frame! This should not be used directly, but instead used as a parent for subclasses!
+A Preset Frame! This should not be used directly, but instead used as a parent for subclasses!
 
-    TO USE:
-     - Override the `__init__` method, e.g.;
+## TO USE:
+- Override the `__init__` method, e.g.;
 ```python
 def __init__(self, G, pos: GO.P___):
-    super().__init__(G, pos, 10) # This defines the outline and background of the frame, you can change this here!
+    super().__init__(G, pos, outline=10) # This defines the outline, background and initial size of the frame, you can change this here!
 ```
-        - You can add paramaters to this if you want to add some things to the class, which you can use in the `_init_objects` method! (if you initialised them *before* the super() call)
-        - If you do not implement this, you will be able to change these values by default, which may not be what you want; so it's better to implement this.
-     - Override the `_init_objects` method, e.g.;
+<br>
+    - You can add paramaters to this if you want to add some things to the class, which you can use in the `_init_objects` method! (if you initialised them *before* the super() call)
+    - If you do not implement this, you will be able to change these values by default, which may not be what you want; so it's better to implement this.
+- Override the `_init_objects` method, e.g.;
 ```python
 def _init_objects(self):
     self.layers[0].add('main')
     self['main'].append(GUI.Text(self, GO.PCTOP, 'HELLO!'))
 ```
-     - Use your new class like any other element!
+- Optionally override the _update function like so:
+```python
+def _update(self, mousePos, events):
+    # Code here will run before the elements get updated and the window is drawn.
+    return super()._update(mousePos, events)
+    # Code here is after the elements have been updated and the window is drawn to the screen.
+```
+- Use your new class like any other element!
+
+If you want to resize the frame to fit any objects, you can either;
+ - Set `self.sizeOfScreen` to the desired size
+ - Run `self.fitObjects()` to do that for you
+ - Do the resizing, then the fitObjects. This is for when you have objects that attach to the sides of the screen and such.
     """
     def __init__(self, 
                  G, 
                  pos: GO.P___, 
+                 initialSze: Iterable[int] = (0, 0),
                  outline: int = 0, 
                  outlinecol: GO.C___ = GO.CGREY, 
                  bgcol: GO.C___ = GO.CWHITE
@@ -191,11 +214,16 @@ def _init_objects(self):
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
-        super().__init__(G, pos, (0, 0), outline, outlinecol, bgcol)
+        super().__init__(G, pos, initialSze, outline, outlinecol, bgcol)
         self._init_objects()
         self.fitObjects()
     
     def fitObjects(self):
+        """
+        Sets the size of the screen to contain every object.
+
+        For objects that snap to the sides of the screen, mostly the right, you may have to set self.sizeOfScreen before or instead of this to get consistant results.
+        """
         if len(self.Stuff) == 0:
             self.sizeOfScreen = (0, 0)
             return

@@ -166,6 +166,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
         def func2(*args, **kwargs):
             stuff = self.Stuff.copy()
             prevstack = self.stacks.copy()
+            prevPause = self.pause
             self.Stuff.clear()
             self.stacks.clear()
             def func(event, element=None, aborted=False):
@@ -210,6 +211,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             self.stacks.replaceWith(prevstack)
             self.Stuff.clear()
             self.Stuff = stuff
+            self.pause = prevPause
             return ret
         
         return func2
