@@ -82,7 +82,10 @@ class Stuff:
         return iter(outl)
     
     def __len__(self):
-        return len(self.get())
+        ln = 0
+        for i in self.categories:
+            ln += len(self.categories[i])
+        return ln
     
     def __getitem__(self, _key):
         return self.categories[_key]
@@ -138,7 +141,12 @@ class Collection:
         return s
     
     def __len__(self):
-        return len(self.watch) + len(self.sprites)
+        return sum(len(i) for i in self.layers)
+
+    def __iter__(self):
+        for i in self.layers:
+            for j in i.get():
+                yield j
     
     def __getitem__(self, _name):
         for i in self.layers:

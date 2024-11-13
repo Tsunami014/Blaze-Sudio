@@ -4,6 +4,7 @@ except ImportError as e:
     print('Sorry, the Theme Playground requires Tkinter and it could not be found.')
     raise e
 from math import ceil, floor
+from typing import Iterable
 from BlazeSudio.graphics import Graphic, mouse, GUI, options as GO
 from BlazeSudio.graphics.GUI.base import ReturnState
 from threading import Thread
@@ -87,6 +88,14 @@ class ImageEditor(GUI.ImageViewer):
             for ln in self.lines:
                 ln.update(newMP, events)
 
+class ThemeProperties(GUI.PresetFrame):
+    def __init__(self, G, pos: GO.P___):
+        super().__init__(G, pos, 0)
+    
+    def _init_objects(self):
+            self.layers[0].add('main')
+            self['main'].append(GUI.Text(self, GO.PCTOP, 'HELLO!'))
+
 def changeTheme(position, themePart):
     def change():
         def ask():
@@ -168,6 +177,7 @@ def testButton(event, element=None, aborted=False):
         RTOP = GO.PNEW((1, 0), (0, 1))
         G['Right'].extend([
             GUI.Text(G, RTOP, 'Button theme properties', font=GO.FTITLE),
+            ThemeProperties(G, RTOP),
             *changeTheme(RTOP, 'BUTTON')
         ])
     elif event == GO.ETICK:
@@ -188,5 +198,6 @@ def test(event, element=None, aborted=False):
         G['Main'].extend([
             GUI.Button(G, GO.PLTOP, next(rainbow), 'Test button', func=testButton),
         ])
+        testButton()
 
 test()
