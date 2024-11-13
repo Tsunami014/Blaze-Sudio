@@ -185,7 +185,7 @@ def MGraphicsDemo():
     pygame.quit() # this here for very fast quitting
 
 def MThemePgDemo():
-    import themePlayground
+    import demoFiles.themePlayground as themePlayground
 
 def MCollisionsDemo(debug=False):
     import os
@@ -236,7 +236,7 @@ if __name__ == '__main__':
         else:
             print('\n'+text)
 
-    def button(text, command):
+    def button(text, command, requires_tk=False):
         def cmd(cmdd):
             if has_tk:
                 root.destroy()
@@ -245,25 +245,27 @@ if __name__ == '__main__':
         if has_tk:
             Tk.Button(root, text=text, command=lambda: cmd(command)).pack()
         else:
-            print(f'{len(cmds)}: {text}')
+            rtk = '*' if requires_tk else ''
+            print(f'{len(cmds)}: {rtk}{text}')
             cmds.append(command)
     
     label('Main stuff:') # Nodes
-    button('Node Editor Demo',           MNodeEditorDemo              )
-    button('Graphics Demo',              MGraphicsDemo                )
-    button('Theme Playground Demo',      MThemePgDemo                 )
+    button('Node Editor Demo',           MNodeEditorDemo,                   )
+    button('Graphics Demo',              MGraphicsDemo,                     )
+    button('Theme Playground Demo',      MThemePgDemo,                  True)
     # TODO: Sound editor demo
-    button('Collisions Demo',            MCollisionsDemo              )
-    button('DEBUG Collisions Demo',      lambda: MCollisionsDemo(True))
+    button('Collisions Demo',            MCollisionsDemo,                   )
+    button('DEBUG Collisions Demo',      lambda: MCollisionsDemo(True),     )
 
     label('Generation stuff:') # Terrain
-    button('Generate World Demo',        TWorldsDemo                  )
-    button('Generate Terrain Demo',      TTerrainGenDemo              )
+    button('Generate World Demo',        TWorldsDemo,                       )
+    button('Generate Terrain Demo',      TTerrainGenDemo,                   )
     
     if has_tk:
         root.after(1, lambda: root.attributes('-topmost', True))
         root.mainloop()
     else:
+        print("*Requires TKinter")
         try:
             cmds[int(input('Enter the number of the demo you want to run > '))]()
         except ValueError:
