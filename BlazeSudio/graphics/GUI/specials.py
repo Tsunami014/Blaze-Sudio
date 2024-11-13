@@ -13,6 +13,8 @@ __all__ = [
     'PopupFrame',
     'GridLayout',
 
+    'PresetFrame',
+
     'BaseFrame',
     'BaseLayout',
     'GraphicBase',
@@ -151,6 +153,75 @@ class BaseFrame(GraphicBase, Element):
     
     def Abort(self):
         self.G.Abort()
+
+class PresetFrame(BaseFrame):
+    """
+    A Preset Frame! This should not be used directly, but instead used as a parent for subclasses!
+
+    TO USE:
+     - Override the `__init__` method, e.g.;
+```python
+def __init__(self, G, pos: GO.P___):
+    super().__init__(G, pos, 10) # This defines the outline and background of the frame, you can change this here!
+```
+        - You can add paramaters to this if you want to add some things to the class, which you can use in the `_init_objects` method! (if you initialised them *before* the super() call)
+        - If you do not implement this, you will be able to change these values by default, which may not be what you want; so it's better to implement this.
+     - Override the `_init_objects` method, e.g.;
+```python
+def _init_objects(self):
+    self.layers[0].add('main')
+    self['main'].append(GUI.Text(self, GO.PCTOP, 'HELLO!'))
+```
+     - Use your new class like any other element!
+    """
+    def __init__(self, 
+                 G, 
+                 pos: GO.P___, 
+                 outline: int = 0, 
+                 outlinecol: GO.C___ = GO.CGREY, 
+                 bgcol: GO.C___ = GO.CWHITE
+        ):
+        """
+        A Frame you can preset! Please see this class' docstring for info on how to use.
+
+        Args:
+            G (Graphic): The graphic screen to attach to.
+            pos (GO.P___): The position of this object in the Graphic screen.
+            outline (int, optional): The thickness of the outline of the element. Defaults to 0.
+            outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
+            bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
+        """
+        super().__init__(G, pos, (0, 0), outline, outlinecol, bgcol)
+        self._init_objects()
+        self.fitObjects()
+    
+    def fitObjects(self):
+        if len(self.Stuff) == 0:
+            self.sizeOfScreen = (0, 0)
+            return
+        poss = [i.stackP() for i in self.Stuff]
+        szes = [i.size for i in self.Stuff]
+        mn = (
+            min(p[0] for p in poss),
+            min(p[1] for p in poss)
+        )
+        ns = (
+            max(p[0]+s[0]-mn[0] for p, s in zip(poss, szes)),
+            max(p[1]+s[1]-mn[1] for p, s in zip(poss, szes)),
+        )
+        self.sizeOfScreen = self.size = ns
+    
+    def _init_objects(self):
+        """
+        Initialise all the objects that make up this frame.
+        ```python
+        def _init_objects(self):
+            self.layers[0].add('main')
+            self['main'].append(GUI.Text(self, GO.PCTOP, 'HELLO!'))
+        ```
+        """
+        pass
+    
 
 class PopupFrame(BaseFrame):
     def __init__(self, 
