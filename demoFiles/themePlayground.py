@@ -59,11 +59,11 @@ class ImageEditor(GUI.ImageViewer):
         endsur.blit(sur, (1, 1))
         endsur.fill((255, 255, 255, 100), special_flags=pygame.BLEND_RGBA_MULT)
 
-        for ln in self.lines:
-            ln.draw(endsur)
-
         p = (self.lines[0].pos, self.lines[1].pos)
         endsur.blit(sur, (p[0]+1, p[1]+1), (*p, self.lines[2].pos-p[0]+1, self.lines[3].pos-p[1]+1))
+
+        for ln in self.lines:
+            ln.draw(endsur)
         
         return endsur
     
@@ -139,7 +139,7 @@ class ThemeProperties(GUI.PresetFrame):
         else:
             n = p.fname
         t1 = GUI.Text(self, PRTOP, n, allowed_width=600, leftrightweight=GO.SWRIGHT)
-        im = ImageEditor(self, PRTOP, self.themePart, size=(600, 600))
+        im = ImageEditor(self, PRTOP, self.themePart, size=(400, 400))
         im.active = n is not None
         if p is None:
             scales = (1, 1)
@@ -147,16 +147,24 @@ class ThemeProperties(GUI.PresetFrame):
             scales = p.scale
             im.defLinePs = (*p.crop[:2], p.crop[2]-p.crop[0], p.crop[3]-p.crop[1])
 
+        g = GUI.GridLayout(self, PRTOP, leftrightWeight=GO.SWLEFT)
+        n1 = GUI.NumInputBox(g, g.LP, 100, start=scales[0], placeholdOnNum=None, max=1000, min=-1000)
+        n2 = GUI.NumInputBox(g, g.LP, 100, start=scales[1], placeholdOnNum=None, max=1000, min=-1000)
+        g.grid = [
+            [GUI.Text(g, g.LP, 'Horizontal scale: '), n1],
+            [GUI.Text(g, g.LP, 'Vertical scale: '), n2]
+        ]
+
         self.themeInps = [
-            GUI.NumInputBox(self, PRTOP, 100, start=scales[0], placeholdOnNum=None),
-            GUI.NumInputBox(self, PRTOP, 100, start=scales[1], placeholdOnNum=None)
+            n1,
+            n2,
         ]
         self['main'].extend([
             b1,
             b2,
             t1,
             im,
-            *self.themeInps
+            g,
         ])
     
     def _update(self, mousePos, events):
