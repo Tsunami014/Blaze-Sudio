@@ -430,7 +430,7 @@ class LayoutPos(GO.POverride):
     def __call__(self):
         idx = self.idx
         ms = self.layout.max_size
-        return (idx[1]*ms[0]+(ms[0]-self.elm.size[0])/2, idx[0]*ms[1]+(ms[1]-self.elm.size[1])/2)
+        return (idx[1]*ms[0]+(ms[0]-self.elm.size[0])*self.layout.weights[1].w, idx[0]*ms[1]+(ms[1]-self.elm.size[1])*self.layout.weights[0].w)
 
 class BaseLayout(Element):
     type = GO.TLAYOUT
@@ -441,6 +441,8 @@ class BaseLayout(Element):
                  gap: int = 5,
                  outline: int = 0, 
                  outlinecol: GO.C___ = GO.CGREY, 
+                 updownWeight: GO.SW__ = GO.SWMID,
+                 leftrightWeight: GO.SW__ = GO.SWMID,
                  bgcol: GO.C___ = GO.CWHITE
                 ):
         """
@@ -453,6 +455,8 @@ class BaseLayout(Element):
             gap (int, optional): The gap between each element in the layout. Defaults to 5.
             outline (int, optional): The thickness of the outline of the element. Defaults to 0 (off).
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
+            updownWeight (GO.SW__, optional): The vertical weighting of each element in the layout. Defaults to GO.SWMID.
+            leftrightWeight (GO.SW__, optional): The horizontal weighting of each element in the layout. Defaults to GO.SWMID.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
         super().__init__(G, pos, size)
@@ -461,6 +465,7 @@ class BaseLayout(Element):
         self.outline = (outline, outlinecol)
         self.grid = [[]]
         self.gap = gap / 2
+        self.weights = [updownWeight, leftrightWeight]
         self.LP = LayoutPos(self)
     
     @property
@@ -593,6 +598,8 @@ class GridLayout(BaseLayout):
                  outline: int = 0, 
                  outlinecol: GO.C___ = GO.CGREY, 
                  size: Iterable[int] = None, 
+                 updownWeight: GO.SW__ = GO.SWMID,
+                 leftrightWeight: GO.SW__ = GO.SWMID,
                  bgcol: GO.C___ = GO.CWHITE
                 ):
         """
@@ -606,11 +613,13 @@ class GridLayout(BaseLayout):
             outline (int, optional): The thickness of the outline of the element. Defaults to 0 (off).
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
             size (Iterable[int]): The size of the screen, or None to auto adjust the size. Defaults to None.
+            updownWeight (GO.SW__, optional): The vertical weighting of each element in the layout. Defaults to GO.SWMID.
+            leftrightWeight (GO.SW__, optional): The horizontal weighting of each element in the layout. Defaults to GO.SWMID.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
         self.autoAdjust = size is None
         self.gridSze = gridSze
-        super().__init__(G, pos, size or (0, 0), gap, outline, outlinecol, bgcol)
+        super().__init__(G, pos, size or (0, 0), gap, outline, outlinecol, updownWeight, leftrightWeight, bgcol)
     
     @property
     def max_size(self):
