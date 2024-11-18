@@ -18,7 +18,10 @@ class Image:
         constrainy = lambda x: max(min(x, self.sur.get_height()), 0)
         x, y = constrainx(self.crop[0]), constrainy(self.crop[1])
         w, h = constrainx(self.crop[2] or self.sur.get_width()), constrainy(self.crop[3] or self.sur.get_height())
-        return pygame.transform.scale(self.sur.subsurface((x, y, w, h)), (w*self.scale[0], h*self.scale[1]))
+        try:
+            return pygame.transform.scale(self.sur.subsurface((x, y, w, h)), (w*self.scale[0], h*self.scale[1]))
+        except ValueError:
+            return pygame.Surface((0, 0))
 
 # TODO: Options for where to repeat if want to enlarge image etc.
 

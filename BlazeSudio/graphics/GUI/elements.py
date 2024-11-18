@@ -1,8 +1,10 @@
+from math import floor
 import pygame
 from typing import Callable
 from string import printable
 from BlazeSudio.graphics import mouse, options as GO
 from BlazeSudio.graphics.GUI.base import Element, ReturnState
+from BlazeSudio.graphics.GUI.specials import Infinity
 from BlazeSudio.graphics.GUI.theme import GLOBALTHEME
 from BlazeSudio.graphics.GUI.events import Dropdown
 
@@ -560,8 +562,10 @@ class ImageViewer(Element):
     def __init__(self, G, pos, sur, size=(300, 300)):
         super().__init__(G, pos, size)
         self._sur = sur
+        self.scrollVel = 0
         self.lastMP = (0, 0)
         self.cache = None
+        self.lastGPause = None
         self.centre()
     
     @property
@@ -595,16 +599,22 @@ class ImageViewer(Element):
         self.update_scroll(max(self.size) / max(sur.get_size()))
     
     def update_scroll(self, newscroll):
+        if newscroll == self.scroll:
+            return
         self.offset[0] *= abs(newscroll) / abs(self.scroll)
         self.offset[1] *= abs(newscroll) / abs(self.scroll)
         self.scroll = newscroll
     
     def unscale_pos(self, pos):
+        if isinstance(pos[0], Infinity):
+            return pos
         thisP = self.stackP()
         pos = (pos[0] - thisP[0], pos[1] - thisP[1])
-        return (pos[0] - self.size[0] / 2 + self.offset[0]) / abs(self.scroll), (pos[1] - self.size[1] / 2 + self.offset[1]) / abs(self.scroll)
+        return (pos[0] - self.size[0] / 2 + self.offset[0]) / self.scroll, (pos[1] - self.size[1] / 2 + self.offset[1]) / self.scroll
     
     def update(self, mousePos, events):
+        if isinstance(mousePos[0], Infinity):
+            mousePos = (mousePos[0].val, mousePos[1].val)
         sur = self._modifySur(self._sur)
         pos = self.stackP()
         if not self.G.pause and pygame.Rect(*pos, *self.size).collidepoint(mousePos):
@@ -612,22 +622,48 @@ class ImageViewer(Element):
             scrolling = any(e.type == pygame.MOUSEWHEEL for e in events)
             for e in events:
                 if e.type == pygame.MOUSEWHEEL:
-                    self.update_scroll(self.scroll + e.y*0.05)
-                
+                    self.scrollVel += e.y * 0.5
+                    self.scrollVel += e.x * 0.5
+                                
                 elif not scrolling and e.type == pygame.MOUSEBUTTONDOWN:
                     self.lastMP = mousePos
-            if pygame.mouse.get_pressed()[0]:
-                self.offset[0] -= mousePos[0] - self.lastMP[0]
-                self.offset[1] -= mousePos[1] - self.lastMP[1]
-                self.lastMP = mousePos
-        newSur = pygame.Surface((self.size[0]/abs(self.scroll), self.size[1]/abs(self.scroll)), pygame.SRCALPHA)
-        newSur.blit(sur, ((self.size[0]/2-self.offset[0])/abs(self.scroll), (self.size[1]/2-self.offset[1])/abs(self.scroll)))
+                    self.lastGPause = self.G.pause
+        if pygame.mouse.get_pressed()[0] and self.lastGPause is not None:
+            mouse.Mouse.set(mouse.MouseState.GRAB)
+            self.offset[0] -= mousePos[0] - self.lastMP[0]
+            self.offset[1] -= mousePos[1] - self.lastMP[1]
+            self.lastMP = mousePos
+            self.G.pause = True
+        elif self.lastGPause is not None:
+            self.G.pause = self.lastGPause
+            self.lastGPause = None
+        
+        self.update_scroll(
+            max(min(self.scroll + self.scrollVel, 10000), max(self.size) / 5000)
+        )
+        self.scrollVel = round(self.scrollVel * 0.7, 3)
+        if abs(self.scrollVel) <= 0.003:
+            self.scrollVel = 0
+
+        # FIXME: Please. This code is the stupidest mess, and I have no clue why regular methods don't work.
+        newSur = pygame.Surface((self.size[0]/self.scroll+2, self.size[1]/self.scroll+2), pygame.SRCALPHA)
+        ox, oy = (self.size[0]/2-self.offset[0])/self.scroll, (self.size[1]/2-self.offset[1])/self.scroll
+        newSur.blit(sur, (floor(ox)+1, floor(oy)+1))
         self.G.WIN.blit(
             buildTransparencySur(self.size), 
             pos
         )
+
+        ox2, oy2 = (-ox % 1) * self.scroll, (-oy % 1) * self.scroll
+
+        if ox2 == 0:
+            ox2 = self.scroll
+        if oy2 == 0:
+            oy2 = self.scroll
+
         self.G.WIN.blit(
-            pygame.transform.scale(newSur, self.size), 
-            pos
+            pygame.transform.scale(newSur, (self.size[0] + 2 * self.scroll, self.size[1] + 2 * self.scroll)),
+            pos,
+            (ox2, oy2, *self.size)
         )
         pygame.draw.rect(self.G.WIN, GO.CGREY, (*pos, *self.size), 2)

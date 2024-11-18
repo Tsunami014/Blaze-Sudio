@@ -3,8 +3,7 @@ try:
 except ImportError as e:
     print('Sorry, the Theme Playground requires Tkinter and it could not be found.')
     raise e
-from math import ceil, floor
-from typing import Iterable
+from math import floor
 from BlazeSudio.graphics import Graphic, mouse, GUI, options as GO
 from BlazeSudio.graphics.GUI.base import ReturnState
 from threading import Thread
@@ -31,9 +30,7 @@ class Line:
             pygame.draw.rect(win, (125, 125, 125), (0, self.pos+self.offset, win.get_width(), 1))
     
     def update(self, mousePos, events):
-        coll = self.pos + self.offset - self.dir == floor(mousePos[self.dir])
-        if coll:
-            mouse.Mouse.set(mouse.MouseState.PICK)
+        coll = self.pos + self.offset == floor(mousePos[self.dir])
         for ev in events:
             if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == pygame.BUTTON_LEFT:
                 if coll:
@@ -42,13 +39,14 @@ class Line:
             self.held = False
         if self.held:
             self.pos = floor(mousePos[self.dir]) - self.offset + self.dir
+        return coll
 
 class ImageEditor(GUI.ImageViewer):
     def __init__(self, G, pos, themePart, size=(300, 300), defaultLinePoss=(None, None, None, None)):
         self.themePart = themePart
         self.theme = GUI.GLOBALTHEME.THEME
         self.lastSur = None
-        self.lines = [Line(self, 0, 0), Line(self, 1, 0), Line(self, 0, 0, 2), Line(self, 1, 0, 2)]
+        self.lines = [Line(self, 0, 0), Line(self, 1, 0), Line(self, 0, 0, 1), Line(self, 1, 0, 1)]
         self.defLinePs = defaultLinePoss
         super().__init__(G, pos, pygame.Surface((0, 0)), size)
     
@@ -75,28 +73,34 @@ class ImageEditor(GUI.ImageViewer):
             self.sur = pygame.Surface((0, 0))
         else:
             self.sur = part.sur
+        self.cache = None
         if (not self.lastSur) or self.lastSur.get_buffer().raw != self.sur.get_buffer().raw: # Because regular != doesn't work for who knows why
             self.lastSur = self.sur
             self.lines[0].pos = self.defLinePs[0] or 0
             self.lines[1].pos = self.defLinePs[1] or 0
-            self.lines[2].pos = self.defLinePs[2] or self.sur.get_width()-1
-            self.lines[3].pos = self.defLinePs[3] or self.sur.get_height()-1
+            self.lines[2].pos = self.defLinePs[2] or self.sur.get_width()
+            self.lines[3].pos = self.defLinePs[3] or self.sur.get_height()
             self.centre()
         newMP = self.unscale_pos(mousePos)
 
         if part is not None:
-            part.crop = (self.lines[0].pos, self.lines[1].pos, self.lines[2].pos-self.lines[0].pos+1, self.lines[3].pos-self.lines[1].pos+1)
+            part.crop = (self.lines[0].pos, self.lines[1].pos, self.lines[2].pos-self.lines[0].pos, self.lines[3].pos-self.lines[1].pos)
 
-        prevpaused = self.G.pause
+        coll = False
+        if (not self.G.pause) and pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos):
+            for ln in self.lines:
+                coll = ln.update(newMP, events) or coll
         linesHeld = any(i.held for i in self.lines)
         if linesHeld:
             self.cache = None
-        self.G.pause = self.G.pause or linesHeld
-        super().update(mousePos, events)
-        self.G.pause = prevpaused
-        if (not self.G.pause) and pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos):
-            for ln in self.lines:
-                ln.update(newMP, events)
+            prevpaused = self.G.pause
+            self.G.pause = True
+            super().update(mousePos, events)
+            self.G.pause = prevpaused
+        else:
+            super().update(mousePos, events)
+        if coll:
+            mouse.Mouse.set(mouse.MouseState.PICK)
 
 class ThemeProperties(GUI.PresetFrame):
     def __init__(self, G, pos: GO.P___, themePart):
@@ -134,8 +138,8 @@ class ThemeProperties(GUI.PresetFrame):
             n = 'None'
         else:
             n = p.fname
-        t1 = GUI.Text(self, PRTOP, n, allowed_width=300)
-        im = ImageEditor(self, PRTOP, self.themePart)
+        t1 = GUI.Text(self, PRTOP, n, allowed_width=600, leftrightweight=GO.SWRIGHT)
+        im = ImageEditor(self, PRTOP, self.themePart, size=(600, 600))
         im.active = n is not None
         if p is None:
             scales = (1, 1)
