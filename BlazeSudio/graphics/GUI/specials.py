@@ -20,7 +20,14 @@ __all__ = [
     'GraphicBase',
 
     'LayoutPos',
+    'Infinity'
 ]
+
+class Infinity(float):
+    def __new__(cls, real):
+        instance = super().__new__(cls, 'inf')
+        instance.val = real
+        return instance
 
 class GraphicBase:
     """This contains all the things an object needs to be a graphic object and is not meant to be used directly."""
@@ -38,9 +45,9 @@ class GraphicBase:
     # Things that don't need replacing:
     def _updateStuff(self, mousepos, evnts):
         oldMP = mousepos
-        for i in self.get():
+        for i in self.Stuff:
             if isinstance(i, GraphicBase) and pygame.Rect(*i.stackP(), *i.size).collidepoint(mousepos):
-                mousepos = (float('inf'), float('inf'))
+                mousepos = (Infinity(mousepos[0]), Infinity(mousepos[1]))
                 break
         calls = []
         redraw_tops = []
@@ -151,7 +158,7 @@ class BaseFrame(GraphicBase, Element):
             mp = (mousePos[0]-x, mousePos[1]-y)
             mouse.Mouse.set(mouse.MouseState.NORMAL)
         else:
-            mp = (float('inf'), float('inf'))
+            mp = (Infinity(mousePos[0]-x), Infinity(mousePos[1]-y))
         
         calls = self._updateStuff(mp, events)
         self.G.WIN.blit(self.WIN, (x, y))
@@ -330,10 +337,9 @@ class ScrollableFrame(BaseFrame):
         self.scroll[1] = min(max(-self.sizeOfScreen[1]+self.size[1], self.scroll[1]), 0)
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
-        if mouseColliding:
-            mp = (mousePos[0]-x-self.scroll[0], mousePos[1]-y-self.scroll[1])
-        else:
-            mp = (float('inf'), float('inf'))
+        mp = (mousePos[0]-x-self.scroll[0], mousePos[1]-y-self.scroll[1])
+        if not mouseColliding:
+            mp = (Infinity(mp[0]), Infinity(mp[1]))
         calls = self._updateStuff(mp, events)
         self.G.WIN.blit(self.WIN, (x, y), pygame.Rect(-self.scroll[0], -self.scroll[1], *self.size))
         if self.outline[0] != 0:
@@ -398,10 +404,9 @@ class ScaledByFrame(BaseFrame):
     def _update(self, mousePos, events):
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
-        if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
-            mp = ((mousePos[0]-x)/self._scale, (mousePos[1]-y)/self._scale)
-        else:
-            mp = (float('inf'), float('inf'))
+        mp = ((mousePos[0]-x)/self._scale, (mousePos[1]-y)/self._scale)
+        if not pygame.Rect(x, y, *self.size).collidepoint(mousePos):
+            mp = (Infinity(mp[0]), Infinity(mp[1]))
         calls = self._updateStuff(mp, events)
         self.G.WIN.blit(pygame.transform.scale(self.WIN, self.size), (x, y))
         if self.outline[0] != 0:
@@ -499,7 +504,7 @@ class BaseLayout(Element):
             mp = (mousePos[0]-x, mousePos[1]-y)
             mouse.Mouse.set(mouse.MouseState.NORMAL)
         else:
-            mp = (float('inf'), float('inf'))
+            mp = (Infinity(mousePos[0]-x), Infinity(mousePos[1]-y))
         
         calls = self._updateStuff(mp, events)
         self.G.WIN.blit(self.WIN, (x, y))
@@ -515,7 +520,7 @@ class BaseLayout(Element):
         oldMP = mousepos
         for i in self.get():
             if isinstance(i, GraphicBase) and pygame.Rect(*i.stackP(), *i.size).collidepoint(mousepos):
-                mousepos = (float('inf'), float('inf'))
+                mousepos = (Infinity(mousepos[0]), Infinity(mousepos[1]))
                 break
         calls = []
         returns = {}
