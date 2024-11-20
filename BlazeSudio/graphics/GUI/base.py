@@ -1,9 +1,22 @@
 from BlazeSudio.graphics.stacks import StackPart
 from BlazeSudio.graphics import options as GO
+import inspect
 from typing import Any, Iterable
 from enum import Enum
 
-__all__ = ['Element', 'ReturnState', 'ReturnGroup']
+__all__ = ['HiddenStatus', 'Element', 'ReturnState', 'ReturnGroup']
+
+class HiddenStatus(Enum):
+    """Different states an Element can be in relation to drawing and updating"""
+
+    SHOWING = 0
+    """Showing, runs normally"""
+    NOTUPDATING = 1
+    """Rendering, but doesn't update"""
+    HIDDEN = 2
+    """Not rendering, but still updating and still has size"""
+    GONE = 3
+    """Not rendering, has no size and doesn't update"""
 
 class Element:
     NEXT_UID = [0]
@@ -19,6 +32,7 @@ class Element:
         """
         self.G = G
         self.pos: GO.P___ = pos
+        self.hiddenStatus = HiddenStatus.SHOWING
         self.size = size
         if isinstance(pos, GO.POverride):
             self.stackP = pos.copy()
@@ -37,8 +51,33 @@ class Element:
         self.pos = newPos
         self.stackP = StackPart(self, self.G.stacks, newPos, self.size, self.G.sizeOfScreen)
     
+    def UpdateDraw(self, mousePos, events, force_redraw=False):
+        if self.hiddenStatus == HiddenStatus.GONE:
+            return
+        
+        args = inspect.getfullargspec(self.update).args
+        ret = None
+        if len(args) == 4: # If includes the force_redraw arg then let it update again
+            ret = self.update(mousePos.copy(), events, force_redraw)
+        elif not force_redraw:
+            ret = self.update(mousePos.copy(), events)
+        
+        if self.hiddenStatus in (HiddenStatus.SHOWING, HiddenStatus.NOTUPDATING):
+            args2 = inspect.getfullargspec(self.draw).args
+            if len(args2) == 2: # Includes mousepos
+                self.draw(mousePos) # We don't use mousePos anymore, no need to copy it this time
+            else:
+                self.draw()
+        
+        if ret:
+            return ret
+        return
+    
     # Required subclass functions
     def update(self, mousePos, events):
+        pass
+
+    def draw(self):
         pass
     
     def get(self):
@@ -54,10 +93,16 @@ class Element:
     def __hash__(self):
         return hash(self.uid)
     
-    def __setattr__(self, name: str, value: Any) -> None: # TODO: Use @size.setter
+    def __setattr__(self, name: str, value: Any) -> None:
         super().__setattr__(name, value)
         if name == 'size' and 'stackP' in self.__dict__: # Safeguard against running this before initialisation of stackP
             self.stackP.setSize(self.size) # Automatically update stackP size whenever you set self.size
+    
+    def __getattribute__(self, name: str) -> Any:
+        if name == 'size' and 'size' in self.__dict__ and 'hiddenStatus' in self.__dict__ and self.hiddenStatus == HiddenStatus.GONE:
+            return (0, 0)
+        else:
+            return super().__getattribute__(name)
     
     def __str__(self):
         return f'<{self.__class__.__name__}({str(self.get())})>'

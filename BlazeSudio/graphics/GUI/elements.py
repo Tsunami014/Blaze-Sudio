@@ -4,7 +4,6 @@ from typing import Callable
 from string import printable
 from BlazeSudio.graphics import mouse, options as GO
 from BlazeSudio.graphics.GUI.base import Element, ReturnState
-from BlazeSudio.graphics.GUI.specials import Infinity
 from BlazeSudio.graphics.GUI.theme import GLOBALTHEME
 from BlazeSudio.graphics.GUI.events import Dropdown
 
@@ -47,9 +46,10 @@ class Switch(Element):
             else:
                 self.anim -= self.speed
         x, y = self.stackP()
-        pygame.draw.rect(self.G.WIN, (125, 125, 125), pygame.Rect(x+self.btnSze/2, y+self.btnSze/4, self.btnSze, self.btnSze/2), border_radius=self.btnSze)
-        pygame.draw.circle(self.G.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (x+self.btnSze/2+self.anim, y+self.btnSze/2), self.btnSze/2)
-        mcollides = pygame.Rect(x, y, *self.size).collidepoint(mousePos)
+        if mousePos:
+            mcollides = pygame.Rect(x, y, *self.size).collidepoint(mousePos)
+        else:
+            mcollides = False
         if not self.G.pause:
             if mcollides:
                 if pygame.mouse.get_pressed()[0]:
@@ -61,6 +61,11 @@ class Switch(Element):
                 event.button == pygame.BUTTON_LEFT and mcollides:
                     self.state = not self.state
                     return ReturnState.CALL
+    
+    def draw(self):
+        x, y = self.stackP()
+        pygame.draw.rect(self.G.WIN, (125, 125, 125), pygame.Rect(x+self.btnSze/2, y+self.btnSze/4, self.btnSze, self.btnSze/2), border_radius=self.btnSze)
+        pygame.draw.circle(self.G.WIN, ((0, 255, 0) if self.state else (255, 0, 0)), (x+self.btnSze/2+self.anim, y+self.btnSze/2), self.btnSze/2)
     
     def get(self):
         """Get the state of the switch (on or off)"""
@@ -147,7 +152,7 @@ class InputBox(Element): # TODO: Change colours
     
     def update(self, mousePos, events):
         if not self.G.pause:
-            mcollide = pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos)
+            mcollide = bool(mousePos) and pygame.Rect(*self.stackP(), *self.size).collidepoint(*mousePos)
             if mcollide:
                 mouse.Mouse.set(mouse.MouseState.TEXT)
             for event in events:
@@ -168,6 +173,8 @@ class InputBox(Element): # TODO: Change colours
                         self._render_txt()
                         if event.key == pygame.K_RETURN:
                             return ReturnState.CALL
+    
+    def draw(self):
         # Blit the text.
         x, y = self.stackP()
         self.G.WIN.blit(self.txt_surface, (x+5+((self.size[0]-10)-self.txt_surface.get_width())*self.weight.w, y+5))
@@ -318,7 +325,7 @@ class Static(Element):
         self.sur = sur
         self.size = self.sur.get_size()
     
-    def update(self, mpos, events):
+    def draw(self):
         self.G.WIN.blit(self.sur, self.stackP())
 
 class Text(Element):
@@ -362,9 +369,8 @@ class Text(Element):
         self.sur = self.font.render(self.txt, self.col, **self.settings)
         self.size = self.sur.get_size()
     
-    def update(self, mpos, events):
+    def draw(self):
         self.G.WIN.blit(self.sur, self.stackP())
-
 
 class Button(Element):
     type = GO.TBUTTON
@@ -423,33 +429,41 @@ class Button(Element):
         s = self.TxtSur.get_size()
         self.size = (s[0] + self.OHE*2 + self.spacing*2, s[1] + self.OHE*2 + self.spacing*2)
     
-    def update(self, mousePos, events, force_draw=False):
+    def update(self, mousePos, events):
         r = pygame.Rect(*self.stackP(), *self.size)
         r.x += self.OHE
         r.y += self.OHE
         r.width -= self.OHE
         r.height -= self.OHE
         if not self.G.pause:
-            if r.collidepoint(mousePos):
+            if bool(mousePos) and r.collidepoint(*mousePos):
                 if pygame.mouse.get_pressed()[0]:
                     mouse.Mouse.set(mouse.MouseState.CLICKING)
                 else:
                     mouse.Mouse.set(mouse.MouseState.HOVER)
+                if any([i.type == pygame.MOUSEBUTTONDOWN and i.button == pygame.BUTTON_LEFT for i in events]):
+                    ret = self.func()
+                    if ret:
+                        if ReturnState.DONTCALL not in ret:
+                            return ReturnState.REDRAW + ReturnState.CALL + ret
+                    else:
+                        return ReturnState.REDRAW + ReturnState.CALL
+                else:
+                    return ReturnState.REDRAW
+    
+    def draw(self, mousePos):
+        r = pygame.Rect(*self.stackP(), *self.size)
+        r.x += self.OHE
+        r.y += self.OHE
+        r.width -= self.OHE
+        r.height -= self.OHE
+        if not self.G.pause:
+            if bool(mousePos) and r.collidepoint(*mousePos):
                 if self.OHE != -1:
                     r.x -= self.OHE
                     r.y -= self.OHE
                     r.width += self.OHE*2
                     r.height += self.OHE*2
-                if not force_draw:
-                    if any([i.type == pygame.MOUSEBUTTONDOWN and i.button == pygame.BUTTON_LEFT for i in events]):
-                        ret = self.func()
-                        if ret:
-                            if ReturnState.DONTCALL not in ret:
-                                return ReturnState.REDRAW + ReturnState.CALL + ret
-                        else:
-                            return ReturnState.REDRAW + ReturnState.CALL
-                    else:
-                        return ReturnState.REDRAW
         if GLOBALTHEME.THEME.BUTTON is None:
             pygame.draw.rect(self.G.WIN, self.cols['BG'], r, border_radius=8)
         else:
@@ -539,14 +553,17 @@ class DropdownButton(Button): # TODO: Different button and dropdown colours
                                  self.actualfunc
         )
 
-    def update(self, mousePos, events, force_draw=False):
+    def update(self, mousePos, events):
         resp = None
         if self.dropdown is not None:
-            resp = self.dropdown.update(mousePos, events, force_draw)
-        if super().update(mousePos, events, False) is not None:
-            super().update(mousePos, events, True)
-        
+            resp = self.dropdown.update(mousePos, events)
+        super().update(mousePos, events)
         return resp
+
+    def draw(self, mousePos):
+        super().draw(mousePos)
+        if self.dropdown is not None:
+            self.dropdown.draw(mousePos)
 
 def buildTransparencySur(size, squareSize=10):
     # The checked pattern
@@ -606,18 +623,13 @@ class ImageViewer(Element):
         self.scroll = newscroll
     
     def unscale_pos(self, pos):
-        if isinstance(pos[0], Infinity):
-            return pos
         thisP = self.stackP()
         pos = (pos[0] - thisP[0], pos[1] - thisP[1])
         return (pos[0] - self.size[0] / 2 + self.offset[0]) / self.scroll, (pos[1] - self.size[1] / 2 + self.offset[1]) / self.scroll
     
     def update(self, mousePos, events):
-        if isinstance(mousePos[0], Infinity):
-            mousePos = (mousePos[0].val, mousePos[1].val)
-        sur = self._modifySur(self._sur)
         pos = self.stackP()
-        if not self.G.pause and pygame.Rect(*pos, *self.size).collidepoint(mousePos):
+        if not self.G.pause and pygame.Rect(*pos, *self.size).collidepoint(mousePos.pos):
             mouse.Mouse.set(mouse.MouseState.GRAB)
             scrolling = any(e.type == pygame.MOUSEWHEEL for e in events)
             for e in events:
@@ -630,9 +642,9 @@ class ImageViewer(Element):
                     self.lastGPause = self.G.pause
         if pygame.mouse.get_pressed()[0] and self.lastGPause is not None:
             mouse.Mouse.set(mouse.MouseState.GRAB)
-            self.offset[0] -= mousePos[0] - self.lastMP[0]
-            self.offset[1] -= mousePos[1] - self.lastMP[1]
-            self.lastMP = mousePos
+            self.offset[0] -= mousePos.pos[0] - self.lastMP[0]
+            self.offset[1] -= mousePos.pos[1] - self.lastMP[1]
+            self.lastMP = mousePos.pos
             self.G.pause = True
         elif self.lastGPause is not None:
             self.G.pause = self.lastGPause
@@ -644,6 +656,10 @@ class ImageViewer(Element):
         self.scrollVel = round(self.scrollVel * 0.7, 3)
         if abs(self.scrollVel) <= 0.003:
             self.scrollVel = 0
+
+    def draw(self):
+        sur = self._modifySur(self._sur)
+        pos = self.stackP()
 
         # FIXME: Please. This code is the stupidest mess, and I have no clue why regular methods don't work.
         newSur = pygame.Surface((self.size[0]/self.scroll+2, self.size[1]/self.scroll+2), pygame.SRCALPHA)

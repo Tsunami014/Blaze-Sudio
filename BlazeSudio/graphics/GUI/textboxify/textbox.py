@@ -110,9 +110,7 @@ class TextBox(Element):
         self.full = False
         self.forceFull = False
 
-    def update(self, mousePos, events, force_redraw=False):
-        if not force_redraw:
-            return ReturnState.REDRAW_HIGHEST
+    def update(self, mousePos, events):
         self.G.pause = True
         sur = pygame.Surface(self.size)
         if self._bg_colour[0]:
@@ -146,12 +144,6 @@ class TextBox(Element):
         if self.full:
             self.forceFull = False
         
-        outSur = self.font.render(self.printedWrds, self._font_colour, allowed_width=self._text_wid-self.padding[0])
-        
-        x, y = self.stackP()
-        pygame.draw.rect(self.G.WIN, self._bg_colour[1], (x, y, *self._adjust()))
-        self.G.WIN.blit(outSur, self._adjust((x + self.padding[0], y + self._dist + self.padding[1])))
-        
         for ev in events:
             if (ev.type == pygame.MOUSEBUTTONDOWN and ev.button == pygame.BUTTON_LEFT) or \
                (ev.type == pygame.KEYDOWN and ev.key in (pygame.K_RETURN, pygame.K_SPACE)):
@@ -161,7 +153,16 @@ class TextBox(Element):
                     if len(self.printedWrds) < len(self.words):
                         self.clear()
                     else:
-                        return ReturnState.CALL
+                        return ReturnState.REDRAW_HIGHEST + ReturnState.CALL
+        
+        return ReturnState.REDRAW_HIGHEST
+
+    def draw(self):
+        outSur = self.font.render(self.printedWrds, self._font_colour, allowed_width=self._text_wid-self.padding[0])
+        
+        x, y = self.stackP()
+        pygame.draw.rect(self.G.WIN, self._bg_colour[1], (x, y, *self._adjust()))
+        self.G.WIN.blit(outSur, self._adjust((x + self.padding[0], y + self._dist + self.padding[1])))
     
     def remove(self):
         self.G.pause = False
@@ -307,13 +308,10 @@ class TextBoxAdv(TextBox):
         self._text_wid += self._portrait.image.get_width() + self.portrait_padding[0] + self.portrait_padding[2]
 
         self.size = self._adjust()
+    
+    def draw(self):
+        super().draw()
 
-    def update(self, mousePos, events, force_redraw=False):
-        if not force_redraw:
-            return ReturnState.REDRAW_HIGHEST
-        # Update the text.
-        ret = super().update(mousePos, events, True)
-        
         x, y = self.stackP()
 
         if self.full and self._indicator:
@@ -332,7 +330,6 @@ class TextBoxAdv(TextBox):
                 self._corner,
                 self._side,
             )
-        return ret
 
     def _adjust(self, pos=None):
         """Include the border size and portrait"""

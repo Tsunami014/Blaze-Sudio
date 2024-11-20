@@ -20,18 +20,72 @@ __all__ = [
     'GraphicBase',
 
     'LayoutPos',
-    'Infinity'
+    'MousePos'
 ]
 
-class Infinity(float):
-    def __new__(cls, real):
-        instance = super().__new__(cls, 'inf')
-        instance.val = real
-        return instance
+class MousePos:
+    """Mouse positioning which holds it's real position"""
+    def __init__(self, x: int, y: int):
+        self._pos = [x, y]
+        self.outOfRange = False
+    
+    @property
+    def pos(self):
+        return self._pos
+    
+    @pos.setter
+    def pos(self, new: Iterable):
+        if not isinstance(new, Iterable):
+            raise TypeError(
+                'New position is not iterable!'
+            )
+        if len(new) != 2:
+            raise ValueError(
+                f'New position has {len(new)} items, when it should have 2!'
+            )
+        self._pos = [new[0], new[1]]
+    
+    def copy(self) -> 'MousePos':
+        n = MousePos(*self._pos)
+        n.outOfRange = self.outOfRange
+        return n
+    
+    def __len__(self):
+        return 2
+    
+    def __bool__(self):
+        return not self.outOfRange
+    
+    def __getitem__(self, idx: int) -> int:
+        if self.outOfRange:
+            raise ValueError(
+                'Mouse position is out of window, cannot get the value!'
+            )
+        return self._pos[idx]
+    
+    def __setitem__(self, idx: int, newval: int) -> int:
+        if self.outOfRange:
+            raise ValueError(
+                'Mouse position is out of window, cannot get the value!'
+            )
+        self._pos[idx] = newval
+    
+    def __iter__(self) -> iter:
+        if self.outOfRange:
+            raise ValueError(
+                'Mouse position is out of window, cannot get the value!'
+            )
+        return iter(self._pos)
+    
+    def __str__(self):
+        if self.outOfRange:
+            return f'Mouse out of window. Real pos; ({self._pos[0]}, {self._pos[1]})'
+        return f'({self._pos[0]}, {self._pos[1]})'
+    def __repr__(self): return str(self)
 
 class GraphicBase:
     """This contains all the things an object needs to be a graphic object and is not meant to be used directly."""
-    # Stuff that needs replacing with instance (not class) variables (but have been provided as instants for convenience):
+    # Stuff that needs replacing with instance (not class) variables (but have been provided as instants just coz):
     WIN: pygame.Surface = pygame.Surface((0, 0))
     size: tuple[int, int] = (0, 0)
     stacks: Stack = Stack()
@@ -44,11 +98,12 @@ class GraphicBase:
 
     # Things that don't need replacing:
     def _updateStuff(self, mousepos, evnts):
-        oldMP = mousepos
-        for i in self.Stuff:
-            if isinstance(i, GraphicBase) and pygame.Rect(*i.stackP(), *i.size).collidepoint(mousepos):
-                mousepos = (Infinity(mousepos[0]), Infinity(mousepos[1]))
-                break
+        oldMP = mousepos.copy()
+        if not mousepos.outOfRange:
+            for i in self.Stuff:
+                if isinstance(i, GraphicBase) and pygame.Rect(*i.stackP(), *i.size).collidepoint(*mousepos):
+                    mousepos.outOfRange = True
+                    break
         calls = []
         redraw_tops = []
         redraw_vtops = []
@@ -70,7 +125,7 @@ class GraphicBase:
                         calls.append(obj)
                     elif care4Redraw:
                         if ret == ReturnState.REDRAW:
-                            obj.update(mousepos, evnts.copy(), True) # Redraw forcefully on top of everything else
+                            obj.UpdateDraw(mousepos.copy(), evnts.copy(), True) # Redraw forcefully on top of everything else
                         elif ret == ReturnState.REDRAW_HIGH:
                             redraw_tops.append(obj)
                         elif ret == ReturnState.REDRAW_HIGHEST:
@@ -78,9 +133,10 @@ class GraphicBase:
         handle_returns(self.Stuff.update(mousepos, evnts.copy()), True)
         moreRets = {}
         for obj in redraw_tops:
-            moreRets[obj] = obj.update(oldMP, evnts.copy(), True) # Redraw on top of everything
+            moreRets[obj] = obj.UpdateDraw(mousepos.copy(), evnts.copy(), True) # Redraw on top of everything
         for obj in redraw_vtops:
-            moreRets[obj] = obj.update(oldMP, evnts.copy(), True) # Redraw on top of LITERALLY everything
+            moreRets[obj] = obj.UpdateDraw(oldMP.copy(), evnts.copy(), True) # Redraw on top of LITERALLY everything
+            # Very top redraws also get original mouse position!
         handle_returns(moreRets)
         return calls
     
@@ -154,13 +210,13 @@ class BaseFrame(GraphicBase, Element):
     def _update(self, mousePos, events):
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
-        if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
-            mp = (mousePos[0]-x, mousePos[1]-y)
+        coll = pygame.Rect(x, y, *self.size).collidepoint(*mousePos.pos)
+        mousePos.pos = (mousePos.pos[0]-x, mousePos.pos[1]-y)
+        if coll:
             mouse.Mouse.set(mouse.MouseState.NORMAL)
-        else:
-            mp = (Infinity(mousePos[0]-x), Infinity(mousePos[1]-y))
+        mousePos.outOfRange = not coll
         
-        calls = self._updateStuff(mp, events)
+        calls = self._updateStuff(mousePos, events)
         self.G.WIN.blit(self.WIN, (x, y))
         if self.outline[0] != 0:
             pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
@@ -318,7 +374,7 @@ class ScrollableFrame(BaseFrame):
         self.lastScroll = None
     
     def _update(self, mousePos, events):
-        mouseColliding = pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos)
+        mouseColliding = pygame.Rect(*self.stackP(), *self.size).collidepoint(*mousePos.pos)
         if mouseColliding and not self.G.pause:
             for ev in events:
                 if ev.type == pygame.MOUSEWHEEL:
@@ -337,10 +393,9 @@ class ScrollableFrame(BaseFrame):
         self.scroll[1] = min(max(-self.sizeOfScreen[1]+self.size[1], self.scroll[1]), 0)
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
-        mp = (mousePos[0]-x-self.scroll[0], mousePos[1]-y-self.scroll[1])
-        if not mouseColliding:
-            mp = (Infinity(mp[0]), Infinity(mp[1]))
-        calls = self._updateStuff(mp, events)
+        mousePos.pos = (mousePos.pos[0]-x-self.scroll[0], mousePos.pos[1]-y-self.scroll[1])
+        mousePos.outOfRange = not mouseColliding
+        calls = self._updateStuff(mousePos, events)
         self.G.WIN.blit(self.WIN, (x, y), pygame.Rect(-self.scroll[0], -self.scroll[1], *self.size))
         if self.outline[0] != 0:
             pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
@@ -404,10 +459,12 @@ class ScaledByFrame(BaseFrame):
     def _update(self, mousePos, events):
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
-        mp = ((mousePos[0]-x)/self._scale, (mousePos[1]-y)/self._scale)
-        if not pygame.Rect(x, y, *self.size).collidepoint(mousePos):
-            mp = (Infinity(mp[0]), Infinity(mp[1]))
-        calls = self._updateStuff(mp, events)
+        coll = pygame.Rect(x, y, *self.size).collidepoint(*mousePos.pos)
+        mousePos.pos = ((mousePos.pos[0]-x)/self._scale, (mousePos.pos[1]-y)/self._scale)
+        if coll:
+            mouse.Mouse.set(mouse.MouseState.NORMAL)
+        mousePos.outOfRange = not coll
+        calls = self._updateStuff(mousePos, events)
         self.G.WIN.blit(pygame.transform.scale(self.WIN, self.size), (x, y))
         if self.outline[0] != 0:
             pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
@@ -505,13 +562,13 @@ class BaseLayout(Element):
     def _update(self, mousePos, events):
         x, y = self.stackP()
         self.WIN.fill(self.bgcol)
-        if pygame.Rect(x, y, *self.size).collidepoint(mousePos):
-            mp = (mousePos[0]-x, mousePos[1]-y)
+        coll = pygame.Rect(x, y, *self.size).collidepoint(*mousePos.pos)
+        mousePos.pos = (mousePos.pos[0]-x, mousePos.pos[1]-y)
+        if coll:
             mouse.Mouse.set(mouse.MouseState.NORMAL)
-        else:
-            mp = (Infinity(mousePos[0]-x), Infinity(mousePos[1]-y))
+        mousePos.outOfRange = not coll
         
-        calls = self._updateStuff(mp, events)
+        calls = self._updateStuff(mousePos, events)
         self.G.WIN.blit(self.WIN, (x, y))
         if self.outline[0] != 0:
             pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
@@ -523,40 +580,48 @@ class BaseLayout(Element):
 
     def _updateStuff(self, mousepos, evnts):
         oldMP = mousepos
-        for i in self.get():
-            if isinstance(i, GraphicBase) and pygame.Rect(*i.stackP(), *i.size).collidepoint(mousepos):
-                mousepos = (Infinity(mousepos[0]), Infinity(mousepos[1]))
-                break
         calls = []
+        redraw_tops = []
+        redraw_vtops = []
+        # TODO: Have return states able to be passed down instead of just the calls
+        def handle_returns(returns, care4Redraw=False):
+            for obj in returns:
+                retValue = returns[obj]
+                if retValue is None:
+                    continue
+
+                if isinstance(retValue, list):
+                    calls.extend(retValue)
+                    continue
+                
+                for ret in retValue.get():
+                    if ret == ReturnState.ABORT:
+                        self.Abort()
+                    elif ret == ReturnState.CALL:
+                        calls.append(obj)
+                    elif care4Redraw:
+                        if ret == ReturnState.REDRAW:
+                            obj.UpdateDraw(mousepos.copy(), evnts.copy(), True) # Redraw forcefully on top of everything else
+                        elif ret == ReturnState.REDRAW_HIGH:
+                            redraw_tops.append(obj)
+                        elif ret == ReturnState.REDRAW_HIGHEST:
+                            redraw_vtops.append(obj)
         returns = {}
         for i in self.grid:
             for j in i:
                 if j is None:
                     continue
-                returns[j] = j.update(mousepos, evnts)
+                returns[j] = j.UpdateDraw(mousepos, evnts)
                 if returns[j] and ReturnState.STOP in returns[j]:
                     return []
-        redraw_tops = []
-        for obj in returns:
-            retValue = returns[obj]
-            if retValue is None:
-                continue
-
-            if isinstance(retValue, list):
-                calls.extend(retValue)
-                continue
-            
-            for ret in retValue.get():
-                if ret == ReturnState.ABORT:
-                    self.Abort()
-                elif ret == ReturnState.CALL:
-                    calls.append(obj)
-                elif ret == ReturnState.REDRAW:
-                    obj.update(mousepos, evnts.copy(), True) # Redraw forcefully on top of everything else
-                elif ret == ReturnState.REDRAW_HIGH:
-                    redraw_tops.append(obj)
+        handle_returns(returns, True)
+        moreRets = {}
         for obj in redraw_tops:
-            obj.update(oldMP, evnts.copy(), True) # Redraw on top of LITERALLY everything
+            moreRets[obj] = obj.UpdateDraw(mousepos.copy(), evnts.copy(), True) # Redraw on top of everything
+        for obj in redraw_vtops:
+            moreRets[obj] = obj.UpdateDraw(oldMP.copy(), evnts.copy(), True) # Redraw on top of LITERALLY everything
+            # Very top redraws also get original mouse position!
+        handle_returns(moreRets)
         return calls
     
     def get(self):
@@ -564,7 +629,7 @@ class BaseLayout(Element):
     
     def add_row(self, amnt=1):
         row = [None for _ in range(len(self.grid[0]))]
-        self.grid.extend([row for i in range(amnt)])
+        self.grid.extend([row for _ in range(amnt)])
     
     def add_col(self, amnt=1):
         xtra = [None for _ in range(amnt)]
@@ -680,9 +745,12 @@ class TerminalBar(Element):
         else:
             self.active = -1
     
-    def update(self, mousePos, events):
+    def update(self, mousePos, events, force_redraw=False):
+        if not force_redraw:
+            return ReturnState.REDRAW_HIGHEST
+
         if not self.G.pause:
-            if self.collides(*mousePos):
+            if self.collides(*mousePos.pos):
                 mouse.Mouse.set(mouse.MouseState.TEXT)
             for event in events:
                 if event.type == pygame.KEYDOWN:
@@ -694,12 +762,14 @@ class TerminalBar(Element):
                         self.pressed(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT and not self.G.pause:
                     if event.button == pygame.BUTTON_LEFT:
-                        self.toggleactive(not self.collides(*mousePos))
+                        self.toggleactive(not self.collides(*mousePos.pos))
         
         if self.active >= 0:
             self.active -= 1
             if self.active <= 0:
                 self.active = 60
+
+    def draw(self):
         r = self.render()
         h = r.get_height()+self.spacing*2
         pygame.draw.rect(self.G.WIN, GO.CBLACK, pygame.Rect(0, self.G.WIN.get_height()-h, self.G.WIN.get_width(), h))

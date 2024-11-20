@@ -1,5 +1,7 @@
 # Main STUFF
 import warnings
+
+from BlazeSudio.graphics.GUI.base import ReturnState
 warnings.filterwarnings("ignore", category=UserWarning)
 
 def NodeEditorDemo():
@@ -143,12 +145,17 @@ def GraphicsDemo():
                     G['events'].append(dialog_box)
                     G.Container.idx = 0
                 elif element == G.Container.PopupBtn:
-                    pop = GUI.PopupFrame(G, GO.PCCENTER, (300, 250))
+                    pop = GUI.PopupFrame(G, GO.PCCENTER, (350, 300))
                     pop.layers[0].add('Alls')
+                    def rmpop(pop):
+                        pop.remove()
+                        return ReturnState.DONTCALL
                     pop['Alls'].extend([
+                        GUI.Empty(pop, GO.PCTOP, (0, 10)),
                         GUI.Text(pop, GO.PCTOP, 'Popup', font=GO.FTITLE),
                         GUI.Text(pop, GO.PCCENTER, 'This is an example of a popup!', allowed_width=250),
-                        GUI.Button(pop, GO.PRTOP, GO.CYELLOW, '❌', func=lambda: pop.remove()),
+                        GUI.Button(pop, GO.PRTOP, GO.CYELLOW, '❌', func=lambda p=pop: rmpop(p)),
+                        GUI.Empty(pop, GO.PCBOTTOM, (0, 10)),
                         GUI.InputBox(pop, GO.PCBOTTOM, 250, GO.RNONE, 'Example textbox', maxim=16),
                     ])
                     G['events'].append(pop) # I know it's not an event, but o well.

@@ -132,8 +132,8 @@ class ColourPicker:
     def update(self, mousePos):
         up = False
         for i in self.values:
-            up = up or i.update(mousePos)
-        if self.rect.collidepoint(mousePos):
+            up = up or (bool(mousePos) and i.update(mousePos))
+        if bool(mousePos) and self.rect.collidepoint(mousePos):
             mouse.Mouse.set(mouse.MouseState.PICK)
             if pygame.mouse.get_pressed()[0] and not up:
                 self.p = ((mousePos[0] - self.imrect.left) / self.pwidth, (mousePos[1] - self.imrect.top) / self.pheight)
@@ -191,14 +191,14 @@ class ColourPickerBTN(Element):
         """Set the rgb colour of the picker"""
         self.picker.set_colour(pygame.Color(r, g, b))
     
-    def update(self, mousePos, events, force_draw=False):
+    def update(self, mousePos, events):
         if self.G.pause:
             self.active = False
         mouse_pressed = pygame.mouse.get_pressed()[0]
         x, y = self.stackP()
         rect = pygame.Rect(x, y, *self.size)
         if not self.G.pause:
-            if rect.collidepoint(mousePos):
+            if bool(mousePos) and rect.collidepoint(mousePos):
                 if mouse_pressed:
                     mouse.Mouse.set(mouse.MouseState.CLICKING)
                 else:
@@ -214,13 +214,15 @@ class ColourPickerBTN(Element):
                     else:
                         self.picker.set_position(x-s[0]+20, y-s[1]+20)
                     self.active = True
-            elif mouse_pressed and not rect.collidepoint(mousePos) and not self.picker.totalRect.collidepoint(mousePos):
+            elif bool(mousePos) and mouse_pressed and not rect.collidepoint(mousePos) and not self.picker.totalRect.collidepoint(mousePos):
                 self.active = False
         if self.active:
             self.picker.update(mousePos)
-            if not force_draw:
-                return ReturnState.REDRAW
-        
+            return ReturnState.REDRAW
+    
+    def draw(self):
+        x, y = self.stackP()
+        rect = pygame.Rect(x, y, *self.size)
         if self.active:
             self.picker.draw(self.G.WIN)
         pygame.draw.rect(self.G.WIN, (0, 0, 0), (x-2, y-2, self.size[0]+4, self.size[1]+4), border_radius=8)

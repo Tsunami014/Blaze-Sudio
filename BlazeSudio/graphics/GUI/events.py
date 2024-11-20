@@ -55,26 +55,27 @@ class Dropdown(Element):
             y += sze[1]
         super().__init__(G, GO.PSTATIC(*pos), (mx, my))
     
-    def update(self, mousePos, events, force_redraw=False):
-        if not force_redraw:
-            return ReturnState.REDRAW_HIGHEST
-        
+    def update(self, mousePos, events):
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
                 self.G.pause = False
                 ran = False
                 for i in range(len(self.rects)):
-                    if self.rects[i].collidepoint(*mousePos):
+                    if self.rects[i].collidepoint(*mousePos.pos):
                         self.func(i)
                         ran = True
                         break
                 if not ran:
                     self.func(None)
                 self.remove()
-                return
+                return ReturnState.REDRAW_HIGHEST
+        
+        return ReturnState.REDRAW_HIGHEST
+    
+    def draw(self, mousePos):
         pygame.draw.rect(self.G.WIN, self.bgcolour, pygame.Rect(*self.stackP(), *self.size), border_radius=8)
         for i in range(len(self.rects)):
-            if self.rects[i].collidepoint(*mousePos):
+            if self.rects[i].collidepoint(*mousePos.pos):
                 if pygame.mouse.get_pressed()[0]:
                     mouse.Mouse.set(mouse.MouseState.CLICKING)
                 else:
@@ -143,16 +144,9 @@ class Toast(Element):
     def dist(self):
         return sqrt((self.goto[0] - self.curPos[0])**2 + (self.goto[1] - self.curPos[1])**2)
     
-    def update(self, mousePos, events, force_redraw=False):
-        if not force_redraw:
-            return ReturnState.REDRAW_HIGHEST
+    def update(self, mousePos, events):
         self.time += 1
-        ns = self.surf
         if self.goto != self.curPos:
-            if self.living:
-                ns.set_alpha(255-self.initdist*self.dist())
-            else:
-                ns.set_alpha(self.initdist*self.dist())
             if self.goto[0] != self.curPos[0]:
                 if round(self.curPos[0]) > round(self.goto[0]):
                     self.curPos[0] -= self.speed
@@ -174,4 +168,13 @@ class Toast(Element):
             self.curPos = self.goto
             self.goto = self.end
             self.living = False
+        return ReturnState.REDRAW_HIGHEST
+
+    def draw(self):
+        ns = self.surf
+        if self.goto != self.curPos:
+            if self.living:
+                ns.set_alpha(255-self.initdist*self.dist())
+            else:
+                ns.set_alpha(self.initdist*self.dist())
         self.G.WIN.blit(ns, self.curPos)

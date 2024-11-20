@@ -59,7 +59,7 @@ class Stuff:
         returns = {}
         for i in self.categories:
             for j in self.categories[i]:
-                returns[j] = j.update(mousePos, events)
+                returns[j] = j.UpdateDraw(mousePos.copy(), events)
                 if returns[j] and -1 in returns[j]:
                     return
         return returns
