@@ -38,7 +38,7 @@ class Element:
             self.stackP = pos.copy()
             self.stackP.setup(self, G)
         else:
-            self.stackP = StackPart(self, G.stacks, pos, size, G.sizeOfScreen)
+            self.stackP = StackPart(self, G.stacks, pos, G.sizeOfScreen)
         self.uid = self.NEXT_UID[0]
         self.NEXT_UID[0] += 1
     
@@ -92,11 +92,6 @@ class Element:
     
     def __hash__(self):
         return hash(self.uid)
-    
-    def __setattr__(self, name: str, value: Any) -> None:
-        super().__setattr__(name, value)
-        if name == 'size' and 'stackP' in self.__dict__: # Safeguard against running this before initialisation of stackP
-            self.stackP.setSize(self.size) # Automatically update stackP size whenever you set self.size
     
     def __getattribute__(self, name: str) -> Any:
         if name == 'size' and 'size' in self.__dict__ and 'hiddenStatus' in self.__dict__ and self.hiddenStatus == HiddenStatus.GONE:

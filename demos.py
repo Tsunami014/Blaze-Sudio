@@ -21,6 +21,7 @@ It will first read the file, then overwrite it when you save.')
 def GraphicsDemo():
     import BlazeSudio.graphics.options as GO
     from BlazeSudio.graphics import Graphic, GUI
+    from BlazeSudio.graphics.GUI.base import HiddenStatus
     import pygame
     from time import sleep
     G = Graphic()
@@ -61,7 +62,8 @@ def GraphicsDemo():
             f['Alls'].append(G.Container.changeScale)
 
             G['texts'].append(GUI.Text(G, GO.PCCENTER, 'This is a cool thing', GO.CBLUE))
-            G['texts'].append(GUI.Text(G, GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED))
+            G.Container.Invisi_T = GUI.Text(G, GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED)
+            G['texts'].append(G.Container.Invisi_T)
             G.Container.txt = GUI.Text(G, GO.PCCENTER, txt, GO.CGREEN)
             G['texts'].append(G.Container.txt)
             G.Container.inp = GUI.InputBox(G, GO.PCCENTER, 500, GO.RHEIGHT, font=GO.FFONT)
@@ -99,11 +101,12 @@ def GraphicsDemo():
 
             L = GUI.GridLayout(G, GO.PCBOTTOM, outline=5)
             G['speshs'].append(L)
+            G.Container.sw = GUI.Switch(L, L.LP)
             L.grid = [
                 [GUI.Text(L, L.LP, 'HI'), GUI.Text(L, L.LP, 'HELLO'), GUI.Text(L, L.LP, 'BYE')],
                 [GUI.Text(L, L.LP, 'HEHE'), GUI.Text(L, L.LP, 'YES'), GUI.Text(L, L.LP, 'NO')],
                 [GUI.Text(L, L.LP, 'HAVE'), GUI.Text(L, L.LP, 'A'), GUI.Text(L, L.LP, 'NICEDAY')],
-                [None, GUI.Button(L, L.LP, GO.CORANGE, 'Hello!'), None]
+                [GUI.Button(L, L.LP, GO.CORANGE, 'Hello!'), None, G.Container.sw]
             ]
 
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
@@ -169,6 +172,12 @@ def GraphicsDemo():
                     element.remove()
             elif element.type == GO.TINPUTBOX:
                 G.Container.txt.set(element.get().strip())
+            elif element.type == GO.TSWITCH:
+                if element == G.Container.sw:
+                    if element.get():
+                        G.Container.Invisi_T.hiddenStatus = HiddenStatus.GONE
+                    else:
+                        G.Container.Invisi_T.hiddenStatus = HiddenStatus.SHOWING
         elif event == GO.EEVENT: # When something like a mouse or keyboard button is pressed. Is passed 'element' too, but this time it is an event
             if element.type == pygame.KEYDOWN:
                 if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
