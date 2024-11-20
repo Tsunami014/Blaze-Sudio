@@ -81,13 +81,13 @@ class ImageEditor(GUI.ImageViewer):
             self.lines[2].pos = self.defLinePs[2] or self.sur.get_width()
             self.lines[3].pos = self.defLinePs[3] or self.sur.get_height()
             self.centre()
-        newMP = self.unscale_pos(mousePos)
+        newMP = self.unscale_pos(mousePos.pos)
 
         if part is not None:
             part.crop = (self.lines[0].pos, self.lines[1].pos, self.lines[2].pos-self.lines[0].pos, self.lines[3].pos-self.lines[1].pos)
 
         coll = False
-        if (not self.G.pause) and pygame.Rect(*self.stackP(), *self.size).collidepoint(mousePos):
+        if (not self.G.pause) and pygame.Rect(*self.stackP(), *self.size).collidepoint(*mousePos.pos):
             for ln in self.lines:
                 coll = ln.update(newMP, events) or coll
         linesHeld = any(i.held for i in self.lines)
@@ -176,40 +176,98 @@ class ThemeProperties(GUI.PresetFrame):
             )
         return super()._update(mousePos, events)
 
-@G.Screen
-def testButton(event, element=None, aborted=False):
-    if event == GO.ELOADUI:
-        G.Clear()
-        G.Container.MainBtn = GUI.Button(G, GO.PCCENTER, GO.CRED, 'Hello!')
-        G['Main'].append(G.Container.MainBtn)
-        LTOP = GO.PNEW((0, 0), (0, 1))
-        G['Left'].extend([
-            GUI.Text(G, LTOP, 'Sample button properties', font=GO.FTITLE),
-            GUI.Text(G, LTOP, 'Colour of button'),
-            GUI.ColourPickerBTN(G, LTOP),
+class BaseThemeTest:
+    NAME = None
+    THEMENAME = None
+
+    def __new__(cls, force_create=False):
+        if force_create:
+            return super().__new__(cls)
+        cls(True).screen()
+    
+    @G.Screen
+    def screen(event, self, element=None, aborted=False):
+        if event == GO.ELOADUI:
+            G.Clear()
+            self.main = self.load_main()
+            G['Main'].append(self.main)
+            G['Main'].append(GUI.Text(G, GO.PCTOP, self.NAME.upper(), font=GO.FTITLE))
+            LTOP = GO.PNEW((0, 0), (0, 1))
+            G['Left'].append(GUI.Text(G, LTOP, 'Sample %s properties'%self.NAME.lower(), font=GO.FTITLE))
+            G['Left'].extend(self.load_props(LTOP))
+            RTOP = GO.PNEW((1, 0), (0, 1))
+            G['Right'].extend([
+                GUI.Text(G, RTOP, self.NAME+' theme properties', font=GO.FTITLE),
+                ThemeProperties(G, RTOP, self.THEMENAME),
+            ])
+        elif event == GO.ETICK:
+            self.tick(G['Left'][1:])
+    
+    def load_main(self):
+        return None
+
+    def load_props(self, LTOP):
+        return []
+    
+    def tick(self, props):
+        pass
+
+class TextTest(BaseThemeTest):
+    NAME = 'Text'
+    THEMENAME = 'BUTTON' # TODO: Add theme for text (fonts)
+    def load_main(self):
+        return GUI.Text(G, GO.PCCENTER, 'Hello!')
+    
+    def load_props(self, LTOP):
+        return [
+            GUI.Text(G, LTOP, 'Text'),
+            GUI.InputBox(G, LTOP, 300, GO.RHEIGHT, starting_text='Sample'),
             GUI.Text(G, LTOP, 'Colour of text'),
             GUI.ColourPickerBTN(G, LTOP, default=(0, 0, 0)),
-            GUI.Text(G, LTOP, 'Text in button'),
-            GUI.InputBox(G, LTOP, 100, GO.RHEIGHT, starting_text='Sample'),
+            GUI.Text(G, LTOP, 'Render dash?'),
+            GUI.Switch(G, LTOP, default=True),
+            GUI.Text(G, LTOP, 'leftrightweight'),
+            GUI.DropdownButton(G, LTOP, ['Left', 'Mid', 'Right'], default=1),
+            GUI.Text(G, LTOP, 'updownweight'),
+            GUI.DropdownButton(G, LTOP, ['Top', 'Mid', 'Bottom'], default=1),
+            # TODO: Font
             GUI.Text(G, LTOP, 'Allowed width'),
-            GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=0, min=0, placeholdOnNum=None),
+            GUI.NumInputBox(G, LTOP, 300, GO.RHEIGHT, start=0, min=0, placeholdOnNum=None),
+        ]
+    
+    def tick(self, props):
+        self.main.col = props[3].get()
+        lr = [GO.SWLEFT, GO.SWMID, GO.SWRIGHT][props[7].get(True)]
+        ud = [GO.SWTOP, GO.SWMID, GO.SWBOT][props[9].get(True)]
+        self.main.set(props[1].get(), 
+                      renderdash=props[5].get(), 
+                      leftrightweight=lr, 
+                      updownweight=ud, 
+                      allowed_width=(props[11].get() or None)
+        )
+
+class ButtonTest(TextTest):
+    NAME = 'Button'
+    THEMENAME = 'BUTTON'
+    def load_main(self):
+        return GUI.Button(G, GO.PCCENTER, GO.CRED, 'Hello!')
+    
+    def load_props(self, LTOP):
+        return [
+            *super().load_props(LTOP),
+            GUI.Text(G, LTOP, 'Colour of button'),
+            GUI.ColourPickerBTN(G, LTOP),
             GUI.Text(G, LTOP, 'On hover enlarge'),
             GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=5, min=0, placeholdOnNum=None),
             GUI.Text(G, LTOP, 'Spacing'),
             GUI.NumInputBox(G, LTOP, 100, GO.RHEIGHT, start=2, min=0, placeholdOnNum=None),
-        ])
-        RTOP = GO.PNEW((1, 0), (0, 1))
-        G['Right'].extend([
-            GUI.Text(G, RTOP, 'Button theme properties', font=GO.FTITLE),
-            ThemeProperties(G, RTOP, 'BUTTON'),
-        ])
-    elif event == GO.ETICK:
-        G.Container.MainBtn.cols = {'BG': G['Left'][2].get(), 'TXT': G['Left'][4].get()}
-        G.Container.MainBtn.set(G['Left'][6].get(), allowed_width=(G['Left'][8].get() or None))
-        G.Container.MainBtn.OHE = G['Left'][10].get()
-        G.Container.MainBtn.spacing = G['Left'][12].get()
-    # elif event == GO.EELEMENTCLICK:
-    #     GUI.GLOBALTHEME.THEME.BUTTON = element.get()
+        ]
+    
+    def tick(self, props):
+        self.main.cols = {'BG': props[-5].get(), 'TXT': props[3].get()}
+        self.main.OHE = props[-3].get()
+        self.main.spacing = props[-1].get()
+        super().tick(props)
 
 @G.Screen
 def test(event, element=None, aborted=False):
@@ -217,9 +275,10 @@ def test(event, element=None, aborted=False):
         G.Clear()
         G['Main'].append(GUI.Text(G, GO.PCTOP, 'THEME EDITOR', font=GO.FTITLE))
         rainbow = GO.CRAINBOW()
+        LTOP = GO.PNEW((0, 0), (0, 1))
         G['Main'].extend([
-            GUI.Button(G, GO.PLTOP, next(rainbow), 'Test button', func=testButton),
+            GUI.Button(G, LTOP, next(rainbow), 'Test text', func=TextTest),
+            GUI.Button(G, LTOP, next(rainbow), 'Test button', func=ButtonTest),
         ])
-        testButton()
 
 test()
