@@ -184,7 +184,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                 evnts = events()
                 self.WIN.fill(self.bgcol)
                 mouse.Mouse.set(mouse.MouseState.NORMAL)
-                for obj in self._updateStuff(mousepos(), evnts):
+                for obj in self._updateStuff(GUI.MousePos(*mousepos()), evnts):
                     func(GO.EELEMENTCLICK, obj)
                 mouse.Mouse.update()
                 if self.rel:
