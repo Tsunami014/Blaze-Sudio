@@ -1,14 +1,17 @@
 class StackPart:
     NEXT_UID = [0]
-    def __init__(self, parent, stack, category, size, winSze):
+    def __init__(self, parent, stack, category, winSze):
         self.parent = parent
         self.stack = stack
         self.category = category
         self.stack.add(category, self)
-        self.size = size
         self.winSze = winSze
         self.uid = self.NEXT_UID[0]
         self.NEXT_UID[0] += 1
+    
+    @property
+    def size(self):
+        return self.parent.size
     
     @property
     def position(self):

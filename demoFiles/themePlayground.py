@@ -5,7 +5,7 @@ except ImportError as e:
     raise e
 from math import floor
 from BlazeSudio.graphics import Graphic, mouse, GUI, options as GO
-from BlazeSudio.graphics.GUI.base import ReturnState
+from BlazeSudio.graphics.GUI.base import HiddenStatus, ReturnState
 from threading import Thread
 import pygame
 G = Graphic()
@@ -110,6 +110,16 @@ class ThemeProperties(GUI.PresetFrame):
     def _init_objects(self):
         self.layers[0].add('main')
         PRTOP = GO.PNEW((1, 0), (0, 1))
+        def updateThemeInps(chosen):
+            if isinstance(chosen, int):
+                chosen = list(self.themeInps[4].keys())[chosen]
+            for name, grid in self.themeInps[4].items():
+                if name == chosen:
+                    grid.hiddenStatus = HiddenStatus.SHOWING
+                else:
+                    grid.hiddenStatus = HiddenStatus.GONE
+            self.themeInps[2].adjustSize()
+            self.fitObjects()
         def change():
             def ask():
                 self.pause = True
@@ -121,7 +131,9 @@ class ThemeProperties(GUI.PresetFrame):
                     self.themeInps[0].set(1)
                     self.themeInps[1].set(1)
                     im.active = True
-                    self.fitObjects()
+                    for x in self.themeInps[:4] + list(self.themeInps[4].values()):
+                        x.hiddenStatus = HiddenStatus.SHOWING
+                    updateThemeInps(list(self.themeInps[4].keys())[0])
                 self.pause = False
             Thread(target=ask, daemon=True).start()
             return ReturnState.DONTCALL
@@ -129,7 +141,9 @@ class ThemeProperties(GUI.PresetFrame):
             setattr(GUI.GLOBALTHEME.THEME, self.themePart, None)
             t1.set('None')
             im.active = False
-            self.fitObjects()
+            for x in self.themeInps[:4] + list(self.themeInps[4].values()):
+                x.hiddenStatus = HiddenStatus.GONE
+            updateThemeInps('None')
             return ReturnState.DONTCALL
         b1 = GUI.Button(self, PRTOP, GO.CORANGE, 'Change the image source 🔁', func=change, allowed_width=300)
         b2 = GUI.Button(self, PRTOP, GO.CRED, 'Unset the image source ❎', func=unset, allowed_width=300)
@@ -158,14 +172,37 @@ class ThemeProperties(GUI.PresetFrame):
         self.themeInps = [
             n1,
             n2,
+            g
         ]
+
+        opts = {}
+
+        g = opts['test 1'] = GUI.GridLayout(self, PRTOP, leftrightWeight=GO.SWLEFT)
+        g.grid = [
+            [GUI.Text(g, g.LP, 'Test 1')]
+        ]
+        g = opts['test 2'] = GUI.GridLayout(self, PRTOP, leftrightWeight=GO.SWLEFT)
+        g.grid = [
+            [GUI.Text(g, g.LP, 'Test 2')]
+        ]
+
+        self.themeInps.extend([
+            GUI.DropdownButton(self, PRTOP, list(opts.keys()), func=updateThemeInps),
+            opts
+        ])
         self['main'].extend([
             b1,
             b2,
             t1,
             im,
-            g,
+            self.themeInps[2],
+            self.themeInps[3],
+            *opts.values(),
+            GUI.Empty(self, PRTOP, (0, self.themeInps[3].linesize*len(opts)))
         ])
+
+        if p is None:
+            unset()
     
     def _update(self, mousePos, events):
         p = getattr(GUI.GLOBALTHEME.THEME, self.themePart)
@@ -174,6 +211,7 @@ class ThemeProperties(GUI.PresetFrame):
                 self.themeInps[0].get(),
                 self.themeInps[1].get()
             )
+        self.fitObjects()
         return super()._update(mousePos, events)
 
 class BaseThemeTest:

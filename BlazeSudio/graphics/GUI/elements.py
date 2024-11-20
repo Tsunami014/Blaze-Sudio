@@ -517,6 +517,10 @@ class DropdownButton(Button): # TODO: Different button and dropdown colours
     def formatted(self):
         return self._format.format(self.opts[self.selected])
     
+    @property
+    def linesize(self):
+        return self.font.linesize + self.spacing*2
+    
     def set(self, num, **settings):
         """Set the index of the current selected object (None = don't set) in the list of selected objects \
             and optionally some text render settings."""

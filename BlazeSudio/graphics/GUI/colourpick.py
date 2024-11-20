@@ -191,7 +191,7 @@ class ColourPickerBTN(Element):
         """Set the rgb colour of the picker"""
         self.picker.set_colour(pygame.Color(r, g, b))
     
-    def update(self, mousePos, events):
+    def update(self, mousePos, events, force_redraw=False):
         if self.G.pause:
             self.active = False
         mouse_pressed = pygame.mouse.get_pressed()[0]
@@ -203,7 +203,7 @@ class ColourPickerBTN(Element):
                     mouse.Mouse.set(mouse.MouseState.CLICKING)
                 else:
                     mouse.Mouse.set(mouse.MouseState.HOVER)
-                if mouse_pressed:
+                if (not force_redraw) and mouse_pressed:
                     s = self.picker.get_size()
                     if x - s[0] < 0 and y - s[1] < 0:
                         self.picker.set_position(x+self.size[0]*2, y+self.size[1]*2)
@@ -216,7 +216,7 @@ class ColourPickerBTN(Element):
                     self.active = True
             elif bool(mousePos) and mouse_pressed and not rect.collidepoint(mousePos) and not self.picker.totalRect.collidepoint(mousePos):
                 self.active = False
-        if self.active:
+        if (not force_redraw) and self.active:
             self.picker.update(mousePos)
             return ReturnState.REDRAW
     
