@@ -230,6 +230,73 @@ def CollisionsDemo(debug=False):
         os.environ['debug'] = 'True'
     from demoFiles import collisionsDemo  # noqa: F401
 
+def WrapDemo():
+    from BlazeSudio.graphics import Graphic, GO, GUI
+    # from BlazeSudio.utils import wrap
+    import pygame
+    G = Graphic(GO.CGREY)
+    G.layers[0].add('Main')
+    G.insert_layer().add('Top')
+
+    def makeSur():
+        topF = G.Container.topF
+        news = pygame.Surface((1, 2))
+        news.set_at((0, 0), topF['Main'][1].get())
+        news.set_at((0, 1), topF['Main'][3].get())
+        news2 = pygame.transform.smoothscale(news, (topF['Main'][5].get(), topF['Main'][7].get()))
+        G.Container.inputSur = news2
+        topF['Main'][8].set(news2)
+    
+    @G.Screen
+    def screen(event, element=None, aborted=False):
+        if event == GO.ELOADUI:
+            G.Clear()
+            topF = GUI.BaseFrame(G, GO.PCTOP, (G.size[0], G.size[1]//2), 2)
+            topF.layers[0].add('Main')
+            G.Container.topF = topF
+            botF = GUI.BaseFrame(G, GO.PCTOP, (G.size[0], G.size[1]//2), 2)
+            botF.layers[0].add('Main')
+            G.Container.botF = botF
+
+            G['Main'].extend([topF, botF])
+
+            G.Container.GObtn = GUI.Button(G, GO.PNEW((0.5, 0.5), (0, 0), (True, True)), GO.CORANGE, 'Wrap!')
+            G['Top'].append(G.Container.GObtn)
+
+            LTOP = GO.PNEW((0, 0), (0, 1))
+            topF['Main'].extend([
+                GUI.Text(topF, LTOP, 'Colour 1'),
+                GUI.ColourPickerBTN(topF, LTOP),
+                GUI.Text(topF, LTOP, 'Colour 2'),
+                GUI.ColourPickerBTN(topF, LTOP, default=(10,255,50)),
+                GUI.Text(topF, LTOP, 'Width'),
+                GUI.NumInputBox(topF, LTOP, 100, GO.RHEIGHT, start=500, min=1, max=1500, placeholdOnNum=None),
+                GUI.Text(topF, LTOP, 'Height'),
+                GUI.NumInputBox(topF, LTOP, 100, GO.RHEIGHT, start=100, min=1, max=500, placeholdOnNum=None),
+            ])
+
+            topF['Main'].append(GUI.Static(topF, GO.PCCENTER, pygame.Surface((0, 0))))
+
+            topF['Main'].append(GUI.Text(topF, GO.PCTOP, 'INPUT IMAGE', font=GO.FTITLE))
+
+
+            botF['Main'].append(GUI.Text(topF, GO.PCTOP, 'OUTPUT IMAGE', font=GO.FTITLE))
+
+            botF['Main'].append(GUI.Static(topF, GO.PCCENTER, pygame.Surface((0, 0))))
+
+            makeSur()
+        elif event == GO.ETICK:
+            makeSur()
+        elif event == GO.EELEMENTCLICK:
+            if element == G.Container.GObtn:
+                @G.Loading
+                def load(slf):
+                    import time
+                    time.sleep(2)
+                load()
+    
+    screen()
+
 # GENERATION STUFF
 
 def TWorldsDemo():
@@ -302,6 +369,10 @@ if __name__ == '__main__':
     # Broken generation stuff
     #button('Generate World Demo',        TWorldsDemo,                       )
     #button('Generate Terrain Demo',      TTerrainGenDemo,                   )
+
+
+    label('Misc stuff:')
+    button('Wrap Demo [game]',            WrapDemo,                       )
     
     if has_tk:
         root.after(1, lambda: root.attributes('-topmost', True))
