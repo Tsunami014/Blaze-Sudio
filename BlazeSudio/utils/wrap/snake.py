@@ -9,10 +9,15 @@ class Snake:
     def __init__(self, width):
         self.joints = [[0, 0], [width, 0]]
         self.jointDists = [width]
+        self.segProps = [[]]
     
     @property
-    def segments(self):
+    def segments(self) -> list[tuple[tuple[int], tuple[int]]]:
         return [(self.joints[i], self.joints[i+1]) for i in range(len(self.joints)-1)]
+    
+    @property
+    def collSegments(self) -> list[colls.Line]:
+        return [colls.Line(self.joints[i], self.joints[i+1]) for i in range(len(self.joints)-1)]
     
     @property
     def width(self):
@@ -32,6 +37,7 @@ class Snake:
                 newdist = newWidth-d-oldD
                 self.joints = [*self.joints[:i], colls.rotate(self.joints[i], (self.joints[i][0], self.joints[i][1]+newdist), ang)]
                 self.jointDists = [*self.jointDists[:i], newdist]
+                self.segProps = [*self.segProps[:i], self.segProps[i]]
                 break
         else:
             x, y = self.joints[i+1][0]-self.joints[i][0], self.joints[i+1][1]-self.joints[i][1]
@@ -39,6 +45,7 @@ class Snake:
             newdist = newWidth-d
             self.joints.append(colls.rotate(self.joints[-1], (self.joints[-1][0], self.joints[-1][1]+newdist), ang))
             self.jointDists.append(newdist)
+            self.segProps.append([])
     
     def insert_straight(self, x):
         self.straighten()
@@ -46,6 +53,7 @@ class Snake:
             for idx in range(len(self.joints)-1):
                 if self.joints[idx+1][0] < x:
                     self.joints.insert(idx+1, (x, self.joints[idx][1]))
+                    self.segProps.insert(idx+1, self.segProps[idx])
                     self.recalculate_dists()
                     return True
         return False
@@ -70,6 +78,11 @@ class Snake:
         for i in range(len(self.joints)-1):
             self.joints[i+1] = colls.rotate(self.joints[i], (self.joints[i][0], self.joints[i][1]+self.jointDists[i]), 90)
     
+    def delete(self, idx):
+        self.joints.pop(idx)
+        self.jointDists.pop(idx)
+        self.segProps.pop(idx)
+    
     def __iter__(self):
         return ((self.joints[i], self.joints[i+1]) for i in range(len(self.joints)-1))
     
@@ -77,28 +90,8 @@ class Snake:
         return len(self.joints)-1
     
     def copy(self):
-        s = Snake(self.width, self.joints.copy())
-        s.offsets = self.offsets
+        s = Snake(10)
+        s.joints = self.joints.copy()
+        s.jointDists = self.jointDists.copy()
+        s.segProps = self.segProps.copy()
         return s
-
-"""class Snake:
-    def __init__(self, width, joints=[]):
-        self.width = width
-        self.offsets = [[0, 0], [0, 0], [0, 0]]
-        self.joints = joints
-    
-    @property
-    def segments(self):
-        l = []
-        l2 = [0, *self.joints, self.width]
-        for i in range(len(l2)-1):
-            l.append((l2[i], l2[i+1]))
-        return l
-    
-    def __iter__(self):
-        return iter(self.segments)
-    
-    def copy(self):
-        s = Snake(self.width, self.joints.copy())
-        s.offsets = self.offsets
-        return s"""

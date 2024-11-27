@@ -231,7 +231,8 @@ def CollisionsDemo(debug=False):
     from demoFiles import collisionsDemo  # noqa: F401
 
 def WrapBasicDemo():
-    from BlazeSudio.utils.wrap import snake
+    from BlazeSudio.utils.wrap import snake, constraints
+    from BlazeSudio.collisions import Point
     import pygame
     pygame.init()
 
@@ -239,33 +240,65 @@ def WrapBasicDemo():
 
     main = snake.Snake(100)
 
-    r = True
+    run = True
     heldSegment = None
+    selectedJoint = None
     selectedSegment = None
-    while r:
+    while run:
         movingMode = pygame.key.get_mods() & pygame.KMOD_ALT
 
-        selectedSegment = (None, None)
+        selectedJoint = (None, None)
         if not movingMode:
             mp = pygame.mouse.get_pos()
             for idx in range(len(main.joints)):
                 i = main.joints[idx]
                 if (i[0]-mp[0])**2+(i[1]-mp[1])**2 <= 5**2:
-                    selectedSegment = (idx, i)
+                    selectedJoint = (idx, i)
                     break
+        
+        if selectedSegment is not None:
+            boxes = 3
+            gap = 10
+            boxSze = 30
+
+            h = boxSze+gap*2
+            w = (boxSze+gap)*boxes+gap
+            x, y = (selectedSegment[0][0][0]+selectedSegment[0][1][0]-w)/2, min(selectedSegment[0][0][1], selectedSegment[0][1][1])-h-gap*3
+
+            SelectedR = pygame.Rect(x, y, w, h)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                r = False
+                run = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    r = False
+                    run = False
                 elif event.key == pygame.K_SPACE:
-                    if (not movingMode) and (selectedSegment[0] is None):
+                    if (not movingMode) and (selectedJoint[0] is None):
                         main.insert_straight(pygame.mouse.get_pos()[0])
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
                 if not movingMode:
-                    heldSegment = selectedSegment[0]
+                    heldSegment = selectedJoint[0]
+
+                    if selectedSegment is None or not SelectedR.collidepoint(event.pos):
+                        selectedSegment = None
+                        mp = Point(*event.pos)
+                        idx = 0
+                        for seg in main.collSegments:
+                            p = seg.closestPointTo(mp)
+                            if (p[0]-event.pos[0])**2+(p[1]-event.pos[1])**2 <= 5**2:
+                                selectedSegment = (seg, idx)
+                                break
+                            idx += 1
+                    else:
+                        for i in range(boxes):
+                            r = pygame.Rect(x+(boxSze+gap)*i+gap, y+gap, boxSze, boxSze)
+                            if r.collidepoint(event.pos):
+                                if i == 0:
+                                    main.segProps[selectedSegment[1]] = []
+                                elif i == 1:
+                                    main.segProps[selectedSegment[1]] = ['This is a test']
+                                break
         
         if heldSegment is not None and (not pygame.mouse.get_pressed()[0]):
             heldSegment = None
@@ -276,29 +309,67 @@ def WrapBasicDemo():
         x = (win.get_width()+main.width)/2
         
         if movingMode:
+            selectedSegment = None
             heldSegment = None
             main.joints[0] = pygame.mouse.get_pos()
             main.update()
         else:
             if heldSegment is not None:
+                selectedSegment = None
                 newx = pygame.mouse.get_pos()[0]
                 if heldSegment > 0:
                     newx = min(newx, main.joints[heldSegment-1][0])
                 if heldSegment < len(main.joints)-1:
                     newx = max(newx, main.joints[heldSegment+1][0])
-                main.joints[heldSegment] = (newx, main.joints[heldSegment][1])
+                if [round(j[0],6) for j in main.joints].count(round(newx,6)) > 1:
+                    main.delete(heldSegment)
+                    heldSegment = None
+                else:
+                    main.joints[heldSegment] = (newx, main.joints[heldSegment][1])
                 main.recalculate_dists()
             else:
                 main.joints[0] = (x, y)
                 main.straighten()
 
-        for i in main:
-            pygame.draw.line(win, (255, 255, 255), i[0], i[1], 10)
+        if selectedSegment is not None:
+            pygame.draw.line(win, (255, 165, 10), selectedSegment[0][0], selectedSegment[0][1], 15)
+
+        segs = main.segments
+        for i in range(len(segs)):
+            if main.segProps[i]:
+                col = (10, 50, 255)
+            else:
+                col = (255, 255, 255)
+            pygame.draw.line(win, col, segs[i][0], segs[i][1], 10)
         for j in main.joints:
-            if j == selectedSegment[1]:
+            if j == selectedJoint[1]:
                 pygame.draw.circle(win, (255, 100, 100), j, 5)
             else:
                 pygame.draw.circle(win, (10, 50, 255), j, 5)
+        
+        if selectedSegment is not None:
+            boxes = 3
+            gap = 10
+            boxSze = 30
+
+            h = boxSze+gap*2
+            w = (boxSze+gap)*boxes+gap
+            x, y = (selectedSegment[0][0][0]+selectedSegment[0][1][0]-w)/2, min(selectedSegment[0][0][1], selectedSegment[0][1][1])-h-gap*3
+            pygame.draw.rect(win, (125, 125, 125), (x, y, w, h), border_radius=4)
+            for i in range(boxes):
+                r = pygame.Rect(x+(boxSze+gap)*i+gap, y+gap, boxSze, boxSze)
+                props = main.segProps[selectedSegment[1]]
+                if (i == 0 and not props) or (i == 1 and props):
+                    if r.collidepoint(pygame.mouse.get_pos()):
+                        col = (255, 50, 255)
+                    else:
+                        col = (10, 50, 255)
+                else:
+                    if r.collidepoint(pygame.mouse.get_pos()):
+                        col = (255, 255, 10)
+                    else:
+                        col = (255, 255, 255)
+                pygame.draw.rect(win, col, r, border_radius=4)
 
         pygame.display.update()
 
