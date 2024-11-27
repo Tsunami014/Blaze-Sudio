@@ -1,4 +1,4 @@
-from BlazeSudio.utils.wrap import constraints, snake
+from BlazeSudio.utils.wrap import constraints, relax
 import os
 import pygame
 import math

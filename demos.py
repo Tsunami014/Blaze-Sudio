@@ -2,6 +2,7 @@
 import warnings
 
 from BlazeSudio.graphics.GUI.base import ReturnState
+from BlazeSudio.utils.wrap import relax
 warnings.filterwarnings("ignore", category=UserWarning)
 
 def NodeEditorDemo():
@@ -231,14 +232,14 @@ def CollisionsDemo(debug=False):
     from demoFiles import collisionsDemo  # noqa: F401
 
 def WrapBasicDemo():
-    from BlazeSudio.utils.wrap import snake, constraints
+    from BlazeSudio.utils.wrap import constraints
     from BlazeSudio.collisions import Point
     import pygame
     pygame.init()
 
     win = pygame.display.set_mode()
 
-    main = snake.Snake(100)
+    main = relax.Relaxation(100)
 
     conns = {
         '|': constraints.SpecificAngle(0),
@@ -283,7 +284,7 @@ def WrapBasicDemo():
                     if (not movingMode) and (selectedJoint[0] is None):
                         main.insert_straight(pygame.mouse.get_pos()[0])
                 elif event.key == pygame.K_r:
-                    main = snake.Snake(100)
+                    main = relax.Relaxation(100)
                     heldSegment = None
                     selectedJoint = (None, None)
                     selectedSegment = None
@@ -323,7 +324,7 @@ def WrapBasicDemo():
         if movingMode:
             selectedSegment = None
             heldSegment = None
-            main.joints[0] = pygame.mouse.get_pos()
+            #main.joints[0] = pygame.mouse.get_pos()
             main.update()
         else:
             if heldSegment is not None:

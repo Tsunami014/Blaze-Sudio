@@ -13,16 +13,19 @@ class OverConstrainedError(ValueError):
         super().__init__(self.__doc__)
 
 class BaseConstraint:
+    def angle(self, ang, idx, main):
+        return ang
+    
     def __str__(self):
         return f'<{__class__.__name__} Constraint>'
     def __repr__(self): return str(self)
 
 class SpecificAngle(BaseConstraint):
     def __init__(self, angle):
-        self.angle = angle
+        self.ang = angle
     
-    def __call__(self, ang, idx, main):
-        return round((ang-self.angle) / 180) * 180 + self.angle
+    def angle(self, ang, idx, main):
+        return round((ang-self.ang) / 180) * 180 + self.ang
     
     def __str__(self):
-        return f'<SpecificAngle Constraint @ {self.angle}>'
+        return f'<SpecificAngle Constraint @ {self.ang}>'
