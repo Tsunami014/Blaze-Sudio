@@ -1,5 +1,6 @@
 # Roadmap
- - [ ] Remove all files I don't need (bot, etc.)
+ - [ ] Finish the wrap function
+ - [ ] Use `multiprocessing` instead of `threading`
  - [ ] Finish theme editor
  - [ ] Finish texture editor
  - [ ] Procedural generation testing area
@@ -14,10 +15,7 @@
  - [ ] Fix import system to make things load faster
  - [ ] Make progressbars load stuff in the background for faster launching of the app
  - [ ] Add more elements
- - [ ] Add some pretty <u>G</u>UI made by my lovelly pixelarting
  - [ ] Make multiple different terrain gens for some fast and some slow generation!
- - [ ] Add optional requirements ([example](https://github.com/xtekky/gpt4free/blob/main/setup.py))
- - [ ] Remove all the AI stuff and instead use my AIHub I also made to make it easier and in a different package
  - [ ] Add type annotations to EVERYTHING
 
 # What I'm (not really) working on:
