@@ -1,3 +1,2 @@
-from BlazeSudio.utils.wrap import wrapLevel
-from BlazeSudio.utils.wrap import save as saveWrapped
+import BlazeSudio.utils.wrap as wrap
 from BlazeSudio.utils.genCollisions import approximate_polygon

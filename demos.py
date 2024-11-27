@@ -232,7 +232,7 @@ def CollisionsDemo(debug=False):
 
 def WrapDemo():
     from BlazeSudio.graphics import Graphic, GO, GUI
-    # from BlazeSudio.utils import wrap
+    from BlazeSudio.utils.wrap import wrapSurface
     import pygame
     G = Graphic(GO.CGREY)
     G.layers[0].add('Main')
@@ -245,7 +245,7 @@ def WrapDemo():
         news.set_at((0, 1), topF['Main'][3].get())
         news2 = pygame.transform.smoothscale(news, (topF['Main'][5].get(), topF['Main'][7].get()))
         G.Container.inputSur = news2
-        topF['Main'][8].set(news2)
+        topF['Main'][-1].set(news2)
     
     @G.Screen
     def screen(event, element=None, aborted=False):
@@ -260,7 +260,7 @@ def WrapDemo():
 
             G['Main'].extend([topF, botF])
 
-            G.Container.GObtn = GUI.Button(G, GO.PNEW((0.5, 0.5), (0, 0), (True, True)), GO.CORANGE, 'Wrap!')
+            G.Container.GObtn = GUI.Button(G, GO.PCCENTER, GO.CORANGE, 'Wrap!')
             G['Top'].append(G.Container.GObtn)
 
             LTOP = GO.PNEW((0, 0), (0, 1))
@@ -275,14 +275,15 @@ def WrapDemo():
                 GUI.NumInputBox(topF, LTOP, 100, GO.RHEIGHT, start=100, min=1, max=500, placeholdOnNum=None),
             ])
 
-            topF['Main'].append(GUI.Static(topF, GO.PCCENTER, pygame.Surface((0, 0))))
-
             topF['Main'].append(GUI.Text(topF, GO.PCTOP, 'INPUT IMAGE', font=GO.FTITLE))
+
+            topF['Main'].append(GUI.Static(topF, GO.PCCENTER, pygame.Surface((0, 0))))
 
 
             botF['Main'].append(GUI.Text(topF, GO.PCTOP, 'OUTPUT IMAGE', font=GO.FTITLE))
 
-            botF['Main'].append(GUI.Static(topF, GO.PCCENTER, pygame.Surface((0, 0))))
+            CCENTER = GO.PNEW((0.5, 0.5), (1, 0), (True, True))
+            botF['Main'].append(GUI.Static(topF, CCENTER, pygame.Surface((0, 0))))
 
             makeSur()
         elif event == GO.ETICK:
@@ -292,8 +293,12 @@ def WrapDemo():
                 @G.Loading
                 def load(slf):
                     import time
-                    time.sleep(2)
-                load()
+                    time.sleep(0.5)
+                    pygame.event.pump()
+                    slf.surf = wrapSurface(G.Container.topF['Main'][-1].get(), pg2=False)
+                fin, outslf = load()
+                if fin:
+                    G.Container.botF['Main'][1].set(outslf.surf)
     
     screen()
 
