@@ -1,5 +1,4 @@
-from BlazeSudio.collisions import rotate
-import BlazeSudio.utils.wrap.constraints as constraints
+from BlazeSudio.utils.wrap import constraints, snake
 import os
 import pygame
 import math

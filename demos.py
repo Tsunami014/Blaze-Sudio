@@ -230,6 +230,78 @@ def CollisionsDemo(debug=False):
         os.environ['debug'] = 'True'
     from demoFiles import collisionsDemo  # noqa: F401
 
+def WrapBasicDemo():
+    from BlazeSudio.utils.wrap import snake
+    import pygame
+    pygame.init()
+
+    win = pygame.display.set_mode()
+
+    main = snake.Snake(100)
+
+    r = True
+    heldSegment = None
+    selectedSegment = None
+    while r:
+        movingMode = pygame.key.get_mods() & pygame.KMOD_ALT
+
+        selectedSegment = (None, None)
+        if not movingMode:
+            mp = pygame.mouse.get_pos()
+            for idx in range(len(main.joints)):
+                i = main.joints[idx]
+                if (i[0]-mp[0])**2+(i[1]-mp[1])**2 <= 5**2:
+                    selectedSegment = (idx, i)
+                    break
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                r = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    r = False
+                elif event.key == pygame.K_SPACE:
+                    if (not movingMode) and (selectedSegment[0] is None):
+                        main.insert_straight(pygame.mouse.get_pos()[0])
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if not movingMode:
+                    heldSegment = selectedSegment[0]
+        
+        if heldSegment is not None and (not pygame.mouse.get_pressed()[0]):
+            heldSegment = None
+        
+        win.fill((10, 10, 10))
+
+        y = win.get_height()/2
+        x = (win.get_width()+main.width)/2
+        
+        if movingMode:
+            heldSegment = None
+            main.joints[0] = pygame.mouse.get_pos()
+            main.update()
+        else:
+            if heldSegment is not None:
+                newx = pygame.mouse.get_pos()[0]
+                if heldSegment > 0:
+                    newx = min(newx, main.joints[heldSegment-1][0])
+                if heldSegment < len(main.joints)-1:
+                    newx = max(newx, main.joints[heldSegment+1][0])
+                main.joints[heldSegment] = (newx, main.joints[heldSegment][1])
+                main.recalculate_dists()
+            else:
+                main.joints[0] = (x, y)
+                main.straighten()
+
+        for i in main:
+            pygame.draw.line(win, (255, 255, 255), i[0], i[1], 10)
+        for j in main.joints:
+            if j == selectedSegment[1]:
+                pygame.draw.circle(win, (255, 100, 100), j, 5)
+            else:
+                pygame.draw.circle(win, (10, 50, 255), j, 5)
+
+        pygame.display.update()
+
 def WrapDemo():
     from BlazeSudio.graphics import Graphic, GO, GUI
     from BlazeSudio.utils.wrap import wrapSurface
@@ -393,7 +465,8 @@ if __name__ == '__main__':
 
 
     label('Misc stuff:')
-    button('Wrap Demo [game]',            WrapDemo,                       )
+    button('Wrap Demo [game]',            WrapDemo,                        )
+    button('Wrap Basic Demo [game]',      WrapBasicDemo,                   )
     
     if has_tk:
         root.after(1, lambda: root.attributes('-topmost', True))
