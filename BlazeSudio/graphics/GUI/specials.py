@@ -98,46 +98,48 @@ class GraphicBase:
 
     # Things that don't need replacing:
     def _updateStuff(self, mousepos, evnts):
-        oldMP = mousepos.copy()
-        if not mousepos.outOfRange:
-            for i in self.Stuff:
-                if isinstance(i, GraphicBase) and pygame.Rect(*i.stackP(), *i.size).collidepoint(*mousepos):
-                    mousepos.outOfRange = True
-                    break
         calls = []
-        redraw_tops = []
-        redraw_vtops = []
-        # TODO: Have return states able to be passed down instead of just the calls
-        def handle_returns(returns, care4Redraw=False):
-            for obj in returns:
-                retValue = returns[obj]
-                if retValue is None:
-                    continue
+        oldMP = mousepos
+        for lay in self.Stuff.layers:
+            mousepos = oldMP.copy()
+            if not mousepos.outOfRange:
+                for i in lay:
+                    if isinstance(i, GraphicBase) and pygame.Rect(*i.stackP(), *i.size).collidepoint(*mousepos):
+                        mousepos.outOfRange = True
+                        break
+            redraw_tops = []
+            redraw_vtops = []
+            # TODO: Have return states able to be passed down instead of just the calls
+            def handle_returns(returns, care4Redraw=False):
+                for obj in returns:
+                    retValue = returns[obj]
+                    if retValue is None:
+                        continue
 
-                if isinstance(retValue, list):
-                    calls.extend(retValue)
-                    continue
-                
-                for ret in retValue.get():
-                    if ret == ReturnState.ABORT:
-                        self.Abort()
-                    elif ret == ReturnState.CALL:
-                        calls.append(obj)
-                    elif care4Redraw:
-                        if ret == ReturnState.REDRAW:
-                            obj.UpdateDraw(mousepos.copy(), evnts.copy(), True) # Redraw forcefully on top of everything else
-                        elif ret == ReturnState.REDRAW_HIGH:
-                            redraw_tops.append(obj)
-                        elif ret == ReturnState.REDRAW_HIGHEST:
-                            redraw_vtops.append(obj)
-        handle_returns(self.Stuff.update(mousepos, evnts.copy()), True)
-        moreRets = {}
-        for obj in redraw_tops:
-            moreRets[obj] = obj.UpdateDraw(mousepos.copy(), evnts.copy(), True) # Redraw on top of everything
-        for obj in redraw_vtops:
-            moreRets[obj] = obj.UpdateDraw(oldMP.copy(), evnts.copy(), True) # Redraw on top of LITERALLY everything
-            # Very top redraws also get original mouse position!
-        handle_returns(moreRets)
+                    if isinstance(retValue, list):
+                        calls.extend(retValue)
+                        continue
+                    
+                    for ret in retValue.get():
+                        if ret == ReturnState.ABORT:
+                            self.Abort()
+                        elif ret == ReturnState.CALL:
+                            calls.append(obj)
+                        elif care4Redraw:
+                            if ret == ReturnState.REDRAW:
+                                obj.UpdateDraw(mousepos.copy(), evnts.copy(), True) # Redraw forcefully on top of everything else
+                            elif ret == ReturnState.REDRAW_HIGH:
+                                redraw_tops.append(obj)
+                            elif ret == ReturnState.REDRAW_HIGHEST:
+                                redraw_vtops.append(obj)
+            handle_returns(lay.update(mousepos, evnts.copy()), True)
+            moreRets = {}
+            for obj in redraw_tops:
+                moreRets[obj] = obj.UpdateDraw(mousepos.copy(), evnts.copy(), True) # Redraw on top of everything
+            for obj in redraw_vtops:
+                moreRets[obj] = obj.UpdateDraw(oldMP.copy(), evnts.copy(), True) # Redraw on top of LITERALLY everything
+                # Very top redraws also get original mouse position!
+            handle_returns(moreRets)
         return calls
     
     def get(self):
@@ -152,6 +154,24 @@ class GraphicBase:
     @property
     def layers(self):
         return self.Stuff.layers
+
+    def insert_layer(self, pos=None):
+        """
+        Inserts a blank layer into the Stuff.
+
+        Args:
+            pos (int, optional): The position to put the new layer. Defaults to the end of the list (None).
+        
+        Pos:
+            - Negative indexes act *kinda* like negative list indexes; -1 = second last, -2 = third last, etc.
+            - None places it last
+            - Positive indexes place it where you would expect; 0 = first, 1 = second, etc.
+            - **The lower down (i.e. index closer to 0) the layer is, the later it will be rendered** (the layer with index 1 will be rendered before the layer of index 0)
+
+        Returns:
+            Stuff: The newly created layer
+        """
+        return self.Stuff.insert_layer(pos)
 
 class BaseFrame(GraphicBase, Element):
     type = GO.TFRAME

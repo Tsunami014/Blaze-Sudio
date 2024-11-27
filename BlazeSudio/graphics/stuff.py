@@ -126,16 +126,9 @@ class Collection:
     def copy(self):
         return Collection([i.copy() for i in self.layers])
     
-    def update(self, mousePos, events):
-        outs = {}
-        for i in self.layers:
-            ret = i.update(mousePos, events)
-            if ret is None:
-                return {}
-            outs.update(ret)
-        return outs
-    
-    def insert_layer(self, pos=-1):
+    def insert_layer(self, pos=None) -> Stuff:
+        if pos is None:
+            pos = len(self.layers)
         s = Stuff()
         self.layers.insert(pos, s)
         return s
