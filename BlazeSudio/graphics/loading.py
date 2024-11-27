@@ -1,6 +1,7 @@
 from threading import Thread, _active
 import asyncio, pygame, ctypes
 import BlazeSudio.graphics.options as GO
+from BlazeSudio.graphics import mouse
 
 IsLoading = [False]
 
@@ -47,6 +48,8 @@ class LoadingScreen:
         #self.pic = pygame.transform.scale(self.pic, (256, 256))
         self.rot = 0
     def update(self):
+        mouse.Mouse.set(mouse.MouseState.NORMAL)
+        mouse.Mouse.update()
         self.rot -= 6
         p = pygame.transform.rotate(self.pic, self.rot)
         self.WIN.fill((255, 255, 255))
