@@ -62,34 +62,36 @@ def wrapSurface(pg: pygame.Surface,
     Returns:
         tuple[pygame.Surface, pygame.Surface]: The output surface or surfaces which are the wrapped image(s)
     """
-    
-    cirs = [pygame.Surface((500, 500), pygame.SRCALPHA) for _ in range(2 if pg2 is not False and pg2 is not True else 1)]
-    width, height = pg.get_size() # Should be the same
+    circrad = 250
+    imgw, imgh = circrad*2, circrad*2
+    cirs = [pygame.Surface((imgw, imgh), pygame.SRCALPHA) for _ in range(2 if pg2 is not False and pg2 is not True else 1)]
+    width, height = pg.get_size()
+    if isinstance(pg2, pygame.Surface):
+        if pg.get_size() != pg2.get_size():
+            raise ValueError(
+                'The 2 input surfaces are of different sizes!!!'
+            )
     pixels = pygame.surfarray.array3d(pg)
     alpha = pygame.surfarray.array_alpha(pg)
     if pg2 is True or pg2 is False:
         alpha2 = None
     else:
         alpha2 = pygame.surfarray.array_alpha(pg2)
+    
+    centre = (int(imgw/2), int(imgh/2))
 
-    phi = startRot
-    offset = (height, height)
-    diffx = width/360#(width-len(allXs))/360
-    hei = int(height - Ri)
-    diffy = height / hei if hei != 0 else 1
-    for x in range(width):
-        #if x in allXs:
-        #    offset = rotate(offset, (offset[0], offset[1]-1), phi)
-        #else:
-        phi += diffx
-        
-        for y in range(hei):
-            realy = int(y * diffy)
-            col = pixels[x, realy]
-            a = alpha[x, realy]
+    for y in range(imgh):
+        for x in range(imgw):
+            d = (x-centre[0])**2+(y-centre[1])**2
+            if d < Ri**2 or d > circrad**2:
+                continue
+            ang = math.atan2(y-centre[1],x-centre[0])/2
+            realx, realy = int(width*(ang/math.pi)) % width, int(height*(1-(math.sqrt(d)/circrad))-1)
+            col = pixels[realx, realy]
+            a = alpha[realx, realy]
             cirs[0].set_at((int(x), int(y)), (*col, a))
             if alpha2 is not None:
-                if alpha2[x, realy] == 255:
+                if alpha2[realx, realy] == 255:
                     ocol = (255, 255, 255)
                     oa = 255
                 else:

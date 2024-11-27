@@ -275,15 +275,29 @@ def WrapDemo():
                 GUI.NumInputBox(topF, LTOP, 100, GO.RHEIGHT, start=100, min=1, max=500, placeholdOnNum=None),
             ])
 
+            RTOP = GO.PNEW((1, 0), (0, 1))
+            G.Container.offset = len(topF['Main'])
+            topF['Main'].extend([
+                GUI.Text(topF, RTOP, 'Ri'),
+                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, start=0, min=0, max=500, placeholdOnNum=None),
+            ])
+
             topF['Main'].append(GUI.Text(topF, GO.PCTOP, 'INPUT IMAGE', font=GO.FTITLE))
 
             topF['Main'].append(GUI.Static(topF, GO.PCCENTER, pygame.Surface((0, 0))))
 
+            def resetBotSur():
+                botF['Main'][-1].set(pygame.Surface((0, 0)))
 
-            botF['Main'].append(GUI.Text(topF, GO.PCTOP, 'OUTPUT IMAGE', font=GO.FTITLE))
+            botF['Main'].extend([
+                GUI.Empty(botF, GO.PCTOP, (0, 30)),
+                GUI.Text(botF, GO.PCTOP, 'OUTPUT IMAGE', font=GO.FTITLE),
+
+                GUI.Button(botF, GO.PRTOP, GO.CORANGE, 'Reset', func=resetBotSur)
+            ])
 
             CCENTER = GO.PNEW((0.5, 0.5), (1, 0), (True, True))
-            botF['Main'].append(GUI.Static(topF, CCENTER, pygame.Surface((0, 0))))
+            botF['Main'].append(GUI.Static(botF, CCENTER, pygame.Surface((0, 0))))
 
             makeSur()
         elif event == GO.ETICK:
@@ -295,10 +309,12 @@ def WrapDemo():
                     import time
                     time.sleep(0.5)
                     pygame.event.pump()
-                    slf.surf = wrapSurface(G.Container.topF['Main'][-1].get(), pg2=False)
+                    off = G.Container.offset
+                    topF = G.Container.topF['Main']
+                    slf.surf = wrapSurface(topF[-1].get(), topF[off+1].get(), pg2=False)
                 fin, outslf = load()
                 if fin:
-                    G.Container.botF['Main'][1].set(outslf.surf)
+                    G.Container.botF['Main'][-1].set(outslf.surf)
     
     screen()
 
