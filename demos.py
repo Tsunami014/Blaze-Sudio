@@ -240,9 +240,15 @@ def WrapBasicDemo():
 
     main = snake.Snake(100)
 
+    conns = {
+        '|': constraints.SpecificAngle(0),
+        '-': constraints.SpecificAngle(90),
+        '/': constraints.SpecificAngle(45),
+        '\\': constraints.SpecificAngle(-45),
+    }
+
     run = True
     heldSegment = None
-    selectedJoint = None
     selectedSegment = None
     while run:
         movingMode = pygame.key.get_mods() & pygame.KMOD_ALT
@@ -256,11 +262,11 @@ def WrapBasicDemo():
                     selectedJoint = (idx, i)
                     break
         
+        boxes = len(conns)
+        gap = 10
+        boxSze = 30
+        
         if selectedSegment is not None:
-            boxes = 3
-            gap = 10
-            boxSze = 30
-
             h = boxSze+gap*2
             w = (boxSze+gap)*boxes+gap
             x, y = (selectedSegment[0][0][0]+selectedSegment[0][1][0]-w)/2, min(selectedSegment[0][0][1], selectedSegment[0][1][1])-h-gap*3
@@ -276,6 +282,11 @@ def WrapBasicDemo():
                 elif event.key == pygame.K_SPACE:
                     if (not movingMode) and (selectedJoint[0] is None):
                         main.insert_straight(pygame.mouse.get_pos()[0])
+                elif event.key == pygame.K_r:
+                    main = snake.Snake(100)
+                    heldSegment = None
+                    selectedJoint = (None, None)
+                    selectedSegment = None
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
                 if not movingMode:
                     heldSegment = selectedJoint[0]
@@ -294,10 +305,11 @@ def WrapBasicDemo():
                         for i in range(boxes):
                             r = pygame.Rect(x+(boxSze+gap)*i+gap, y+gap, boxSze, boxSze)
                             if r.collidepoint(event.pos):
-                                if i == 0:
-                                    main.segProps[selectedSegment[1]] = []
-                                elif i == 1:
-                                    main.segProps[selectedSegment[1]] = ['This is a test']
+                                val = list(conns.values())[i]
+                                if val in main.segProps[selectedSegment[1]]:
+                                    main.segProps[selectedSegment[1]].remove(val)
+                                else:
+                                    main.segProps[selectedSegment[1]].append(val)
                                 break
         
         if heldSegment is not None and (not pygame.mouse.get_pressed()[0]):
@@ -348,18 +360,16 @@ def WrapBasicDemo():
                 pygame.draw.circle(win, (10, 50, 255), j, 5)
         
         if selectedSegment is not None:
-            boxes = 3
-            gap = 10
-            boxSze = 30
-
             h = boxSze+gap*2
             w = (boxSze+gap)*boxes+gap
             x, y = (selectedSegment[0][0][0]+selectedSegment[0][1][0]-w)/2, min(selectedSegment[0][0][1], selectedSegment[0][1][1])-h-gap*3
             pygame.draw.rect(win, (125, 125, 125), (x, y, w, h), border_radius=4)
+            vals = list(conns.values())
+            f = pygame.font.Font(None, boxSze)
             for i in range(boxes):
                 r = pygame.Rect(x+(boxSze+gap)*i+gap, y+gap, boxSze, boxSze)
                 props = main.segProps[selectedSegment[1]]
-                if (i == 0 and not props) or (i == 1 and props):
+                if vals[i] in props:
                     if r.collidepoint(pygame.mouse.get_pos()):
                         col = (255, 50, 255)
                     else:
@@ -370,6 +380,8 @@ def WrapBasicDemo():
                     else:
                         col = (255, 255, 255)
                 pygame.draw.rect(win, col, r, border_radius=4)
+                txt = f.render(list(conns.keys())[i], 1, (0, 0, 0))
+                win.blit(txt, (r.x+(r.w-txt.get_width())/2, r.y+(r.h-txt.get_height())/2))
 
         pygame.display.update()
 
