@@ -238,6 +238,7 @@ def WrapBasicDemo():
     pygame.init()
 
     win = pygame.display.set_mode()
+    pygame.display.toggle_fullscreen()
 
     main = relax.Relaxation(100)
 
@@ -313,6 +314,10 @@ def WrapBasicDemo():
                                     main.segProps[selectedSegment[1]].append(val)
                                 break
         
+        if pygame.key.get_pressed()[pygame.K_s]:
+            if (not movingMode) and (selectedJoint[0] is None):
+                main.insert_straight(pygame.mouse.get_pos()[0])
+        
         if heldSegment is not None and (not pygame.mouse.get_pressed()[0]):
             heldSegment = None
         
@@ -324,7 +329,8 @@ def WrapBasicDemo():
         if movingMode:
             selectedSegment = None
             heldSegment = None
-            #main.joints[0] = pygame.mouse.get_pos()
+            if not pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                main.recentre(*pygame.mouse.get_pos())
             main.update()
         else:
             if heldSegment is not None:
