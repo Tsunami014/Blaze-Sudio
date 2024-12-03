@@ -246,8 +246,8 @@ def WrapBasicDemo():
     conns = {
         '|': constraints.SpecificAngle(0),
         '-': constraints.SpecificAngle(90),
-        '/': constraints.SpecificAngle(45),
-        '\\': constraints.SpecificAngle(-45),
+        '/': constraints.SpecificAngle(-45),
+        '\\': constraints.SpecificAngle(45),
     }
 
     run = True
