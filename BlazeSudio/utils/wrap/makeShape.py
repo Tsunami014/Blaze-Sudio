@@ -144,7 +144,7 @@ class MakeShape:
         if max_length > sum_length - max_length:
             raise ShapeFormatError("Not a valid polygon; one of the line segments is too long.\n")
 
-        radius = self._find_radius(line_lengths)
+        radius = self._find_radius()
 
         phi = -0.5 * theta(line_lengths[0], radius)
 
