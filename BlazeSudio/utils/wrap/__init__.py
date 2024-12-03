@@ -1,4 +1,4 @@
-from BlazeSudio.utils.wrap import constraints, relax
+from BlazeSudio.utils.wrap import constraints, makeShape
 import os
 import pygame
 import math
