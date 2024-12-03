@@ -1,12 +1,10 @@
-import math, random, sys
+import math
 import BlazeSudio.collisions as colls
 
 __all__ = [
-    'MakeShape'
+    'MakeShape',
+    'ShapeFormatError'
 ]
-
-PI = math.pi
-TWO_PI = 2 * PI
 
 def theta(L, r):
     return 2.0 * math.asin(0.5 * L / r)
@@ -15,39 +13,10 @@ def d_theta(L, r):
     r2 = r * r
     return -2.0 * L / (r2 * math.sqrt(4.0 - L * L / r2))
 
-def find_radius(lengths, epsilon, iteration_count=None):
-    min_theta = 1.0 - epsilon
-    max_theta = 1.0 + epsilon
-
-    sum_length = sum(lengths)
-    max_length = max(lengths)
-
-    min_radius = 0.5 * max_length
-    max_radius = 0.5 * sum_length
-
-    iterations = 0
-
-    while True:
-        sum_theta = 0.0
-        iterations += 1
-        radius = 0.5 * (min_radius + max_radius)
-
-        for L in lengths:
-            sum_theta += theta(L, radius)
-
-        sum_theta /= TWO_PI
-
-        if min_theta <= sum_theta <= max_theta:
-            break
-        elif sum_theta < 1.0:
-            max_radius = radius
-        else:
-            min_radius = radius
-
-    if iteration_count is not None:
-        iteration_count[0] = iterations
-
-    return radius
+class ShapeFormatError(ValueError):
+    """
+    The shape is not in the correct format!
+    """
 
 class MakeShape:
     def __init__(self, width):
@@ -126,29 +95,56 @@ class MakeShape:
         self.joints = [
             (i[0]+diff[0], i[1]+diff[1]) for i in self.joints
         ]
+
+    def _find_radius(self, epsilon=0.0000002, returnIterations=False):
+        min_theta = 1.0 - epsilon
+        max_theta = 1.0 + epsilon
+
+        ds = self.jointDists
+
+        sum_length = sum(ds)
+        max_length = max(ds)
+
+        min_radius = 0.5 * max_length
+        max_radius = 0.5 * sum_length
+
+        iterations = 0
+
+        while True:
+            sum_theta = 0.0
+            iterations += 1
+            radius = 0.5 * (min_radius + max_radius)
+
+            for L in ds:
+                sum_theta += theta(L, radius)
+
+            sum_theta /= 2 * math.pi
+
+            if min_theta <= sum_theta <= max_theta:
+                break
+            elif sum_theta < 1.0:
+                max_radius = radius
+            else:
+                min_radius = radius
+
+        if returnIterations:
+            return radius, iterations
+
+        return radius
     
-    def makeShape(self):
+    def makeShape(self): # Thanks SO MUCH to https://math.stackexchange.com/questions/1930607/maximum-area-enclosure-given-side-lengths
         line_lengths = self.jointDists
 
         if len(line_lengths) < 3:
-            sys.stderr.write("Need at least three line lengths.\n")
-            return
+            raise ShapeFormatError("Need at least three line lengths.")
 
         max_length = max(line_lengths)
         sum_length = sum(line_lengths)
 
         if max_length > sum_length - max_length:
-            sys.stderr.write("Not a valid polygon; one of the line segments is too long.\n")
-            return
+            raise ShapeFormatError("Not a valid polygon; one of the line segments is too long.\n")
 
-        #sys.stderr.write(f"Read {len(line_lengths)} line lengths:\n")
-        for length in line_lengths:
-            sys.stderr.write(f"\t{length:.6f}\n")
-
-        iterations = [0]
-        radius = find_radius(line_lengths, 0.0000002, iterations)
-
-        #sys.stderr.write(f"radius = {radius:.6f} using {iterations[0]} iterations.\n")
+        radius = self._find_radius(line_lengths)
 
         phi = -0.5 * theta(line_lengths[0], radius)
 
@@ -162,10 +158,8 @@ class MakeShape:
             y = y0 + radius * math.sin(phi)
             phi += theta(L, radius)
             njs.append((x, y))
-            #print(f"{x:.6f} {y:.6f}")
         self.joints = njs + [(0, 0)]
-        
-    
+
     def straighten(self):
         for i in range(len(self.joints)-1):
             self.joints[i+1] = colls.rotate(self.joints[i], (self.joints[i][0], self.joints[i][1]+self.jointDists[i]), 90)
