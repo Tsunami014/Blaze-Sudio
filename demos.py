@@ -235,6 +235,7 @@ def WrapBasicDemo():
     from BlazeSudio.utils.wrap import constraints
     from BlazeSudio.collisions import Point
     import pygame
+    import sys
     pygame.init()
 
     win = pygame.display.set_mode()
@@ -256,7 +257,10 @@ def WrapBasicDemo():
     while run:
         newMM = pygame.key.get_mods() & pygame.KMOD_ALT
         if newMM and not movingMode:
-            main.makeShape()
+            try:
+                main.makeShape()
+            except Exception as e:
+                print(f'There was an error generating your shape: {type(e)} - {e}', file=sys.stderr)
         movingMode = newMM
 
         selectedJoint = (None, None)
