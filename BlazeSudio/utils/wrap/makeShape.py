@@ -102,11 +102,14 @@ class MakeShape:
 
         ds = self.jointDists
 
+        desired_angle = 360
+        DA_ratio = desired_angle / 360
+
         sum_length = sum(ds)
         max_length = max(ds)
 
         min_radius = 0.5 * max_length
-        max_radius = 0.5 * sum_length
+        max_radius = (0.5 * sum_length) / DA_ratio
 
         iterations = 0
 
@@ -118,7 +121,7 @@ class MakeShape:
             for L in ds:
                 sum_theta += theta(L, radius)
 
-            sum_theta /= 2 * math.pi
+            sum_theta /= (2 * math.pi) * DA_ratio
 
             if min_theta <= sum_theta <= max_theta:
                 break
@@ -128,8 +131,12 @@ class MakeShape:
                 min_radius = radius
             
             if max_iters is not None and iterations > max_iters:
+                if sum_theta < 1.0:
+                    too = 'small'
+                else:
+                    too = 'large'
                 raise TimeoutError(
-                    'Maximum iterations reached! Couldn\'t put the points on a circle, try a different arrangement of points'
+                    'Maximum iterations reached! Radius was too %s. Couldn\'t put the points on a circle, try a different arrangement of points'%too
                 )
 
         if returnIterations:
