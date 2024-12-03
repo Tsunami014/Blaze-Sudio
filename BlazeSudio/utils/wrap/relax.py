@@ -1,9 +1,53 @@
-import math, random
+import math, random, sys
 import BlazeSudio.collisions as colls
 
 __all__ = [
     'Relaxation'
 ]
+
+PI = math.pi
+TWO_PI = 2 * PI
+
+def theta(L, r):
+    return 2.0 * math.asin(0.5 * L / r)
+
+def d_theta(L, r):
+    r2 = r * r
+    return -2.0 * L / (r2 * math.sqrt(4.0 - L * L / r2))
+
+def find_radius(lengths, epsilon, iteration_count=None):
+    min_theta = 1.0 - epsilon
+    max_theta = 1.0 + epsilon
+
+    sum_length = sum(lengths)
+    max_length = max(lengths)
+
+    min_radius = 0.5 * max_length
+    max_radius = 0.5 * sum_length
+
+    iterations = 0
+
+    while True:
+        sum_theta = 0.0
+        iterations += 1
+        radius = 0.5 * (min_radius + max_radius)
+
+        for L in lengths:
+            sum_theta += theta(L, radius)
+
+        sum_theta /= TWO_PI
+
+        if min_theta <= sum_theta <= max_theta:
+            break
+        elif sum_theta < 1.0:
+            max_radius = radius
+        else:
+            min_radius = radius
+
+    if iteration_count is not None:
+        iteration_count[0] = iterations
+
+    return radius
 
 class Relaxation:
     def __init__(self, width):
@@ -83,138 +127,48 @@ class Relaxation:
             (i[0]+diff[0], i[1]+diff[1]) for i in self.joints
         ]
     
-    def update(self):
-        if all(i[1] == self.joints[0][1] for i in self.joints):
-            self.unstraighten()
-            return # self.unstraighten() calls self.update() to keep it correct, so we don't need to continue now
-        
-        repulsion_strength = 0.7
-        
-        self.joints[-1] = self.joints[0]
-        newjs = self.joints.copy()
-        for i in range(len(self.joints)-1):
-            # Push away from others
-            idx = 0
-            for seg in self.collSegments:
-                if seg.p1 != self.joints[i] and seg.p2 != self.joints[i]:
-                    closestP = seg.closestPointTo(colls.Point(*self.joints[i]))
-                    dx = closestP[0] - self.joints[i][0]
-                    dy = closestP[1] - self.joints[i][1]
-                    dist = math.sqrt(dx**2 + dy**2)
-                    if dist > 0: # To avoid division by zero
-                        force_mag = repulsion_strength/dist
-                        force_mag *= abs(i-idx)/(len(self.joints)/2)
-                        fx, fy = force_mag*dx, force_mag*dy
-                        newjs[i] = (self.joints[i][0]-fx, self.joints[i][1]-fy)
-                        newjs[idx] = (self.joints[idx][0]+fx, self.joints[idx][1]+fy)
-                        newjs[idx+1] = (self.joints[idx+1][0]+fx, self.joints[idx+1][1]+fy)
-                    idx += 1
-        
-        # self.joints = newjs.copy()
-        
-        # for _ in range(10):
-        #     # Split the difference between the 2 points
-        #     for i in range(len(self.joints) - 1):
-        #         x, y = self.joints[i + 1][0] - self.joints[i][0], self.joints[i + 1][1] - self.joints[i][1]
-        #         dist = math.sqrt(x**2 + y**2)
-        #         # ang = math.degrees(math.atan2(y, x)) - 90
-        #         if dist > 0:  # Avoid division by zero
-        #             # ang2 = ang
-        #             # for constraint in self.segProps[i]:
-        #             #     ang2 = constraint.angle(ang2, i, self)
-        #             correction_factor = (self.jointDists[i] - dist) / dist
-        #             # dx = (x+math.cos(ang-ang2)*dist) * correction_factor / 2  # Split correction equally between the two points
-        #             # dy = (y+math.sin(ang-ang2)*dist) * correction_factor / 2
-        #             dx = x * correction_factor / 2  # Split correction equally between the two points
-        #             dy = y * correction_factor / 2
-        #             newjs[i] = (self.joints[i][0] - dx, self.joints[i][1] - dy)
-        #             newjs[i + 1] = (self.joints[i + 1][0] + dx, self.joints[i + 1][1] + dy)
-            
-        # Apply the constraints
-        
-        # Bring everything else together to keep at the same distance (TODO: sharing the distance between the points around i)
+    def makeShape(self):
+        line_lengths = self.jointDists
 
-        # Restrain each joint one by one, pulling both sides of the chain inwards from the displacement to keep them the same
-        # self.joints = newjs.copy()
-        # for i in range(len(self.joints)):
-        #     i = (i+len(self.joints)//2) % len(self.joints) # Start from the centre
-        #     for j in range(i, len(self.joints)-1):
-        #         x, y = self.joints[j+1][0] - self.joints[j][0], self.joints[j+1][1] - self.joints[j][1]
-        #         ang = math.degrees(math.atan2(y, x))-90
-        #         for constraint in self.segProps[j]:
-        #             ang = constraint.angle(ang, j, self)
-        #         newjs[j + 1] = colls.rotate(self.joints[j], (self.joints[j][0], self.joints[j][1] + self.jointDists[j]), ang)
-        #     for j in range(i, 0, -1):
-        #         x, y = self.joints[j][0] - self.joints[j-1][0], self.joints[j][1] - self.joints[j-1][1]
-        #         ang = math.degrees(math.atan2(y, x))-90
-        #         for constraint in self.segProps[j-1]:
-        #             ang = constraint.angle(ang, j-1, self)
-        #         newjs[j-1] = colls.rotate(self.joints[j], (self.joints[j][0], self.joints[j][1] - self.jointDists[j-1]), ang)
+        if len(line_lengths) < 3:
+            sys.stderr.write("Need at least three line lengths.\n")
+            return
 
-        self.joints = newjs
+        max_length = max(line_lengths)
+        sum_length = sum(line_lengths)
 
-        #Pulls both sides inwards so it's equal 
-        # for i in range(len(self.joints) - 1):
-        #     diffs = [(0, 0), (0, 0)]
-        #     if i != 0:
-        #         x, y = self.joints[i][0] - self.joints[i-1][0], self.joints[i][1] - self.joints[i-1][1]
-        #         ang = math.degrees(math.atan2(y, x)) - 90
-        #         for constraint in self.segProps[i-1]:
-        #             ang = constraint.angle(ang, i-1, self)
-        #         new = colls.rotate(self.joints[i-1], (self.joints[i-1][0], self.joints[i-1][1] + self.jointDists[i-1]), ang)
-        #         diffs[0] = (new[0]-self.joints[i-1][0], new[1]-self.joints[i-1][1])
-        #     x, y = self.joints[i+1][0] - self.joints[i][0], self.joints[i+1][1] - self.joints[i][1]
-        #     ang = math.degrees(math.atan2(y, x)) - 90
-        #     for constraint in self.segProps[i]:
-        #         ang = constraint.angle(ang, i, self)
-        #     new = colls.rotate(self.joints[i], (self.joints[i][0], self.joints[i][1] + self.jointDists[i]), ang)
-        #     diffs[1] = (new[0]-self.joints[i][0], new[1]-self.joints[i][1])
+        if max_length > sum_length - max_length:
+            sys.stderr.write("Not a valid polygon; one of the line segments is too long.\n")
+            return
 
-        #     # diffs = [(diffs[0][0]*connection_strength, diffs[0][1]*connection_strength), (diffs[1][0]*connection_strength, diffs[1][1]*connection_strength)]
+        #sys.stderr.write(f"Read {len(line_lengths)} line lengths:\n")
+        for length in line_lengths:
+            sys.stderr.write(f"\t{length:.6f}\n")
 
-        #     self.joints = [(a[0]-diffs[0][0], a[1]-diffs[0][1]) for a in self.joints[:i]] + [self.joints[i]] + [(a[0]-diffs[1][0], a[1]-diffs[1][1]) for a in self.joints[i+1:]]
+        iterations = [0]
+        radius = find_radius(line_lengths, 0.0000002, iterations)
+
+        #sys.stderr.write(f"radius = {radius:.6f} using {iterations[0]} iterations.\n")
+
+        phi = -0.5 * theta(line_lengths[0], radius)
+
+        x0 = radius * math.cos(phi)
+        y0 = -radius * math.sin(phi)
+
+        njs = []
+
+        for L in line_lengths:
+            x = x0 - radius * math.cos(phi)
+            y = y0 + radius * math.sin(phi)
+            phi += theta(L, radius)
+            njs.append((x, y))
+            #print(f"{x:.6f} {y:.6f}")
+        self.joints = njs + [(0, 0)]
         
-        # Apply constraints and real segment properties
-        # TODO: Instead of this, have in the loop above pulling the rest of the shape together instead of the start pulling the next one etc.
-
-        # Restrain each segment separately (?) then average and stick them together
-        # segs = self.segments
-        # for idx, seg in enumerate(segs):
-        #     x, y = seg[1][0] - seg[0][0], seg[1][1] - seg[0][1]
-        #     ang = math.degrees(math.atan2(y, x))-90
-        #     for constraint in self.segProps[idx]:
-        #         ang = constraint.angle(ang, idx, self)
-        #     segs[idx] = (seg[0], colls.rotate(seg[0], (seg[0][0], seg[0][1] + self.jointDists[idx]), ang))
-        
-        # self.joints = [segs[0][0]] + [
-        #     ((i[1][0] + j[0][0]) / 2, (i[1][1] + j[0][1]) / 2) for i, j in zip(segs[:-1], segs[1:])
-        # ] + [segs[-1][1]]
-        
-        # Restrain the joints one by one
-        for i in range(len(self.joints) - 1):
-            x, y = self.joints[i+1][0] - self.joints[i][0], self.joints[i+1][1] - self.joints[i][1]
-            ang = math.degrees(math.atan2(y, x))-90
-            for constraint in self.segProps[i]:
-                ang = constraint.angle(ang, i, self)
-            self.joints[i+1] = colls.rotate(self.joints[i], (self.joints[i][0], self.joints[i][1] + self.jointDists[i]), ang)
     
     def straighten(self):
         for i in range(len(self.joints)-1):
             self.joints[i+1] = colls.rotate(self.joints[i], (self.joints[i][0], self.joints[i][1]+self.jointDists[i]), 90)
-    
-    def unstraighten(self):
-        totd = self.joints[0][0]-self.joints[-1][0]
-        if totd == 0:
-            return
-        d = totd / 2
-        centre = (
-            sum(i[0] for i in self.joints)/len(self.joints),
-            sum(i[1] for i in self.joints)/len(self.joints),
-        )
-        self.joints = [
-            colls.rotate(centre, (centre[0], centre[1]+d), ((i[0]-self.joints[-1][0])/totd)*360) for i in self.joints
-        ]
-        self.update()
     
     def delete(self, idx):
         self.joints.pop(idx)

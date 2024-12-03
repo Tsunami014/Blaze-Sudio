@@ -252,8 +252,12 @@ def WrapBasicDemo():
     run = True
     heldSegment = None
     selectedSegment = None
+    movingMode = False
     while run:
-        movingMode = pygame.key.get_mods() & pygame.KMOD_ALT
+        newMM = pygame.key.get_mods() & pygame.KMOD_ALT
+        if newMM and not movingMode:
+            main.makeShape()
+        movingMode = newMM
 
         selectedJoint = (None, None)
         if not movingMode:
@@ -331,7 +335,6 @@ def WrapBasicDemo():
             heldSegment = None
             if not pygame.key.get_mods() & pygame.KMOD_SHIFT:
                 main.recentre(*pygame.mouse.get_pos())
-            main.update()
         else:
             if heldSegment is not None:
                 selectedSegment = None
