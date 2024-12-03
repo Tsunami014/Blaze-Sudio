@@ -9,8 +9,6 @@ class OverConstrainedError(ValueError):
     """
     The expression has been overly constrained and will not output a closed circle!
     """
-    def __init__(self): # TODO: Add info
-        super().__init__(self.__doc__)
 
 class BaseConstraint:
     def angle(self, ang, idx, main):

@@ -1,5 +1,6 @@
 import math
 import BlazeSudio.collisions as colls
+from BlazeSudio.utils.wrap.constraints import OverConstrainedError
 
 __all__ = [
     'MakeShape',
@@ -34,9 +35,7 @@ class MakeShape:
     
     @property
     def width(self):
-        return sum(
-            math.sqrt((self.joints[i][0]-self.joints[i+1][0])**2+(self.joints[i][1]-self.joints[i+1][1])**2) for i in range(len(self.joints)-1)
-        )
+        return sum(self.jointDists)
     
     @width.setter
     def width(self, newWidth):
@@ -100,13 +99,11 @@ class MakeShape:
         min_theta = 1.0 - epsilon
         max_theta = 1.0 + epsilon
 
-        ds = self.jointDists
-
         desired_angle = 360
         DA_ratio = desired_angle / 360
 
-        sum_length = sum(ds)
-        max_length = max(ds)
+        sum_length = sum(self.jointDists)
+        max_length = max(self.jointDists)
 
         min_radius = 0.5 * max_length
         max_radius = (0.5 * sum_length) / DA_ratio
@@ -118,7 +115,7 @@ class MakeShape:
             iterations += 1
             radius = 0.5 * (min_radius + max_radius)
 
-            for L in ds:
+            for L in self.jointDists:
                 sum_theta += theta(L, radius)
 
             sum_theta /= (2 * math.pi) * DA_ratio
@@ -145,32 +142,51 @@ class MakeShape:
         return radius
     
     def makeShape(self): # Thanks SO MUCH to https://math.stackexchange.com/questions/1930607/maximum-area-enclosure-given-side-lengths
-        line_lengths = self.jointDists
 
-        if len(line_lengths) < 3:
+        if len(self.jointDists) < 3:
             raise ShapeFormatError("Need at least three line lengths.")
 
-        max_length = max(line_lengths)
-        sum_length = sum(line_lengths)
+        max_length = max(self.jointDists)
+        sum_length = sum(self.jointDists)
 
         if max_length > sum_length - max_length:
             raise ShapeFormatError("Not a valid polygon; one of the line segments is too long.\n")
 
         radius = self._find_radius()
 
-        phi = -0.5 * theta(line_lengths[0], radius)
+        startingi = 0
+        got = 0
+        for i in range(len(self.segProps)):
+            if self.segProps[i] != []:
+                if got == 0:
+                    startingi = i
+                    got = 1
+                elif got == 2:
+                    raise OverConstrainedError(
+                        'Cannot have multiple constraints not in a row!'
+                    )
+            elif got == 1:
+                got = 2
+        
+        phi = -0.5 * theta(self.jointDists[startingi], radius)
+        if got != 0:
+            ang = 90
+            for prop in self.segProps[startingi]:
+                ang = prop.angle(ang, startingi, self)
+            phi += math.radians(ang)
 
         x0 = radius * math.cos(phi)
         y0 = -radius * math.sin(phi)
 
         njs = []
 
-        for L in line_lengths:
+        for i in range(len(self.jointDists)):
+            L = self.jointDists[(i+startingi) % len(self.jointDists)]
             x = x0 - radius * math.cos(phi)
             y = y0 + radius * math.sin(phi)
             phi += theta(L, radius)
             njs.append((x, y))
-        self.joints = njs + [(0, 0)]
+        self.joints = njs[startingi:] + njs[:startingi] + [njs[startingi]]
 
     def straighten(self):
         for i in range(len(self.joints)-1):
