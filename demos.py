@@ -2,7 +2,7 @@
 import warnings
 
 from BlazeSudio.graphics.GUI.base import ReturnState
-from BlazeSudio.utils.wrap import relax
+from BlazeSudio.utils.wrap import makeShape
 warnings.filterwarnings("ignore", category=UserWarning)
 
 def NodeEditorDemo():
@@ -240,7 +240,7 @@ def WrapBasicDemo():
     win = pygame.display.set_mode()
     pygame.display.toggle_fullscreen()
 
-    main = relax.Relaxation(100)
+    main = makeShape.MakeShape(100)
 
     conns = {
         '|': constraints.SpecificAngle(0),
@@ -289,7 +289,7 @@ def WrapBasicDemo():
                     if (not movingMode) and (selectedJoint[0] is None):
                         main.insert_straight(pygame.mouse.get_pos()[0])
                 elif event.key == pygame.K_r:
-                    main = relax.Relaxation(100)
+                    main = makeShape.MakeShape(100)
                     heldSegment = None
                     selectedJoint = (None, None)
                     selectedSegment = None

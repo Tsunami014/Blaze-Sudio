@@ -2,7 +2,7 @@ import math, random, sys
 import BlazeSudio.collisions as colls
 
 __all__ = [
-    'Relaxation'
+    'MakeShape'
 ]
 
 PI = math.pi
@@ -49,7 +49,7 @@ def find_radius(lengths, epsilon, iteration_count=None):
 
     return radius
 
-class Relaxation:
+class MakeShape:
     def __init__(self, width):
         self.joints = [(0, 0), (width, 0)]
         self.jointDists = [width]
@@ -184,7 +184,7 @@ class Relaxation:
         return len(self.joints)-1
     
     def copy(self):
-        s = Relaxation(10)
+        s = MakeShape(10)
         s.joints = self.joints.copy()
         s.jointDists = self.jointDists.copy()
         s.segProps = [i.copy() for i in self.segProps]
