@@ -96,7 +96,7 @@ class MakeShape:
             (i[0]+diff[0], i[1]+diff[1]) for i in self.joints
         ]
 
-    def _find_radius(self, epsilon=0.0000002, returnIterations=False):
+    def _find_radius(self, epsilon=0.0000002, max_iters=10000, returnIterations=False):
         min_theta = 1.0 - epsilon
         max_theta = 1.0 + epsilon
 
@@ -126,6 +126,11 @@ class MakeShape:
                 max_radius = radius
             else:
                 min_radius = radius
+            
+            if max_iters is not None and iterations > max_iters:
+                raise TimeoutError(
+                    'Maximum iterations reached! Something went wrong, try a different arrangement of points'
+                )
 
         if returnIterations:
             return radius, iterations
