@@ -367,11 +367,15 @@ def WrapBasicDemo():
             else:
                 col = (255, 255, 255)
             pygame.draw.line(win, col, segs[i][0], segs[i][1], 10)
+        idx = 0
         for j in main.joints:
             if j == selectedJoint[1]:
                 pygame.draw.circle(win, (255, 100, 100), j, 5)
+            elif idx in (0, len(main.joints)-1):
+                pygame.draw.circle(win, (200, 50, 200), j, 5)
             else:
-                pygame.draw.circle(win, (10, 50, 255), j, 5)
+                pygame.draw.circle(win, (100, 100, 255), j, 5)
+            idx += 1
         
         if selectedSegment is not None:
             h = boxSze+gap*2

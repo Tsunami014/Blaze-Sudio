@@ -186,7 +186,7 @@ class MakeShape:
             y = y0 + radius * math.sin(phi)
             phi += theta(L, radius)
             njs.append((x, y))
-        self.joints = njs[startingi:] + njs[:startingi] + [njs[startingi]]
+        self.joints = [njs[i-startingi] for i in range(len(njs))] + [njs[-startingi]]
 
     def straighten(self):
         for i in range(len(self.joints)-1):
