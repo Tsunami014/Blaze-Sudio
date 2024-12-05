@@ -68,11 +68,11 @@ def collToShapely(collShape: Shape) -> _shapelyGeom.base.BaseGeometry:
     if checkShpType(collShape, Point):
         return _shapelyGeom.Point(collShape.x, collShape.y)
     if checkShpType(collShape, Line):
-        return _shapelyGeom.LineString([(collShape.p1.x, collShape.p1.y), (collShape.p2.x, collShape.p2.y)])
+        return _shapelyGeom.LineString([(collShape.p1[0], collShape.p1[1]), (collShape.p2[0], collShape.p2[1])])
     if checkShpType(collShape, Circle):
-        return _shapelyGeom.Point(collShape.x, collShape.y).buffer(collShape.radius)
+        return _shapelyGeom.Point(collShape.x, collShape.y).buffer(collShape.r)
     if checkShpType(collShape, ShpGroups.CLOSED):
-        return _shapelyGeom.Polygon([(i.x, i.y) for i in collShape.toPoints()])
+        return _shapelyGeom.Polygon([(i[0], i[1]) for i in collShape.toPoints()])
     if checkShpType(collShape, ShpGroups.GROUP):
         return _shapelyGeom.GeometryCollection([collToShapely(i) for i in collShape.shapes])
     raise ValueError(f'Cannot convert BlazeSudio shape of type {type(collShape)} to shapely shape')
