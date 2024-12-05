@@ -232,7 +232,6 @@ def CollisionsDemo(debug=False):
     from demoFiles import collisionsDemo  # noqa: F401
 
 def WrapBasicDemo():
-    from BlazeSudio.utils.wrap import constraints
     from BlazeSudio.collisions import Point
     import pygame
     import sys
@@ -244,10 +243,10 @@ def WrapBasicDemo():
     main = makeShape.MakeShape(100)
 
     conns = {
-        '|': constraints.SpecificAngle(0),
-        '-': constraints.SpecificAngle(90),
-        '/': constraints.SpecificAngle(-45),
-        '\\': constraints.SpecificAngle(45),
+        '|': 0,
+        '-': 90,
+        '/': -45,
+        '\\': 45,
     }
 
     run = True
@@ -316,10 +315,7 @@ def WrapBasicDemo():
                             r = pygame.Rect(x+(boxSze+gap)*i+gap, y+gap, boxSze, boxSze)
                             if r.collidepoint(event.pos):
                                 val = list(conns.values())[i]
-                                if val in main.segProps[selectedSegment[1]]:
-                                    main.segProps[selectedSegment[1]].remove(val)
-                                else:
-                                    main.segProps[selectedSegment[1]].append(val)
+                                main.setAngs[selectedSegment[1]] = val
                                 break
         
         if pygame.key.get_pressed()[pygame.K_s]:
@@ -362,7 +358,7 @@ def WrapBasicDemo():
 
         segs = main.segments
         for i in range(len(segs)):
-            if main.segProps[i]:
+            if main.setAngs[i]:
                 col = (10, 50, 255)
             else:
                 col = (255, 255, 255)
@@ -386,8 +382,7 @@ def WrapBasicDemo():
             f = pygame.font.Font(None, boxSze)
             for i in range(boxes):
                 r = pygame.Rect(x+(boxSze+gap)*i+gap, y+gap, boxSze, boxSze)
-                props = main.segProps[selectedSegment[1]]
-                if vals[i] in props:
+                if vals[i] == main.setAngs[selectedSegment[1]]:
                     if r.collidepoint(pygame.mouse.get_pos()):
                         col = (255, 50, 255)
                     else:

@@ -1,10 +1,10 @@
 import math
 import BlazeSudio.collisions as colls
-from BlazeSudio.utils.wrap.constraints import OverConstrainedError
 
 __all__ = [
     'MakeShape',
-    'ShapeFormatError'
+    'ShapeFormatError',
+    'OverConstrainedError'
 ]
 
 def theta(L, r):
@@ -19,11 +19,16 @@ class ShapeFormatError(ValueError):
     The shape is not in the correct format!
     """
 
+class OverConstrainedError(ValueError):
+    """
+    The expression has been overly constrained and will not output a closed circle!
+    """
+
 class MakeShape:
     def __init__(self, width):
         self.joints = [(0, 0), (width, 0)]
         self.jointDists = [width]
-        self.segProps = [[]]
+        self.setAngs = [None]
         self.lastRadius = None
     
     @property
@@ -50,7 +55,7 @@ class MakeShape:
                 newdist = newWidth-d-oldD
                 self.joints = [*self.joints[:i], colls.rotate(self.joints[i], (self.joints[i][0], self.joints[i][1]+newdist), ang)]
                 self.jointDists = [*self.jointDists[:i], newdist]
-                self.segProps = [*self.segProps[:i], self.segProps[i].copy()]
+                self.setAngs = [*self.setAngs[:i], self.setAngs[i]]
                 break
         else:
             x, y = self.joints[i+1][0]-self.joints[i][0], self.joints[i+1][1]-self.joints[i][1]
@@ -58,7 +63,7 @@ class MakeShape:
             newdist = newWidth-d
             self.joints.append(colls.rotate(self.joints[-1], (self.joints[-1][0], self.joints[-1][1]+newdist), ang))
             self.jointDists.append(newdist)
-            self.segProps.append([])
+            self.setAngs.append(None)
     
     def insert_straight(self, x):
         self.straighten()
@@ -68,7 +73,7 @@ class MakeShape:
             for idx in range(len(self.joints)-1):
                 if self.joints[idx+1][0] < x:
                     self.joints.insert(idx+1, (x, self.joints[idx][1]))
-                    self.segProps.insert(idx+1, self.segProps[idx].copy())
+                    self.setAngs.insert(idx+1, self.setAngs[idx])
                     self.recalculate_dists()
                     return True
         return False
@@ -161,8 +166,8 @@ class MakeShape:
 
         startingi = 0
         got = 0
-        for i in range(len(self.segProps)):
-            if self.segProps[i] != []:
+        for i in range(len(self.setAngs)):
+            if self.setAngs[i] is not None:
                 if got == 0:
                     startingi = i
                     got = 1
@@ -175,10 +180,7 @@ class MakeShape:
         
         phi = -0.5 * theta(self.jointDists[startingi], radius)
         if got != 0:
-            ang = 90
-            for prop in self.segProps[startingi]:
-                ang = prop.angle(ang, startingi, self)
-            phi += math.radians(ang)
+            phi += math.radians(self.setAngs[startingi])
 
         x0 = radius * math.cos(phi)
         y0 = -radius * math.sin(phi)
@@ -216,7 +218,7 @@ class MakeShape:
         if idx != len(self.joints):
             #self.jointDists[idx-1] += self.jointDists.pop(idx)
             self.jointDists.pop(idx)
-            self.segProps.pop(idx)
+            self.setAngs.pop(idx)
     
     def __iter__(self):
         return ((self.joints[i], self.joints[i+1]) for i in range(len(self.joints)-1))
@@ -228,6 +230,6 @@ class MakeShape:
         s = MakeShape(10)
         s.joints = self.joints.copy()
         s.jointDists = self.jointDists.copy()
-        s.segProps = [i.copy() for i in self.segProps]
+        s.setAngs = self.setAngs.copy()
         s.lastRadius = self.lastRadius
         return s
