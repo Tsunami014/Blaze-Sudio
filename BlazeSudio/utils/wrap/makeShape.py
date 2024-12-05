@@ -24,6 +24,7 @@ class MakeShape:
         self.joints = [(0, 0), (width, 0)]
         self.jointDists = [width]
         self.segProps = [[]]
+        self.lastRadius = None
     
     @property
     def segments(self) -> list[tuple[tuple[int], tuple[int]]]:
@@ -136,12 +137,16 @@ class MakeShape:
                     'Maximum iterations reached! Radius was too %s. Couldn\'t put the points on a circle, try a different arrangement of points'%too
                 )
 
+        self.lastRadius = radius
+
         if returnIterations:
             return radius, iterations
 
         return radius
     
     def makeShape(self): # Thanks SO MUCH to https://math.stackexchange.com/questions/1930607/maximum-area-enclosure-given-side-lengths
+        # TODO: Multiple constraints in a row
+        # TODO: Paralell constraints
 
         if len(self.jointDists) < 3:
             raise ShapeFormatError("Need at least three line lengths.")
@@ -189,10 +194,24 @@ class MakeShape:
         self.joints = [njs[i-startingi] for i in range(len(njs))] + [njs[-startingi]]
 
     def straighten(self):
+        self.lastRadius = None
         for i in range(len(self.joints)-1):
             self.joints[i+1] = colls.rotate(self.joints[i], (self.joints[i][0], self.joints[i][1]+self.jointDists[i]), 90)
     
+    def generateBounds(self, hei):
+        if self.lastRadius is None:
+            self.makeShape()
+        
+        collObj = colls.Polygon(*self.joints)
+        shapelyObj = colls.collToShapely(collObj)
+        centre = colls.NoShape()
+        # centre = colls.shapelyToColl(pygeoops.centerline(shapelyObj, -0.5))
+        # if not colls.checkShpType(centre, colls.ShpGroups.GROUP):
+        #     centre = colls.Shapes(centre)
+        return colls.shapelyToColl(shapelyObj.buffer(hei)), collObj, centre
+    
     def delete(self, idx):
+        self.lastRadius = None
         self.joints.pop(idx)
         if idx != len(self.joints):
             #self.jointDists[idx-1] += self.jointDists.pop(idx)
@@ -210,4 +229,5 @@ class MakeShape:
         s.joints = self.joints.copy()
         s.jointDists = self.jointDists.copy()
         s.segProps = [i.copy() for i in self.segProps]
+        s.lastRadius = self.lastRadius
         return s

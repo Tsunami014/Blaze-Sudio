@@ -400,6 +400,20 @@ def WrapBasicDemo():
                 pygame.draw.rect(win, col, r, border_radius=4)
                 txt = f.render(list(conns.keys())[i], 1, (0, 0, 0))
                 win.blit(txt, (r.x+(r.w-txt.get_width())/2, r.y+(r.h-txt.get_height())/2))
+        
+        if movingMode:
+            polys = main.generateBounds(100)
+
+            # Outer Polygon
+            ps = list(polys[0])
+            for p in ps:
+                pygame.draw.circle(win, (125, 125, 125), p, 3)
+            for i in range(len(ps)-1):
+                pygame.draw.line(win, (125, 125, 125), ps[i], ps[i+1], 3)
+            
+            # Inner Shapes[Line]
+            for i in polys[2]:
+                pygame.draw.line(win, (125, 125, 125), i[0], i[1], 3)
 
         pygame.display.update()
 
