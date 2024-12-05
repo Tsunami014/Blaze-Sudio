@@ -200,17 +200,35 @@ class MakeShape:
         for i in range(len(self.joints)-1):
             self.joints[i+1] = colls.rotate(self.joints[i], (self.joints[i][0], self.joints[i][1]+self.jointDists[i]), 90)
     
-    def generateBounds(self, hei):
+    def generateBounds(self, hei, large=True, main=True, small=True):
         if self.lastRadius is None:
             self.makeShape()
         
-        collObj = colls.Polygon(*self.joints)
-        shapelyObj = colls.collToShapely(collObj)
-        centre = colls.NoShape()
-        # centre = colls.shapelyToColl(pygeoops.centerline(shapelyObj, -0.5))
-        # if not colls.checkShpType(centre, colls.ShpGroups.GROUP):
-        #     centre = colls.Shapes(centre)
-        return colls.shapelyToColl(shapelyObj.buffer(hei)), collObj, centre
+        collObj = None
+        
+        if large:
+            collObj = colls.Polygon(*self.joints)
+            shapelyObj = colls.collToShapely(collObj)
+            lgeObj = colls.shapelyToColl(shapelyObj.buffer(hei))
+        else:
+            lgeObj = None
+        
+        if main:
+            if collObj is None:
+                collObj = colls.Polygon(*self.joints)
+            mnObj = collObj
+        else:
+            mnObj = None
+        
+        if small:
+            smlObj = colls.NoShape()
+            # centre = colls.shapelyToColl(pygeoops.centerline(shapelyObj, -0.5))
+            # if not colls.checkShpType(centre, colls.ShpGroups.GROUP):
+            #     centre = colls.Shapes(centre)
+        else:
+            smlObj = None
+        
+        return lgeObj, mnObj, smlObj
     
     def delete(self, idx):
         self.lastRadius = None

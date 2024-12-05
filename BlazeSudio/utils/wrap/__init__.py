@@ -1,20 +1,42 @@
-from BlazeSudio.utils.wrap import constraints, makeShape
+from BlazeSudio import collisions
+from BlazeSudio.utils.wrap.makeShape import MakeShape
 import os
 import pygame
 import math
 
 __all__ = [
     'wrapLevel',
-    'constraints'
+    'wrapSurface',
+    'Segment'
 ]
+
+class Segment:
+    def __init__(self, startx, endx, angle=None):
+        """
+        A segment of an image with optional angle constraints!
+
+        Args:
+            startx (int): The starting x position of the segment
+            endx (int): The ending x position of the segment
+            angle (int, optional): The angle to constrain this segment to, or None for nothing. Defaults to None.
+        """
+        self.pos = [startx, endx]
+        self.angle = angle
+    
+    def __str__(self):
+        if self.angle is None:
+            return f'<Segment {self.pos[0]}-{self.pos[1]}>'
+        return f'<Segment {self.pos[0]}-{self.pos[1]} @{self.angle}°>'
+    def __repr__(self): return str(self)
 
 def wrapLevel(
         world, 
         lvl: int, 
-        Ri: int|float = 0, 
+        top: int|float = 1,
+        bottom: int|float = 0, 
         quality: float = 1.0, 
         startRot: int|float = 0, 
-        constraints: list[constraints.BaseConstraint] = [],
+        constraints: list[Segment] = [],
     ) -> tuple[pygame.Surface]:
     """
     Wrap a level and get it's wrapped surface and also it's collision surface.
@@ -22,37 +44,49 @@ def wrapLevel(
     Args:
         world (_type_): The world to get the level from.
         lvl (int): The level number.
-        Ri (float, optional): The amount or gap in the centre of the circle. Defaults to 0.
+        top (int|float, optional): The position of the top of the wrapped image. See below 'positioning'. Defaults to 1.
+        bottom (int|float, optional): The position of the bottom of the wrapped image. See below 'positioning'. Defaults to 0.
         quality (float, optional): The quality of the output, in terms of percentage of calculated total size as a decimal. Defaults to 1.0 (regular sized).
         startRot (int|float, optional): The starting rotation. Defaults to 0.
-        constraints (list[constraints.BaseConstraint], optional): A list of constraints to apply to the image. Defaults to [].
+        constraints (list[Segment], optional): A list of constraints to apply to the image. Defaults to [].
 
     Returns:
         tuple[pygame.Surface, pygame.Surface]: The output surface or surfaces which are the wrapped image(s)
+
+    Positioning:
+        - When the image is being wrapped, it wraps the width of the image.
+        - The top and bottom parameters are the positions of the top and bottom of the image respectively.
+        ```
+        1 = the width (wrapped) plus a buffer of the image height
+        0 = the image width (wrapped)
+        -1 = the centroid (or centroid line(s)) of the polygon made by the wrapped image width
+        ```
     """
 
     pg = world.get_pygame(lvl, transparent_bg=True)
     for i in world.get_level(lvl).layers:
         i.tileset = None  # So it has to render blocks instead >:)
     pg2 = world.get_pygame(lvl, transparent_bg=True)
-    return wrapSurface(pg, Ri, quality, startRot, constraints, pg2)
+    return wrapSurface(pg, top, bottom, quality, startRot, constraints, pg2)
 
 def wrapSurface(pg: pygame.Surface, 
-               Ri: int|float = 0, 
-               quality: float = 1.0, 
-               startRot: int|float = 0, 
-               constraints: list[constraints.BaseConstraint] = [], 
-               pg2: bool|pygame.Surface=True
+                top: int|float = 1,
+                bottom: int|float = 0, 
+                quality: float = 1.0, 
+                startRot: int|float = 0, 
+                constraints: list[Segment] = [], 
+                pg2: bool|pygame.Surface=True
     ) -> tuple[pygame.Surface]|pygame.Surface:
     """
     Wrap a pygame surface and optionally it's alpha separately.
 
     Args:
         pg (pygame.Surface): The pygame surface to wrap.
-        Ri (float, optional): The amount or gap in the centre of the circle. Defaults to 0.
+        top (int|float, optional): The position of the top of the wrapped image. See below 'positioning'. Defaults to 1.
+        bottom (int|float, optional): The position of the bottom of the wrapped image. See below 'positioning'. Defaults to 0.
         quality (float, optional): The quality of the output, in terms of percentage of calculated total size as a decimal. Defaults to 1.0 (regular sized).
         startRot (int|float, optional): The starting rotation. Defaults to 0.
-        constraints (list[constraints.BaseConstraint], optional): A list of constraints to apply to the image. Defaults to [].
+        constraints (list[Segment], optional): A list of constraints to apply to the image. Defaults to [].
         pg2 (bool|pygame.Surface, optional): A pygame surface for the alpha wrapping, or a bool as to whether to return it in the first place. Defaults to True.
             - `pygame.Surface` -> use that for the alpha only wrap
             - `True` -> use `pg` for the alpha wrap
@@ -60,32 +94,81 @@ def wrapSurface(pg: pygame.Surface,
 
     Returns:
         tuple[pygame.Surface, pygame.Surface]: The output surface or surfaces which are the wrapped image(s)
+    
+    Positioning:
+        - When the image is being wrapped, it wraps the width of the image.
+        - The top and bottom parameters are the positions of the top and bottom of the image respectively.
+        ```
+        1 = the width (wrapped) plus a buffer of the image height
+        0 = the image width (wrapped)
+        -1 = the centroid (or centroid line(s)) of the polygon made by the wrapped image width
+        ```
     """
-    circrad = 250
-    imgw, imgh = circrad*2, circrad*2
-    cirs = [pygame.Surface((imgw, imgh), pygame.SRCALPHA) for _ in range(2 if pg2 is not False and pg2 is not True else 1)]
     width, height = pg.get_size()
     if isinstance(pg2, pygame.Surface):
         if pg.get_size() != pg2.get_size():
             raise ValueError(
                 'The 2 input surfaces are of different sizes!!!'
             )
+    shape = MakeShape(width)
+    def checkX1(x):
+        for con in constraints:
+            if x > con.pos[0] and x < con.pos[1]:
+                return False
+        return True
+    segs = [x for x in range(width) if checkX1(x)]
+    def checkX2(x):
+        for con in constraints:
+            if x == con.pos[0]:
+                return con.angle
+        return None
+    segrots = [checkX2(x) for x in segs]
+    shape.joints = [(i, 0) for i in segs]
+    shape.setAngs = segrots
+    shape.recalculate_dists()
+    large, main, small = shape.generateBounds(height, True, False, False) # main and small set to None
+    largePs = large.toPoints()
+    mins = (min(i[0] for i in largePs), min(i[1] for i in largePs))
+    for i in range(len(shape.joints)):
+        shape.joints[i] = (shape.joints[i][0]-mins[0], shape.joints[i][1]-mins[1])
+    large, main, small = shape.generateBounds(height)
+    collsegs = shape.collSegments
+    largePs = large.toPoints()
+    sze = (math.ceil(max(i[0] for i in largePs)), math.ceil(max(i[1] for i in largePs)))
+    cirs = [pygame.Surface(sze, pygame.SRCALPHA) for _ in range(2 if pg2 is not False and pg2 is not True else 1)]
     pixels = pygame.surfarray.array3d(pg)
     alpha = pygame.surfarray.array_alpha(pg)
     if pg2 is True or pg2 is False:
         alpha2 = None
     else:
         alpha2 = pygame.surfarray.array_alpha(pg2)
-    
-    centre = (int(imgw/2), int(imgh/2))
 
-    for y in range(imgh):
-        for x in range(imgw):
-            d = (x-centre[0])**2+(y-centre[1])**2
-            if d < Ri**2 or d > circrad**2:
+    for y in range(sze[1]):
+        for x in range(sze[0]):
+            collP = collisions.Point(x, y)
+            closests = [i.closestPointTo(collP) for i in collsegs]
+            closeDists = [(p[0]-x)**2+(p[1]-y)**2 for p in closests]
+            closestIdx = closests.index(sorted(closests, key=lambda p: closeDists[closests.index(p)])[0])
+
+            hei = math.sqrt(closeDists[closestIdx])/height
+            if hei > 1 or hei < 0:
                 continue
-            ang = math.atan2(y-centre[1],x-centre[0])/2
-            realx, realy = int(width*(ang/math.pi)) % width, int(height*(1-(math.sqrt(d)/circrad))-1)
+
+            d = 0
+            for idx in range(len(collsegs)):
+                if idx != closestIdx:
+                    d += shape.jointDists[idx]
+                else:
+                    d += math.sqrt(((closests[idx][0]-collsegs[closestIdx].p1[0])**2 + (closests[idx][1]-collsegs[closestIdx].p1[1])**2))
+                    break
+            else:
+                raise ValueError(
+                    'Something very bad happened!!!!!'
+                )
+            if hei > 1 or hei < 0: # Not in the shape
+                continue
+            d = d / width # Percentage of the way through the shape
+            realx, realy = (int(width*d), int(height*hei)) # test
             col = pixels[realx, realy]
             a = alpha[realx, realy]
             cirs[0].set_at((int(x), int(y)), (*col, a))
@@ -97,6 +180,7 @@ def wrapSurface(pg: pygame.Surface,
                     ocol = (0, 0, 0)
                     oa = 0
                 cirs[1].set_at((int(x), int(y)), (*ocol, oa))
+        print((y*sze[0])/(sze[1]*sze[0]), '%')
     # TODO: if pg2 is True: # just mask the output
     if len(cirs) == 1:
         return cirs[0]
