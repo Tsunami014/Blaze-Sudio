@@ -358,7 +358,7 @@ def WrapBasicDemo():
 
         segs = main.segments
         for i in range(len(segs)):
-            if main.setAngs[i]:
+            if main.setAngs[i] is not None:
                 col = (10, 50, 255)
             else:
                 col = (255, 255, 255)
