@@ -147,6 +147,9 @@ def wrapSurface(pg: pygame.Surface,
     width2 = width**2
     distsSqrd = [i**2 for i in shape.jointDists]
 
+    cirsArray = [pygame.surfarray.pixels3d(i) for i in cirs]
+    alphaArray = pygame.surfarray.pixels_alpha(cirs[0])
+
     print(0, '%')
 
     for y in range(sze[1]):
@@ -176,15 +179,14 @@ def wrapSurface(pg: pygame.Surface,
             realx, realy = (int(width*d), int(height*hei))
             col = pixels[realx, realy]
             a = alpha[realx, realy]
-            cirs[0].set_at((int(x), int(y)), (*col, a))
+            cirsArray[0][int(x), int(y)] = col
+            alphaArray[int(x), int(y)] = a
             if alpha2 is not None:
                 if alpha2[realx, realy] == 255:
                     ocol = (255, 255, 255)
-                    oa = 255
                 else:
                     ocol = (0, 0, 0)
-                    oa = 0
-                cirs[1].set_at((int(x), int(y)), (*ocol, oa))
+                cirsArray[1][int(x), int(y)] = ocol
         print(((y+1)*sze[0])/(sze[1]*sze[0]), '%')
     # TODO: if pg2 is True: # just mask the output
     if len(cirs) == 1:
