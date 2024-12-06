@@ -143,41 +143,37 @@ def wrapSurface(pg: pygame.Surface,
     else:
         alpha2 = pygame.surfarray.array_alpha(pg2)
 
-    print(0, '%')
-
     height2 = height**2
     width2 = width**2
     distsSqrd = [i**2 for i in shape.jointDists]
 
+    print(0, '%')
+
     for y in range(sze[1]):
-        closests = {}
-        line = collisions.Line((0, y), (sze[0], y))
-        for idx, seg in enumerate(collsegs):
-            if seg.collides(line):
-                closests[idx] = seg
         for x in range(sze[0]):
             collP = collisions.Point(x, y)
             closest_point = None
             min_dist = float('inf')
+            d = 0
+            possD = 0
             
-            for idx, i in closests.items():
+            for idx, i in enumerate(collsegs):
                 p = i.closestPointTo(collP)
                 dist = (p[0] - x) ** 2 + (p[1] - y) ** 2
+                possD += distsSqrd[idx]
                 if dist < min_dist:
                     min_dist = dist
                     closest_point = p
                     closestIdx = idx
+                    d = possD
 
             hei = min_dist/height2
-            if hei > 1 or hei < 0:
-                continue
+            if hei >= 1 or hei < 0:
+               continue
 
-            d = sum(distsSqrd[:closestIdx])
             d += (closest_point[0]-collsegs[closestIdx].p1[0])**2 + (closest_point[1]-collsegs[closestIdx].p1[1])**2
-            if hei >= 1 or hei < 0: # Not in the shape
-                continue
             d = d / width2 # Percentage of the way through the shape
-            realx, realy = (int(width*d), int(height*hei)) # test
+            realx, realy = (int(width*d), int(height*hei))
             col = pixels[realx, realy]
             a = alpha[realx, realy]
             cirs[0].set_at((int(x), int(y)), (*col, a))
