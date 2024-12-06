@@ -150,36 +150,30 @@ def wrapSurface(pg: pygame.Surface,
     distsSqrd = [i**2 for i in shape.jointDists]
 
     for y in range(sze[1]):
+        closests = {}
+        line = collisions.Line((0, y), (sze[0], y))
+        for idx, seg in enumerate(collsegs):
+            if seg.collides(line):
+                closests[idx] = seg
         for x in range(sze[0]):
             collP = collisions.Point(x, y)
             closest_point = None
             min_dist = float('inf')
             
-            idx = 0
-            for i in collsegs:
+            for idx, i in closests.items():
                 p = i.closestPointTo(collP)
                 dist = (p[0] - x) ** 2 + (p[1] - y) ** 2
                 if dist < min_dist:
                     min_dist = dist
                     closest_point = p
                     closestIdx = idx
-                idx += 1
 
             hei = min_dist/height2
             if hei > 1 or hei < 0:
                 continue
 
-            d = 0
-            for idx in range(len(collsegs)):
-                if idx != closestIdx:
-                    d += distsSqrd[idx]
-                else:
-                    d += ((closest_point[0]-collsegs[closestIdx].p1[0])**2 + (closest_point[1]-collsegs[closestIdx].p1[1])**2)
-                    break
-            else:
-                raise ValueError(
-                    'Something very bad happened!!!!!'
-                )
+            d = sum(distsSqrd[:closestIdx])
+            d += (closest_point[0]-collsegs[closestIdx].p1[0])**2 + (closest_point[1]-collsegs[closestIdx].p1[1])**2
             if hei >= 1 or hei < 0: # Not in the shape
                 continue
             d = d / width2 # Percentage of the way through the shape
