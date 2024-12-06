@@ -1,3 +1,3 @@
-from BlazeSudio.debug.globals import IMPORT_CONFIG as _CNFG
-_CNFG['Debug'] = True
-from BlazeSudio.collisions.extra import *
+import os as _os
+_os.environ['debugCollisions'] = 'True'
+from BlazeSudio.collisions import *

@@ -1,8 +1,4 @@
-import os
-if 'debug' in os.environ:
-    from BlazeSudio.debug import collisions
-else:
-    from BlazeSudio import collisions
+from BlazeSudio import collisions
 from BlazeSudio.graphics.options import CRAINBOWCOLOURS, FFONT
 import pygame
 import math
