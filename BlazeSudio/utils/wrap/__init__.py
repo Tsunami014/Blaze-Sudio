@@ -106,10 +106,10 @@ def wrapSurface(pg: pygame.Surface,
     """
     width, height = pg.get_size()
     if isinstance(pg2, pygame.Surface):
-        if pg.get_size() != pg2.get_size():
-            raise ValueError(
-                'The 2 input surfaces are of different sizes!!!'
-            )
+       if pg.get_size() != pg2.get_size():
+           raise ValueError(
+               'The 2 input surfaces are of different sizes!!!'
+           )
     shape = MakeShape(width)
     def checkX1(x):
         for con in constraints:
@@ -143,31 +143,46 @@ def wrapSurface(pg: pygame.Surface,
     else:
         alpha2 = pygame.surfarray.array_alpha(pg2)
 
+    print(0, '%')
+
+    height2 = height**2
+    width2 = width**2
+    distsSqrd = [i**2 for i in shape.jointDists]
+
     for y in range(sze[1]):
         for x in range(sze[0]):
             collP = collisions.Point(x, y)
-            closests = [i.closestPointTo(collP) for i in collsegs]
-            closeDists = [(p[0]-x)**2+(p[1]-y)**2 for p in closests]
-            closestIdx = closests.index(sorted(closests, key=lambda p: closeDists[closests.index(p)])[0])
+            closest_point = None
+            min_dist = float('inf')
+            
+            idx = 0
+            for i in collsegs:
+                p = i.closestPointTo(collP)
+                dist = (p[0] - x) ** 2 + (p[1] - y) ** 2
+                if dist < min_dist:
+                    min_dist = dist
+                    closest_point = p
+                    closestIdx = idx
+                idx += 1
 
-            hei = math.sqrt(closeDists[closestIdx])/height
+            hei = min_dist/height2
             if hei > 1 or hei < 0:
                 continue
 
             d = 0
             for idx in range(len(collsegs)):
                 if idx != closestIdx:
-                    d += shape.jointDists[idx]
+                    d += distsSqrd[idx]
                 else:
-                    d += math.sqrt(((closests[idx][0]-collsegs[closestIdx].p1[0])**2 + (closests[idx][1]-collsegs[closestIdx].p1[1])**2))
+                    d += ((closest_point[0]-collsegs[closestIdx].p1[0])**2 + (closest_point[1]-collsegs[closestIdx].p1[1])**2)
                     break
             else:
                 raise ValueError(
                     'Something very bad happened!!!!!'
                 )
-            if hei > 1 or hei < 0: # Not in the shape
+            if hei >= 1 or hei < 0: # Not in the shape
                 continue
-            d = d / width # Percentage of the way through the shape
+            d = d / width2 # Percentage of the way through the shape
             realx, realy = (int(width*d), int(height*hei)) # test
             col = pixels[realx, realy]
             a = alpha[realx, realy]
@@ -180,7 +195,7 @@ def wrapSurface(pg: pygame.Surface,
                     ocol = (0, 0, 0)
                     oa = 0
                 cirs[1].set_at((int(x), int(y)), (*ocol, oa))
-        print((y*sze[0])/(sze[1]*sze[0]), '%')
+        print(((y+1)*sze[0])/(sze[1]*sze[0]), '%')
     # TODO: if pg2 is True: # just mask the output
     if len(cirs) == 1:
         return cirs[0]
