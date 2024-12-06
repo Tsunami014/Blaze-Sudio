@@ -1,8 +1,5 @@
 # Main STUFF
 import warnings
-
-from BlazeSudio.graphics.GUI.base import ReturnState
-from BlazeSudio.utils.wrap import makeShape
 warnings.filterwarnings("ignore", category=UserWarning)
 
 def NodeEditorDemo():
@@ -23,6 +20,7 @@ def GraphicsDemo():
     import BlazeSudio.graphics.options as GO
     from BlazeSudio.graphics import Graphic, GUI
     from BlazeSudio.graphics.GUI.base import HiddenStatus
+    from BlazeSudio.graphics.GUI.base import ReturnState
     import pygame
     from time import sleep
     G = Graphic()
@@ -226,13 +224,13 @@ def ThemePgDemo():
     import demoFiles.themePlayground as themePlayground  # noqa: F401
 
 def CollisionsDemo(debug=False):
-    import os
     if debug:
-        os.environ['debug'] = 'True'
+        from BlazeSudio.debug import collisions  # noqa: F401
     from demoFiles import collisionsDemo  # noqa: F401
 
 def WrapBasicDemo():
     from BlazeSudio.collisions import Point
+    from BlazeSudio.utils.wrap import makeShape
     import pygame
     import sys
     pygame.init()

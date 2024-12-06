@@ -1,8 +1,10 @@
+import pygame as _pygame
+import shapely.geometry as _shapelyGeom
 from _typeshed import Incomplete
 from enum import Enum
 from typing import Any, Dict, Iterable, Type
 
-__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnUnitCircle', 'ShpGroups', 'checkShpType', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'Arc', 'ClosedShape', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
+__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnUnitCircle', 'shapelyToColl', 'collToShapely', 'drawShape', 'ShpGroups', 'checkShpType', 'ClosedShape', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'Arc', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
 
 Number = int | float
 verboseOutput = Iterable[Any] | None
@@ -74,6 +76,36 @@ def checkShpType(shape: Shape | Shapes, typs: Type | ShpGroups | Iterable[Type |
 
     Returns:
         bool: Whether the shape is of the specified type(s) or group(s).
+    """
+def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Shape | Shapes:
+    """
+    Converts a shapely shape to a BlazeSudio Shape.
+
+    Args:
+        shapelyShape (shapely.geometry.base.BaseGeometry): The shapely shape to convert.
+
+    Returns:
+        Shape | Shapes: The converted shape.
+    """
+def collToShapely(collShape: Shape) -> _shapelyGeom.base.BaseGeometry:
+    """
+    Converts a BlazeSudio Shape to a shapely shape.
+
+    Args:
+        collShape (Shape): The BlazeSudio shape to convert.
+
+    Returns:
+        shapely.geometry.base.BaseGeometry: The converted shape.
+    """
+def drawShape(surface: _pygame.Surface, shape: Shape, colour: tuple[int, int, int], width: int = 0):
+    """
+    Draws a BlazeSudio shape to a Pygame surface.
+
+    Args:
+        surface (pygame.Surface): The surface to draw the shape on.
+        shape (Shape): The shape to draw.
+        colour (tuple[int, int, int]): The colour to draw the shape in.
+        width (int, optional): The width of the lines to draw. Defaults to 0.
     """
 
 class Shape:
@@ -969,4 +1001,30 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
 
         Returns:
             Shape: The shape object made from the points
+        """
+    @staticmethod
+    def pointsToPoly(*points: list[Point], ratio: Number = 0.1) -> Shape | Shapes:
+        """
+        Converts a list of points to a polygon.
+        This differs from `ShapeCombiner.pointsToShape` in that **this** will create a polygon encapsulating all the points, *instead* of connecting them all with lines.
+
+        Args:
+            points (list[Point]): The points to convert to a polygon.
+            ratio (Number): A number in the range [0, 1]. Higher means fewer verticies/less detail.
+
+        Returns:
+            Shape | Shapes: A Shapes object containing one polygon with the points from the input.
+        """
+    @staticmethod
+    def ShapelyUnion(*shapes: Shape) -> Shape:
+        """
+        Combine all the input shapes with shapely to be a union.
+        If the shapes are not all touching, they will *still* be combined into one shape.
+        If you need to combine shapes but don't like the result of this, try the `ShapeCombiner.Union` method.
+
+        Args:
+            shapes (list[Shape]): The shapes to combine.
+
+        Returns:
+            Shape: A Shape which is the union of all the input shapes.
         """
