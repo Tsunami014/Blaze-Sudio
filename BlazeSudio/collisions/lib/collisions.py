@@ -2771,7 +2771,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         return Shapes(*shapes, *others)
 
     @staticmethod
-    def Union(*shapes: Shape) -> Shapes: # FIXME
+    def union(*shapes: Shape) -> Shapes: # FIXME
         """
         Combine all the input shapes with a unary union. Still in progress and doesn't work too well.
 
@@ -2895,7 +2895,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         return shapelyToColl(shapely.concave_hull(shapelyGeom.MultiPoint([tuple(i) for i in points]), ratio=ratio))
     
     @staticmethod
-    def ShapelyUnion(*shapes: Shape) -> Shape:
+    def shapelyUnion(*shapes: Shape) -> Shape:
         """
         Combine all the input shapes with shapely to be a union.
         If the shapes are not all touching, they will *still* be combined into one shape.

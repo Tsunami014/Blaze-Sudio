@@ -17,8 +17,8 @@ combineTyp = 0
 pos = [0, 0]
 vel = [0, 0]
 combineFs = {
-    'CollsUnion': collisions.ShapeCombiner.Union,
-    'ShapelyUnion': collisions.ShapeCombiner.ShapelyUnion,
+    'CollsUnion': collisions.ShapeCombiner.union,
+    'ShapelyUnion': collisions.ShapeCombiner.shapelyUnion,
     'BoundingBox': collisions.ShapeCombiner.boundingBox,
     'CombineRects': collisions.ShapeCombiner.combineRects,
     'PointsToShape': collisions.ShapeCombiner.pointsToShape,
