@@ -2,11 +2,14 @@ import math
 from enum import Enum
 from typing import Type, Union, Iterable, Any, Dict
 
-import pygame as _pygame
-import shapely as _shapely
-import shapely.geometry as _shapelyGeom
-import shapely.ops as _shapelyOps
-from math import radians as _toRadians
+# Just for utility funcs, not the actual collision library
+try: # This library was not made for pygame, but it can be used with it
+    import pygame
+except ImportError:
+    pygame = None # Remember to `checkForPygame()`!
+import shapely
+import shapely.geometry as shapelyGeom
+import shapely.ops as shapelyOps
 
 Number = Union[int, float]
 verboseOutput = Union[Iterable[Any], None]
@@ -41,6 +44,12 @@ __all__ = [
 
     'ShapeCombiner',
 ]
+
+def checkForPygame():
+    if pygame is None:
+        raise ImportError(
+            'Pygame is not installed, so you cannot use this function without it!'
+        )
 
 def rotate(origin: pointLike, point: pointLike, angle: Number) -> pointLike:
     """
@@ -141,7 +150,7 @@ def checkShpType(shape: Union['Shape', 'Shapes'], typs: Union[Type, ShpGroups, I
             return True
     return False
 
-def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Union['Shape', 'Shapes']:
+def shapelyToColl(shapelyShape: shapelyGeom.base.BaseGeometry) -> Union['Shape', 'Shapes']:
     """
     Converts a shapely shape to a BlazeSudio Shape.
 
@@ -151,19 +160,19 @@ def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Union['Shape'
     Returns:
         Shape | Shapes: The converted shape.
     """
-    if _shapely.is_empty(shapelyShape):
+    if shapely.is_empty(shapelyShape):
         return NoShape()
-    if isinstance(shapelyShape, _shapelyGeom.Point):
+    if isinstance(shapelyShape, shapelyGeom.Point):
         return Point(shapelyShape.x, shapelyShape.y)
-    if isinstance(shapelyShape, _shapelyGeom.LineString):
+    if isinstance(shapelyShape, shapelyGeom.LineString):
         return ShapeCombiner.pointsToShape(*list(zip(*[list(i) for i in shapelyShape.coords.xy])))
-    if isinstance(shapelyShape, _shapelyGeom.Polygon):
+    if isinstance(shapelyShape, shapelyGeom.Polygon):
         return ShapeCombiner.pointsToShape(*list(zip(*[list(i) for i in shapelyShape.exterior.coords.xy])))
-    if isinstance(shapelyShape, (_shapelyGeom.MultiPoint, _shapelyGeom.MultiLineString, _shapelyGeom.MultiPolygon, _shapelyGeom.GeometryCollection)):
+    if isinstance(shapelyShape, (shapelyGeom.MultiPoint, shapelyGeom.MultiLineString, shapelyGeom.MultiPolygon, shapelyGeom.GeometryCollection)):
         return Shapes(*[shapelyToColl(i) for i in shapelyShape.geoms])
     raise ValueError(f'Cannot convert shapely shape of type {type(shapelyShape)} to BlazeSudio Shape')
 
-def collToShapely(collShape: 'Shape') -> _shapelyGeom.base.BaseGeometry:
+def collToShapely(collShape: 'Shape') -> shapelyGeom.base.BaseGeometry:
     """
     Converts a BlazeSudio Shape to a shapely shape.
 
@@ -174,18 +183,18 @@ def collToShapely(collShape: 'Shape') -> _shapelyGeom.base.BaseGeometry:
         shapely.geometry.base.BaseGeometry: The converted shape.
     """
     if checkShpType(collShape, Point):
-        return _shapelyGeom.Point(collShape.x, collShape.y)
+        return shapelyGeom.Point(collShape.x, collShape.y)
     if checkShpType(collShape, Line):
-        return _shapelyGeom.LineString([(collShape.p1[0], collShape.p1[1]), (collShape.p2[0], collShape.p2[1])])
+        return shapelyGeom.LineString([(collShape.p1[0], collShape.p1[1]), (collShape.p2[0], collShape.p2[1])])
     if checkShpType(collShape, Circle):
-        return _shapelyGeom.Point(collShape.x, collShape.y).buffer(collShape.r)
+        return shapelyGeom.Point(collShape.x, collShape.y).buffer(collShape.r)
     if checkShpType(collShape, ShpGroups.CLOSED):
-        return _shapelyGeom.Polygon([(i[0], i[1]) for i in collShape.toPoints()])
+        return shapelyGeom.Polygon([(i[0], i[1]) for i in collShape.toPoints()])
     if checkShpType(collShape, ShpGroups.GROUP):
-        return _shapelyGeom.GeometryCollection([collToShapely(i) for i in collShape.shapes])
+        return shapelyGeom.GeometryCollection([collToShapely(i) for i in collShape.shapes])
     raise ValueError(f'Cannot convert BlazeSudio shape of type {type(collShape)} to shapely shape')
 
-def drawShape(surface: _pygame.Surface, shape: 'Shape', colour: tuple[int, int, int], width: int = 0):
+def drawShape(surface: Any, shape: 'Shape', colour: tuple[int, int, int], width: int = 0):
     """
     Draws a BlazeSudio shape to a Pygame surface.
 
@@ -195,19 +204,20 @@ def drawShape(surface: _pygame.Surface, shape: 'Shape', colour: tuple[int, int, 
         colour (tuple[int, int, int]): The colour to draw the shape in.
         width (int, optional): The width of the lines to draw. Defaults to 0.
     """
+    checkForPygame()
     if checkShpType(shape, Point):
-        _pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), width)
+        pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), width)
     elif checkShpType(shape, Line):
         if tuple(shape.p1) == tuple(shape.p2):
-            _pygame.draw.circle(surface, colour, (int(shape.p1[0]), int(shape.p1[1])), int(width/2))
-        _pygame.draw.line(surface, colour, (int(shape.p1[0]), int(shape.p1[1])), 
+            pygame.draw.circle(surface, colour, (int(shape.p1[0]), int(shape.p1[1])), int(width/2))
+        pygame.draw.line(surface, colour, (int(shape.p1[0]), int(shape.p1[1])), 
                                            (int(shape.p2[0]), int(shape.p2[1])), width)
     elif checkShpType(shape, Arc):
-        _pygame.draw.arc(surface, colour, 
+        pygame.draw.arc(surface, colour, 
                          (int(shape.x)-int(shape.r), int(shape.y)-int(shape.r), int(shape.r*2), int(shape.r*2)), 
-                         _toRadians(-shape.endAng), _toRadians(-shape.startAng), width)
+                         math.radians(-shape.endAng), math.radians(-shape.startAng), width)
     elif checkShpType(shape, Circle):
-        _pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), int(shape.r), width)
+        pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), int(shape.r), width)
     elif checkShpType(shape, ShpGroups.CLOSED):
         ps = shape.toPoints()
         psset = {tuple(i) for i in ps}
@@ -215,14 +225,14 @@ def drawShape(surface: _pygame.Surface, shape: 'Shape', colour: tuple[int, int, 
             return
         elif len(psset) == 1:
             fst = psset.pop()
-            _pygame.draw.circle(surface, colour, (int(fst[0]), int(fst[1])), int(width/2))
+            pygame.draw.circle(surface, colour, (int(fst[0]), int(fst[1])), int(width/2))
         elif len(psset) == 2:
             fst = psset.pop()
             snd = psset.pop()
-            _pygame.draw.line(surface, colour, 
+            pygame.draw.line(surface, colour, 
                               (int(fst[0]), int(fst[1])), 
                               (int(snd[0]), int(snd[1])), int(width/4*3))
-        _pygame.draw.polygon(surface, colour, ps, width)
+        pygame.draw.polygon(surface, colour, ps, width)
     elif checkShpType(shape, ShpGroups.GROUP):
         for i in shape.shapes:
             drawShape(surface, i, colour, width)
@@ -231,7 +241,7 @@ def drawShape(surface: _pygame.Surface, shape: 'Shape', colour: tuple[int, int, 
 
 class Shape:
     """The base Shape class. This defaults to always collide.
-This class always collides; so *can* be used as an infinite plane, but why?"""
+    This class always collides; so *can* be used as an infinite plane, but why?"""
     GROUPS = []
     x: Number = 0
     y: Number = 0
@@ -275,6 +285,20 @@ This class always collides; so *can* be used as an infinite plane, but why?"""
         for s in othershape:
             points.extend(s._where(self))
         return points
+
+    def distance_to(self, othershape: 'Shape') -> Number:
+        """
+        Finds the distance between this shape and another shape.
+
+        Args:
+            othershape (Shape): The other shape to find the distance to
+
+        Returns:
+            Number: The distance between this shape and the other shape
+        """
+        thisP = self.closestPointTo(othershape)
+        otherP = othershape.closestPointTo(self)
+        return math.hypot(thisP[0]-otherP[0], thisP[1]-otherP[1])
     
     def check_rects(self, othershape: 'Shape') -> bool:
         """
@@ -355,6 +379,15 @@ This class always collides; so *can* be used as an infinite plane, but why?"""
         """
         return []
     
+    def area(self) -> Number:
+        """
+        Gets the area of the shape.
+
+        Returns:
+            Number: The area of the shape
+        """
+        return float('inf')
+    
     def rect(self) -> Iterable[Number]:
         """
         Returns the rectangle bounding box surrounding this object.
@@ -408,6 +441,15 @@ class NoShape(Shape):
     
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
         return []
+    
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; 0.
+
+        Returns:
+            Number: The area of the shape
+        """
+        return 0
     
     def copy(self) -> 'NoShape':
         """Make a copy of this non-existant shape"""
@@ -560,6 +602,15 @@ class Shapes:
 
     # TODO: to_points and to_lines
 
+    def area(self) -> Number:
+        """
+        Gets the combined area of all the shapes.
+
+        Returns:
+            Number: The sum of all the areas of the shapes.
+        """
+        return sum(s.area() for s in self.shapes)
+
     def rect(self) -> Iterable[Number]:
         """
         Returns the rectangle bounding box surrounding every one of these objects.
@@ -620,6 +671,15 @@ class Point(Shape):
             Iterable[Number]: (min x, min y, max x, max y)
         """
         return self.x, self.y, self.x, self.y
+    
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; 0.
+
+        Returns:
+            Number: The area of the shape
+        """
+        return 0.0
     
     def toPoints(self) -> Iterable[pointLike]:
         """
@@ -710,7 +770,7 @@ class Point(Shape):
         closestObj = points[0][1]
         t = closestObj.tangent(closestP, vel)
         normal = t-90
-        dist_left = math.sqrt(abs(newPoint[0]-closestP[0])**2+abs(newPoint[1]-closestP[1])**2) * closestObj.bounciness
+        dist_left = math.hypot(newPoint[0]-closestP[0], newPoint[1]-closestP[1]) * closestObj.bounciness
         x, y = oldPoint[0] - closestP[0], oldPoint[1] - closestP[1]
         phi = math.degrees(math.atan2(y, x))+90 # Because we have to -90 due to issues and then +180 so it becomes +90
         diff = (phi-normal) % 360
@@ -802,6 +862,15 @@ class Line(Shape):
         """
         super().__init__(bounciness)
         self.p1, self.p2 = p1, p2
+    
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; the distance between the 2 points making up the line.
+
+        Returns:
+            Number: The distance between the 2 points.
+        """
+        return math.hypot(self.p1[0]-self.p2[0], self.p1[1]-self.p2[1])
     
     @property
     def x(self):
@@ -1136,7 +1205,7 @@ class Line(Shape):
                 normal, phi = 0, 0
 
         # the distance between the closest point on the other object and the corresponding point on the newLine
-        dist_left = math.sqrt((newPoint[0]-closestP[0])**2 + (newPoint[1]-closestP[1])**2) * closestObj.bounciness
+        dist_left = math.hypot(newPoint[0]-closestP[0], newPoint[1]-closestP[1]) * closestObj.bounciness
         diff = (phi-normal) % 360 # The difference between the angle of incidence and the normal
         if diff > 180: # Do we even need this?
             diff -= 360
@@ -1225,8 +1294,8 @@ class Line(Shape):
 
 class Circle(Shape):
     """A perfect circle. Defined as an x and y centre coordinate of the circle and a radius.
-Please be mindful when checking for this class as it is technically a closed shape, but if you try to run \
-`.toLines()` or `.toPoints()` it will return an empty list; so please check for it *before* closed shapes."""
+    Please be mindful when checking for this class as it is technically a closed shape, but if you try to run \
+    `.toLines()` or `.toPoints()` it will return an empty list; so please check for it *before* closed shapes."""
     GROUPS = [ShpGroups.CLOSED]
     def __init__(self, x: Number, y: Number, r: Number, bounciness: float = BASEBOUNCINESS):
         """
@@ -1247,6 +1316,15 @@ Please be mindful when checking for this class as it is technically a closed sha
             Iterable[Number]: (min x, min y, max x, max y)
         """
         return self.x - self.r, self.y - self.r, self.x + self.r, self.y + self.r
+    
+    def area(self) -> Number:
+        """
+        Gets the area of the circle.
+
+        Returns:
+            Number: The area of the circle.
+        """
+        return math.pi * self.r**2
     
     def _collides(self, othershape: Shape) -> bool:
         if checkShpType(othershape, Point):
@@ -1294,14 +1372,16 @@ Please be mindful when checking for this class as it is technically a closed sha
                 ya = (-D * dx ) /  (dr * dr)
                 ta = (xa-x1)*dx/dr + (ya-y1)*dy/dr
                 return [(xa + self.x, ya + self.y)] if 0 < ta < dr else []
+
+            discRoot = math.sqrt(discriminant)
             
-            xa = (D * dy + sign(dy) * dx * math.sqrt(discriminant)) / (dr * dr)
-            ya = (-D * dx + abs(dy) * math.sqrt(discriminant)) / (dr * dr)
+            xa = (D * dy + sign(dy) * dx * discRoot) / (dr * dr)
+            ya = (-D * dx + abs(dy) * discRoot) / (dr * dr)
             ta = (xa-x1)*dx/dr + (ya-y1)*dy/dr
             xpt = [(xa + self.x, ya + self.y)] if 0 < ta < dr else []
             
-            xb = (D * dy - sign(dy) * dx * math.sqrt(discriminant)) / (dr * dr) 
-            yb = (-D * dx - abs(dy) * math.sqrt(discriminant)) / (dr * dr)
+            xb = (D * dy - sign(dy) * dx * discRoot) / (dr * dr) 
+            yb = (-D * dx - abs(dy) * discRoot) / (dr * dr)
             tb = (xb-x1)*dx/dr + (yb-y1)*dy/dr
             xpt += [(xb + self.x, yb + self.y)] if 0 < tb < dr else []
             return xpt
@@ -1311,7 +1391,7 @@ Please be mindful when checking for this class as it is technically a closed sha
             # circle 1: (x0, y0), radius r0
             # circle 2: (x1, y1), radius r1
 
-            d=math.sqrt((othershape.x-self.x)**2 + (othershape.y-self.y)**2)
+            d=math.hypot(othershape.x-self.x, othershape.y-self.y)
             
             # non intersecting
             if d > self.r + othershape.r :
@@ -1323,8 +1403,9 @@ Please be mindful when checking for this class as it is technically a closed sha
             if d == 0 and self.r == othershape.r:
                 return []
             else:
-                a=(self.r**2-othershape.r**2+d**2)/(2*d)
-                h=math.sqrt(self.r**2-a**2)
+                r2 = self.r**2
+                a=(r2-othershape.r**2+d**2)/(2*d)
+                h=math.sqrt(r2-a**2)
                 x2=self.x+a*(othershape.x-self.x)/d   
                 y2=self.y+a*(othershape.y-self.y)/d   
                 x3=x2+h*(othershape.y-self.y)/d     
@@ -1450,13 +1531,13 @@ Please be mindful when checking for this class as it is technically a closed sha
                          (newCir.x + newCir.r * math.cos(velphi), newCir.y + newCir.r * math.sin(velphi))
                         ).closestPointTo(Point(*closestP))
         dist_left = (
-            math.sqrt((oldCir[0]-cpoMvemnt[0])**2+(oldCir[1]-cpoMvemnt[1])**2) - \
+            math.hypot(oldCir[0]-cpoMvemnt[0], oldCir[1]-cpoMvemnt[1]) - \
                 math.sqrt(round(newCir.r**2, precision)-( # math.sqrt(max(0, newCir.r**2 - ((cpoMvemnt[0] - closestP[0])**2 + (cpoMvemnt[1] - closestP[1])**2)))????
-                        round(math.sqrt((cpoMvemnt[0]-closestP[0])**2+(cpoMvemnt[1]-closestP[1])**2), precision)
+                        round(math.hypot(cpoMvemnt[0]-closestP[0], cpoMvemnt[1]-closestP[1]), precision)
                     )
                 )
         ) * closestObj.bounciness
-        dist_to = math.sqrt(vel[0]**2+vel[1]**2)-dist_left
+        dist_to = math.hypot(vel[0], vel[1])-dist_left
         if dist_left == 0:
             if verbose:
                 return oldCir, [0, 0], [True]
@@ -1576,7 +1657,9 @@ Please be mindful when checking for this class as it is technically a closed sha
 
 class Arc(Circle):
     """A section of a circle's circumfrance. This is in the 'lines' group because it can be used as the outer edge of another shape.
-This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take."""
+    This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take.
+    
+    **ANGLES ARE MEASURED IN DEGREES.**"""
     GROUPS = [ShpGroups.LINES]
     def __init__(self, 
                  x: Number, 
@@ -1595,14 +1678,27 @@ This is defined as an x, y and radius just like a circle, but also with a start 
             startAngle (Number): The starting angle to take the portion of the circumfrance of. Wraps around.
             endAngle (Number): The ending angle to take the portion of the circumfrance of. Wraps around.
             precision (Number, optional): The decimal places to round to to check. Defaults to 5. \
-This is needed as almost everything requires a very precise exact check to succeed and sometimes decimal errors occur and you get \
-an equation like `10000.000000000002 == 10000.0` which is False. This is to prevent that.
+                This is needed as almost everything requires a very precise exact check to succeed and sometimes decimal errors occur and you get \
+                an equation like `10000.000000000002 == 10000.0` which is False. This is to prevent that.
             bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
         """
         self.x, self.y, self.r = x, y, rad
         self.startAng, self.endAng = startAngle, endAngle
         self.precision = precision
         self.bounciness = bounciness
+    
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; the length of the arc.
+
+        Returns:
+            Number: The length of the arc.
+        """
+        if self.endAng < self.startAng:
+            diff = 360 - self.startAng + self.endAng
+        else:
+            diff = self.endAng - self.startAng
+        return (diff/360) * 2*math.pi * self.r
     
     def _collides(self, othershape: Shape) -> bool:
         if checkShpType(othershape, Point):
@@ -1850,7 +1946,7 @@ an equation like `10000.000000000002 == 10000.0` which is False. This is to prev
 
 class ClosedShape(Shape):
     """These are shapes like rects and polygons; if you split them into a list of lines all the lines join with one another.
-Please do not use this class as it is just a building block for subclasses and to provide them with some basic methods."""
+    Please do not use this class as it is just a building block for subclasses and to provide them with some basic methods."""
     GROUPS = [ShpGroups.CLOSED]
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
         if not self.check_rects(othershape):
@@ -2105,7 +2201,7 @@ Please do not use this class as it is just a building block for subclasses and t
                 normal, phi = 0, 0
 
         # the distance between the closest point on the other object and the corresponding point on the newLine
-        dist_left = math.sqrt((newPoint[0]-closestP[0])**2 + (newPoint[1]-closestP[1])**2) * closestObj.bounciness
+        dist_left = math.hypot(newPoint[0]-closestP[0], newPoint[1]-closestP[1]) * closestObj.bounciness
         diff = (phi-normal) % 360 # The difference between the angle of incidence and the normal
         if diff > 180: # Do we even need this?
             diff -= 360
@@ -2223,6 +2319,15 @@ class Rect(ClosedShape):
         """
         return min(self.x, self.x + self.w), min(self.y, self.y + self.h), max(self.x, self.x + self.w), max(self.y, self.y + self.h)
     
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; width * height.
+
+        Returns:
+            Number: self.w * self.h
+        """
+        return self.w * self.h
+    
     def _collides(self, othershape: Shape) -> bool:
         x, y, mx, my = self.rect()
         if checkShpType(othershape, Point):
@@ -2303,8 +2408,8 @@ class Rect(ClosedShape):
 
 class RotatedRect(ClosedShape):
     """A rectangle...... That is rotated.
-It is rotated around it's x and y coordinates.
-Defined as an x, y, width, height and rotation."""
+    It is rotated around it's x and y coordinates.
+    Defined as an x, y, width, height and rotation."""
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number, bounciness: float = BASEBOUNCINESS):
         """
         Args:
@@ -2353,6 +2458,15 @@ Defined as an x, y, width, height and rotation."""
         """
         ps = self.toPoints()
         return min([i[0] for i in ps]), min([i[1] for i in ps]), max([i[0] for i in ps]), max([i[1] for i in ps])
+    
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; width * height.
+
+        Returns:
+            Number: self.w * self.h
+        """
+        return self.w * self.h
     
     def _collides(self, othershape: Shape) -> bool:
         if not self.check_rects(othershape):
@@ -2449,7 +2563,7 @@ class Polygon(ClosedShape):
         Args:
             *points (pointLike): The points that make up the polygon.
             errorOnLT3 (bool, optional): Whether to error if the amount of points making up this polygon is less than 3. \
-If it *is* less than 3, I have no clue what will happen; it will probably get a lot of things wrong - which is why this is in place. Defaults to True.
+                If it *is* less than 3, I have no clue what will happen; it will probably get a lot of things wrong - which is why this is in place. Defaults to True.
             bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
 
         Raises:
@@ -2487,6 +2601,18 @@ If it *is* less than 3, I have no clue what will happen; it will probably get a 
             Iterable[Number]: (min x, min y, max x, max y)
         """
         return min([i[0] for i in self.points]), min([i[1] for i in self.points]), max([i[0] for i in self.points]), max([i[1] for i in self.points])
+    
+    def area(self) -> Number:
+        """
+        Gets the area of the shape.
+
+        Returns:
+            Number: The area of the shape
+        """
+        return abs(sum(
+            (self.points[i][0] * self.points[i+1][1] - self.points[i+1][0] * self.points[i][1])
+            for i in range(len(self.points)-1)
+        ) + (self.points[len(self.points)-1][0] * self.points[0][1] - self.points[0][0] * self.points[len(self.points)-1][1])) / 2
     
     def _collides(self, othershape: Shape) -> bool:
         if not self.check_rects(othershape):
@@ -2766,7 +2892,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         Returns:
             Shape | Shapes: A Shapes object containing one polygon with the points from the input.
         """
-        return shapelyToColl(_shapely.concave_hull(_shapelyGeom.MultiPoint([tuple(i) for i in points]), ratio=ratio))
+        return shapelyToColl(shapely.concave_hull(shapelyGeom.MultiPoint([tuple(i) for i in points]), ratio=ratio))
     
     @staticmethod
     def ShapelyUnion(*shapes: Shape) -> Shape:
@@ -2781,7 +2907,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         Returns:
             Shape: A Shape which is the union of all the input shapes.
         """
-        return shapelyToColl(_shapelyOps.unary_union(collToShapely(Shapes(*shapes))))
+        return shapelyToColl(shapelyOps.unary_union(collToShapely(Shapes(*shapes))))
 
 # TODO: Options for having func(a, b, c) OR func([a, b, c])
 # TODO: Area and distance_to for all shapes

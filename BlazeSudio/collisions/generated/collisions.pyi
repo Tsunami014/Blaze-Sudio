@@ -1,5 +1,4 @@
-import pygame as _pygame
-import shapely.geometry as _shapelyGeom
+import shapely.geometry as shapelyGeom
 from _typeshed import Incomplete
 from enum import Enum
 from typing import Any, Dict, Iterable, Type
@@ -77,7 +76,7 @@ def checkShpType(shape: Shape | Shapes, typs: Type | ShpGroups | Iterable[Type |
     Returns:
         bool: Whether the shape is of the specified type(s) or group(s).
     """
-def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Shape | Shapes:
+def shapelyToColl(shapelyShape: shapelyGeom.base.BaseGeometry) -> Shape | Shapes:
     """
     Converts a shapely shape to a BlazeSudio Shape.
 
@@ -87,7 +86,7 @@ def shapelyToColl(shapelyShape: _shapelyGeom.base.BaseGeometry) -> Shape | Shape
     Returns:
         Shape | Shapes: The converted shape.
     """
-def collToShapely(collShape: Shape) -> _shapelyGeom.base.BaseGeometry:
+def collToShapely(collShape: Shape) -> shapelyGeom.base.BaseGeometry:
     """
     Converts a BlazeSudio Shape to a shapely shape.
 
@@ -97,7 +96,7 @@ def collToShapely(collShape: Shape) -> _shapelyGeom.base.BaseGeometry:
     Returns:
         shapely.geometry.base.BaseGeometry: The converted shape.
     """
-def drawShape(surface: _pygame.Surface, shape: Shape, colour: tuple[int, int, int], width: int = 0):
+def drawShape(surface: Any, shape: Shape, colour: tuple[int, int, int], width: int = 0):
     """
     Draws a BlazeSudio shape to a Pygame surface.
 
@@ -110,7 +109,7 @@ def drawShape(surface: _pygame.Surface, shape: Shape, colour: tuple[int, int, in
 
 class Shape:
     """The base Shape class. This defaults to always collide.
-This class always collides; so *can* be used as an infinite plane, but why?"""
+    This class always collides; so *can* be used as an infinite plane, but why?"""
     GROUPS: Incomplete
     x: Number
     y: Number
@@ -139,6 +138,16 @@ This class always collides; so *can* be used as an infinite plane, but why?"""
 
         Returns:
             Iterable[pointLike]: Points that lie both on this shape and the input shape(s)
+        """
+    def distance_to(self, othershape: Shape) -> Number:
+        """
+        Finds the distance between this shape and another shape.
+
+        Args:
+            othershape (Shape): The other shape to find the distance to
+
+        Returns:
+            Number: The distance between this shape and the other shape
         """
     def check_rects(self, othershape: Shape) -> bool:
         """
@@ -195,6 +204,13 @@ This class always collides; so *can* be used as an infinite plane, but why?"""
         Returns:
             Iterable[pointLike]: Get a list of all the Points that make up this object. For Circles, Arcs and Shape's, this will be empty.
         """
+    def area(self) -> Number:
+        """
+        Gets the area of the shape.
+
+        Returns:
+            Number: The area of the shape
+        """
     def rect(self) -> Iterable[Number]:
         """
         Returns the rectangle bounding box surrounding this object.
@@ -221,6 +237,13 @@ This class always collides; so *can* be used as an infinite plane, but why?"""
 class NoShape(Shape):
     """A class to represent no shape. This is useful for when you want to have a shape that doesn't collide with anything."""
     def __init__(self) -> None: ...
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; 0.
+
+        Returns:
+            Number: The area of the shape
+        """
     def copy(self) -> NoShape:
         """Make a copy of this non-existant shape"""
 
@@ -324,6 +347,13 @@ class Shapes:
         Returns:
             Iterable[Number]: A list of all the tangents to the specified point.
         """
+    def area(self) -> Number:
+        """
+        Gets the combined area of all the shapes.
+
+        Returns:
+            Number: The sum of all the areas of the shapes.
+        """
     def rect(self) -> Iterable[Number]:
         """
         Returns the rectangle bounding box surrounding every one of these objects.
@@ -358,6 +388,13 @@ class Point(Shape):
 
         Returns:
             Iterable[Number]: (min x, min y, max x, max y)
+        """
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; 0.
+
+        Returns:
+            Number: The area of the shape
         """
     def toPoints(self) -> Iterable[pointLike]:
         """
@@ -439,6 +476,13 @@ class Line(Shape):
             p1 (pointLike): The start point of this line
             p2 (pointLike): The end point of this line
             bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
+        """
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; the distance between the 2 points making up the line.
+
+        Returns:
+            Number: The distance between the 2 points.
         """
     @property
     def x(self):
@@ -554,7 +598,7 @@ class Line(Shape):
 
 class Circle(Shape):
     """A perfect circle. Defined as an x and y centre coordinate of the circle and a radius.
-Please be mindful when checking for this class as it is technically a closed shape, but if you try to run `.toLines()` or `.toPoints()` it will return an empty list; so please check for it *before* closed shapes."""
+    Please be mindful when checking for this class as it is technically a closed shape, but if you try to run     `.toLines()` or `.toPoints()` it will return an empty list; so please check for it *before* closed shapes."""
     GROUPS: Incomplete
     def __init__(self, x: Number, y: Number, r: Number, bounciness: float = ...) -> None:
         """
@@ -570,6 +614,13 @@ Please be mindful when checking for this class as it is technically a closed sha
 
         Returns:
             Iterable[Number]: (min x, min y, max x, max y)
+        """
+    def area(self) -> Number:
+        """
+        Gets the area of the circle.
+
+        Returns:
+            Number: The area of the circle.
         """
     def closestPointTo(self, othershape: Shape, returnAll: bool = False) -> pointLike | Iterable[pointLike]:
         """
@@ -659,7 +710,9 @@ Please be mindful when checking for this class as it is technically a closed sha
 
 class Arc(Circle):
     """A section of a circle's circumfrance. This is in the 'lines' group because it can be used as the outer edge of another shape.
-This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take."""
+    This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take.
+    
+    **ANGLES ARE MEASURED IN DEGREES.**"""
     GROUPS: Incomplete
     precision: Incomplete
     bounciness: Incomplete
@@ -671,8 +724,15 @@ This is defined as an x, y and radius just like a circle, but also with a start 
             rad (Number): The radius of the circle.
             startAngle (Number): The starting angle to take the portion of the circumfrance of. Wraps around.
             endAngle (Number): The ending angle to take the portion of the circumfrance of. Wraps around.
-            precision (Number, optional): The decimal places to round to to check. Defaults to 5. This is needed as almost everything requires a very precise exact check to succeed and sometimes decimal errors occur and you get an equation like `10000.000000000002 == 10000.0` which is False. This is to prevent that.
+            precision (Number, optional): The decimal places to round to to check. Defaults to 5.                 This is needed as almost everything requires a very precise exact check to succeed and sometimes decimal errors occur and you get                 an equation like `10000.000000000002 == 10000.0` which is False. This is to prevent that.
             bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
+        """
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; the length of the arc.
+
+        Returns:
+            Number: The length of the arc.
         """
     def flip(self) -> None:
         """
@@ -729,7 +789,7 @@ This is defined as an x, y and radius just like a circle, but also with a start 
 
 class ClosedShape(Shape):
     """These are shapes like rects and polygons; if you split them into a list of lines all the lines join with one another.
-Please do not use this class as it is just a building block for subclasses and to provide them with some basic methods."""
+    Please do not use this class as it is just a building block for subclasses and to provide them with some basic methods."""
     GROUPS: Incomplete
     def tangent(self, point: pointLike, vel: pointLike) -> Number:
         """
@@ -837,6 +897,13 @@ class Rect(ClosedShape):
         Returns:
             Iterable[Number]: (min x, min y, max x, max y)
         """
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; width * height.
+
+        Returns:
+            Number: self.w * self.h
+        """
     def toLines(self) -> Iterable[Line]:
         """
         Returns:
@@ -855,8 +922,8 @@ class Rect(ClosedShape):
 
 class RotatedRect(ClosedShape):
     """A rectangle...... That is rotated.
-It is rotated around it's x and y coordinates.
-Defined as an x, y, width, height and rotation."""
+    It is rotated around it's x and y coordinates.
+    Defined as an x, y, width, height and rotation."""
     cachedPoints: Incomplete
     cacheRequirements: Incomplete
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number, bounciness: float = ...) -> None:
@@ -885,6 +952,13 @@ Defined as an x, y, width, height and rotation."""
         Returns:
             Iterable[Number]: (min x, min y, max x, max y)
         """
+    def area(self) -> Number:
+        """
+        Gets the area of the shape; width * height.
+
+        Returns:
+            Number: self.w * self.h
+        """
     def toPoints(self) -> Iterable[pointLike]:
         """
         Returns:
@@ -908,7 +982,7 @@ class Polygon(ClosedShape):
         """
         Args:
             *points (pointLike): The points that make up the polygon.
-            errorOnLT3 (bool, optional): Whether to error if the amount of points making up this polygon is less than 3. If it *is* less than 3, I have no clue what will happen; it will probably get a lot of things wrong - which is why this is in place. Defaults to True.
+            errorOnLT3 (bool, optional): Whether to error if the amount of points making up this polygon is less than 3.                 If it *is* less than 3, I have no clue what will happen; it will probably get a lot of things wrong - which is why this is in place. Defaults to True.
             bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
 
         Raises:
@@ -930,6 +1004,13 @@ class Polygon(ClosedShape):
 
         Returns:
             Iterable[Number]: (min x, min y, max x, max y)
+        """
+    def area(self) -> Number:
+        """
+        Gets the area of the shape.
+
+        Returns:
+            Number: The area of the shape
         """
     def toLines(self) -> Iterable[Line]:
         """
