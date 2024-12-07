@@ -19,6 +19,10 @@ if '--no-build' not in sys.argv:
         fname = f'collisions.cpython-{sys.version_info.major}{sys.version_info.minor}-{platform}.so'
     setup(
         name="collisions",
-        ext_modules=cythonize(extensions),
+        ext_modules=cythonize(
+            extensions,
+            nthreads=6,
+            language_level="3",
+        ),
     )
     shutil.move('./'+fname, './generated/'+fname)
