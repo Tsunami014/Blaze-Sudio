@@ -21,6 +21,18 @@
             "justMyCode": false
         },
         {
+            "name": "Run Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "BlazeSudio/test/testfuncs.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${cwd}"
+            },
+            "justMyCode": false
+        },
+        {
             "name": "Current File",
             "type": "debugpy",
             "request": "launch",
