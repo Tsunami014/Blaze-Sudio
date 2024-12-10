@@ -3,7 +3,7 @@ from _typeshed import Incomplete
 from enum import Enum
 from typing import Any, Dict, Iterable, Type
 
-__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnUnitCircle', 'shapelyToColl', 'collToShapely', 'drawShape', 'ShpGroups', 'checkShpType', 'ClosedShape', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'Arc', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
+__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnCircle', 'shapelyToColl', 'collToShapely', 'drawShape', 'ShpGroups', 'checkShpType', 'ClosedShape', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'Arc', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
 
 Number = int | float
 verboseOutput = Iterable[Any] | None
@@ -45,7 +45,7 @@ def direction(fromPoint: pointLike, toPoint: pointLike) -> Number:
     Returns:
         Number: The direction in radians OF `toPoint` FROM `fromPoint`
     """
-def pointOnUnitCircle(angle: Number, strength: Number = 1) -> pointLike:
+def pointOnCircle(angle: Number, strength: Number = 1) -> pointLike:
     """
     Finds the point on the unit circle at a given angle with a given strength
 
@@ -1056,7 +1056,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
             Shapes: A Shapes object with the rectangles from the input shapes combined
         """
     @staticmethod
-    def Union(*shapes: Shape) -> Shapes:
+    def union(*shapes: Shape) -> Shapes:
         """
         Combine all the input shapes with a unary union. Still in progress and doesn't work too well.
 
@@ -1097,7 +1097,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
             Shape | Shapes: A Shapes object containing one polygon with the points from the input.
         """
     @staticmethod
-    def ShapelyUnion(*shapes: Shape) -> Shape:
+    def shapelyUnion(*shapes: Shape) -> Shape:
         """
         Combine all the input shapes with shapely to be a union.
         If the shapes are not all touching, they will *still* be combined into one shape.
