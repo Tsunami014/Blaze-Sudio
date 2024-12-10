@@ -18,7 +18,8 @@
         "worlds",
         "nodes",
         "other",
-        "sound"
+        "sound",
+        "tests"
     ],
     "python.REPL.enableREPLSmartSend": false
 }
