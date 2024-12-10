@@ -22,7 +22,7 @@ __all__ = [
     'rotate',
     'rotateBy0',
     'direction',
-    'pointOnUnitCircle',
+    'pointOnCircle',
     'shapelyToColl',
     'collToShapely',
     'drawShape',
@@ -106,7 +106,7 @@ def direction(fromPoint: pointLike, toPoint: pointLike) -> Number:
     """
     return math.atan2(toPoint[1]-fromPoint[1], toPoint[0]-fromPoint[0])
 
-def pointOnUnitCircle(angle: Number, strength: Number=1) -> pointLike:
+def pointOnCircle(angle: Number, strength: Number=1) -> pointLike:
     """
     Finds the point on the unit circle at a given angle with a given strength
 
