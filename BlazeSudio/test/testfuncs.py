@@ -1,9 +1,9 @@
 from BlazeSudio.test import Check, AssertEqual, CompareTimes
 
-from BlazeSudio.debug import collisions # Use this more because it is the exact latest version, and is debuggable.
-# from BlazeSudio import collisions # Use this **instead** if you want to use the compiled version
+def testCollisions():
+    from BlazeSudio.debug import collisions # Use this more because it is the exact latest version, and is debuggable.
+    # from BlazeSudio import collisions # Use this **instead** if you want to use the compiled version
 
-def testAll():
     # Base rotate functions
     # If these fail there is a big issue
     AssertEqual('Basic Rotate 1: `rotate` works', ['x', 'y'], 
@@ -12,20 +12,20 @@ def testAll():
                 collisions.rotate([1, 0], [1, -1], 90), (2, 0))
 
     # Test points
-    def testPoint(testName, outs, expected1, expected2, ins):
+    def testPoint(testName, inp, invel, shapeCollisions, expected1, expected2):
+        outp, outvel = collisions.Point(*inp).handleCollisionsVel(invel, collisions.Shapes(*shapeCollisions))
         Check(testName, 
             ['x', 'y', 'accelx', 'accely'], 
-            ins, 
-            [outs[0][0], outs[0][1], outs[1][0], outs[1][1]], 
+            [*inp, *invel], 
+            [*outp, *outvel], 
             [*expected1, *expected2], 
             lambda li: f'({li[0]}, {li[1]}), [{li[2]}, {li[3]}]'
         )
     
     testPoint('Point 1: Perfect rebound',
-            collisions.Point(2, 0).handleCollisionsVel([0, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1))), 
+            (2, 0), [0, 2], [collisions.Rect(0, 1, 4, 4, 1)], 
             (2, 0), # It rebounded perfectly and now is exactly where it started
-            (0, -2), # It is now going the opposite direction
-            (2, 0, 0, 2))
+            (0, -2)) # It is now going the opposite direction
     # . = current pos, N = new pos
     #  .
     #+--+
@@ -33,54 +33,18 @@ def testAll():
     #|  |
     #+--+
     testPoint('Point 2: Perfect rebound 2 - side',
-            collisions.Point(0, 2).handleCollisionsVel([2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4, 1))),
+            (0, 2), [2, 0], [collisions.Rect(1, 0, 4, 4, 1)],
             (0, 2), # It rebounded perfectly and now is exactly where it started
-            (-2, 0), # It is now going the opposite direction
-            (0, 2, 2, 0))
+            (-2, 0)) # It is now going the opposite direction
     # . = current pos, N = new pos
     # +--+
     # |  |
     #.|N |
     # +--+
     testPoint('Point 3: v shape',
-            collisions.Point(0, 0).handleCollisionsVel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1))),
+            (0, 0), [2, 2], [collisions.Rect(0, 1, 4, 4, 1)],
             (2, 0), # It rebounded like a v shape
-            (2, -2),
-            (0, 0, 2, 2))
-    # . = current pos, N = new pos
-    #.
-    #+--+
-    #| N|
-    #|  |
-    #+--+
-    
-    testPoint('Point 4: Rebound top',
-            collisions.Circle(2, 0, 1).handleCollisionsVel([0, 2], collisions.Shapes(collisions.Rect(0, 2, 4, 4, 1))), 
-            (2, 0),
-            (0, -2), # It is now going the opposite direction
-            (2, 0, 0, 2))
-    # . = current pos, N = new pos
-    #  .
-    #+--+
-    #| N|
-    #|  |
-    #+--+
-    # TODO: More tests
-    # testPoint('Perfect rebound 2 - side',
-    #         collisions.Circle(0, 2).handleCollisionsVel([2, 0], collisions.Shapes(collisions.Rect(1, 0, 4, 4, 1))),
-    #         (0, 2), # It rebounded perfectly and now is exactly where it started
-    #         (-2, 0), # It is now going the opposite direction
-    #         (0, 2, 2, 0))
-    # . = current pos, N = new pos
-    # +--+
-    # |  |
-    #.|N |
-    # +--+
-    # testPoint('v shape',
-    #         collisions.Circle(0, 0).handleCollisionsVel([2, 2], collisions.Shapes(collisions.Rect(0, 1, 4, 4, 1))),
-    #         (2, 0), # It rebounded like a v shape
-    #         (2, -2),
-    #         (0, 0, 2, 2))
+            (2, -2))
     # . = current pos, N = new pos
     #.
     #+--+
@@ -90,11 +54,11 @@ def testAll():
 
     # Test lines
     def testLine(testName, line, accel, shapes, expectedp1, expectedp2, expectedaccel, expectedtype):
-        outLine, outaccel, v = collisions.Line(*line).handleCollisionsVel(accel, collisions.Shapes(*shapes), verbose=True)
+        outLine, outvel, v = collisions.Line(*line).handleCollisionsVel(accel, collisions.Shapes(*shapes), verbose=True)
         Check(testName, 
               ['p1x', 'p1y', 'p2x', 'p2y', 'accelx', 'accely', 'type'], 
               [*line[0], *line[1], *accel, 'N/A'], 
-              [*outLine[0], *outLine[1], *outaccel, v[0]], 
+              [*outLine[0], *outLine[1], *outvel, v[0]], 
               [*expectedp1, *expectedp2, *expectedaccel, expectedtype], 
               lambda li: f'({li[0]}, {li[1]}), ({li[2]}, {li[3]}), ({li[4]}, {li[5]}), {li[6]}'
         )
@@ -173,14 +137,27 @@ def testAll():
     # +--+
 
     # Test circles
-    def testCircles(testName, outs, expected1, expected2, ins, radius):
+    def testCircles(testName, inps, vel, collShps, expectedpos, expectedvel):
+        outcirc, outvel = collisions.Circle(*inps).handleCollisionsVel(vel, collisions.Shapes(*collShps))
         Check(testName, 
             ['x', 'y', 'radius', 'accelx', 'accely'], 
-            ins, 
-            [outs[0][0], outs[0][1], radius, outs[1][0], outs[1][1]], 
-            [*expected1, radius, *expected2], 
+            [*inps, *vel], 
+            [*outcirc, *outvel], 
+            [*expectedpos, inps[2], *expectedvel], 
             lambda li: f'({li[0]}, {li[1]}, {li[2]}), [{li[3]}, {li[4]}]'
         )
+    
+    testCircles('Circle 1: Rebound top',
+                (2, 0, 1), [0, 2], [collisions.Rect(0, 2, 4, 4, 1)], 
+                (2, 0),
+                (0, -2)) # It is now going the opposite direction
+    # o = current pos, N = new pos
+    #  o
+    #+--+
+    #| N|
+    #|  |
+    #+--+
+    # TODO: More tests
 
     # TIMING
     shp1 = collisions.RotatedRect(0, 0, 1, 1, 45)
@@ -192,7 +169,10 @@ def testAll():
     )
 
 
-if __name__ == '__main__':
-    print()
-    testAll()
+def testAll():
+    print('COLLISIONS TESTS')
+    testCollisions()
     print('\nIT ALL WORKS YAY')
+
+if __name__ == '__main__':
+    testAll()

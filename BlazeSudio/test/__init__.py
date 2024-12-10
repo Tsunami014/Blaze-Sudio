@@ -91,9 +91,13 @@ def DebugTable(names: list[str],
         print(nme+': '+' '*(spacing-len(nme)) + formatter(nvals))
     
     if highlights is not None:
-        print(' ' * (spacing+2) + formatter((
+        fmt = formatter((
             (' ' if i in highlights else '^')*max_lens[i] for i in range(fstValLen)
-        )))
+        ))
+        for let in set(fmt):
+            if let not in ' ^':
+                fmt = fmt.replace(let, ' ')
+        print(' ' * (spacing+2) + fmt)
     else:
         print()
 
@@ -227,12 +231,12 @@ def CompareTimes(testName: str, name1: str, func1: Callable, name2: str, func2: 
     f1Time *= 1000
     f2Time *= 1000
 
-    print(f'Test {testName}:')
+    print('TEST', testName)
     print(f'Time taken for {name1.lower()}: {f1Time} ms, time taken for {name2.lower()}: {f2Time} ms.')
     print(f'Difference: {abs(f1Time - f2Time)} ms.')
     if f1Time == 0 or f2Time == 0:
         return
     if f1Time > f2Time:
-        print(f'{name1[0].upper()+name1[1:].lower()} is {f2Time/f1Time} times faster than {name2.lower()}, or {f2Time/f1Time*100}%.')
+        print(f'{name1[0].upper()+name1[1:].lower()} is {f2Time/f1Time} times faster (~{round(f2Time/f1Time*100, 3)}%) than {name2.lower()}.')
     else:
-        print(f'{name2[0].upper()+name2[1:].lower()} is {f1Time/f2Time} times faster than {name1.lower()}, or {f1Time/f2Time*100}%.')
+        print(f'{name2[0].upper()+name2[1:].lower()} is {f1Time/f2Time} times faster (~{round(f1Time/f2Time*100, 3)}%) than {name1.lower()}.')
