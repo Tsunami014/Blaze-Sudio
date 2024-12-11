@@ -1,12 +1,11 @@
 # Thanks to https://www.reddit.com/r/pygame/comments/z571pa/this_is_how_you_can_texture_a_polygon/ !!!!
 import pygame
 
-
 def lerp(p1, p2, f):
     return p1 + f * (p2 - p1)
 
 def lerp2d(p1, p2, f):
-    return tuple( lerp( p1[i], p2[i], f ) for i in range(2) )
+    return tuple(lerp(p1[i], p2[i], f) for i in range(2))
 
 def draw_quad(surface, quad, img):
     points = []

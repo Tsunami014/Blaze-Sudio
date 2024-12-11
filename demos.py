@@ -464,6 +464,16 @@ def WrapDemo():
 
             topF['Main'].append(GUI.Text(topF, GO.PCTOP, 'INPUT IMAGE', font=GO.FTITLE))
 
+            def customImg(img):
+                topF['Main'][-1].set(pygame.image.load(img))
+
+            rainbow = GO.CRAINBOW()
+            topF['Main'].extend([
+                GUI.Button(topF, GO.PLBOTTOM, next(rainbow), 'Iris',   func=lambda: customImg('demoFiles/wrap1.png')),
+                GUI.Button(topF, GO.PLBOTTOM, next(rainbow), 'Text',   func=lambda: customImg('demoFiles/wrap2.png')),
+                GUI.Button(topF, GO.PLBOTTOM, next(rainbow), 'Planet', func=lambda: customImg('demoFiles/wrap3.png')),
+            ])
+
             topF['Main'].append(GUI.Static(topF, GO.PCCENTER, pygame.Surface((0, 0))))
 
             def resetBotSur():
@@ -481,7 +491,9 @@ def WrapDemo():
 
             makeSur()
         elif event == GO.ETICK:
-            makeSur()
+            if G.Container.topF['Main'][1].active or G.Container.topF['Main'][3].active or \
+               G.Container.topF['Main'][5].active or G.Container.topF['Main'][7].active:
+                makeSur()
         elif event == GO.EELEMENTCLICK:
             if element == G.Container.GObtn:
                 @G.Loading
