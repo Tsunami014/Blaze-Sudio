@@ -3,7 +3,7 @@ import pygame
 from typing import Callable
 from string import printable
 from BlazeSudio.graphics import mouse, options as GO
-from BlazeSudio.graphics.GUI.base import Element, ReturnState
+from BlazeSudio.graphics.GUI.base import Element, ReturnGroup, ReturnState
 from BlazeSudio.graphics.GUI.theme import GLOBALTHEME
 from BlazeSudio.graphics.GUI.events import Dropdown
 
@@ -443,7 +443,7 @@ class Button(Element):
                     mouse.Mouse.set(mouse.MouseState.HOVER)
                 if any([i.type == pygame.MOUSEBUTTONDOWN and i.button == pygame.BUTTON_LEFT for i in events]):
                     ret = self.func()
-                    if ret:
+                    if isinstance(ret, (ReturnState, ReturnGroup)):
                         if ReturnState.DONTCALL not in ret:
                             return ReturnState.REDRAW + ReturnState.CALL + ret
                     else:
