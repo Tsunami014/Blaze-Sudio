@@ -80,7 +80,7 @@ class Screen(GUI.GraphicBase):
 
     def _Event(self, event):
         """
-        This function is called every time an event is called.
+        When a pygame event occurs (click mouse, press button, etc.)
 
         Args:
             event (pygame.event.Event): The event that was called.
