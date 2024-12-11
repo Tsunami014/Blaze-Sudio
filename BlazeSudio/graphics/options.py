@@ -403,10 +403,11 @@ class E___:
 
 EFIRST =        E___(0, 'The first event, before the screen has even displayed it\'s first frame')
 ELOADUI =       E___(1, 'Every time it loads the UI (first, when G.Refresh, etc.) it calls this function.')
-ETICK =         E___(2, 'Each tick this is ran')
-EELEMENTCLICK = E___(3, 'When an element is clicked, this is ran', {'element': 'The element that got clicked'})
-EEVENT =        E___(4, 'When a pygame event occurs (click mouse, press button, etc.)', {'element': 'The pygame.event.Event that occured'})
-ELAST =         E___(5, 'Just before quitting this is ran', {'aborted': 'Whether or not the graphic screen was aborted due to G.Abort()'})
+ETICK =         E___(2, 'Each tick this is ran, before the UI is rendered. For events related to UI or for drawing to `G.WIN` for it to go under the UI.')
+EDRAW =         E___(3, 'Each tick this is ran, after the UI is rendered and events are polled, but before the screen is displayed (so you can still draw on it).')
+EELEMENTCLICK = E___(4, 'When an element is clicked, this is ran', {'element': 'The element that got clicked'})
+EEVENT =        E___(5, 'When a pygame event occurs (click mouse, press button, etc.)', {'element': 'The pygame.event.Event that occured'})
+ELAST =         E___(6, 'Just before quitting this is ran', {'aborted': 'Whether or not the graphic screen was aborted due to G.Abort()'})
 
 # Types
 @Base(str=False)

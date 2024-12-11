@@ -412,7 +412,7 @@ def WrapBasicDemo():
 
 def WrapDemo():
     from BlazeSudio.graphics import Graphic, GO, GUI
-    from BlazeSudio.utils.wrap import wrapSurface
+    from BlazeSudio.utils.wrap import wrapSurface, Segment
     import pygame
     G = Graphic(GO.CGREY)
     G.layers[0].add('Main')
@@ -426,11 +426,15 @@ def WrapDemo():
         news2 = pygame.transform.smoothscale(news, (topF['Main'][5].get(), topF['Main'][7].get()))
         G.Container.inputSur = news2
         topF['Main'][-1].set(news2)
+        G.Container.segs = []
+        G.Container.cursegidx = None
     
     @G.Screen
     def screen(event, element=None, aborted=False):
         if event == GO.ELOADUI:
             G.Clear()
+            G.Container.segs = []
+            G.Container.cursegidx = None
             topF = GUI.BaseFrame(G, GO.PCTOP, (G.size[0], G.size[1]//2), 2)
             topF.layers[0].add('Main')
             G.Container.topF = topF
@@ -466,6 +470,8 @@ def WrapDemo():
 
             def customImg(img):
                 topF['Main'][-1].set(pygame.image.load(img))
+                G.Container.segs = []
+                G.Container.cursegidx = None
 
             rainbow = GO.CRAINBOW()
             topF['Main'].extend([
@@ -478,6 +484,8 @@ def WrapDemo():
 
             def resetBotSur():
                 botF['Main'][-1].set(pygame.Surface((0, 0)))
+                G.Container.segs = []
+                G.Container.cursegidx = None
 
             botF['Main'].extend([
                 GUI.Empty(botF, GO.PCTOP, (0, 30)),
@@ -490,10 +498,34 @@ def WrapDemo():
             botF['Main'].append(GUI.Static(botF, CCENTER, pygame.Surface((0, 0))))
 
             makeSur()
+        elif event == GO.EEVENT and element.type == pygame.KEYDOWN and element.key == pygame.K_r:
+            G.Container.cursegidx = None
+            G.Container.segs = []
         elif event == GO.ETICK:
             if G.Container.topF['Main'][1].active or G.Container.topF['Main'][3].active or \
                G.Container.topF['Main'][5].active or G.Container.topF['Main'][7].active:
                 makeSur()
+            
+            if pygame.key.get_pressed()[pygame.K_SPACE]:
+                w = G.Container.topF['Main'][-1].get().get_width()
+                pos = pygame.mouse.get_pos()[0]-(G.size[0]-w)/2
+                pos = max(min(pos, w), 0)
+                if G.Container.cursegidx is None:
+                    G.Container.cursegidx = len(G.Container.segs)
+                    G.Container.segs.append([pos, pos])
+                else:
+                    curSeg = G.Container.segs[G.Container.cursegidx]
+                    if pos < curSeg[0]:
+                        curSeg[0] = pos
+                    if pos > curSeg[1]:
+                        curSeg[1] = pos
+            else:
+                G.Container.cursegidx = None
+        elif event == GO.EDRAW:
+            w = G.Container.topF['Main'][-1].get().get_width()
+            off = (G.size[0]-w)/2
+            for seg in G.Container.segs:
+                pygame.draw.line(G.WIN, (125, 125, 125), (seg[0]+off, 90), (seg[1]+off, 90), 5)
         elif event == GO.EELEMENTCLICK:
             if element == G.Container.GObtn:
                 @G.Loading
@@ -503,7 +535,14 @@ def WrapDemo():
                     pygame.event.pump()
                     off = G.Container.offset
                     topF = G.Container.topF['Main']
-                    slf.surf = wrapSurface(topF[-1].get(), topF[off+1].get(), pg2=False)
+
+                    conns = []
+                    for seg in G.Container.segs:
+                        conns.append(Segment(seg[0], seg[1]))
+
+                    slf.surf = wrapSurface(topF[-1].get(), topF[off+1].get(), pg2=False, constraints=conns)
+
+                    slf.surf = pygame.transform.scale(slf.surf, (500, 500))
                 fin, outslf = load()
                 if fin:
                     G.Container.botF['Main'][-1].set(outslf.surf)

@@ -46,7 +46,6 @@ class Graphic(GUI.GraphicBase):
         self.rel = False
         self.ab = False
         self.pause = False
-        self.callbacks = {}
         self.Container = GS.Container()
     
     @property
@@ -170,10 +169,7 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
             self.Stuff.clear()
             self.stacks.clear()
             def func(event, element=None, aborted=False):
-                if event == GO.EELEMENTCLICK and element in self.callbacks:
-                    ret = self.callbacks[element](element)
-                ret = funcy(event, *args, element=element, aborted=aborted, **kwargs)
-                return ret
+                return funcy(event, *args, element=element, aborted=aborted, **kwargs)
             cont = self.Container.copy()
             func(GO.EFIRST)
             self.run = True
@@ -201,6 +197,8 @@ spawn up another Graphic screen allowing you to go back to the previous screen, 
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.run = False
+                
+                func(GO.EDRAW)
                 pygame.display.flip()
                 self.clock.tick(60)
             ret = func(GO.ELAST, aborted=self.ab)
@@ -228,7 +226,6 @@ because it is slow if you have many things to load. Instead, try `.set` on the e
     def Clear(self, ignores=[]):
         self.store = {}
         self.pause = False
-        self.callbacks = {}
         self.Stuff.clear(ignores)
         self.stacks.clear()
     
