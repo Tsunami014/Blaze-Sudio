@@ -1,7 +1,7 @@
 import pygame as pygame
 pygame.init()
 
-from BlazeSudio.graphics.graphics import Graphic
+from BlazeSudio.graphics.graphics import *
 from BlazeSudio.graphics.loading import *
 from BlazeSudio.graphics.options import *
 from BlazeSudio.graphics.stuff import *

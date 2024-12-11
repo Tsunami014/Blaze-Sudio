@@ -18,24 +18,25 @@ It will first read the file, then overwrite it when you save.')
 
 def GraphicsDemo():
     import BlazeSudio.graphics.options as GO
-    from BlazeSudio.graphics import Graphic, GUI
+    from BlazeSudio.graphics import Screen, Loading, GUI
     from BlazeSudio.graphics.GUI.base import HiddenStatus
     from BlazeSudio.graphics.GUI.base import ReturnState
     import pygame
     from time import sleep
-    G = Graphic()
-    @G.Loading
-    def test_loading(self):
-        for self.i in range(10):
+    @Loading
+    def test_loading(slf):
+        for slf.i in range(10):
             sleep(1)
     
-    @G.Screen
-    def test(event, txt, element=None, aborted=False): # You do not need args and kwargs if you KNOW that your function will not take them in. Include what you need.
-        if event == GO.ELOADUI: # Load the graphics in!
+    class Test(Screen):
+        def __init__(self, txt):
+            super().__init__(GO.CWHITE)
+            self.txt = txt
+        
+        def _LoadUI(self): # Load the graphics in!
             CTOP = GO.PNEW((0.5, 0), (1, 0), (True, False)) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
             LBOT = GO.PNEW((0, 1), (0, -1))
-            G.Clear()
-            G.layers[0].add_many([
+            self.layers[0].add_many([
                 # You can name these whatever you want, but I like to keep them the same as the type.
                 'TB',
                 'texts',
@@ -46,10 +47,10 @@ def GraphicsDemo():
                 'endElms', # These will be the ones I find in the GO.ELAST event
             ])
             # I chose this because you can see the different sections of the screen, but you can do what you want; as long as they end up on the list it's ok.
-            G['TB'].append(GUI.TerminalBar(G))
+            self['TB'].append(GUI.TerminalBar(self))
 
-            f = GUI.ScaledByFrame(G, GO.PRBOTTOM, (500, 400))
-            G['speshs'].append(f)
+            f = GUI.ScaledByFrame(self, GO.PRBOTTOM, (500, 400))
+            self['speshs'].append(f)
             f.layers[0].add('Alls')
             LTOP = GO.PNEW((0, 0), (0, 1))
             f['Alls'].extend([
@@ -57,60 +58,60 @@ def GraphicsDemo():
                 GUI.Empty(f, LTOP, (0, 15)),
                 GUI.Text(f, LTOP, 'Change scale:', GO.CGREEN),
             ])
-            G.Container.changeScale = GUI.NumInputBox(f, LTOP, 100, GO.RHEIGHT, start=2, min=1, placeholdOnNum=None)
-            f['Alls'].append(G.Container.changeScale)
+            self.changeScale = GUI.NumInputBox(f, LTOP, 100, GO.RHEIGHT, start=2, min=1, placeholdOnNum=None)
+            f['Alls'].append(self.changeScale)
 
-            G['texts'].append(GUI.Text(G, GO.PCCENTER, 'This is a cool thing', GO.CBLUE))
-            G.Container.Invisi_T = GUI.Text(G, GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED)
-            G['texts'].append(G.Container.Invisi_T)
-            G.Container.txt = GUI.Text(G, GO.PCCENTER, txt, GO.CGREEN)
-            G['texts'].append(G.Container.txt)
-            G.Container.inp = GUI.InputBox(G, GO.PCCENTER, 500, GO.RHEIGHT, font=GO.FFONT)
-            G['endElms'].append(G.Container.inp)
-            G['space'].append(GUI.Empty(G, GO.PCCENTER, (0, 50)))
-            G['endElms'].append(GUI.NumInputBox(G, GO.PCCENTER, 100, font=GO.FFONT, min=-255, max=255))
-            G['space'].append(GUI.Empty(G, GO.PCCENTER, (0, 50)))
-            G['endElms'].append(GUI.DropdownButton(G, GO.PCCENTER, ['HI', 'BYE']))
+            self['texts'].append(GUI.Text(self, GO.PCCENTER, 'This is a cool thing', GO.CBLUE))
+            self.Invisi_T = GUI.Text(self, GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED)
+            self['texts'].append(self.Invisi_T)
+            self.txt = GUI.Text(self, GO.PCCENTER, self.txt, GO.CGREEN)
+            self['texts'].append(self.txt)
+            self.inp = GUI.InputBox(self, GO.PCCENTER, 500, GO.RHEIGHT, font=GO.FFONT)
+            self['endElms'].append(self.inp)
+            self['space'].append(GUI.Empty(self, GO.PCCENTER, (0, 50)))
+            self['endElms'].append(GUI.NumInputBox(self, GO.PCCENTER, 100, font=GO.FFONT, min=-255, max=255))
+            self['space'].append(GUI.Empty(self, GO.PCCENTER, (0, 50)))
+            self['endElms'].append(GUI.DropdownButton(self, GO.PCCENTER, ['HI', 'BYE']))
 
-            G['space'].append(GUI.Empty(G, LBOT, (0, 20)))
-            G['buttons'].append(GUI.Button(G, LBOT, GO.CYELLOW, 'Button 1 :D'))
-            G['texts'].append(GUI.Text(G, LBOT, 'Buttons above [^] and below [v]', GO.CBLUE))
-            G.Container.PopupBtn = GUI.Button(G, LBOT, GO.CMAUVE, 'Popup test')
-            G['buttons'].append(G.Container.PopupBtn)
-            G.Container.TextboxBtn = GUI.Button(G, LBOT, GO.CBLUE, 'Textbox test')
-            G['buttons'].append(G.Container.TextboxBtn)
-            G.Container.LoadingBtn = GUI.Button(G, LBOT, GO.CGREEN, 'Loading test')
-            G['buttons'].append(G.Container.LoadingBtn)
-            G.Container.exitbtn = GUI.Button(G, GO.PLCENTER, GO.CRED, 'EXIT', GO.CWHITE, func=lambda: G.Abort())
-            G['buttons'].append(G.Container.exitbtn)
+            self['space'].append(GUI.Empty(self, LBOT, (0, 20)))
+            self['buttons'].append(GUI.Button(self, LBOT, GO.CYELLOW, 'Button 1 :D'))
+            self['texts'].append(GUI.Text(self, LBOT, 'Buttons above [^] and below [v]', GO.CBLUE))
+            self.PopupBtn = GUI.Button(self, LBOT, GO.CMAUVE, 'Popup test')
+            self['buttons'].append(self.PopupBtn)
+            self.TextboxBtn = GUI.Button(self, LBOT, GO.CBLUE, 'Textbox test')
+            self['buttons'].append(self.TextboxBtn)
+            self.LoadingBtn = GUI.Button(self, LBOT, GO.CGREEN, 'Loading test')
+            self['buttons'].append(self.LoadingBtn)
+            self.exitbtn = GUI.Button(self, GO.PLCENTER, GO.CRED, 'EXIT', GO.CWHITE, func=lambda: self.Abort())
+            self['buttons'].append(self.exitbtn)
 
-            G['texts'].extend([
-                GUI.Text(G, CTOP, 'Are you '),
-                GUI.Text(G, CTOP, 'happy? ', GO.CGREEN),
-                GUI.Text(G, CTOP, 'Or sad?', GO.CRED)
+            self['texts'].extend([
+                GUI.Text(self, CTOP, 'Are you '),
+                GUI.Text(self, CTOP, 'happy? ', GO.CGREEN),
+                GUI.Text(self, CTOP, 'Or sad?', GO.CRED)
             ])
 
-            G.Container.switches = [
-                GUI.Switch(G, GO.PRTOP, 40, 2),
-                GUI.Switch(G, GO.PRTOP, default=True),
+            self.switches = [
+                GUI.Switch(self, GO.PRTOP, 40, 2),
+                GUI.Switch(self, GO.PRTOP, default=True),
             ]
-            G['endElms'].extend(G.Container.switches)
-            G.Container.colour = GUI.ColourPickerBTN(G, GO.PRTOP)
-            G['endElms'].append(G.Container.colour)
+            self['endElms'].extend(self.switches)
+            self.colour = GUI.ColourPickerBTN(self, GO.PRTOP)
+            self['endElms'].append(self.colour)
 
-            L = GUI.GridLayout(G, GO.PCBOTTOM, outline=5)
-            G['speshs'].append(L)
-            G.Container.sw = GUI.Switch(L, L.LP)
+            L = GUI.GridLayout(self, GO.PCBOTTOM, outline=5)
+            self['speshs'].append(L)
+            self.sw = GUI.Switch(L, L.LP)
             L.grid = [
                 [GUI.Text(L, L.LP, 'HI'), GUI.Text(L, L.LP, 'HELLO'), GUI.Text(L, L.LP, 'BYE')],
                 [GUI.Text(L, L.LP, 'HEHE'), GUI.Text(L, L.LP, 'YES'), GUI.Text(L, L.LP, 'NO')],
                 [GUI.Text(L, L.LP, 'HAVE'), GUI.Text(L, L.LP, 'A'), GUI.Text(L, L.LP, 'NICEDAY')],
-                [GUI.Button(L, L.LP, GO.CORANGE, 'Hello!'), None, G.Container.sw]
+                [GUI.Button(L, L.LP, GO.CORANGE, 'Hello!'), None, self.sw]
             ]
 
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
-            S = GUI.ScrollableFrame(G, TOPLEFT, (250, 200), (400, 450))
-            G['speshs'].append(S)
+            S = GUI.ScrollableFrame(self, TOPLEFT, (250, 200), (400, 450))
+            self['speshs'].append(S)
             # This is another way of setting out your Stuff; having everything under one name.
             S.layers[0].add('Alls')
             S['Alls'].extend([
@@ -119,35 +120,35 @@ def GraphicsDemo():
                 GUI.Empty(S, GO.PCTOP, (0, 50)),
                 GUI.InputBox(S, GO.PCTOP, 200, GO.RHEIGHT, weight=GO.SWLEFT),
                 GUI.Empty(S, GO.PCTOP, (0, 50)),
-                GUI.Button(S, GO.PCTOP, GO.CGREEN, 'Press me!', func=lambda: G.Container.txt.set('You pressed the button in the Scrollable :)')),
+                GUI.Button(S, GO.PCTOP, GO.CGREEN, 'Press me!', func=lambda: self.txt.set('You pressed the button in the Scrollable :)')),
                 GUI.Empty(S, GO.PCTOP, (0, 50)),
                 GUI.Text(S, GO.PCTOP, 'Auto adjust scrollable height', GO.CORANGE, allowed_width=200),
                 GUI.Switch(S, GO.PCTOP, speed=0.5)
             ])
-        elif event == GO.ETICK: # This runs every 1/60 secs (each tick)
+        def _Tick(self): # This runs every 1/60 secs (each tick)
             # Return False if you want to quit the screen. This is not needed if you never want to do this.
-            G['speshs'][0].scale = G.Container.changeScale.get()
-            S = G['speshs'][2]
+            self['speshs'][0].scale = self.changeScale.get()
+            S = self['speshs'][2]
             e = S['Alls'][-1]
             if e.get():
                 S.sizeOfScreen = (S.sizeOfScreen[0], e.stackP()[1]+e.size[1]+30)
             else:
                 S.sizeOfScreen = (S.sizeOfScreen[0], 450)
-        elif event == GO.EELEMENTCLICK: # Some UI element got clicked!
-            if element.type == GO.TBUTTON:
-                # This gets passed 'element': the element that got clicked.
-                if element == G.Container.LoadingBtn:
+        def _ElementClick(self, obj): # Some UI element got clicked!
+            if obj.type == GO.TBUTTON:
+                # This gets passed 'obj': the element that got clicked.
+                if obj == self.LoadingBtn:
                     succeeded, ret = test_loading()
-                    G.Container.txt.set('Ran for %i seconds%s' % (ret.i+1, (' Successfully! :)' if succeeded else ' And failed :(')))
-                elif element == G.Container.TextboxBtn:
+                    self.txt.set('Ran for %i seconds%s' % (ret.i+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+                elif obj == self.TextboxBtn:
                     bot = GO.PNEW((0.5, 1), (0, 0), (True, False))
-                    dialog_box = GUI.TextBoxAdv(G, bot, text='HALOOO!!')
+                    dialog_box = GUI.TextBoxAdv(self, bot, text='HALOOO!!')
                     dialog_box.set_indicator()
                     dialog_box.set_portrait()
-                    G['events'].append(dialog_box)
-                    G.Container.idx = 0
-                elif element == G.Container.PopupBtn:
-                    pop = GUI.PopupFrame(G, GO.PCCENTER, (350, 300))
+                    self['events'].append(dialog_box)
+                    self.idx = 0
+                elif obj == self.PopupBtn:
+                    pop = GUI.PopupFrame(self, GO.PCCENTER, (350, 300))
                     pop.layers[0].add('Alls')
                     def rmpop(pop):
                         pop.remove()
@@ -160,45 +161,45 @@ def GraphicsDemo():
                         GUI.Empty(pop, GO.PCBOTTOM, (0, 10)),
                         GUI.InputBox(pop, GO.PCBOTTOM, 250, GO.RNONE, 'Example textbox', maxim=16),
                     ])
-                    G['events'].append(pop) # I know it's not an event, but o well.
+                    self['events'].append(pop) # I know it's not an event, but o well.
                 else:
-                    G.Container.txt.set(element.txt) # put name of button in middle
-            elif element.type == GO.TTEXTBOX:
-                if G.Container.idx == 0:
-                    element.set("Happy coding!")
-                    G.Container.idx = 1
+                    self.txt.set(obj.txt) # put name of button in middle
+            elif obj.type == GO.TTEXTBOX:
+                if self.idx == 0:
+                    obj.set("Happy coding!")
+                    self.idx = 1
                 else: 
-                    element.remove()
-            elif element.type == GO.TINPUTBOX:
-                G.Container.txt.set(element.get().strip())
-            elif element.type == GO.TSWITCH:
-                if element == G.Container.sw:
-                    if element.get():
-                        G.Container.Invisi_T.hiddenStatus = HiddenStatus.GONE
+                    obj.remove()
+            elif obj.type == GO.TINPUTBOX:
+                self.txt.set(obj.get().strip())
+            elif obj.type == GO.TSWITCH:
+                if obj == self.sw:
+                    if obj.get():
+                        self.Invisi_T.hiddenStatus = HiddenStatus.GONE
                     else:
-                        G.Container.Invisi_T.hiddenStatus = HiddenStatus.SHOWING
-        elif event == GO.EEVENT: # When something like a mouse or keyboard button is pressed. Is passed 'element' too, but this time it is an event
-            if element.type == pygame.KEYDOWN:
-                if element.key == pygame.K_s and element.mod & pygame.KMOD_CTRL:
-                    G['events'].append(GUI.Toast(G, 'Saved! (Don\'t worry - this does nothing)', GO.CGREEN))
-            elif element.type == pygame.MOUSEBUTTONDOWN and element.button == pygame.BUTTON_RIGHT:
+                        self.Invisi_T.hiddenStatus = HiddenStatus.SHOWING
+        def _Event(self, event): # When something like a mouse or keyboard button is pressed. Is passed 'element' too, but this time it is an event
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s and event.mod & pygame.KMOD_CTRL:
+                    self['events'].append(GUI.Toast(self, 'Saved! (Don\'t worry - this does nothing)', GO.CGREEN))
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_RIGHT:
                 opts = ['HI', 'BYE', 'HI AGAIN']
                 def dropdownSelect(resp):
                     if isinstance(resp, int):
-                        G.Container.txt.set(opts[resp])
-                G['events'].append(GUI.Dropdown(G, pygame.mouse.get_pos(), opts, func=dropdownSelect))
-        elif event == GO.ELAST:
+                        self.txt.set(opts[resp])
+                self['events'].append(GUI.Dropdown(self, pygame.mouse.get_pos(), opts, func=dropdownSelect))
+        def _Last(self, aborted):
             # This also gets passed 'aborted': Whether you aborted or exited the screen
-            S = G['speshs'][2]
+            S = self['speshs'][2]
             return { # Whatever you return here will be returned by the function
                 'Aborted?': aborted, 
-                'endElms': G['endElms']+[
+                'endElms': self['endElms']+[
                     # These are the input and the switch
                     S['Alls'][3],
                     S['Alls'][-1],
                 ]}
     
-    print(test('Right click or press anything or press ctrl+s!'))
+    print(Test('Right click or press anything or press ctrl+s!')())
     pygame.quit() # this here for very fast quitting
 
 def LoremGraphicsDemo():

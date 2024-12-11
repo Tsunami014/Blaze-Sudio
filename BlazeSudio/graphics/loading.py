@@ -1,9 +1,11 @@
 from threading import Thread, _active
-import asyncio, pygame, ctypes
+import asyncio
+import pygame
+import ctypes
 import BlazeSudio.graphics.options as GO
 from BlazeSudio.graphics import mouse
 
-IsLoading = [False]
+__all__ = ['thread_with_exception', 'Loading', 'Progressbar']
 
 class thread_with_exception(Thread):
     def __init__(self, target, *args, attempt=True):
@@ -38,39 +40,21 @@ class thread_with_exception(Thread):
                 ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id), 0)
                 print('Exception raise failure')
 
-class LoadingScreen:
-    def __init__(self, WIN, font):
-        self.WIN = WIN
-        self.font = font
-        self.pic = pygame.font.Font(None, 256).render('C', 2, (0, 50, 50))
-        self.clock = pygame.time.Clock()
-        #for i in range(10): self.pic = pygame.transform.rotate(self.pic, random()*2)
-        #self.pic = pygame.transform.scale(self.pic, (256, 256))
-        self.rot = 0
-    def update(self):
-        mouse.Mouse.set(mouse.MouseState.NORMAL)
-        mouse.Mouse.update()
-        self.rot -= 6
-        p = pygame.transform.rotate(self.pic, self.rot)
-        self.WIN.fill((255, 255, 255))
-        t = self.font.render('Loading...', (0, 0, 0))
-        self.WIN.blit(t, (self.WIN.get_width()//2-t.get_width()//2, 0))
-        self.WIN.blit(p, (self.WIN.get_width()//2-p.get_width()//2, self.WIN.get_height()//2-p.get_height()//2))
-        pygame.display.update()
-        self.clock.tick(60)
-
-def LoadingDecorator(func):
-    def func2(WIN, font): # TODO: get window and use own font. Font can be override.
-        IsLoading[0] = True
+def Loading(func, font=GO.FFONT):
+    def func2(*args, **kwargs):
         class main:
-            def __call__(self, *args):
-                func(self, *args)
+            def __call__(self):
+                func(self, *args, **kwargs)
         
-        ls = LoadingScreen(WIN, font)
-        ls.update()
         m = main()
         t = thread_with_exception(m)
         t.start()
+
+        WIN = pygame.display.get_surface()
+        pic = pygame.font.Font(None, 256).render('C', 2, (0, 50, 50))
+        clock = pygame.time.Clock()
+        rot = 0
+
         run = True
         while t.is_alive() and run:
             for event in pygame.event.get():
@@ -79,10 +63,19 @@ def LoadingDecorator(func):
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         run = False
-            ls.update()
+            
+            mouse.Mouse.set(mouse.MouseState.NORMAL)
+            mouse.Mouse.update()
+            rot -= 6
+            p = pygame.transform.rotate(pic, rot)
+            WIN.fill((255, 255, 255))
+            s = font.render('Loading...', (0, 0, 0))
+            WIN.blit(s, ((WIN.get_width()-s.get_width())//2, 0))
+            WIN.blit(p, ((WIN.get_width()-p.get_width())//2, (WIN.get_height()-p.get_height())//2))
+            pygame.display.update()
+            clock.tick(60)
         end = t.is_alive()
         t.raise_exception()
-        IsLoading[0] = False
         return (not end), m
     return func2
 

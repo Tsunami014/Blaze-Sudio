@@ -1,21 +1,16 @@
 import pygame
 
 __all__ = [
-    'Container',
     'Thing',
     'Stuff',
+    'Layers',
     'Collection',
 ]
 
-# A Thing is a singular object
-# A Stuff is a bunch of Things
-# A Collection is a collection of layers of Stuff
-
-class Container:
-    def copy(self):
-        cnt = Container()
-        cnt.__dict__.update(self.__dict__)
-        return cnt
+# A Thing is an object
+# Stuff is an organisated dictionary of Things
+# A Layer is a list that can be filled with Stuff
+# A Collection is a collection of Layers of Stuff
 
 def handle_events():
     evs = pygame.event.get()
@@ -65,7 +60,8 @@ class Stuff:
         return returns
     
     def add(self, _name):
-        self.categories[_name] = []
+        if _name not in self.categories:
+            self.categories[_name] = []
     
     def add_many(self, _names):
         self.categories.update({i: [] for i in _names if i not in self.categories})
@@ -101,10 +97,21 @@ class Stuff:
         return '<Stuff with %i objects>'%len(self)
     def __repr__(self): return str(self)
 
+class Layers(list):
+    def __getitem__(self, _idx):
+        if not isinstance(_idx, int):
+            raise TypeError(
+                'Index must be an integer!'
+            )
+        if _idx >= len(self):
+            self.extend([Stuff() for _ in range(_idx - len(self) + 1)])
+        
+        return super().__getitem__(_idx)
+
 class Collection:
     def __init__(self, layers=None):
         if layers is None:
-            self.layers = [Stuff()]
+            self.layers = Layers([Stuff()])
         else:
             self.layers = layers
     
@@ -124,7 +131,7 @@ class Collection:
             i.clear(ignores)
     
     def copy(self):
-        return Collection([i.copy() for i in self.layers])
+        return Collection(Layers([i.copy() for i in self.layers]))
     
     def insert_layer(self, pos=None) -> Stuff:
         if pos is None:
