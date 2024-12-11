@@ -176,6 +176,8 @@ def wrapSurface(pg: pygame.Surface,
 
     # hitsLns = collisions.shapelyToColl([edges])
     print('0 %')
+    # import time
+    # t = time.time()
     hitsLge = collisions.Shapes(*large.toLines())
 
     def closestTo(li, p):
@@ -249,7 +251,8 @@ def wrapSurface(pg: pygame.Surface,
         #             alphaArray[x, y] = 255
 
         totd += d
-        print((totd/total)*100, '%')
+        # print((totd/total)*100, '%')
+    # print(time.time()-t) # 6.692249059677124
 
     # for idx, poly in enumerate(polys):
     #     d2 = shape.jointDists[idx]**2
