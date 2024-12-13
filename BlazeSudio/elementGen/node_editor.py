@@ -2,7 +2,7 @@ import pygame
 
 from BlazeSudio.elementGen.image import Image
 import BlazeSudio.graphics.options as GO
-from BlazeSudio.graphics import GUI, Graphic
+from BlazeSudio.graphics import GUI, Screen
 import BlazeSudio.elementGen.node_parser as np
 import BlazeSudio.elementGen.node_file as nf
 
