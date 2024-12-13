@@ -1,11 +1,14 @@
+import math
 from threading import Thread, _active
-import asyncio
+from functools import partial
+from time import time
+from typing import Callable
 import pygame
 import ctypes
 import BlazeSudio.graphics.options as GO
 from BlazeSudio.graphics import mouse
 
-__all__ = ['thread_with_exception', 'Loading', 'Progressbar']
+__all__ = ['thread_with_exception', 'BaseLoadingScreen', 'Loading', 'Progressbar']
 
 class thread_with_exception(Thread):
     def __init__(self, target, *args, attempt=True):
@@ -40,20 +43,58 @@ class thread_with_exception(Thread):
                 ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(thread_id), 0)
                 print('Exception raise failure')
 
-def Loading(func, font=GO.FFONT):
-    def func2(*args, **kwargs):
-        class main:
-            def __call__(self):
-                func(self, *args, **kwargs)
-        
-        m = main()
-        t = thread_with_exception(m)
+class BaseLoadingScreen:
+    """
+    ## USAGE EXAMPLES:
+
+    ### As a decorator
+    ```python
+    import time
+
+    @LoadingScreen.decor
+    def func(slf, arg):
+        time.sleep(2)
+        slf['hi'] = arg
+    
+    success, slf = func('Hello!')
+    print(success, slf.get('hi', 'NOTHING')) # `True Hello!` (or if you exited the screen, `False NOTHING`)
+    ```
+
+    ### As an instance
+    ```python
+    import time
+
+    LS = LoadingScreen()
+
+    @LS
+    def func(slf, arg):
+        time.sleep(2)
+        slf['hi'] = arg
+    
+    success, slf = func('Hello!')
+    print(success, slf.get('hi', 'NOTHING')) # `True Hello!` (or if you exited the screen, `False NOTHING`)
+    ```
+    """
+    def __init__(self):
+        pass
+
+    def tick(self, WIN):
+        pass
+
+    def reset(self):
+        pass
+
+    def __runner(self, func, *fargs, **fkwargs):
+        d = {}
+        self.reset()
+        if hasattr(self, 'func'):
+            t = thread_with_exception(partial(self.func, func, d, *fargs, **fkwargs))
+        else:
+            t = thread_with_exception(partial(func, d, *fargs, **fkwargs))
         t.start()
 
-        WIN = pygame.display.get_surface()
-        pic = pygame.font.Font(None, 256).render('C', 2, (0, 50, 50))
         clock = pygame.time.Clock()
-        rot = 0
+        WIN = pygame.display.get_surface()
 
         run = True
         while t.is_alive() and run:
@@ -66,100 +107,139 @@ def Loading(func, font=GO.FFONT):
             
             mouse.Mouse.set(mouse.MouseState.NORMAL)
             mouse.Mouse.update()
-            rot -= 6
-            p = pygame.transform.rotate(pic, rot)
-            WIN.fill((255, 255, 255))
-            s = font.render('Loading...', (0, 0, 0))
-            WIN.blit(s, ((WIN.get_width()-s.get_width())//2, 0))
-            WIN.blit(p, ((WIN.get_width()-p.get_width())//2, (WIN.get_height()-p.get_height())//2))
+            self.tick(WIN)
             pygame.display.update()
             clock.tick(60)
+        
         end = t.is_alive()
         t.raise_exception()
-        return (not end), m
-    return func2
+        return (not end), d
+    
+    def __call__(self, func):
+        return partial(self.__runner, func)
+    
+    @classmethod
+    def decor(cls, *args, **kwargs):
+        if len(args) == 1 and len(kwargs) == 0 and callable(args[0]): # Called as @decorator
+            instance = cls.__new__(cls)
+            instance.__init__()
+            return partial(instance.__runner, args[0])
+        else: # called as @decorator(*args, **kwargs)
+            def decor2(func):
+                instance = cls.__new__(cls)
+                instance.__init__(*args, **kwargs)
+                return partial(instance.__runner, func)
+            return decor2
 
-class Progressbar:
-    def __init__(self, width, height):
-        self.tasks = []
+class Loading(BaseLoadingScreen):
+    """
+    A Loading screen with a little loading pic in the middle that spins around.
+
+    Args:
+        font (pygame.Font, optional): The font of the text. Defaults to GO.FFONT.
+    """
+    def __init__(self, font=GO.FFONT):
+        self.pic = pygame.font.Font(None, 256).render('C', 2, (0, 50, 50))
+        self.font = font
+    
+    def reset(self):
+        self.rot = 0
+
+    def tick(self, WIN):
+        self.rot -= 6
+        p = pygame.transform.rotate(self.pic, self.rot)
+        WIN.fill((255, 255, 255))
+        s = self.font.render('Loading...', (0, 0, 0))
+        WIN.blit(s, ((WIN.get_width()-s.get_width())//2, 0))
+        WIN.blit(p, ((WIN.get_width()-p.get_width())//2, (WIN.get_height()-p.get_height())//2))
+
+def DEFAULT_FORMAT_FUNC(txt, tasks, total, tme):
+    secsPerCycle = 2
+    cycle = math.floor((tme*secsPerCycle) / 0.25) % 4
+    dots = '.'*cycle
+    perc = (tasks/total)*100
+    return f'{txt}{dots} ({perc}%)'
+
+class Progressbar(BaseLoadingScreen):
+    def __init__(self, 
+                 amount: int, 
+                 width: int=800, 
+                 height: int=100, 
+                 border: int=5, 
+                 yield_start: bool=True, 
+                 format_func: Callable=DEFAULT_FORMAT_FUNC, 
+                 loadingtxtColour: GO.C___=GO.CBLACK
+                ):
+        """
+        A progressbar!
+
+        The function for this needs to be a generator; where `amount` is the amount of `yield`s in the generator, and each `yield` changes the loading text.
+
+        **The function should start with a `yield` to set the first text shown. This is expected.** To turn this off, set `yield_start` to `False`.
+
+        Args:
+            amount (int): The amount of `yield`s in the generator.
+            width (int, optional): The width of the bar. Defaults to 800.
+            height (int, optional): The height of the bar. Defaults to 100.
+            border (int, optional): The border around the bar. Defaults to 5.
+            yield_start (bool, optional): Whether the function starts with a `yield` to set the text or not. Defaults to True. If False the text will start as `Loading`.
+            format_func (Callable, optional): The function called to format the loading text. Defaults to DEFAULT_FORMAT_FUNC. See below 'format_func'.
+            loadingtxtColour (GO.C___, optional): The colour of the loading text. Defaults to GO.CBLACK.
+        
+        format_func:
+            Args:
+
+                 - str: The current text.
+                 - int: The amount of tasks complete.
+                 - int: The amount of total tasks.
+                 - float: The current time (for loading animations).
+            
+            Defaults to:
+        
+        ```python
+            def DEFAULT_FORMAT_FUNC(txt, tasks, total, tme):
+                secsPerCycle = 2
+                cycle = math.floor((tme*secsPerCycle) / 0.25) % 4
+                dots = '.'*cycle
+                perc = (tasks/total)*100
+                return f'{txt}{dots} ({perc}%)'
+        ```
+        """
+        self.yield_start = (-1 if yield_start else 0)
+        self.amount = amount
         self.size = (width, height)
+        self.border = border
         self.font = GO.FNEW('Arial', 20)
+        self.formatter = format_func
+        self.loadingtxtColour = loadingtxtColour
+    
+    def reset(self):
+        self.done = self.yield_start
         self.txt = ''
     
-    def set_txt(self, txt):
-        self.txt = txt
-    
-    def whileloading(self, x, y, border, window, update_func, loadingtxtColour):
-        # Create the loading bar surface
-        bar = pygame.Surface(self.size)
-        bar.fill(GO.CBLACK)
-        bar.set_colorkey(GO.CBLACK)
-        prev_screen = window.copy()
-        running = True
-        clock = pygame.time.Clock()
-        dots = '.'
-        dotcounter = 0
-        while running:
-            # Handle the events
-            for event in pygame.event.get():
-                # If the user clicks the close button, exit the loop
-                if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    running = False
-                    break
-            
-            dotcounter += 1
-            if dotcounter > 60 / 3:
-                if dots == '.': dots = '..'
-                elif dots == '..': dots = '...'
-                elif dots == '...': dots = '.'
-                dotcounter = 0
-            
-            # Clear the window
-            window.fill(GO.CWHITE)
-            window.blit(prev_screen, (0, 0))
-            # Get the number of completed tasks from the future
-            completed = sum([int(i.done()) for i in self.tasks])
-            # Draw the loading bar border
-            pygame.draw.rect(window, GO.CBLACK, (x, y, bar.get_width(), bar.get_height()))
-            # Draw the loading bar fill
-            try: perc = 100/len(self.tasks) * completed
-            except ZeroDivisionError: perc = 0
-            perc = (perc * 100) // 100
-            pygame.draw.rect(bar, GO.CGREEN, (border, border, (bar.get_width() - 2 * border) / 100 * perc, bar.get_height() - 2 * border))
-            window.blit(self.font.render(self.txt.format(str(completed), str(len(self.tasks)), str(perc), dots), loadingtxtColour), (0, 0))
-            # Blit the loading bar surface onto the window
-            window.blit(bar, (x, y))
-            update_func()
-            # Update the display
-            pygame.display.flip()
-            clock.tick(60)
-            if perc == 100:
-                running = False
-                break
-            # Print the number of completed tasks
-            #print(f"Completed {completed} tasks out of 10")
-        self.txt = ''
-    
-    async def main(self, tasks):
-        self.tasks = [asyncio.create_task(_) for _ in tasks]
-        self.results = await asyncio.gather(*self.tasks, return_exceptions=True)
-    
-    def __call__(self, window, x, y, border_width, tasks, loadingtxt='Loading{3} {2}% ({0} / {1})', loadingtxtColour=GO.CBLACK, update_func=lambda: None):
-        if self.txt == '': # If something changed the text before it got time to initialise
-            self.txt = loadingtxt
-        # Create an asyncio event loop
-        self.results = None
-        loop = asyncio.get_event_loop()
-        def run():
-            task = loop.create_task(self.main(tasks))
+    def func(self, func, d, *args, **kwargs):
+        gen = func(d, *args, **kwargs)
+        while True:
             try:
-                loop.run_until_complete(task)
-            except:
-                pass
-        def runn():
-            loop.run_in_executor(None, run)
-            self.whileloading(x, y, border_width, window, update_func, loadingtxtColour)
-            loop.stop()
-            asyncio.get_event_loop().stop()
-            return self.results
-        return runn
+                self.txt = next(gen)
+                self.done += 1
+            except StopIteration as e:
+                return e.value
+    
+    def tick(self, WIN):
+        # Clear the window
+        WIN.fill(GO.CWHITE)
+        # Draw the loading bar border
+        w, h = self.size[0]+self.border*2, self.size[1]+self.border*2
+        x, y = (WIN.get_width()-w)/2, (WIN.get_height()-h)/2
+        pygame.draw.rect(WIN, GO.CBLACK, (x, y, w, h))
+        # Draw the loading bar fill
+        try:
+            perc = (self.done/self.amount)
+        except ZeroDivisionError:
+            perc = 0
+        perc = min(max(perc, 0), 1)
+        pygame.draw.rect(WIN, GO.CGREEN, (x+self.border, y+self.border, perc*self.size[0], h - 2*self.border))
+
+        txt = self.font.render(self.formatter(str(self.txt), min(max(self.done, 0), self.amount), self.amount, time()), self.loadingtxtColour)
+        WIN.blit(txt, ((WIN.get_width()-txt.get_width())/2, 0))

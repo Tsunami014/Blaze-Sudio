@@ -18,15 +18,24 @@ It will first read the file, then overwrite it when you save.')
 
 def GraphicsDemo():
     import BlazeSudio.graphics.options as GO
-    from BlazeSudio.graphics import Screen, Loading, GUI
+    from BlazeSudio.graphics import Screen, Loading, Progressbar, GUI
     from BlazeSudio.graphics.GUI.base import HiddenStatus
     from BlazeSudio.graphics.GUI.base import ReturnState
     import pygame
     from time import sleep
-    @Loading
+    @Loading.decor
     def test_loading(slf):
-        for slf.i in range(10):
+        slf['i'] = 0
+        for slf['i'] in range(10):
             sleep(1)
+    
+    @Progressbar.decor(10)
+    def test_loading2(slf):
+        yield '0'
+        slf['i'] = 0
+        for slf['i'] in range(10):
+            sleep(1)
+            yield slf['i']+1
     
     class Test(Screen):
         def __init__(self, txt):
@@ -82,6 +91,8 @@ def GraphicsDemo():
             self['buttons'].append(self.TextboxBtn)
             self.LoadingBtn = GUI.Button(self, LBOT, GO.CGREEN, 'Loading test')
             self['buttons'].append(self.LoadingBtn)
+            self.LoadingBtn2 = GUI.Button(self, LBOT, GO.CGREY, 'Progressbar loading test')
+            self['buttons'].append(self.LoadingBtn2)
             self.exitbtn = GUI.Button(self, GO.PLCENTER, GO.CRED, 'EXIT', GO.CWHITE, func=lambda: self.Abort())
             self['buttons'].append(self.exitbtn)
 
@@ -139,7 +150,10 @@ def GraphicsDemo():
                 # This gets passed 'obj': the element that got clicked.
                 if obj == self.LoadingBtn:
                     succeeded, ret = test_loading()
-                    self.txt.set('Ran for %i seconds%s' % (ret.i+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+                    self.txt.set('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+                if obj == self.LoadingBtn2:
+                    succeeded, ret = test_loading2()
+                    self.txt.set('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
                 elif obj == self.TextboxBtn:
                     bot = GO.PNEW((0.5, 1), (0, 0), (True, False))
                     dialog_box = GUI.TextBoxAdv(self, bot, text='HALOOO!!')
@@ -208,7 +222,7 @@ def LoremGraphicsDemo():
     class Test(Screen, RunInstantly):
         def _LoadUI(self):
             self.layers[0].add('speshs')
-            @Loading
+            @Loading.decor
             def load(slf):
                 S2 = GUI.ScrollableFrame(self, GO.PCCENTER, (900, 700), (2000, 11000))
                 S2.layers[0].add('alls')
@@ -535,7 +549,7 @@ def WrapDemo():
         
         def _ElementClick(self, obj):
             if obj == self.GObtn:
-                @Loading
+                @Loading.decor
                 def load(slf):
                     import time
                     time.sleep(0.5)
@@ -547,12 +561,12 @@ def WrapDemo():
                     for seg in self.segs:
                         conns.append(Segment(seg[0], seg[1]))
 
-                    slf.surf = wrapSurface(topF[-1].get(), topF[off+1].get(), pg2=False, constraints=conns)
+                    slf['surf'] = wrapSurface(topF[-1].get(), topF[off+1].get(), pg2=False, constraints=conns)
 
-                    slf.surf = pygame.transform.scale(slf.surf, (500, 500))
-                fin, outslf = load()
+                    slf['surf'] = pygame.transform.scale(slf['surf'], (500, 500))
+                fin, outs = load()
                 if fin:
-                    self.botF['Main'][-1].set(outslf.surf)
+                    self.botF['Main'][-1].set(outs['surf'])
     
     Main()()
 
