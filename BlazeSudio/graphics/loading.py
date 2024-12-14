@@ -157,7 +157,7 @@ def DEFAULT_FORMAT_FUNC(txt, tasks, total, tme):
     secsPerCycle = 2
     cycle = math.floor((tme*secsPerCycle) / 0.25) % 4
     dots = '.'*cycle
-    perc = (tasks/total)*100
+    perc = round((tasks/total)*100, 3)
     return f'{txt}{dots} ({perc}%)'
 
 class Progressbar(BaseLoadingScreen):
@@ -201,9 +201,18 @@ class Progressbar(BaseLoadingScreen):
                 secsPerCycle = 2
                 cycle = math.floor((tme*secsPerCycle) / 0.25) % 4
                 dots = '.'*cycle
-                perc = (tasks/total)*100
+                perc = round((tasks/total)*100, 3)
                 return f'{txt}{dots} ({perc}%)'
         ```
+        
+        If in the function that is loading you yield a tuple of 2 items and the second is a dictionary then it will use the first item for text and will change some settings based off of the dict.
+        
+        e.g. `yield 'hi', {'key': value}`
+
+        Settings:
+            amount (int): The amount of tasks that need completing.
+            done (int): The amount of tasks complete (including the one you're setting it with).
+            formatter (Callable): The formatter (see format_func).
         """
         self.yield_start = (-1 if yield_start else 0)
         self.amount = amount
@@ -221,8 +230,36 @@ class Progressbar(BaseLoadingScreen):
         gen = func(d, *args, **kwargs)
         while True:
             try:
-                self.txt = next(gen)
-                self.done += 1
+                out = next(gen)
+                if isinstance(out, tuple) and len(out) == 2 and isinstance(out[1], dict):
+                    self.txt = out[0]
+                    self.done += 1
+                    for key, it in out[1].items():
+                        if key == 'amount':
+                            if not isinstance(it, int):
+                                raise TypeError(
+                                    f"Type of item '{it}' is not int!"
+                                )
+                            self.amount = it
+                        elif key == 'done':
+                            if not isinstance(it, int):
+                                raise TypeError(
+                                    f"Type of item '{it}' is not int!"
+                                )
+                            self.done = it
+                        elif key == 'done':
+                            if not isinstance(it, Callable):
+                                raise TypeError(
+                                    f"Type of item '{it}' is not Callable!"
+                                )
+                            self.formatter = it
+                        else:
+                            raise ValueError(
+                                f"Key '{key}' is unknown!"
+                            )
+                else:
+                    self.txt = out
+                    self.done += 1
             except StopIteration as e:
                 return e.value
     

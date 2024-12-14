@@ -427,7 +427,7 @@ def WrapBasicDemo():
         pygame.display.update()
 
 def WrapDemo():
-    from BlazeSudio.graphics import Screen, Loading, options as GO, GUI
+    from BlazeSudio.graphics import Screen, Progressbar, options as GO, GUI
     from BlazeSudio.utils.wrap import wrapSurface, Segment
     import pygame
     
@@ -516,9 +516,12 @@ def WrapDemo():
             self.makeSur()
         
         def _Event(self, event):
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                self.cursegidx = None
-                self.segs = []
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    self.cursegidx = None
+                    self.segs = []
+                elif event.key == pygame.K_RETURN:
+                    self.wrap()
         
         def _Tick(self):
             if self.topF['Main'][1].active or self.topF['Main'][3].active or \
@@ -549,24 +552,30 @@ def WrapDemo():
         
         def _ElementClick(self, obj):
             if obj == self.GObtn:
-                @Loading.decor
-                def load(slf):
-                    import time
-                    time.sleep(0.5)
-                    pygame.event.pump()
-                    off = self.offset
-                    topF = self.topF['Main']
+                self.wrap()
+        
+        def wrap(self):
+            @Progressbar.decor(4)
+            def load(slf):
+                import time
+                time.sleep(0.5)
+                pygame.event.pump()
+                yield 'Setting up'
+                off = self.offset
+                topF = self.topF['Main']
 
-                    conns = []
-                    for seg in self.segs:
-                        conns.append(Segment(seg[0], seg[1]))
+                conns = []
+                for seg in self.segs:
+                    conns.append(Segment(seg[0], seg[1]))
 
-                    slf['surf'] = wrapSurface(topF[-1].get(), topF[off+1].get(), pg2=False, constraints=conns)
+                slf['surf'] = yield from wrapSurface(topF[-1].get(), topF[off+1].get(), pg2=False, constraints=conns, isIter=True)
 
-                    slf['surf'] = pygame.transform.scale(slf['surf'], (500, 500))
-                fin, outs = load()
-                if fin:
-                    self.botF['Main'][-1].set(outs['surf'])
+                yield 'Finishing up'
+
+                slf['surf'] = pygame.transform.scale(slf['surf'], (500, 500))
+            fin, outs = load()
+            if fin:
+                self.botF['Main'][-1].set(outs['surf'])
     
     Main()()
 
