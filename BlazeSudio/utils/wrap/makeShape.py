@@ -1,5 +1,8 @@
 import math
+import numpy as np
+import pygame
 import BlazeSudio.collisions as colls
+from BlazeSudio.utils.wrap.skeleton import FastSkeleton
 
 __all__ = [
     'MakeShape',
@@ -67,7 +70,7 @@ class MakeShape:
     
     def insert_straight(self, x):
         self.straighten()
-        if self.joints[0][-1] < x < self.joints[0][0]:
+        if self.joints[-1][0] < x < self.joints[0][0]:
             if x in (i[0] for i in self.joints):
                 return False
             for idx in range(len(self.joints)-1):
@@ -221,7 +224,18 @@ class MakeShape:
             mnObj = None
         
         if small:
-            smlObj = colls.NoShape()
+            xs, ys = zip(*self.joints)
+            minx, miny = min(xs), min(ys)
+            sur = pygame.Surface((max(xs)-minx, max(ys)-miny))
+            pygame.draw.polygon(sur, (255, 255, 255), [(i[0]-minx, i[1]-miny) for i in self.joints])
+            arr = pygame.surfarray.pixels3d(sur)
+            skel = FastSkeleton()(np.all(arr == np.array([255, 255, 255]), axis=-1))
+            smlObj = colls.Shapes(
+                *[
+                    colls.Line((int(u[0])+minx, int(u[1])+miny), (int(v[0])+minx, int(v[1])+miny)) for u, v in skel.edges()
+                ]
+            )
+            # smlObj = colls.NoShape()
             # centre = colls.shapelyToColl(pygeoops.centerline(shapelyObj, -0.5))
             # if not colls.checkShpType(centre, colls.ShpGroups.GROUP):
             #     centre = colls.Shapes(centre)
