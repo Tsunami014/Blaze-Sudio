@@ -76,7 +76,8 @@ def wrapSurface(pg: pygame.Surface,
                 quality: float = 1.0, 
                 startRot: int|float = 0, 
                 constraints: list[Segment] = [], 
-                pg2: bool|pygame.Surface=True
+                pg2: bool|pygame.Surface = True,
+                isIter: bool = False
     ) -> tuple[pygame.Surface]|pygame.Surface:
     """
     Wrap a pygame surface and optionally it's alpha separately.
@@ -92,6 +93,7 @@ def wrapSurface(pg: pygame.Surface,
             - `pygame.Surface` -> use that for the alpha only wrap
             - `True` -> use `pg` for the alpha wrap
             - `False` -> don't return or calculate an alpha wrap
+        isIter (bool, optional): Whether to return a generator or just run the func itself. Defaults to False (just run the func). The generator is in a format aplicable to `graphics.loading.Progress`.
 
     Returns:
         tuple[pygame.Surface, pygame.Surface]: The output surface or surfaces which are the wrapped image(s)
@@ -105,174 +107,121 @@ def wrapSurface(pg: pygame.Surface,
         -1 = the centroid (or centroid line(s)) of the polygon made by the wrapped image width
         ```
     """
-    width, height = pg.get_size()
-    if isinstance(pg2, pygame.Surface):
-       if pg.get_size() != pg2.get_size():
-           raise ValueError(
-               'The 2 input surfaces are of different sizes!!!'
-           )
-    shape = MakeShape(width)
-    def checkX1(x):
-        for con in constraints:
-            if x > con.pos[0] and x < con.pos[1]:
-                return False
-        return True
-    segs = [x for x in range(width) if checkX1(x)]
-    def checkX2(x):
-        for con in constraints:
-            if x == con.pos[0]:
-                return con.angle
-        return None
-    segrots = [checkX2(x) for x in segs]
-    shape.joints = [(i, 0) for i in segs]
-    shape.setAngs = segrots
-    # shape.joints = [(0, 100), (100, 200), (200, 200), (300, 100), (200, 0), (100, 0), (0, 100)]
-    shape.recalculate_dists()
-    large, main, small = shape.generateBounds(height, True, False, False) # main and small set to None
-    largePs = large.toPoints()
-    mins = (min(i[0] for i in largePs), min(i[1] for i in largePs))
-    for i in range(len(shape.joints)):
-        shape.joints[i] = (shape.joints[i][0]-mins[0], shape.joints[i][1]-mins[1])
-    large, main, small = shape.generateBounds(height)
-    collsegs = shape.collSegments
-    largePs = large.toPoints()
-    sze = (math.ceil(max(i[0] for i in largePs)), math.ceil(max(i[1] for i in largePs)))
-    cir = pygame.Surface(sze, pygame.SRCALPHA)
+    def wrap():
+        yield 'Initialising wrap', {'amount': 3}
+        width, height = pg.get_size()
+        if isinstance(pg2, pygame.Surface):
+            if pg.get_size() != pg2.get_size():
+                raise ValueError(
+                    'The 2 input surfaces are of different sizes!!!'
+                )
+        shape = MakeShape(width)
+        def checkX1(x):
+            for con in constraints:
+                if x > con.pos[0] and x < con.pos[1]:
+                    return False
+            return True
+        segs = [x for x in range(width) if checkX1(x)]
+        def checkX2(x):
+            for con in constraints:
+                if x == con.pos[0]:
+                    return con.angle
+            return None
+        segrots = [checkX2(x) for x in segs]
+        shape.joints = [(i, 0) for i in segs]
+        shape.setAngs = segrots
+        # shape.joints = [(0, 100), (100, 200), (200, 200), (300, 100), (200, 0), (100, 0), (0, 100)]
+        shape.recalculate_dists()
+        large, main, small = shape.generateBounds(height, True, False, False) # main and small set to None
+        largePs = large.toPoints()
+        mins = (min(i[0] for i in largePs), min(i[1] for i in largePs))
+        for i in range(len(shape.joints)):
+            shape.joints[i] = (shape.joints[i][0]-mins[0], shape.joints[i][1]-mins[1])
+        large, main, small = shape.generateBounds(height)
+        collsegs = shape.collSegments
+        largePs = large.toPoints()
+        sze = (math.ceil(max(i[0] for i in largePs)), math.ceil(max(i[1] for i in largePs)))
+        cir = pygame.Surface(sze, pygame.SRCALPHA)
 
-    angs = [collisions.direction(i.p1, i.p2) for i in collsegs]
+        angs = [collisions.direction(i.p1, i.p2) for i in collsegs]
 
-    # print('initialising lines...')
+        yield 'Initialising lines'
 
-    lns = []
-    angs2 = []
+        lns = []
+        angs2 = []
 
-    r = (shape.lastRadius + height)*2
+        r = (shape.lastRadius + height)*2
 
-    for idx, seg in enumerate(collsegs):
-        #d2 = shape.jointDists[idx]**2
+        for idx, seg in enumerate(collsegs):
+            #d2 = shape.jointDists[idx]**2
 
-        sin_sum = math.sin(angs[idx]) + math.sin(angs[idx-1])
-        cos_sum = math.cos(angs[idx]) + math.cos(angs[idx-1])
+            sin_sum = math.sin(angs[idx]) + math.sin(angs[idx-1])
+            cos_sum = math.cos(angs[idx]) + math.cos(angs[idx-1])
 
-        # Calculate the circular mean using arctan2
-        mean_rad = math.atan2(sin_sum, cos_sum)
-        avg = math.degrees(mean_rad)
-        angs2.append(avg)
-    
-        lns.append(collisions.Line(collisions.rotate(seg.p1, (seg.p1[0], seg.p1[1]-r), avg), 
-                                    collisions.rotate(seg.p1, (seg.p1[0], seg.p1[1]+r), avg)))
+            # Calculate the circular mean using arctan2
+            mean_rad = math.atan2(sin_sum, cos_sum)
+            avg = math.degrees(mean_rad)
+            angs2.append(avg)
         
-        # pygame.draw.line(cirs[0], (255, 50, 255), seg[0], seg[1], 2)
-    
-    # print('finding delaunay triangles...')
+            lns.append(collisions.Line(collisions.rotate(seg.p1, (seg.p1[0], seg.p1[1]-r), avg), 
+                                        collisions.rotate(seg.p1, (seg.p1[0], seg.p1[1]+r), avg)))
+            
+            # pygame.draw.line(cirs[0], (255, 50, 255), seg[0], seg[1], 2)
 
-    lns = collisions.Shapes(*lns)
+        lns = collisions.Shapes(*lns)
 
-    # edges = shapely.delaunay_triangles(shapely.MultiPoint([shapely.Point(p) for p in lns.whereCollides(lns)]), only_edges=True)
+        hitsLge = collisions.Shapes(*large.toLines())
 
-    # shapelyOuter = collisions.collToShapely(large)
-
-    # hitsLns = [collisions.shapelyToColl(i) for i in edges.geoms if not shapelyOuter.intersects(i)]
-
-    # hitsLns = collisions.shapelyToColl([edges])
-    print('0 %')
-    # import time
-    # t = time.time()
-    hitsLge = collisions.Shapes(*large.toLines())
-
-    def closestTo(li, p):
-        d = None
-        clo = None
-        for p2 in li:
-            d2 = (p2[0]-p[0])**2+(p2[1]-p[1])**2
-            if d is None or d2 < d:
-                d = d2
-                clo = p2
-        return clo
-    
-    # for ln in lns:
-    #     pygame.draw.line(cir, (125, 125, 125), ln[0], ln[1])
-    
-    # for p in lns.whereCollides(lns):
-    #     pygame.draw.circle(cir, (0, 0, 0), p, 2)
-
-    totd = 0
-    total = sum(shape.jointDists)
-
-    # def sort_points(points, centre = None): # *slightly* modified from https://stackoverflow.com/questions/69100978/how-to-sort-a-list-of-points-in-clockwise-anti-clockwise-in-python
-    #     if centre:
-    #         centre_x, centre_y = centre
-    #     else:
-    #         centre_x, centre_y = sum([x for x,_ in points])/len(points), sum([y for _,y in points])/len(points)
-    #     angles = [(math.atan2(y - centre_y, x - centre_x)-(math.pi/4))%360 for x,y in points]
-    #     idxs = sorted(range(len(points)), key=lambda i: angles[i])
-    #     points = [points[i] for i in idxs]
-    #     return points
-    
-    # if not pg.get_flags() & pygame.SRCALPHA:
-    #     pg = pg.convert_alpha()
-
-    for idx, seg in enumerate(collsegs):
-        d = shape.jointDists[idx]
-
-        # TODO: Trace the large poly along bcos it may have multiple segments
-        poly = [
-            closestTo(lns[idx-1].whereCollides(hitsLge), seg.p1),
-            closestTo(lns[idx].whereCollides(hitsLge), seg.p2),
-            closestTo(lns[idx].whereCollides(lns), seg.p2),
-            closestTo(lns[idx-1].whereCollides(lns), seg.p1),
-        ]
-
-        draw_quad(cir, poly, pg.subsurface(((totd/total)*width, 0, math.ceil((d/total)*width), pg.get_height())))
-
-        # collpoly = collisions.Polygon(*poly)
-
-        # mins = (min(i[0] for i in poly), min(i[1] for i in poly))
-        # zeroPoly = [(i[0]-mins[0], i[1]-mins[1]) for i in poly]
-
-        # sur = pygame.Surface((max(i[0] for i in zeroPoly), max(i[1] for i in zeroPoly)), pygame.SRCALPHA)
-        # pygame.gfxdraw.textured_polygon(sur, zeroPoly, pg.subsurface(((totd/total)*width, 0, math.ceil((d/total)*height), height)), 0, 0)
-        # pygame.gfxdraw.textured_polygon(cir, poly, pg.subsurface(((totd/total)*width, 0, math.ceil((d/total)*height), height)), 0, 0)
-        # ns = pygame.transform.scale(pg.subsurface(((totd/total)*width, 0, max((d/total)*width, 1), height)), (d/total*width, height))
-        # pygame.gfxdraw.textured_polygon(cir, poly, pygame.transform.rotate(ns, math.degrees(angs[idx])), 0, 0)
-        # pygame.gfxdraw.textured_polygon(cir, poly, pygame.transform.rotate(pg, math.degrees(angs[idx])), (totd/total)*width, 0)
-
-        #poly[-1][0] -= 0.1
-        #poly[-1][1] -= 0.1
-
-        #cir.blit(*warp(pg.subsurface(((totd/total)*width, 0, max((d/total)*height, 1), height)), poly, False))
-
-        # pygame.draw.polygon(cir, ((totd/total)*255, 125, 125, 255), poly)
-        # r = collpoly.rect()
-        # for y in range(math.floor(r[1]), math.ceil(r[3])):
-        #     for x in range(math.floor(r[0]), math.ceil(r[2])):
-        #         if collpoly.collides(collisions.Point(x, y)):
-        #             cir.set_at((x, y), (c, 125, 125))
-        #             alphaArray[x, y] = 255
-
-        totd += d
-        # print((totd/total)*100, '%')
-    # print(time.time()-t) # 6.692249059677124
-
-    # for idx, poly in enumerate(polys):
-    #     d2 = shape.jointDists[idx]**2
-
-    #     ang1 = (math.cos(angs[idx]), math.sin(angs[idx]))
-    #     avgs = []
-    #     for a in (angs[idx-1], angs[idx+1]):
-    #         ang2 = (math.cos(a), math.sin(a))
-    #         avgs.append(collisions.direction((0, 0), ((ang1[0]+ang2[0])/2, (ang1[1]+ang2[1])/2)))
+        def closestTo(li, p):
+            d = None
+            clo = None
+            for p2 in li:
+                d2 = (p2[0]-p[0])**2+(p2[1]-p[1])**2
+                if d is None or d2 < d:
+                    d = d2
+                    clo = p2
+            return clo
         
-    #     ps1 = []
+        # for ln in lns:
+        #     pygame.draw.line(cir, (125, 125, 125), ln[0], ln[1])
+        
+        # for p in lns.whereCollides(lns):
+        #     pygame.draw.circle(cir, (0, 0, 0), p, 2)
 
-    #     thisPoly = collisions.Polygon()
+        totd = 0
+        total = sum(shape.jointDists)
 
-    #     totd2 += d2
-    #     print((idx+1)/totL, '%')
-    
-    # TODO: if pg2 is True: # just mask the output
-    return cir.copy()
-    # return cirs
+        yield 'Calculating segments', {'amount': len(collsegs), 'done': 0}
+
+        for idx, seg in enumerate(collsegs):
+            d = shape.jointDists[idx]
+
+            # TODO: Trace the large poly along bcos it may have multiple segments
+            poly = [
+                closestTo(lns[idx-1].whereCollides(hitsLge), seg.p1),
+                closestTo(lns[idx].whereCollides(hitsLge), seg.p2),
+                closestTo(lns[idx].whereCollides(lns), seg.p2),
+                closestTo(lns[idx-1].whereCollides(lns), seg.p1),
+            ]
+
+            draw_quad(cir, poly, pg.subsurface(((totd/total)*width, 0, math.ceil((d/total)*width), pg.get_height())))
+
+            totd += d
+            yield 'Calculating segments'
+        
+        # TODO: if pg2 is True: # just mask the output
+        return cir.copy()
+        # return cirs
+    if isIter:
+        return wrap()
+    else:
+        w = wrap()
+        for msg in w:
+            pass
+        try:
+            next(w)
+        except StopIteration as e:
+            return e.value
 
 def save(imgs, fname, szes, spacing=None): # TODO: Think about removing
     ms = max(szes)
