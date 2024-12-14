@@ -423,6 +423,8 @@ def WrapBasicDemo():
             # Inner Shapes[Line]
             for i in polys[2]:
                 pygame.draw.line(win, (125, 125, 125), i[0], i[1], 3)
+                for j in i:
+                    pygame.draw.circle(win, (125, 125, 125), j, 2)
 
         pygame.display.update()
 
