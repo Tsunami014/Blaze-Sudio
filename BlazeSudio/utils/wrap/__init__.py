@@ -208,8 +208,8 @@ def wrapSurface(pg: pygame.Surface,
             p2Closests.sort(key=lambda x: (x[0]-seg.p2[0])**2+(x[1]-seg.p2[1])**2)
             lastP1 = p2Closests[0]
             poly = [
-                closestTo(lns[idx-1].whereCollides(hitsLge), seg.p1),
-                closestTo(lns[idx].whereCollides(hitsLge), seg.p2),
+                closestTo(lns[idx].whereCollides(hitsLge), seg.p1),
+                closestTo(lns[(idx+1)%len(lns.shapes)].whereCollides(hitsLge), seg.p2),
                 p2Closests[0],
                 p1Closests[0],
             ]
