@@ -4,6 +4,8 @@ import pygame
 import pygame.freetype
 from string import printable
 
+# TODO: Make these all enums
+
 # TODO: Modify the __str__ and __repr__ of the class to a name
 def Base(cls=None, default=True, str=True, addhash=True):
     def wrap(clss):
@@ -407,12 +409,13 @@ TINPUTBOX =   T___(1,  'Inputbox'  )
 TNUMBOX =     T___(2,  'Numbox'    )
 TTEXTBOX =    T___(3,  'Textbox'   )
 TSWITCH =     T___(4,  'Switch'    )
-TFRAME =      T___(5,  'Frame'     )
-TLAYOUT =     T___(6,  'Layout'    )
-TSTATIC =     T___(7,  'Static'    )
-TCOLOURPICK = T___(8,  'ColourPick')
-TTOAST =      T___(9,  'Toast'     )
-TEMPTY =      T___(10, 'Empty'     )
+TCHECKBOX =   T___(5,  'Checkbox'  )
+TFRAME =      T___(6,  'Frame'     )
+TLAYOUT =     T___(7,  'Layout'    )
+TSTATIC =     T___(8,  'Static'    )
+TCOLOURPICK = T___(9,  'ColourPick')
+TTOAST =      T___(10,  'Toast'    )
+TEMPTY =      T___(11, 'Empty'     )
 
 
 # Resizes

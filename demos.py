@@ -115,9 +115,9 @@ def GraphicsDemo():
             self['speshs'].append(L)
             self.sw = GUI.Switch(L, L.LP)
             L.grid = [
-                [GUI.Text(L, L.LP, 'HI'), GUI.Text(L, L.LP, 'HELLO'), GUI.Text(L, L.LP, 'BYE')],
-                [GUI.Text(L, L.LP, 'HEHE'), GUI.Text(L, L.LP, 'YES'), GUI.Text(L, L.LP, 'NO')],
-                [GUI.Text(L, L.LP, 'HAVE'), GUI.Text(L, L.LP, 'A'), GUI.Text(L, L.LP, 'NICEDAY')],
+                [GUI.Text(L, L.LP, 'HI'), None, GUI.Text(L, L.LP, 'BYE')],
+                [GUI.Text(L, L.LP, 'YES'), GUI.Checkbox(L, L.LP), GUI.Text(L, L.LP, 'NO')],
+                [GUI.Checkbox(L, L.LP, 20, check_size=10), GUI.Checkbox(L, L.LP, thickness=2), GUI.Checkbox(L, L.LP, check_size=40)],
                 [GUI.Button(L, L.LP, GO.CORANGE, 'Hello!'), None, self.sw]
             ]
 

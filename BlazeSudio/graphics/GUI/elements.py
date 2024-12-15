@@ -2,6 +2,7 @@ from math import floor
 import pygame
 from typing import Callable
 from string import printable
+from random import random
 from BlazeSudio.graphics import mouse, options as GO
 from BlazeSudio.graphics.GUI.base import Element, ReturnGroup, ReturnState
 from BlazeSudio.graphics.GUI.theme import GLOBALTHEME
@@ -9,6 +10,7 @@ from BlazeSudio.graphics.GUI.events import Dropdown
 
 __all__ = [
     'Switch',
+    'Checkbox',
     'InputBox',
     'NumInputBox',
     'Empty',
@@ -72,6 +74,69 @@ class Switch(Element):
         return self.state
     def set(self, newState):
         """Set the state of the switch (on or off)"""
+        self.state = newState
+
+class Checkbox(Element):
+    type = GO.TCHECKBOX
+    def __init__(self, G, pos: GO.P___, size=40, thickness=5, check_size=15, radius=5, default=False):
+        """
+        A checkbox that can be either checked or unchecked.
+
+        Args:
+            G (Graphic): The graphic screen to attach to.
+            pos (GO.P___): The position of this element in the screen.
+            size (int, optional): The size of this element. Defaults to 40.
+            thickness (int, optional): The thickness of the lines. Defaults to 5.
+            check_size (int, optional): The size of the check mark arrow. Defaults to 20.
+            radius (int, optional): The border radius of the drawn boxes. Defaults to 5.
+            default (bool, optional): Whether the checkbox is either on or off on creation. Defaults to False.
+        """
+        self.thickness = thickness
+        self.BR = radius
+        self.Csize = check_size
+        self.rerandomise()
+        super().__init__(G, pos, (size, size))
+        self.state = default
+    
+    def rerandomise(self):
+        self.randoms = [random()+1, random()+1, random()+3, random()*2+4]
+    
+    def update(self, mousePos, events):
+        x, y = self.stackP()
+        if mousePos:
+            mcollides = pygame.Rect(x, y, *self.size).collidepoint(mousePos)
+        else:
+            mcollides = False
+        if not self.G.pause:
+            if mcollides:
+                if pygame.mouse.get_pressed()[0]:
+                    mouse.Mouse.set(mouse.MouseState.CLICKING)
+                else:
+                    mouse.Mouse.set(mouse.MouseState.HOVER)
+            for event in events:
+                if event.type == pygame.MOUSEBUTTONDOWN and \
+                event.button == pygame.BUTTON_LEFT and mcollides:
+                    self.state = not self.state
+                    self.rerandomise()
+                    return ReturnState.CALL
+    
+    def draw(self):
+        x, y = self.stackP()
+        pygame.draw.rect(self.G.WIN, (125, 125, 125), pygame.Rect(x, y, *self.size), self.thickness, self.BR)
+        if self.state:
+            midp = (x+self.size[0]/2, y+self.size[1]-(self.size[1]/self.randoms[3]))
+            p1 = (midp[0]-self.Csize*self.randoms[0], midp[1]-self.Csize)
+            p2 = (midp[0]+self.Csize*self.randoms[1], midp[1]-self.Csize*self.randoms[2])
+            pygame.draw.line(self.G.WIN, GO.CGREEN, p1, midp, self.thickness+1)
+            pygame.draw.line(self.G.WIN, GO.CGREEN, midp, p2, self.thickness+1)
+            for p in (p1, midp, p2):
+                pygame.draw.circle(self.G.WIN, GO.CGREEN, p, self.thickness//2+1)
+    
+    def get(self):
+        """Get the state of the checkbox (on or off)"""
+        return self.state
+    def set(self, newState):
+        """Set the state of the checkbox (on or off)"""
         self.state = newState
 
 # InputBoxes code modified from https://stackoverflow.com/questions/46390231/how-can-i-create-a-text-input-box-with-pygame 
