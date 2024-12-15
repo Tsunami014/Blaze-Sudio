@@ -67,7 +67,7 @@ def GraphicsDemo():
                 GUI.Empty(f, LTOP, (0, 15)),
                 GUI.Text(f, LTOP, 'Change scale:', GO.CGREEN),
             ])
-            self.changeScale = GUI.NumInputBox(f, LTOP, 100, GO.RHEIGHT, start=2, min=1, placeholdOnNum=None)
+            self.changeScale = GUI.NumInputBox(f, LTOP, 100, GO.RHEIGHT, start=2, min=1, placeholdOnNum=None, decimals=True)
             f['Alls'].append(self.changeScale)
 
             self['texts'].append(GUI.Text(self, GO.PCCENTER, 'This is a cool thing', GO.CBLUE))
@@ -78,7 +78,8 @@ def GraphicsDemo():
             self.inp = GUI.InputBox(self, GO.PCCENTER, 500, GO.RHEIGHT, font=GO.FFONT)
             self['endElms'].append(self.inp)
             self['space'].append(GUI.Empty(self, GO.PCCENTER, (0, 50)))
-            self['endElms'].append(GUI.NumInputBox(self, GO.PCCENTER, 100, font=GO.FFONT, min=-255, max=255))
+            self['endElms'].append(GUI.NumInputBox(self, GO.PCCENTER, 100, font=GO.FFONT, min=-255, max=255, placeholdOnNum=None))
+            self['endElms'].append(GUI.NumInputBox(self, GO.PCCENTER, 100, font=GO.FFONT, min=-255, max=255, start=None, empty=100, decimals=3))
             self['space'].append(GUI.Empty(self, GO.PCCENTER, (0, 50)))
             self['endElms'].append(GUI.DropdownButton(self, GO.PCCENTER, ['HI', 'BYE']))
 

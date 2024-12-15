@@ -114,7 +114,6 @@ class InputBox(Element): # TODO: Change colours
         self.blanktxt = placeholder
         self.renderdash = True
         self.weight = weight
-        self._force_placeholder_col = False
 
         self.size = [width+5, font.linesize+5]
         self._render_txt()
@@ -134,8 +133,6 @@ class InputBox(Element): # TODO: Change colours
         txt = self.text
         if txt == '':
             txt = self.blanktxt
-            txtcol = GO.CINACTIVE
-        if self._force_placeholder_col:
             txtcol = GO.CINACTIVE
         self.txt_surface = self.font.render(txt, txtcol, leftrightweight=self.weight, allowed_width=(None if self.resize == GO.RWIDTH else self.size[0] - 5), renderdash=self.renderdash)
         if self.resize == GO.RWIDTH:
@@ -181,7 +178,7 @@ class InputBox(Element): # TODO: Change colours
         # Blit the rect.
         pygame.draw.rect(self.G.WIN, self.colour, pygame.Rect(x, y, *self.size), 2)
 
-class NumInputBox(InputBox): # TODO: Decimals
+class NumInputBox(InputBox):
     type = GO.TNUMBOX
     def __init__(self, 
                  G, 
@@ -189,9 +186,11 @@ class NumInputBox(InputBox): # TODO: Decimals
                  width: int, 
                  resize: GO.R___ = GO.RWIDTH, 
                  font: GO.F___ = GO.FSMALL, 
-                 start: int = 0, 
+                 start: int|None = 0, 
+                 empty: int|None = None,
                  max: int = float('inf'), 
                  min: int = float('-inf'), 
+                 decimals: bool|int = False,
                  placeholder: str = 'Type number here!',
                  placeholdOnNum: None|bool|int = False
                 ):
@@ -204,82 +203,112 @@ class NumInputBox(InputBox): # TODO: Decimals
             width (int): The width of the box. This will get overridden if using GO.RWIDTH.
             resize (GO.R___, optional): How to overflow text if the box is too large. Defaults to GO.RWIDTH.
             font (GO.F___, optional): The font of the text in the box. Defaults to GO.FSMALL.
-            start (int, optional): The number present in the box on creation. Defaults to 0.
+            start (int|None, optional): The number present in the box on creation, or None to start empty. Defaults to 0.
+            empty (int|None, optional): The number to set the box to if the box is empty, or None to be the 'start' param. Defaults to None.
             max (int, optional): The maximum value that can be submitted in this box. Defaults to infinity.
             min (int, optional): The minimum value that can be submitted in this box. Defaults to -infinity.
+            decimals (bool|int, optional): Whether to allow decimals in the number (and if an int, to how many decimal places). Defaults to False.
             placeholder (str, optional): The placeholder text visible when there is no text in the box. Defaults to 'Type number here!'.
-            placeholdOnNum (bool|int, optional): **True** = show the placeholder on original number, \
+            placeholdOnNum (bool|int, optional): **True** = show the placeholder on empty, \
                 **False** = only show the placeholder once before you input your first number, \
                 **None** = don't show the placeholder ever \
                 **int** = show the placeholder if the number is equal to this int. Defaults to False.
         """
-        super().__init__(G, pos, width, resize, placeholder, font, None, starting_text=str(start))
-        if isinstance(placeholdOnNum, bool):
-            if placeholdOnNum:
-                self.placehold = start
-            else:
-                self.placehold = True
+        if placeholdOnNum is True:
+            self.placehold = ''
+        elif placeholdOnNum is False:
+            self.placehold = True
         elif placeholdOnNum is None:
             self.placehold = False
         else:
-            self.placehold = placeholdOnNum
-        self.empty = True
-        self.emptyValue = start
-        self.realnum = start
+            self.placehold = str(placeholdOnNum)
+        super().__init__(G, pos, width, resize, placeholder, font, None, starting_text=(str(start) if start is not None else ''))
+        if empty is None:
+            self.emptyValue = start or 0
+        else:
+            self.emptyValue = empty
         self.limits = (min, max)
+        self.decimals = decimals
         self.renderdash = False
         self.fix()
         self._render_txt()
     
     def get(self, noneIfEmpty=False):
         """Get the number in the numbox, optionally returning None if the textbox is empty (default False)"""
-        if noneIfEmpty and self.empty:
+        if noneIfEmpty and self.text == '':
             return None
-        return self.realnum
+        if self.text == '':
+            return self.emptyValue
+        elif '.' in self.text:
+            return float(self.text)
+        return int(self.text)
 
     def set(self, newNum):
         """Set the number in the numbox"""
-        self.realnum = newNum
+        self.text = str(newNum)
+        self.fix()
+    
+    def _render_txt(self):
+        txtcol = self.colour
+
+        t = self.text
+        if self.placehold is True or self.text == self.placehold:
+            placeholdCol = True
+            t = self.blanktxt
+        else:
+            if t == '':
+                t = str(self.emptyValue)
+                placeholdCol = True
+            else:
+                placeholdCol = False
+        
+        if placeholdCol:
+            txtcol = GO.CINACTIVE
+        
+        self.txt_surface = self.font.render(t, txtcol, leftrightweight=self.weight, allowed_width=(None if self.resize == GO.RWIDTH else self.size[0] - 5), renderdash=self.renderdash)
+        if self.resize == GO.RWIDTH:
+            self.size[0] = self.txt_surface.get_width() + 10
+        elif self.resize == GO.RHEIGHT:
+            self.size[1] = self.txt_surface.get_height() + 10
 
     def _handle_text(self, event):
         if event.key == pygame.K_BACKSPACE:
-            if self.empty:
-                return
-            # if str(self.realnum)[:-1].endswith('.'):
-            #     self.realnum = int(self.realnum)
-            # else:
-            if len(str(self.realnum)) == 1:
-                self.realnum = self.emptyValue
-                self.empty = True
-            else:
-                try:
-                    self.realnum = int(str(self.realnum)[:-1])
-                except:
-                    self.realnum = 0
+            self.text = self.text[:-1]
         elif event.key == pygame.K_MINUS:
-            if self.empty:
-                self.empty = False
-            self.realnum = self.realnum * -1
+            if self.text.startswith('-'):
+                self.text = self.text[1:]
+            else:
+                self.text = '-' + self.text
+        elif event.key == pygame.K_PERIOD:
+            if '.' not in self.text and self.decimals:
+                self.text += '.'
         else:
             if event.unicode in '0123456789':
-                if self.empty:
-                    self.realnum = int(event.unicode)
-                else:
-                    self.realnum = int(str(self.realnum) + event.unicode)
-                self.empty = False
-                if self.placehold is True:
-                    self.placehold = False
-            # elif event.unicode == '.':
-            #     self.realnum = float(self.realnum)
+                self.text += event.unicode
         self.fix()
     
     def fix(self):
-        self.realnum = max(min(self.realnum, self.limits[1]), self.limits[0])
-        self._force_placeholder_col = self.empty
-        if self.placehold is self.realnum or self.placehold is True:
-            self.text = ''
-        else:
-            self.text = str(self.realnum)
+        if self.text == '':
+            return
+        num = float(self.text)
+        if float(num) > self.limits[1]:
+            self.text = str(self.limits[1])
+        elif float(num) < self.limits[0]:
+            self.text = str(self.limits[0])
+        
+        if '.' in self.text and not self.decimals:
+            self.text = self.text[:self.text.index('.')]
+        elif '.' in self.text and not isinstance(self.decimals, bool):
+            self.text = self.text[:self.text.index('.')+1+self.decimals]
+        
+        if not self.active and self.text.endswith('.'):
+            self.text = self.text[:-1]
+        
+        if self.placehold is True and self.text != str(self.emptyValue):
+            self.placehold = None
+        
+        if self.text.startswith('0') and not self.text.startswith('0.') and len(self.text) > 1:
+            self.text = self.text[1:]
 
 class Empty(Element):
     type = GO.TEMPTY
