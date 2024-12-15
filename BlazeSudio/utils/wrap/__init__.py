@@ -62,6 +62,7 @@ def wrapLevel(
         0 = the image width (wrapped)
         -1 = the centroid (or centroid line(s)) of the polygon made by the wrapped image width
         ```
+        - Top **must** be >= 0 and bottom **must** be <= 0 and >= -1.
     """
 
     pg = world.get_pygame(lvl, transparent_bg=True)
@@ -106,6 +107,7 @@ def wrapSurface(pg: pygame.Surface,
         0 = the image width (wrapped)
         -1 = the centroid (or centroid line(s)) of the polygon made by the wrapped image width
         ```
+        - Top **must** be >= 0 and bottom **must** be <= 0 and >= -1.
     """
     def wrap():
         yield 'Initialising wrap', {'amount': 3}
@@ -115,6 +117,10 @@ def wrapSurface(pg: pygame.Surface,
                 raise ValueError(
                     'The 2 input surfaces are of different sizes!!!'
                 )
+        if top < 0 or bottom > 0 or bottom < -1:
+            raise ValueError(
+                'Top must be >= 0 and bottom must be <= 0 and >= -1'
+            )
         shape = MakeShape(width)
         def checkX1(x):
             for con in constraints:
@@ -191,27 +197,68 @@ def wrapSurface(pg: pygame.Surface,
         totd = 0
         total = sum(shape.jointDists)
 
-        yield 'Calculating segments', {'amount': len(collsegs), 'done': 0}
-
         lastP1 = None
+        lnsLen = len(lns.shapes)
+
+        yield 'Calculating segments', {'amount': len(collsegs), 'done': 0}
 
         for idx, seg in enumerate(collsegs):
             d = shape.jointDists[idx]
 
             # TODO: Trace the large poly along bcos it may have multiple segments
-            if lastP1 is None:
-                p1Closests = small.closestPointTo(collisions.Point(*seg.p1))
-                p1Closests.sort(key=lambda x: (x[0]-seg.p1[0])**2+(x[1]-seg.p1[1])**2)
+            
+            if top != 0:
+                out1 = closestTo(lns[idx].whereCollides(hitsLge), seg.p1)
+                out2 = closestTo(lns[(idx+1)%lnsLen].whereCollides(hitsLge), seg.p2)
+                if top == 1:
+                    outerp1 = out1
+                    outerp2 = out2
+                else:
+                    inner1 = seg.p1
+                    outerp1 = (
+                        (inner1[0]-out1[0])*top+out1[0],
+                        (inner1[1]-out1[1])*top+out1[1]
+                    )
+                    inner2 = seg.p2
+                    outerp2 = (
+                        (inner2[0]-out2[0])*top+out2[0],
+                        (inner2[1]-out2[1])*top+out2[1]
+                    )
             else:
-                p1Closests = [lastP1]
-            p2Closests = small.closestPointTo(collisions.Point(*seg.p2))
-            p2Closests.sort(key=lambda x: (x[0]-seg.p2[0])**2+(x[1]-seg.p2[1])**2)
-            lastP1 = p2Closests[0]
+                outerp1 = seg.p1
+                outerp2 = seg.p2
+            
+            if bottom != 0:
+                if lastP1 is None:
+                    p1Closests = small.closestPointTo(collisions.Point(*seg.p1))
+                    p1Closest = closestTo(p1Closests, seg.p1)
+                else:
+                    p1Closest = lastP1
+                p2Closests = small.closestPointTo(collisions.Point(*seg.p2))
+                p2Closest = closestTo(p2Closests, seg.p2)
+                lastP1 = p2Closest
+
+                if bottom == -1:
+                    innerP1 = p1Closest
+                    innerP2 = p2Closest
+                else:
+                    innerP1 = (
+                        (p1Closest[0]-seg.p1[0])*abs(bottom)+seg.p1[0],
+                        (p1Closest[1]-seg.p1[1])*abs(bottom)+seg.p1[1]
+                    )
+                    innerP2 = (
+                        (p2Closest[0]-seg.p2[0])*abs(bottom)+seg.p2[0],
+                        (p2Closest[1]-seg.p2[1])*abs(bottom)+seg.p2[1]
+                    )
+            else:
+                innerP1 = seg.p1
+                innerP2 = seg.p2
+
             poly = [
-                closestTo(lns[idx].whereCollides(hitsLge), seg.p1),
-                closestTo(lns[(idx+1)%len(lns.shapes)].whereCollides(hitsLge), seg.p2),
-                p2Closests[0],
-                p1Closests[0],
+                outerp1,
+                outerp2,
+                innerP2,
+                innerP1,
             ]
 
             draw_quad(cir, poly, pg.subsurface(((totd/total)*width, 0, math.ceil((d/total)*width), pg.get_height())))
