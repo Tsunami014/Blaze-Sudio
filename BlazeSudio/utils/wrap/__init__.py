@@ -137,7 +137,7 @@ def wrapSurface(pg: pygame.Surface,
         mins = (min(i[0] for i in largePs), min(i[1] for i in largePs))
         for i in range(len(shape.joints)):
             shape.joints[i] = (shape.joints[i][0]-mins[0], shape.joints[i][1]-mins[1])
-        large, main, small = shape.generateBounds(height)
+        large, main, small = shape.generateBounds(height, True, False, True)
         collsegs = shape.collSegments
         largePs = large.toPoints()
         sze = (math.ceil(max(i[0] for i in largePs)), math.ceil(max(i[1] for i in largePs)))
@@ -193,15 +193,25 @@ def wrapSurface(pg: pygame.Surface,
 
         yield 'Calculating segments', {'amount': len(collsegs), 'done': 0}
 
+        lastP1 = None
+
         for idx, seg in enumerate(collsegs):
             d = shape.jointDists[idx]
 
             # TODO: Trace the large poly along bcos it may have multiple segments
+            if lastP1 is None:
+                p1Closests = small.closestPointTo(collisions.Point(*seg.p1))
+                p1Closests.sort(key=lambda x: (x[0]-seg.p1[0])**2+(x[1]-seg.p1[1])**2)
+            else:
+                p1Closests = [lastP1]
+            p2Closests = small.closestPointTo(collisions.Point(*seg.p2))
+            p2Closests.sort(key=lambda x: (x[0]-seg.p2[0])**2+(x[1]-seg.p2[1])**2)
+            lastP1 = p2Closests[0]
             poly = [
                 closestTo(lns[idx-1].whereCollides(hitsLge), seg.p1),
                 closestTo(lns[idx].whereCollides(hitsLge), seg.p2),
-                closestTo(lns[idx].whereCollides(lns), seg.p2),
-                closestTo(lns[idx-1].whereCollides(lns), seg.p1),
+                p2Closests[0],
+                p1Closests[0],
             ]
 
             draw_quad(cir, poly, pg.subsurface(((totd/total)*width, 0, math.ceil((d/total)*width), pg.get_height())))
