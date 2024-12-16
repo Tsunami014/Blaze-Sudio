@@ -52,12 +52,9 @@ def DebugTable(names: list[str],
 
     Args:
         names (list[str]): The names of the inputs.
-        ins (list[SupportedTypes]): The inputs.
-        outs (list[SupportedTypes]): The outputs.
-        expecteds (list[SupportedTypes]): The expected outputs, or None if there is no expected result.
         formatter (Callable[[tuple[SupportedTypes]], str], optional): A function that takes a list of inputs and returns a string. (e.g. `lambda li: f'({li[0]}, {li[1]})'`). Defaults to `lambda li: ' '.join(li)`.
         highlights (list[int], optional): Which list elements to highlight. Defaults to None.
-        labels (list[str], optional): The labels for the columns. Defaults to ['In', 'Out', 'Expected'].
+        **rows (dict[str, tuple[SupportedTypes]]): A dictionary of `str: tuple[SupportedTypes]` values. These will be the rows in the table, and each value will be converted to strings.
 
     Raises:
         ValueError: If the `rows` argument is of incorrect format.
@@ -70,7 +67,7 @@ def DebugTable(names: list[str],
         raise ValueError(
             'Not all rows are iterable!'
         )
-    rows = {i: tuple(rows[i]) for i in rows}
+    rows = {i: tuple(str(j) for j in rows[i]) for i in rows}
     fstValLen = len(tuple(rows.values())[0])
     if any(len(i) != fstValLen for i in rows.values()):
         raise ValueError(
@@ -81,8 +78,8 @@ def DebugTable(names: list[str],
         return t + ' ' * (ln - len(t))
         # return ' ' * ((ln - len(t)) // 2) + t + ' ' * ((ln - len(t) + 1) // 2)
     
-    ls = [names, *list(rows.values())]
-    max_lens = [max(len(j[i]) for j in ls) for i in range(len(fstValLen))]
+    ls = [names] + list(rows.values())
+    max_lens = [max(len(j[i]) for j in ls) for i in range(fstValLen)]
     spacing = max(len(i) for i in rows.keys())
 
     print(' '*(spacing+2) + formatter(names))
@@ -91,8 +88,8 @@ def DebugTable(names: list[str],
         print(nme+': '+' '*(spacing-len(nme)) + formatter(nvals))
     
     if highlights is not None:
-        fmt = formatter((
-            (' ' if i in highlights else '^')*max_lens[i] for i in range(fstValLen)
+        fmt = formatter(tuple(
+            ('^' if i in highlights else ' ')*max_lens[i] for i in range(fstValLen)
         ))
         for let in set(fmt):
             if let not in ' ^':
@@ -143,6 +140,7 @@ def Check(testName: str,
     if errors != []:
         print(f'TEST {testName} FAILED:')
         DebugTable(
+            names,
             formatter,
             errors,
             ins=ins,
