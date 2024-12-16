@@ -482,9 +482,9 @@ def WrapDemo():
             self.offset = len(topF['Main'])
             topF['Main'].extend([
                 GUI.Text(topF, RTOP, 'Top'),
-                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, start=1, min=0, max=2, placeholdOnNum=None),
+                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=1, min=0, max=2, placeholdOnNum=None, decimals=8),
                 GUI.Text(topF, RTOP, 'Bottom'),
-                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, start=-1, min=-1, max=0, placeholdOnNum=None),
+                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=-1, min=-1, max=0, placeholdOnNum=None, decimals=8),
             ])
 
             topF['Main'].append(GUI.Text(topF, GO.PCTOP, 'INPUT IMAGE', font=GO.FTITLE))

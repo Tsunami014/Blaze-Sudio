@@ -355,7 +355,10 @@ class NumInputBox(InputBox):
     def fix(self):
         if self.text == '':
             return
-        num = float(self.text)
+        if self.text == '-':
+            num = 0
+        else:
+            num = float(self.text)
         if float(num) > self.limits[1]:
             self.text = str(self.limits[1])
         elif float(num) < self.limits[0]:
