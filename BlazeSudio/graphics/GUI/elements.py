@@ -287,11 +287,11 @@ class NumInputBox(InputBox):
             self.placehold = False
         else:
             self.placehold = str(placeholdOnNum)
-        super().__init__(G, pos, width, resize, placeholder, font, None, starting_text=(str(start) if start is not None else ''))
         if empty is None:
             self.emptyValue = start or 0
         else:
             self.emptyValue = empty
+        super().__init__(G, pos, width, resize, placeholder, font, None, starting_text=(str(start) if start is not None else ''))
         self.limits = (min, max)
         self.decimals = decimals
         self.renderdash = False
