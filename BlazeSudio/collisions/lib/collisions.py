@@ -143,7 +143,7 @@ def checkShpType(shape: Union['Shape', 'Shapes'], typs: Union[Type, ShpGroups, I
     """
     if not isinstance(typs, Iterable):
         typs = [typs]
-    if not isinstance(shape, Shape):
+    if not isinstance(shape, (Shape, Shapes)):
         return False
     for i in typs:
         if i in shape.GROUPS or type(shape) is i:
@@ -274,7 +274,7 @@ class Shape:
         Finds where this shape collides with another shape(s)
 
         Args:
-            othershape (Shape / Shapes / Iterable[Shape]): The shape(s) to check for collision with
+            othershape (Shape / Shapes / Iterable[Shape]): The shape(s) to check for collision with.
 
         Returns:
             Iterable[pointLike]: Points that lie both on this shape and the input shape(s)
@@ -285,6 +285,23 @@ class Shape:
         for s in othershape:
             points.extend(s._where(self))
         return points
+    
+    def isContaining(self, othershape: Union['Shape','Shapes',Iterable['Shape']]) -> bool:
+        """
+        Finds whether this shape fully encloses `othershape`; if `whereCollides` returns `[]` but `collides` returns True. But (most of the time) more optimised than that.
+
+        Args:
+            othershape (Shape / Shapes / Iterable[Shape]): The shape to check if it is fully enclosed within this shape.
+
+        Returns:
+            bool: Whether the shape is fully enclosed within this shape.
+        """
+        if isinstance(othershape, Shape):
+            return self._contains(othershape)
+        for s in othershape:
+            if self._contains(s):
+                return True
+        return False
 
     def distance_to(self, othershape: 'Shape') -> Number:
         """
@@ -323,6 +340,9 @@ class Shape:
     
     def _where(self, othershape: 'Shape') -> Iterable[pointLike]:
         return []
+
+    def _contains(self, othershape: 'Shape') -> bool:
+        return True
     
     def closestPointTo(self, othershape: 'Shape', returnAll: bool = False) -> pointLike|Iterable[pointLike]:
         """
@@ -375,7 +395,7 @@ class Shape:
     def toPoints(self) -> Iterable[pointLike]:
         """
         Returns:
-            Iterable[pointLike]: Get a list of all the Points that make up this object. For Circles, Arcs and Shape's, this will be empty.
+            Iterable[pointLike]: Get a list of all the Points that make up this object. For a few shapes (e.g. circles), this will be empty.
         """
         return []
     
@@ -441,6 +461,9 @@ class NoShape(Shape):
     
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
         return []
+    
+    def _contains(self, othershape: 'Shape') -> bool:
+        return False
     
     def area(self) -> Number:
         """
@@ -514,7 +537,7 @@ class Shapes:
         for s in shapes:
             self.shapes.remove(s)
     
-    def collides(self, shapes: Union[Shape,'Shapes',Iterable['Shape']]) -> bool:
+    def collides(self, shapes: Union[Shape,'Shapes',Iterable[Shape]]) -> bool:
         """
         Checks for collisions between all the shapes in this object and the input shape(s).
 
@@ -529,7 +552,7 @@ class Shapes:
                 return True
         return False
 
-    def whereCollides(self, shapes: Union[Shape,'Shapes',Iterable['Shape']]) -> Iterable[pointLike]:
+    def whereCollides(self, shapes: Union[Shape,'Shapes',Iterable[Shape]]) -> Iterable[pointLike]:
         """
         Find the points where this object collides with the input shape(s).
 
@@ -563,6 +586,21 @@ class Shapes:
             else:
                 points.append(s.closestPointTo(othershape, False))
         return points
+
+    def isContaining(self, othershape: Union[Shape,'Shapes',Iterable[Shape]]) -> bool:
+        """
+        Finds whether this shape fully encloses `othershape`; if `whereCollides` returns `[]` but `collides` returns True. But more optimised than that.
+
+        Args:
+            othershape (Shape / Shapes / Iterable[Shape]): The shape to check if it is fully enclosed within this shape.
+
+        Returns:
+            bool: Whether the shape is fully enclosed within this shape.
+        """
+        for s in self.shapes:
+            if s.isContaining(othershape):
+                return True
+        return False
     
     # TODO: Pick one method: either the dict or the list, not both (see below 2 funcs)
 
@@ -636,6 +674,9 @@ class Shapes:
     def __iter__(self):
         return iter(self.shapes)
     
+    def __len__(self):
+        return len(self.shapes)
+    
     def __getitem__(self, index: int) -> Union[Shape,'Shapes']:
         return self.shapes[index]
     
@@ -645,7 +686,8 @@ class Shapes:
     def __repr__(self): return str(self)
     
     def __str__(self):
-        return f'<Shapes with {len(self.shapes)} shapes>'
+        shpTyps = str([i.__class__.__name__ for i in self.shapes]).replace("'", "")
+        return f'<Shapes with shapes: {shpTyps}>'
 
 # The below are in order of collision:
 # Each defines how it collides if it hits anything below it, and calls the other object for collisions above.
@@ -719,6 +761,9 @@ class Point(Shape):
         Do you get the point?
         """
         return (self.x, self.y)
+    
+    def _contains(self, othershape: Shape) -> bool:
+        return False
     
     def handleCollisionsPos(self, 
                             oldPoint: Union['Point',pointLike], 
@@ -931,6 +976,9 @@ class Line(Shape):
             Iterable[pointLike]: Get a list of all the Points that make up this object.
         """
         return [self.p1, self.p2]
+
+    def _contains(self, othershape: Shape) -> bool:
+        return False
     
     def _collides(self, othershape: Shape) -> bool:
         if checkShpType(othershape, Point):
@@ -1326,9 +1374,22 @@ class Circle(Shape):
         """
         return math.pi * self.r**2
     
-    def _collides(self, othershape: Shape) -> bool:
+    def _contains(self, othershape: Shape) -> bool:
         if checkShpType(othershape, Point):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < self.r**2
+        if checkShpType(othershape, Line):
+            return self._contains(Point(*othershape.p1)) and self._contains(Point(*othershape.p2))
+        if checkShpType(othershape, Circle):
+            return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < max(self.r-othershape.r, 0)**2
+        if checkShpType(othershape, Arc):
+            ps = othershape.toPoints()
+            return self._contains(ps[0]) and self._contains(ps[1])
+        if checkShpType(othershape, ClosedShape):
+            return all(self._contains(p) for p in othershape.toPoints())
+    
+    def _collides(self, othershape: Shape) -> bool:
+        if checkShpType(othershape, Point):
+            return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 <= self.r**2
         if checkShpType(othershape, Line):
             if not self.check_rects(othershape):
                 return False
@@ -1505,7 +1566,7 @@ class Circle(Shape):
             (oldCir.x + oldCir.r * math.cos(velphi-quart), oldCir.y + oldCir.r * math.sin(velphi-quart)),
             (oldCir.x + oldCir.r * math.cos(velphi+quart), oldCir.y + oldCir.r * math.sin(velphi+quart)),
             (newCir.x + newCir.r * math.cos(velphi-quart), newCir.y + newCir.r * math.sin(velphi-quart)),
-            (newCir.x + newCir.r * math.cos(velphi+quart), newCir.y + newCir.r * math.sin(velphi+quart))
+            (newCir.x + newCir.r * math.cos(velphi+quart), newCir.y + newCir.r * math.sin(velphi+quart)),
         ), newCir)
         if not mvement.collides(objs):
             if verbose:
@@ -1729,6 +1790,9 @@ class Arc(Circle):
         Flips the portion taken to make the arc; so an arc covering 90 degrees of the circle will now cover 270, and vice versa.
         """
         self.startAng, self.endAng = self.endAng, self.startAng
+
+    def _contains(self, othershape: Shape) -> bool:
+        return False
     
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
         if checkShpType(othershape, Point):
@@ -1899,6 +1963,16 @@ class Arc(Circle):
         else:
             W = max(eps[0][0], eps[1][0])
         return E, N, W, S
+
+    def toPoints(self):
+        """
+        Returns:
+            Iterable[pointLike]: Get a list of all the Points that make up this object.
+        """
+        return [
+            Point(*rotate((self.x, self.y), (self.x, self.y+self.r), self.startAng-90)),
+            Point(*rotate((self.x, self.y), (self.x, self.y+self.r), self.endAng-90)),
+        ]
     
     def copy(self) -> 'Arc':
         """
@@ -2257,6 +2331,19 @@ class ClosedShape(Shape):
             return out, outvel, o[2]
         return out, outvel
     
+    def _containsPoint(self, point: Point) -> bool:
+        return self._collides(point) and self.whereCollides(point) == []
+
+    def _contains(self, othershape: Shape) -> bool:
+        if checkShpType(othershape, Point):
+            return self._containsPoint(othershape)
+        if checkShpType(othershape, Line):
+            return self._contains(Point(*othershape.p1)) and self._contains(Point(*othershape.p2))
+        if checkShpType(othershape, Circle) or checkShpType(othershape, Arc):
+            return self._collides(othershape) and self.whereCollides(othershape) == []
+        if checkShpType(othershape, ClosedShape):
+            return all(self._contains(p) for p in othershape.toPoints())
+    
     def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
         """
         Finds whether a point is on a corner of this shape.
@@ -2327,6 +2414,10 @@ class Rect(ClosedShape):
             Number: self.w * self.h
         """
         return self.w * self.h
+    
+    def _containsPoint(self, point: Point) -> bool:
+        x, y, mx, my = self.rect()
+        return x < point.x < mx and y < point.y and my > point.y
     
     def _collides(self, othershape: Shape) -> bool:
         x, y, mx, my = self.rect()
@@ -2468,19 +2559,16 @@ class RotatedRect(ClosedShape):
         """
         return self.w * self.h
     
+    def _containsPoint(self, point: Point) -> bool:
+        newp = rotate((self.x, self.y), point, -self.rot)
+        return self.x < newp[0] < (self.x+self.w) and self.y < newp[1] < (self.y+self.h)
+    
     def _collides(self, othershape: Shape) -> bool:
         if not self.check_rects(othershape):
             return False
         if checkShpType(othershape, Point):
-            ps = self.toPoints()
-            c = False
-            j = len(ps) - 1
-            for i in range(len(ps)):
-                if ((ps[i][1] > othershape.y) != (ps[j][1] > othershape.y)) and \
-                (othershape.x < (ps[j][0] - ps[i][0]) * (othershape.y - ps[i][1]) / (ps[j][1] - ps[i][1]) + ps[i][0]):
-                    c = not c
-                j = i
-            return c
+            newp = rotate((self.x, self.y), othershape, -self.rot)
+            return self.x <= newp[0] <= (self.x+self.w) and self.y <= newp[1] <= (self.y+self.h)
         if checkShpType(othershape, Line):
             for li in self.toLines():
                 if li.collides(othershape):
