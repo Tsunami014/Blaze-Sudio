@@ -29,6 +29,7 @@ highlightTyps = [
     (collisions.Shape),
     (collisions.Shape),
     (collisions.Rect),
+    (collisions.Point),
     (collisions.Point)
 ]
 combineCache = [None, None]
@@ -56,6 +57,10 @@ def drawObj(obj, t, col):
             drawObj(o, types.index(type(o)), (244, 194, 194, 200))
     if t == 7:
         col = (255, 255, 255)
+        # Outline shapes to be deleted
+        for o in objs:
+            if curObj.collides(o):
+                drawObj(o, types.index(type(o)), (255, 110, 60))
     collisions.drawShape(win, obj, col, 8)
 
 def moveCurObj(curObj):
@@ -80,7 +85,7 @@ def moveCurObj(curObj):
         curObj.x, curObj.y = pos
         if typ in (2, 3):
             curObj.r = dir[1]
-        elif typ in (4, 5, 8):
+        elif typ in (4, 5, 7, 8):
             curObj.w, curObj.h = dir[0], dir[1]
             if typ == 5:
                 curObj.rot = dir[2]
@@ -204,7 +209,8 @@ while run:
                 elif typ == 6:
                     curObj = collisions.Point(*event.pos)
                 elif typ == 7:
-                    curObj = collisions.Point(*event.pos)
+                    curObj = collisions.Rect(*event.pos, 0, 0)
+                    dir = [0, 0, 0]
                 elif typ == 8:
                     curObj = collisions.Rect(*event.pos, 0, 0)
                     dir = [0, 0, 0]
@@ -258,7 +264,15 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
     if btns[pygame.K_RIGHTBRACKET]:
         curObj.bounciness = min(1.5, curObj.bounciness+0.05)
         
-    win.fill((0, 0, 0) if (not objs.collides(curObj)) or playMode else (250, 50, 50))
+    if playMode:
+        win.fill(0)
+    elif objs.collides(curObj):
+        if curObj.isContaining(objs):
+            win.fill((50, 100, 255))
+        else:
+            win.fill((250, 50, 50))
+    else:
+        win.fill(0)
     pygame.draw.rect(win, (255, 255, 255), (0, 0, win.get_width(), header_sze))
     # Split it up into equal segments and put the text header_opts[i] in the middle of each segment
     for i in range(len(header_opts)):
@@ -307,7 +321,7 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
     
     for i in objs:
         drawObj(i, types.index(type(i)), offsetColour(i, (10, 255, 50)))
-    drawObj(curObj, typ, offsetColour(curObj, CRAINBOWCOLOURS[typ]))
+    drawObj(curObj, typ, offsetColour(curObj, CRAINBOWCOLOURS[typ%len(CRAINBOWCOLOURS)]))
 
     if not playMode:
         for i in objs.whereCollides(curObj):
