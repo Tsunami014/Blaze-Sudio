@@ -412,7 +412,7 @@ def WrapBasicDemo():
                 win.blit(txt, (r.x+(r.w-txt.get_width())/2, r.y+(r.h-txt.get_height())/2))
         
         if movingMode:
-            polys = main.generateBounds(100)
+            polys = main.generateBounds(100, True, False, True)
 
             # Outer Polygon
             ps = list(polys[0])
