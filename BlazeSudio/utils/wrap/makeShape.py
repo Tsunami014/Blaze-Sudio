@@ -1,8 +1,9 @@
 import math
 import numpy as np
-import pygame
 import BlazeSudio.collisions as colls
-from BlazeSudio.utils.wrap.skeleton import FastSkeleton
+from skimage.draw import polygon
+from skimage.morphology import skeletonize
+from skimage.measure import find_contours
 
 __all__ = [
     'MakeShape',
@@ -226,19 +227,17 @@ class MakeShape:
         if small:
             xs, ys = zip(*self.joints)
             minx, miny = min(xs), min(ys)
-            sur = pygame.Surface((max(xs)-minx, max(ys)-miny))
-            pygame.draw.polygon(sur, (255, 255, 255), [(i[0]-minx, i[1]-miny) for i in self.joints])
-            arr = pygame.surfarray.pixels3d(sur)
-            skel = FastSkeleton()(np.all(arr == np.array([255, 255, 255]), axis=-1))
+            image = np.zeros((int(max(xs)-minx)+1, int(max(ys)-miny)+1), dtype=np.uint8)
+            rr, cc = polygon(np.array(xs)-minx, np.array(ys)-miny)
+            image[rr, cc] = 1
+            skeleton = skeletonize(image, method='lee')
+            contours = find_contours(skeleton, 0.5)
             smlObj = colls.Shapes(
                 *[
-                    colls.Line((int(u[0])+minx, int(u[1])+miny), (int(v[0])+minx, int(v[1])+miny)) for u, v in skel.edges()
+                    colls.Line((float(u[0])+minx, float(u[1])+miny), (float(v[0])+minx, float(v[1])+miny)) for contour in contours for u, v in zip(contour[:-1], contour[1:])
                 ]
             )
-            # smlObj = colls.NoShape()
-            # centre = colls.shapelyToColl(pygeoops.centerline(shapelyObj, -0.5))
-            # if not colls.checkShpType(centre, colls.ShpGroups.GROUP):
-            #     centre = colls.Shapes(centre)
+
         else:
             smlObj = None
         
