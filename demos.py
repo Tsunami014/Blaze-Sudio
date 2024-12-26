@@ -482,9 +482,11 @@ def WrapDemo():
             self.offset = len(topF['Main'])
             topF['Main'].extend([
                 GUI.Text(topF, RTOP, 'Top'),
-                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=1, start=None, min=0, max=2, placeholdOnNum=None, decimals=8),
+                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=0.5, start=None, min=0, max=2, placeholdOnNum=None, decimals=8),
                 GUI.Text(topF, RTOP, 'Bottom'),
-                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=-1, start=None, min=-1, max=0, placeholdOnNum=None, decimals=8),
+                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=-0.5, start=None, min=-1, max=0, placeholdOnNum=None, decimals=8),
+                GUI.Text(topF, RTOP, 'Limit'),
+                GUI.Switch(topF, RTOP, default=True),
             ])
 
             topF['Main'].append(GUI.Text(topF, GO.PCTOP, 'INPUT IMAGE', font=GO.FTITLE))
@@ -573,7 +575,15 @@ def WrapDemo():
                 for seg in self.segs:
                     conns.append(Segment(seg[0], seg[1]))
 
-                slf['surf'] = yield from wrapSurface(topF[-1].get(), topF[off+1].get(), topF[off+3].get(), pg2=False, constraints=conns, isIter=True)
+                slf['surf'] = yield from wrapSurface(
+                    topF[-1].get(), 
+                    topF[off+1].get(), 
+                    topF[off+3].get(), 
+                    topF[off+5].get(), 
+                    pg2=False, 
+                    constraints=conns, 
+                    isIter=True
+                )
 
                 yield 'Finishing up'
 
