@@ -136,6 +136,12 @@ def testCollisions():
     # |  |
     # +--+
 
+    testLine('Line 9: Line v shape off circle exact',
+             ((0, 0), (1.5, 0)), [1, 1], collisions.Shapes(collisions.Circle(2, 2, 1, 1)),
+             (1, 1), (2.5, 1), (-1, -1), 3)
+    #─-
+    # O
+    
     # Test circles
     def testCircles(testName, inps, vel, collShps, expectedpos, expectedvel):
         outcirc, outvel = collisions.Circle(*inps).handleCollisionsVel(vel, collisions.Shapes(*collShps))
@@ -148,16 +154,34 @@ def testCollisions():
         )
     
     testCircles('Circle 1: Rebound top',
-                (2, 0, 1), [0, 2], [collisions.Rect(0, 2, 4, 4, 1)], 
+                (2, 0, 1), [0, 2], [collisions.Rect(0, 0, 4, 4, 1)], 
                 (2, 0),
-                (0, -2)) # It is now going the opposite direction
+                (0, -3)) # It is now going the opposite direction
     # o = current pos, N = new pos
     #  o
     #+--+
     #| N|
     #|  |
     #+--+
-    # TODO: More tests
+    testCircles('Circle 2: Rebound side',
+                (0, 2, 1), [2, 0], [collisions.Rect(1, 0, 4, 4, 1)],
+                (0, 2), # It rebounded perfectly and now is exactly where it started
+                (-2, 0)) # It is now going the opposite direction
+    # o = current pos, N = new pos
+    # +--+
+    # |  |
+    #o|N |
+    # +--+
+    testCircles('Circle 3: v shape',
+                (0, 0, 1), [2, 2], [collisions.Rect(0, 1, 4, 4, 1)],
+                (2, 0), # It rebounded like a v shape
+                (2, -2))
+    # o = current pos, N = new pos
+    #o
+    #+--+
+    #| N|
+    #|  |
+    #+--+
 
     # TIMING
     shp1 = collisions.RotatedRect(0, 0, 1, 1, 45)
