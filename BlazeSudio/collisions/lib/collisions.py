@@ -127,7 +127,9 @@ class ShpGroups(Enum):
     """These shapes start in one spot and end in the same spot"""
     LINES = 1
     """Shapes that make the outer edges of other shapes"""
-    GROUP = 2
+    NOTSTRAIGHT = 2
+    """Shapes that are not straight; e.g. Circles"""
+    GROUP = 3
     """A group of other shapes"""
 
 def checkShpType(shape: Union['Shape', 'Shapes'], typs: Union[Type, ShpGroups, Iterable[Union[Type, ShpGroups]]]) -> bool:
@@ -1180,6 +1182,11 @@ class Line(Shape):
         oldLine = Line(*sorted([oldLine.p1, oldLine.p2], key=lambda x: x[0]))
         newLine = Line(*sorted([newLine.p1, newLine.p2], key=lambda x: x[0]))
         mvement = Polygon(oldLine.p1, oldLine.p2, newLine.p2, newLine.p1)
+        # Don't let you move when you're in a wall
+        if oldLine.collides(objs):
+            if verbose:
+                return oldLine, [0, 0], [None, True]
+            return oldLine, [0, 0]
         points = []
         hit = False
         for o in objs:
@@ -1195,11 +1202,6 @@ class Line(Shape):
             if verbose:
                 return newLine, vel, [None, False]
             return newLine, vel
-        # Don't let you move when you're in a wall
-        if points == []:
-            if verbose:
-                return oldLine, [0, 0], [None, True]
-            return oldLine, [0, 0]
         points.sort(key=lambda x: x[3])
         closestP = points[0][0] # Closest point on the OTHER object
         cPoint = points[0][2] # closestP projected onto the oldLine
@@ -1208,20 +1210,23 @@ class Line(Shape):
 
         thisNormal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))
         paralell = False
-        cLine = None
         thisIsOnP = oldLine.isCorner(cPoint, precision)
-        if checkShpType(closestObj, Line):
-            cLine = closestObj
-        elif checkShpType(closestObj, ShpGroups.CLOSED):
-            colllidingLns = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
-            if colllidingLns != []:
-                cLine = colllidingLns[0]
-        elif checkShpType(closestObj, Circle) and (not thisIsOnP):
-            paralell = True
-        if cLine is not None:
-            sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
-            otherLnNormal = math.degrees(math.atan2(sortedOtherLn[0][1]-sortedOtherLn[1][1], sortedOtherLn[0][0]-sortedOtherLn[1][0]))
-            paralell = abs(otherLnNormal%360 - thisNormal%360) < precision or abs((otherLnNormal-180)%360 - thisNormal%360) < precision
+        if checkShpType(closestObj, ShpGroups.NOTSTRAIGHT):
+            paralell = not thisIsOnP
+        if not paralell:
+            cLine = None
+            if checkShpType(closestObj, Line):
+                cLine = closestObj
+            elif checkShpType(closestObj, ShpGroups.CLOSED):
+                colllidingLns = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
+                if colllidingLns != []:
+                    cLine = colllidingLns[0]
+            elif checkShpType(closestObj, Circle) and (not thisIsOnP):
+                paralell = True
+            if cLine is not None:
+                sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
+                otherLnNormal = math.degrees(math.atan2(sortedOtherLn[0][1]-sortedOtherLn[1][1], sortedOtherLn[0][0]-sortedOtherLn[1][0]))
+                paralell = abs(otherLnNormal%360 - thisNormal%360) < precision or abs((otherLnNormal-180)%360 - thisNormal%360) < precision
         velDiff = 180
         if paralell: # Line off line
             collTyp = 3
@@ -1251,6 +1256,9 @@ class Line(Shape):
                 #)
                 collTyp = None
                 normal, phi = 0, 0
+        
+        if round(newPoint[0], precision) == round(closestP[0], precision) and round(newPoint[1], precision) == round(closestP[1], precision):
+            phi = normal+180
 
         # the distance between the closest point on the other object and the corresponding point on the newLine
         dist_left = math.hypot(newPoint[0]-closestP[0], newPoint[1]-closestP[1]) * closestObj.bounciness
@@ -1344,7 +1352,7 @@ class Circle(Shape):
     """A perfect circle. Defined as an x and y centre coordinate of the circle and a radius.
     Please be mindful when checking for this class as it is technically a closed shape, but if you try to run \
     `.toLines()` or `.toPoints()` it will return an empty list; so please check for it *before* closed shapes."""
-    GROUPS = [ShpGroups.CLOSED]
+    GROUPS = [ShpGroups.CLOSED, ShpGroups.NOTSTRAIGHT]
     def __init__(self, x: Number, y: Number, r: Number, bounciness: float = BASEBOUNCINESS):
         """
         Args:
@@ -1654,7 +1662,7 @@ class Circle(Shape):
     
     def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
         """
-        Finds whether a point is on a corner of this shape.
+        Finds whether a point is on a corner of this shape. But because circles don't have any corners, this will return False.
 
         Args:
             point (pointLike): The point to find if it's a corner
@@ -1721,7 +1729,7 @@ class Arc(Circle):
     This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take.
     
     **ANGLES ARE MEASURED IN DEGREES.**"""
-    GROUPS = [ShpGroups.LINES]
+    GROUPS = [ShpGroups.LINES, ShpGroups.NOTSTRAIGHT]
     def __init__(self, 
                  x: Number, 
                  y: Number, 
@@ -1963,6 +1971,23 @@ class Arc(Circle):
         else:
             W = max(eps[0][0], eps[1][0])
         return E, N, W, S
+    
+    def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
+        """
+        Finds whether a point is on a corner of this shape.
+
+        Args:
+            point (pointLike): The point to find if it's a corner
+            precision (Number, optional): The decimal places to round to to check. Defaults to 5.
+
+        Returns:
+            bool: Whether the point is on a corner of this shape
+        """
+        for p in self.toPoints():
+            if round(p[0], precision) == round(point[0], precision) and \
+               round(p[1], precision) == round(point[1], precision):
+                return True
+        return False
 
     def toPoints(self):
         """
@@ -2229,21 +2254,24 @@ class ClosedShape(Shape):
 
         thisNormal = math.degrees(math.atan2(oldLine[0][1]-oldLine[1][1], oldLine[0][0]-oldLine[1][0]))
         paralell = False
-        cLines = []
         thisIsOnP = oldLine.isCorner(cPoint, precision)
-        if checkShpType(closestObj, Line):
-            cLines = [closestObj]
-        elif checkShpType(closestObj, ShpGroups.CLOSED):
-            cLines = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
-        elif checkShpType(closestObj, Circle) and (not thisIsOnP):
-            paralell = True
-        if cLines != []:
-            for cLine in cLines:
-                sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
-                otherLnNormal = math.degrees(math.atan2(sortedOtherLn[0][1]-sortedOtherLn[1][1], sortedOtherLn[0][0]-sortedOtherLn[1][0]))
-                paralell = abs(otherLnNormal%360 - thisNormal%360) < precision or abs((otherLnNormal-180)%360 - thisNormal%360) < precision
-                if paralell:
-                    break
+        if checkShpType(closestObj, ShpGroups.NOTSTRAIGHT):
+            paralell = not thisIsOnP
+        else:
+            cLines = []
+            if checkShpType(closestObj, Line):
+                cLines = [closestObj]
+            elif checkShpType(closestObj, ShpGroups.CLOSED):
+                cLines = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
+            elif checkShpType(closestObj, Circle) and (not thisIsOnP):
+                paralell = True
+            if cLines != []:
+                for cLine in cLines:
+                    sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
+                    otherLnNormal = math.degrees(math.atan2(sortedOtherLn[0][1]-sortedOtherLn[1][1], sortedOtherLn[0][0]-sortedOtherLn[1][0]))
+                    paralell = abs(otherLnNormal%360 - thisNormal%360) < precision or abs((otherLnNormal-180)%360 - thisNormal%360) < precision
+                    if paralell:
+                        break
         velDiff = 180
         if paralell: # Line off line
             collTyp = 3
@@ -2273,6 +2301,9 @@ class ClosedShape(Shape):
                 #)
                 collTyp = None
                 normal, phi = 0, 0
+        
+        if round(newPoint[0], precision) == round(closestP[0], precision) and round(newPoint[1], precision) == round(closestP[1], precision):
+            phi = normal+180
 
         # the distance between the closest point on the other object and the corresponding point on the newLine
         dist_left = math.hypot(newPoint[0]-closestP[0], newPoint[1]-closestP[1]) * closestObj.bounciness
