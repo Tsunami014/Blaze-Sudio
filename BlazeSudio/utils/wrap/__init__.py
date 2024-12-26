@@ -35,7 +35,7 @@ def wrapLevel(
         lvl: int, 
         top: int|float = 1,
         bottom: int|float = 0, 
-        quality: float = 1.0, 
+        limit: bool = True, 
         startRot: int|float = 0, 
         constraints: list[Segment] = [],
     ) -> tuple[pygame.Surface]:
@@ -47,7 +47,7 @@ def wrapLevel(
         lvl (int): The level number.
         top (int|float, optional): The position of the top of the wrapped image. See below 'positioning'. Defaults to 1.
         bottom (int|float, optional): The position of the bottom of the wrapped image. See below 'positioning'. Defaults to 0.
-        quality (float, optional): The quality of the output, in terms of percentage of calculated total size as a decimal. Defaults to 1.0 (regular sized).
+        limit (bool, optional): Whether to limit the warp so it MUST be a height of `pg.get_height()`. Making this False may give some very warped results. Constrains the bottom of the image. Defaults to True.
         startRot (int|float, optional): The starting rotation. Defaults to 0.
         constraints (list[Segment], optional): A list of constraints to apply to the image. Defaults to [].
 
@@ -69,12 +69,12 @@ def wrapLevel(
     for i in world.get_level(lvl).layers:
         i.tileset = None  # So it has to render blocks instead >:)
     pg2 = world.get_pygame(lvl, transparent_bg=True)
-    return wrapSurface(pg, top, bottom, quality, startRot, constraints, pg2)
+    return wrapSurface(pg, top, bottom, limit, startRot, constraints, pg2)
 
 def wrapSurface(pg: pygame.Surface, 
                 top: int|float = 1,
                 bottom: int|float = 0, 
-                quality: float = 1.0, 
+                limit: bool = True,
                 startRot: int|float = 0, 
                 constraints: list[Segment] = [], 
                 pg2: bool|pygame.Surface = True,
@@ -87,7 +87,7 @@ def wrapSurface(pg: pygame.Surface,
         pg (pygame.Surface): The pygame surface to wrap.
         top (int|float, optional): The position of the top of the wrapped image. See below 'positioning'. Defaults to 1.
         bottom (int|float, optional): The position of the bottom of the wrapped image. See below 'positioning'. Defaults to 0.
-        quality (float, optional): The quality of the output, in terms of percentage of calculated total size as a decimal. Defaults to 1.0 (regular sized).
+        limit (bool, optional): Whether to limit the warp so it MUST be a height of `pg.get_height()`. Making this False may give some very warped results. Constrains the bottom of the image. Defaults to True.
         startRot (int|float, optional): The starting rotation. Defaults to 0.
         constraints (list[Segment], optional): A list of constraints to apply to the image. Defaults to [].
         pg2 (bool|pygame.Surface, optional): A pygame surface for the alpha wrapping, or a bool as to whether to return it in the first place. Defaults to True.
@@ -253,6 +253,12 @@ def wrapSurface(pg: pygame.Surface,
             else:
                 innerP1 = seg.p1
                 innerP2 = seg.p2
+            
+            if limit:
+                phi1 = collisions.direction(outerp1, innerP1)
+                innerP1 = collisions.rotate(outerp1, (outerp1[0], outerp1[1]-height), math.degrees(phi1)+90)
+                phi2 = collisions.direction(outerp2, innerP2)
+                innerP2 = collisions.rotate(outerp2, (outerp2[0], outerp2[1]-height), math.degrees(phi2)+90)
 
             poly = [
                 outerp1,
