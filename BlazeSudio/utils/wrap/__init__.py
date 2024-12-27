@@ -1,6 +1,7 @@
 from BlazeSudio import collisions
 from BlazeSudio.utils.wrap.makeShape import MakeShape
 from BlazeSudio.utils.wrap.warp import draw_quad
+import numpy as np
 import os
 import pygame
 import math
@@ -38,6 +39,7 @@ def wrapLevel(
         limit: bool = True, 
         startRot: int|float = 0, 
         constraints: list[Segment] = [],
+        isIter: bool = False
     ) -> tuple[pygame.Surface]:
     """
     Wrap a level and get it's wrapped surface and also it's collision surface.
@@ -50,6 +52,7 @@ def wrapLevel(
         limit (bool, optional): Whether to limit the warp so it MUST be a height of `pg.get_height()`. Making this False may give some very warped results. Constrains the bottom of the image. Defaults to True.
         startRot (int|float, optional): The starting rotation. Defaults to 0.
         constraints (list[Segment], optional): A list of constraints to apply to the image. Defaults to [].
+        isIter (bool, optional): Whether to return a generator or just run the func itself. Defaults to False (just run the func). The generator is in a format aplicable to `graphics.loading.Progress`.
 
     Returns:
         tuple[pygame.Surface, pygame.Surface]: The output surface or surfaces which are the wrapped image(s)
@@ -64,12 +67,24 @@ def wrapLevel(
         ```
         - Top **must** be >= 0 and bottom **must** be <= 0 and >= -1.
     """
-
-    pg = world.get_pygame(lvl, transparent_bg=True)
-    for i in world.get_level(lvl).layers:
-        i.tileset = None  # So it has to render blocks instead >:)
-    pg2 = world.get_pygame(lvl, transparent_bg=True)
-    return wrapSurface(pg, top, bottom, limit, startRot, constraints, pg2)
+    def wrap():
+        pg = world.get_pygame(lvl, transparent_bg=True)
+        for i in world.get_level(lvl).layers:
+            i.tileset = None  # So it has to render blocks instead >:)
+        pg2 = world.get_pygame(lvl, transparent_bg=True)
+        ret = yield from wrapSurface(pg, top, bottom, limit, startRot, constraints, pg2, True)
+        return ret
+    
+    if isIter:
+        return wrap()
+    else:
+        w = wrap()
+        for msg in w:
+            pass
+        try:
+            next(w)
+        except StopIteration as e:
+            return e.value
 
 def wrapSurface(pg: pygame.Surface, 
                 top: int|float = 1,
@@ -113,10 +128,14 @@ def wrapSurface(pg: pygame.Surface,
         yield 'Initialising wrap', {'amount': 3}
         width, height = pg.get_size()
         if isinstance(pg2, pygame.Surface):
+            pg2IsPygame = True
             if pg.get_size() != pg2.get_size():
                 raise ValueError(
                     'The 2 input surfaces are of different sizes!!!'
                 )
+        else:
+            pg2IsPygame = False
+        
         if top < 0 or bottom > 0 or bottom < -1:
             raise ValueError(
                 'Top must be >= 0 and bottom must be <= 0 and >= -1'
@@ -148,6 +167,8 @@ def wrapSurface(pg: pygame.Surface,
         largePs = large.toPoints()
         sze = (math.ceil(max(i[0] for i in largePs)), math.ceil(max(i[1] for i in largePs)))
         cir = pygame.Surface(sze, pygame.SRCALPHA)
+        if pg2IsPygame:
+            cir2 = pygame.Surface(sze, pygame.SRCALPHA)
 
         angs = [collisions.direction(i.p1, i.p2) for i in collsegs]
 
@@ -268,13 +289,29 @@ def wrapSurface(pg: pygame.Surface,
             ]
 
             draw_quad(cir, poly, pg.subsurface(((totd/total)*width, 0, math.ceil((d/total)*width), pg.get_height())))
+            if pg2IsPygame:
+                draw_quad(cir2, poly, pg2.subsurface(((totd/total)*width, 0, math.ceil((d/total)*width), pg2.get_height())))
 
             totd += d
             yield 'Calculating segments'
         
-        # TODO: if pg2 is True: # just mask the output
+        if pg2 is True: # just mask the output
+            surface_array = pygame.surfarray.pixels3d(cir)
+            alpha_array = pygame.surfarray.pixels_alpha(cir)
+
+            white = np.array([255, 255, 255])
+            black = np.array([0, 0, 0])
+
+            alpha_array[np.all(surface_array == white, axis=-1)] = 0
+            alpha_array[np.all(surface_array == black, axis=-1)] = 128  # 50% transparency
+
+            surface = pygame.surfarray.make_surface(surface_array)
+            surface = surface.convert_alpha()
+            pygame.surfarray.pixels_alpha(surface)[:] = alpha_array
+            return cir.copy(), surface.copy()
+        elif pg2IsPygame:
+            return cir.copy(), cir2.copy()
         return cir.copy()
-        # return cirs
     if isIter:
         return wrap()
     else:
@@ -286,31 +323,75 @@ def wrapSurface(pg: pygame.Surface,
         except StopIteration as e:
             return e.value
 
-def save(imgs, fname, szes, spacing=None): # TODO: Think about removing
-    ms = max(szes)
-    ss = sum(szes)
-    sp = (spacing or ms)
-    out = pygame.Surface((ms, ss+sp-ss%sp), pygame.SRCALPHA)
+def find_blanks(imgs1: list[pygame.Surface], imgs2: list[pygame.Surface]=None):
+    """
+    Finds the blank bounding boxes around the input planets. Both will be used to find a box that encompasses both, but the second doesn't *have* to be specified \
+    to just use the first instead.
+
+    Args:
+        imgs1 (list[pygame.Surface]): The first list of planets.
+        imgs2 (list[pygame.Surface], optional): The second list of planets. Defaults to None.
+
+    Returns:
+        list[tuple[int, int, int, int]]: The bounding boxes!
+    """
+    outs = []
+    for img1, img2 in zip(imgs1, imgs2):
+        mask = pygame.mask.from_surface(img1)
+        bounding_rects = mask.get_bounding_rects()
+        if imgs2 is not None:
+            mask = pygame.mask.from_surface(img2)
+            bounding_rects.extend(mask.get_bounding_rects())
+        outs.append([
+            min(i.x for i in bounding_rects),
+            min(i.y for i in bounding_rects),
+            max(i.x+i.w for i in bounding_rects),
+            max(i.y+i.h for i in bounding_rects),
+        ])
+        
+    return outs
+
+def save(imgs: list[pygame.Surface], fname: str, multiples: int=None, remove_blanks: list[tuple[int]]=None, centreX: bool=False, centreY: bool=False):
+    """
+    Saves a list of images to a single image file.
+
+    Args:
+        imgs (list[pygame.Surface]): The list of images to save.
+        fname (str): The filename to save the image to.
+        multiples (int, optional): If provided, ensures that the height of each image is a multiple of this value. Defaults to None.
+        remove_blank (list[tuple[int]], optional): The blank space to remove in the images, found through `find_blanks`. Defaults to None.
+        centreX (bool, optional): Whether to centre the images on the x axis. Defaults to False.
+        centreY (bool, optional): Whether to centre the images on the y axis. Defaults to False.
+    """
+    if remove_blanks is not None:
+        imgs2 = []
+        for idx, img in enumerate(imgs):
+            blanks = remove_blanks[idx]
+            img2 = pygame.Surface((blanks[2]-blanks[0], blanks[3]-blanks[1]), pygame.SRCALPHA)
+            img2.blit(img, (-blanks[0], -blanks[1]))
+            imgs2.append(img2)
+        imgs = imgs2
+    def modify(x):
+        if multiples is None or x%multiples == 0:
+            return x
+        return x+(multiples-(x%multiples))
+    szes = [(i.get_width(), modify(i.get_height())) for i in imgs]
+    ms = modify(max(i[0] for i in szes))
+    ss = sum(i[1] for i in szes)
+    out = pygame.Surface((ms, ss), pygame.SRCALPHA)
     prevh = 0
     for img, sze in zip(imgs, szes):
-        if isinstance(img, pygame.Surface):
-            newImg = pygame.transform.scale(img, (sze, sze)).convert_alpha()
-            out.blit(newImg, (0, prevh))
-            if spacing is None:
-                prevh += newImg.get_height()
-            else:
-                prevh += spacing
-            continue
-        new_image = pygame.Surface((len(img[0]), len(img)), pygame.SRCALPHA)
-        for y, row in enumerate(img):
-            for x, pixel in enumerate(row):
-                new_image.set_at((x, y), pixel)
-        newImg = pygame.transform.scale(new_image, (sze, sze))
-        out.blit(newImg, (0, prevh))
-        if spacing is None:
-            prevh += newImg.get_height()
+        act_sze = img.get_size()
+        if centreX:
+            x = (ms-act_sze[0])/2
         else:
-            prevh += spacing
+            x = 0
+        if centreY:
+            y = (sze[1]-act_sze[1])/2
+        else:
+            y = 0
+        out.blit(img, (x, prevh+y))
+        prevh += sze[1]
 
     if not os.path.exists(os.path.dirname(fname)):
         os.makedirs(os.path.dirname(fname))
