@@ -17,9 +17,8 @@
         "graphics",
         "worlds",
         "nodes",
-        "other",
+        "wrap",
         "sound",
-        "tests",
         "tests"
     ],
     "python.REPL.enableREPLSmartSend": false
