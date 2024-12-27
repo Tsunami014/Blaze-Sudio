@@ -57,7 +57,7 @@ def wrapLevel(
         limit (bool, optional): Whether to limit the warp so it MUST be a height of `pg.get_height()`. Making this False may give some very warped results. Constrains the bottom of the image. Defaults to True.
         startRot (int|float, optional): The starting rotation. Defaults to 0.
         constraints (list[Segment], optional): A list of constraints to apply to the image. Defaults to [].
-        halo (list[int, int, int, int], optional): The halo around the image. Defaults to `[0, 0, 0, 0]` (no halo). A good halo is `[255, 255, 255, 1]` (a very faint glow).
+        halo (list[int, int, int, int], optional): The halo around the image. Defaults to `[0, 0, 0, 0]` (no halo). A good halo is `[255, 255, 255, 10]` (a very faint glow).
         isIter (bool, optional): Whether to return a generator or just run the func itself. Defaults to False (just run the func). The generator is in a format aplicable to `graphics.loading.Progress`.
 
     Returns:
@@ -112,7 +112,7 @@ def wrapSurface(pg: pygame.Surface,
         limit (bool, optional): Whether to limit the warp so it MUST be a height of `pg.get_height()`. Making this False may give some very warped results. Constrains the bottom of the image. Defaults to True.
         startRot (int|float, optional): The starting rotation. Defaults to 0.
         constraints (list[Segment], optional): A list of constraints to apply to the image. Defaults to [].
-        halo (list[int, int, int, int], optional): The halo around the image. Defaults to `[0, 0, 0, 0]` (no halo). A good halo is `[255, 255, 255, 1]` (a very faint glow).
+        halo (list[int, int, int, int], optional): The halo around the image. Defaults to `[0, 0, 0, 0]` (no halo). A good halo is `[255, 255, 255, 10]` (a very faint glow).
         pg2 (bool|pygame.Surface, optional): A pygame surface for the alpha wrapping, or a bool as to whether to return it in the first place. Defaults to True.
             - `pygame.Surface` -> use that for the alpha only wrap
             - `True` -> use `pg` for the alpha wrap
