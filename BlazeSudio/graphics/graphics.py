@@ -4,6 +4,7 @@ from BlazeSudio.graphics import stuff as GS
 from BlazeSudio.graphics import options as GO
 from BlazeSudio.graphics import stacks as STACKS
 from BlazeSudio.graphics import GUI, mouse
+from BlazeSudio.graphics.GUI.base import Element
 
 
 # TODO: make initial creation of elements faster
@@ -62,7 +63,7 @@ class Screen(GUI.GraphicBase):
         """
         pass
 
-    def _ElementClick(self, obj):
+    def _ElementClick(self, obj: Element):
         """
         This function is called every time an element is clicked.
 
@@ -78,7 +79,7 @@ class Screen(GUI.GraphicBase):
         """
         pass
 
-    def _Event(self, event):
+    def _Event(self, event: pygame.event.Event):
         """
         When a pygame event occurs (click mouse, press button, etc.)
 
@@ -96,7 +97,7 @@ class Screen(GUI.GraphicBase):
         """
         pass
 
-    def _Last(self, aborted):
+    def _Last(self, aborted: bool):
         """
         This function is called when the screen is about to close. What it returns the function will too.
 

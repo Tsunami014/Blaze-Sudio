@@ -247,7 +247,7 @@ class Progressbar(BaseLoadingScreen):
                                     f"Type of item '{it}' is not int!"
                                 )
                             self.done = it
-                        elif key == 'done':
+                        elif key == 'formatter':
                             if not isinstance(it, Callable):
                                 raise TypeError(
                                     f"Type of item '{it}' is not Callable!"
