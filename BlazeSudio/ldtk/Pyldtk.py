@@ -412,8 +412,8 @@ class layer:
         Returns:
             pygame.Surface: The layer (be it intgrid or tile) compiled as a pygame surface with transparency.
         """
-        end = pygame.Surface(self.sizePx).convert_alpha()
-        end.fill((255, 255, 255, 1))
+        end = pygame.Surface(self.sizePx, pygame.SRCALPHA)
+        end.fill((255, 255, 255, 0))
         if not self.data['visible']:
             return end
         # TODO: Autotile layer support, but does it even need it???
@@ -424,7 +424,7 @@ class layer:
                     for x in range(len(self.intgrid[y])):
                         col = pygame.Surface((self.gridSize, self.gridSize)).convert_alpha()
                         if self.intgrid[y, x] == 0 or self.intgrid[y, x] not in vals:
-                            col.fill((255, 255, 255, 1))
+                            col.fill((255, 255, 255, 0))
                         else:
                             h = self.intGridValues[vals.index(self.intgrid[y, x])]['color'].lstrip('#')
                             col.fill(tuple(int(h[i:i+2], 16) for i in (0, 2, 4)))
