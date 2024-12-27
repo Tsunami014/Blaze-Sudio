@@ -376,18 +376,18 @@ def save(imgs: list[pygame.Surface],
         centreX (bool, optional): Whether to centre the images on the x axis. Defaults to False.
         centreY (bool, optional): Whether to centre the images on the y axis. Defaults to False.
     """
-    if remove_blanks is not None:
-        imgs2 = []
-        for idx, img in enumerate(imgs):
-            blanks = remove_blanks[idx]
-            img2 = pygame.Surface((blanks[2]-blanks[0], blanks[3]-blanks[1]), pygame.SRCALPHA)
-            img2.blit(img, (-blanks[0], -blanks[1]))
-            imgs2.append(img2)
-        imgs = imgs2
     def modify(x):
         if multiples is None or x%multiples == 0:
             return x
         return x+(multiples-(x%multiples))
+    if remove_blanks is not None:
+        imgs2 = []
+        for idx, img in enumerate(imgs):
+            blanks = remove_blanks[idx]
+            img2 = pygame.Surface((blanks[2]-blanks[0], modify(blanks[3]-blanks[1])), pygame.SRCALPHA)
+            img2.blit(img, (-blanks[0], -blanks[1]))
+            imgs2.append(img2)
+        imgs = imgs2
     szes = [(i.get_width(), modify(i.get_height())) for i in imgs]
     ms = modify(max(i[0] for i in szes))
     ss = sum(i[1] for i in szes)
@@ -491,7 +491,7 @@ def update(img: pygame.Surface,
     thisOut.blit(img, (x, y))
 
     h1, h2, h3 = out1.get_height(), thisOut.get_height(), out2.get_height()
-    out = pygame.Surface((ms, h1+h2+h3), pygame.SRCALPHA)
+    out = pygame.Surface((ms, modify(h1+h2+h3)), pygame.SRCALPHA)
     out.blit(out1, (0, 0))
     out.blit(thisOut, (0, h1))
     out.blit(out2, (0, h3))
