@@ -1,8 +1,10 @@
-import json, math, os
+import BlazeSudio.ldtk.Pyldtk as ldtk
+
 from pygame import Surface, Rect
 import pygame.draw
-
-import BlazeSudio.ldtk.Pyldtk as ldtk
+import json
+import math
+import os
 
 class World:
     def __init__(self, path):
@@ -59,7 +61,7 @@ class World:
 
     def get_pygame(self, lvl=0, transparent_bg=False):
         level = self.ldtk.levels[lvl]
-        end = Surface(level.sizePx).convert_alpha()
+        end = Surface(level.sizePx, pygame.SRCALPHA)
         if transparent_bg:
             end.fill((0, 0, 0, 0))
         else:
