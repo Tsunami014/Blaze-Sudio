@@ -340,11 +340,14 @@ def find_blanks(imgs1: list[pygame.Surface], imgs2: list[pygame.Surface]=None):
         list[tuple[int, int, int, int]]: The bounding boxes!
     """
     outs = []
+    do_img2 = imgs2 is not None
+    if not do_img2:
+        imgs2 = imgs1
     for img1, img2 in zip(imgs1, imgs2):
-        mask = pygame.mask.from_surface(img1)
+        mask = pygame.mask.from_surface(img1, 0)
         bounding_rects = mask.get_bounding_rects()
-        if imgs2 is not None:
-            mask = pygame.mask.from_surface(img2)
+        if do_img2:
+            mask = pygame.mask.from_surface(img2, 0)
             bounding_rects.extend(mask.get_bounding_rects())
         outs.append([
             min(i.x for i in bounding_rects),
@@ -492,6 +495,8 @@ def update(img: pygame.Surface,
     out.blit(out1, (0, 0))
     out.blit(thisOut, (0, h1))
     out.blit(out2, (0, h3))
+
+    pygame.image.save(out, fname)
 
     writeHei = str(modify(thisOut.get_height()))
     new = fc[:thisidx] + writeHei + '\n' + fc[thisidx+len(writeHei):]
