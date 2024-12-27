@@ -9,7 +9,11 @@ import math
 __all__ = [
     'wrapLevel',
     'wrapSurface',
-    'Segment'
+    'Segment',
+    'find_blanks',
+    'save',
+    'saveData',
+    'update'
 ]
 
 class Segment:
@@ -351,7 +355,13 @@ def find_blanks(imgs1: list[pygame.Surface], imgs2: list[pygame.Surface]=None):
         
     return outs
 
-def save(imgs: list[pygame.Surface], fname: str, multiples: int=None, remove_blanks: list[tuple[int]]=None, centreX: bool=False, centreY: bool=False):
+def save(imgs: list[pygame.Surface], 
+         fname: str, 
+         multiples: int=None, 
+         remove_blanks: list[tuple[int]]=None, 
+         centreX: bool=False, 
+         centreY: bool=False
+        ):
     """
     Saves a list of images to a single image file.
 
@@ -396,3 +406,95 @@ def save(imgs: list[pygame.Surface], fname: str, multiples: int=None, remove_bla
     if not os.path.exists(os.path.dirname(fname)):
         os.makedirs(os.path.dirname(fname))
     pygame.image.save(out, fname)
+
+def saveData(imgs: list[pygame.Surface], fname: str, names: list[str], multiples: int=None, remove_blanks: list[tuple[int]]=None):
+    if remove_blanks is not None:
+        imgs2 = []
+        for idx, img in enumerate(imgs):
+            blanks = remove_blanks[idx]
+            img2 = pygame.Surface((blanks[2]-blanks[0], blanks[3]-blanks[1]), pygame.SRCALPHA)
+            img2.blit(img, (-blanks[0], -blanks[1]))
+            imgs2.append(img2)
+        imgs = imgs2
+    def modify(x):
+        if multiples is None or x%multiples == 0:
+            return x
+        return x+(multiples-(x%multiples))
+    szes = [names[idx]+'\x00'+str(modify(i.get_height())) for idx, i in enumerate(imgs)]
+    with open(fname, 'w+') as f:
+        f.write('\n'.join(szes))
+
+def update(img: pygame.Surface, 
+           replaceName: str, 
+           fname: str, 
+           dataFname: str, 
+           multiples: int=None, 
+           remove_blanks: tuple[int]=None, 
+           centreX: bool=False, 
+           centreY: bool=False
+        ):
+    toth = 0
+    thish = 0
+    thisidx = 0
+    with open(dataFname) as f:
+        fc = f.read()
+        for ln in fc.split('\n'):
+            name, h = ln.split('\x00')
+            if name == replaceName:
+                thish = int(h)
+                thisidx += 1 + len(name)
+                break
+            toth += int(h)
+            thisidx += 2 + len(name) + len(h)
+    
+    out = pygame.image.load(fname)
+
+    if remove_blanks is not None:
+        blanks = remove_blanks
+        img2 = pygame.Surface((blanks[2]-blanks[0], blanks[3]-blanks[1]), pygame.SRCALPHA)
+        img2.blit(img, (-blanks[0], -blanks[1]))
+        img = img2
+    def modify(x):
+        if multiples is None or x%multiples == 0:
+            return x
+        return x+(multiples-(x%multiples))
+    
+    ms = modify(img.get_width())
+    out2 = out.subsurface((0, toth+thish, out.get_width(), out.get_height()-toth-thish))
+    if ms > out.get_width():
+        if centreX:
+            x = (ms-out.get_width())/2
+        else:
+            x = 0
+        out1 = pygame.Surface((ms, toth), pygame.SRCALPHA)
+        out1.blit(out, (x, 0))
+        nout2 = pygame.Surface((ms, (out.get_height()-toth-thish)), pygame.SRCALPHA)
+        nout2.blit(out2, (x, 0))
+        out2 = nout2
+    else:
+        ms = out.get_width()
+        out1 = out.subsurface((0, 0, out.get_width(), toth)).copy()
+        out2 = out2.copy()
+    
+    thisOut = pygame.Surface((ms, img.get_height()), pygame.SRCALPHA)
+    if centreX:
+        x = (ms-img.get_width())/2
+    else:
+        x = 0
+    if centreY:
+        y = (thisOut.get_height()-img.get_height())/2
+    else:
+        y = 0
+    thisOut.blit(img, (x, y))
+
+    h1, h2, h3 = out1.get_height(), thisOut.get_height(), out2.get_height()
+    out = pygame.Surface((ms, h1+h2+h3), pygame.SRCALPHA)
+    out.blit(out1, (0, 0))
+    out.blit(thisOut, (0, h1))
+    out.blit(out2, (0, h3))
+
+    writeHei = str(modify(thisOut.get_height()))
+    new = fc[:thisidx] + writeHei + '\n' + fc[thisidx+len(writeHei):]
+
+    with open(dataFname, 'w') as f:
+        f.write(new.replace('\n\n', '\n').strip('\n'))
