@@ -19,7 +19,8 @@
         "nodes",
         "wrap",
         "sound",
-        "tests"
+        "tests",
+        "game"
     ],
     "python.REPL.enableREPLSmartSend": false
 }

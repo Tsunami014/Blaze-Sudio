@@ -1,20 +1,24 @@
 import pygame
+from BlazeSudio.graphics.GUI.base import Element
+from BlazeSudio.graphics import options as GO
 
-class Player:
-    def __init__(self, G, world, Game):
+class Player(Element):
+    def __init__(self, Game, world):
         self.Game = Game
-        self.G = G
         self.world = world
+        super().__init__(Game, GO.PLTOP, Game.size)
 
     def update(self, mPos, events):
         self.Game.curScene.tick(events.copy())
+
+    def draw(self):
         rend = self.Game.curScene.render()
         if not self.Game.curScene.useRenderer:
             return
-        win = self.G.WIN
-        sze = self.G.size
+        win = self.Game.WIN
+        sze = self.Game.size
         mw, mh = sze[0] / 2, sze[1] / 2
-        
+
         scale = self.Game.curScene.CamDist
         realpos = self.Game.curScene.CamPos
         realpos = [realpos[0] * scale, realpos[1] * scale]
