@@ -1576,6 +1576,12 @@ class Circle(Shape):
             (newCir.x + newCir.r * math.cos(velphi-quart), newCir.y + newCir.r * math.sin(velphi-quart)),
             (newCir.x + newCir.r * math.cos(velphi+quart), newCir.y + newCir.r * math.sin(velphi+quart)),
         ), newCir)
+        # Don't let you move when you're in a wall
+        if oldCir.collides(objs):
+            if verbose:
+                return oldCir, [0, 0], [True]
+            return oldCir, [0, 0]
+        
         if not mvement.collides(objs):
             if verbose:
                 return newCir, vel, [False]
@@ -1586,11 +1592,6 @@ class Circle(Shape):
             if cs != []:
                 cs.extend([i for j in [mvement[0], mvement[2]] for i in o.closestPointTo(j, True) if Point(*i).collides(mvement)])
                 points.extend(list(zip(cs, [o for _ in range(len(cs))])))
-        # Don't let you move when you're in a wall
-        if points == []:
-            if verbose:
-                return oldCir, [0, 0], [True]
-            return oldCir, [0, 0]
         points.sort(key=lambda x: abs(x[0][0]-oldCir[0])**2+abs(x[0][1]-oldCir[1])**2)
         closestP = points[0][0]
         closestObj = points[0][1]
