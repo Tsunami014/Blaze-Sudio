@@ -515,7 +515,10 @@ def update(img: pygame.Surface,
     pygame.image.save(out, fname)
 
     writeHei = str(modify(thisOut.get_height()))
-    new = fc[:thisidx] + writeHei + '\n' + fc[thisidx+len(writeHei):]
+    if replaceName in fc:
+        new = fc[:thisidx] + writeHei + '\n' + fc[thisidx+len(writeHei):]
+    else:
+        new = fc + f'\n{replaceName}\x00{writeHei}'
 
     with open(dataFname, 'w') as f:
         f.write(new.replace('\n\n', '\n').strip('\n'))
