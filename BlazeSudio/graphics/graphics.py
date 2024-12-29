@@ -91,7 +91,7 @@ class Screen(GUI.GraphicBase):
     def _DrawAft(self):
         """
         This function is called every time *just before* the screen is drawn. This could be used for things to be drawn on top of all the other GUI elements.
-        To draw something *behind* the other elements, use `_DrawBef()`.
+        To draw something *behind* the other elements, use `_Tick()`.
 
         This function can also be used for events that happen after everything else.
         """
