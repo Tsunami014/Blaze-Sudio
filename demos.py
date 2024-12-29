@@ -594,6 +594,58 @@ def WrapDemo():
     
     Main()()
 
+def TsetCollDemo():
+    from BlazeSudio.graphics import Screen, Loading, options as GO, GUI
+    from functools import partial
+    import pygame
+    
+    tset = pygame.image.load('demoFiles/sampleTileset.png')
+
+    class Main(Screen):
+        def getTile(self, idx):
+            if idx is None:
+                return
+            self.poly = None
+            self.tile = tset.subsurface((idx*32, 0, 32, 32))
+        
+        @Loading.decor
+        def calcPoly(slf, self):
+            self.poly = [(0, 0), (32, 0), (32, 32), (0, 32)]
+        
+        def __init__(self):
+            self.getTile(0)
+            super().__init__()
+        
+        def _LoadUI(self):
+            self.layers[0].add('Main')
+
+            PCTOP = GO.PNEW((0.5, 0), (1, 0), (True, False))
+            self.scale = GUI.NumInputBox(self, PCTOP, 100, GO.RNONE, start=None, empty=1, min=1, max=30, placeholder='Scale by size', decimals=2)
+            chooser = GUI.DropdownButton(self, PCTOP, ['Tile %i'%i for i in range(tset.get_width()//32)], func=lambda i: self.getTile(i))
+
+            goBtn = GUI.Button(self, GO.PCBOTTOM, GO.CGREEN, 'Go!', func=partial(self.calcPoly, self))
+
+            self['Main'].extend([
+                self.scale,
+                chooser,
+                goBtn
+            ])
+        
+        def _Tick(self):
+            scale = self.scale.get()
+
+            def outPos(x, y):
+                center_x = (self.size[0] - 32 * scale) / 2
+                center_y = (self.size[1] - 32 * scale) / 2
+                return (x * scale + center_x, y * scale + center_y)
+            
+            self.WIN.blit(pygame.transform.scale(self.tile, (32*scale, 32*scale)), outPos(0, 0))
+
+            if self.poly is not None:
+                pygame.draw.polygon(self.WIN, (0, 0, 0), [outPos(*p) for p in self.poly], 4)
+    
+    Main()()
+
 # GENERATION STUFF
 
 def TWorldsDemo():
@@ -651,26 +703,27 @@ if __name__ == '__main__':
             cmds.append(command)
     
     label('Node generator [image]:')
-    button('Node Editor Demo',           NodeEditorDemo,                   )
+    button('Node Editor Demo',             NodeEditorDemo,                   )
 
     label('Graphics [graphics] / [game]:')
-    button('Graphics Demo',              GraphicsDemo,                     )
-    button('Lorem Ipsum Graphics Demo',  LoremGraphicsDemo,                )
-    button('Theme Playground Demo',      ThemePgDemo,                  True)
+    button('Graphics Demo',                GraphicsDemo,                     )
+    button('Lorem Ipsum Graphics Demo',    LoremGraphicsDemo,                )
+    button('Theme Playground Demo',        ThemePgDemo,                  True)
 
     # TODO: Sound editor demo
     label('Collisions [collisions]:')
-    button('Collisions Demo',            CollisionsDemo,                   )
-    button('DEBUG Collisions Demo',      lambda: CollisionsDemo(True),     )
+    button('Collisions Demo',              CollisionsDemo,                   )
+    button('DEBUG Collisions Demo',        lambda: CollisionsDemo(True),     )
 
     # Broken generation stuff
-    #button('Generate World Demo',        TWorldsDemo,                       )
-    #button('Generate Terrain Demo',      TTerrainGenDemo,                   )
+    #button('Generate World Demo',          TWorldsDemo,                       )
+    #button('Generate Terrain Demo',        TTerrainGenDemo,                   )
 
 
     label('Misc stuff:')
-    button('Wrap Demo [game]',            WrapDemo,                        )
-    button('Wrap Basic Demo [game]',      WrapBasicDemo,                   )
+    button('Wrap Demo [game]',              WrapDemo,                        )
+    button('Wrap Basic Demo [game]',        WrapBasicDemo,                   )
+    button('Tileset Collision Demo [game]', TsetCollDemo,                    )
     
     if has_tk:
         root.after(1, lambda: root.attributes('-topmost', True))
