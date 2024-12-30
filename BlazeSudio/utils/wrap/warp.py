@@ -1,32 +1,26 @@
-# Thanks to https://www.reddit.com/r/pygame/comments/z571pa/this_is_how_you_can_texture_a_polygon/ !!!!
+# Improved from https://www.reddit.com/r/pygame/comments/z571pa/this_is_how_you_can_texture_a_polygon/
 import pygame
 
-def lerp(p1, p2, f):
-    return p1 + f * (p2 - p1)
-
 def lerp2d(p1, p2, f):
-    return tuple(lerp(p1[i], p2[i], f) for i in range(2))
+    return (
+        p1[0] + (p2[0] - p1[0]) * f,
+        p1[1] + (p2[1] - p1[1]) * f
+    )
 
 def draw_quad(surface, quad, img):
-    points = []
-
-    pixel_array = pygame.surfarray.array3d(img)
+    pixel_array = pygame.surfarray.pixels3d(img)
     wid, hei = img.get_size()
-
-    for i in range(hei+1):
-        b = lerp2d(quad[1], quad[2], i/hei)
-        c = lerp2d(quad[0], quad[3], i/hei)
-        row = []
-        for u in range(wid+1):
-            a = lerp2d(c, b, u/wid)
-            row.append(a)
-        points.append(row)
-
-    for x in range(wid):
-        for y in range(hei):
-            color = pixel_array[x, y]  # (r, g, b)
-            pygame.draw.polygon(
-                surface,
-                color,
-                [points[b][a] for a, b in [(x,y), (x,y+1), (x+1,y+1), (x+1,y)]] 
-            )
+    for y in range(hei):
+        b1 = lerp2d(quad[1], quad[2], y/hei)
+        b2 = lerp2d(quad[1], quad[2], (y+1)/hei)
+        c1 = lerp2d(quad[0], quad[3], y/hei)
+        c2 = lerp2d(quad[0], quad[3], (y+1)/hei)
+        for x in range(wid):
+            color = pixel_array[x, y]
+            poly = [
+                lerp2d(c1, b1, x/wid),
+                lerp2d(c1, b1, (x+1)/wid),
+                lerp2d(c2, b2, (x+1)/wid),
+                lerp2d(c2, b2, x/wid),
+            ]
+            pygame.draw.polygon(surface, color, poly)
