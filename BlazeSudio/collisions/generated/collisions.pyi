@@ -1,9 +1,9 @@
 import shapely.geometry as shapelyGeom
 from _typeshed import Incomplete
-from enum import Enum
-from typing import Any, Dict, Iterable, Type
+from enum import IntEnum
+from typing import Any, Dict, Iterable
 
-__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnCircle', 'shapelyToColl', 'collToShapely', 'drawShape', 'ShpGroups', 'checkShpType', 'ClosedShape', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'Arc', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
+__all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnCircle', 'shapelyToColl', 'collToShapely', 'drawShape', 'ShpGroups', 'ShpTyps', 'checkShpType', 'ClosedShape', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'Arc', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
 
 Number = int | float
 verboseOutput = Iterable[Any] | None
@@ -57,21 +57,38 @@ def pointOnCircle(angle: Number, strength: Number = 1) -> pointLike:
         pointLike: The point on the unit circle at angle `angle` * strength
     """
 
-class ShpGroups(Enum):
+class ShpGroups(IntEnum):
     """
     An enum representing the different groups you can put shapes in.
     """
     CLOSED: int
     LINES: int
+    NOTSTRAIGHT: int
     GROUP: int
 
-def checkShpType(shape: Shape | Shapes, typs: Type | ShpGroups | Iterable[Type | ShpGroups]) -> bool:
+class ShpTyps(IntEnum):
+    """
+    An enum representing the different possible shapes.
+    """
+    NoShape: int
+    Group: int
+    Point: int
+    Line: int
+    Circle: int
+    Arc: int
+    Rect: int
+    RotRect: int
+    Polygon: int
+
+def checkShpType(shape: Shape | Shapes, *typs: ShpTyps | ShpGroups) -> bool:
     """
     Checks to see if a shape is of a certain type or group.
 
+    This checks if it is of ANY of the specified types or groups.
+
     Args:
         shape (Shape or Shapes]): The input shape or shapes to check the type of.
-        typs (ShpTypes, ShpGroups, or an Iterable[ShpTypes or ShpGroups]): The shape type(s) &/or group(s) to check for.
+        *typs (Iterable[ShpTypes | ShpGroups]): The shape type(s) &/or group(s) to check for.
 
     Returns:
         bool: Whether the shape is of the specified type(s) or group(s).
@@ -111,6 +128,7 @@ class Shape:
     """The base Shape class. This defaults to always collide.
     This class always collides; so *can* be used as an infinite plane, but why?"""
     GROUPS: Incomplete
+    TYPE: Incomplete
     x: Number
     y: Number
     bounciness: Incomplete
@@ -134,10 +152,20 @@ class Shape:
         Finds where this shape collides with another shape(s)
 
         Args:
-            othershape (Shape / Shapes / Iterable[Shape]): The shape(s) to check for collision with
+            othershape (Shape / Shapes / Iterable[Shape]): The shape(s) to check for collision with.
 
         Returns:
             Iterable[pointLike]: Points that lie both on this shape and the input shape(s)
+        """
+    def isContaining(self, othershape: Shape | Shapes | Iterable['Shape']) -> bool:
+        """
+        Finds whether this shape fully encloses `othershape`; if `whereCollides` returns `[]` but `collides` returns True. But (most of the time) more optimised than that.
+
+        Args:
+            othershape (Shape / Shapes / Iterable[Shape]): The shape to check if it is fully enclosed within this shape.
+
+        Returns:
+            bool: Whether the shape is fully enclosed within this shape.
         """
     def distance_to(self, othershape: Shape) -> Number:
         """
@@ -202,7 +230,7 @@ class Shape:
     def toPoints(self) -> Iterable[pointLike]:
         """
         Returns:
-            Iterable[pointLike]: Get a list of all the Points that make up this object. For Circles, Arcs and Shape's, this will be empty.
+            Iterable[pointLike]: Get a list of all the Points that make up this object. For a few shapes (e.g. circles), this will be empty.
         """
     def area(self) -> Number:
         """
@@ -250,6 +278,7 @@ class NoShape(Shape):
 class Shapes:
     """A class which holds multiple shapes and can be used to do things with all of them at once."""
     GROUPS: Incomplete
+    TYPE: Incomplete
     shapes: Incomplete
     def __init__(self, *shapes: Shape) -> None:
         """
@@ -293,7 +322,7 @@ class Shapes:
         Example:
         `shapes.remove_shapes(Shape1, Shape2)` OR `shapes.remove_shapes(*[Shape1, Shape2])`
         """
-    def collides(self, shapes: Shape | Shapes | Iterable['Shape']) -> bool:
+    def collides(self, shapes: Shape | Shapes | Iterable[Shape]) -> bool:
         """
         Checks for collisions between all the shapes in this object and the input shape(s).
 
@@ -303,7 +332,7 @@ class Shapes:
         Returns:
             bool: True if *any* of the shapes in this object collide with *any* of the input shapes
         """
-    def whereCollides(self, shapes: Shape | Shapes | Iterable['Shape']) -> Iterable[pointLike]:
+    def whereCollides(self, shapes: Shape | Shapes | Iterable[Shape]) -> Iterable[pointLike]:
         """
         Find the points where this object collides with the input shape(s).
 
@@ -324,6 +353,16 @@ class Shapes:
 
         Returns:
             Iterable[pointLike]: All the closest point(s) ON each of these objects
+        """
+    def isContaining(self, othershape: Shape | Shapes | Iterable[Shape]) -> bool:
+        """
+        Finds whether this shape fully encloses `othershape`; if `whereCollides` returns `[]` but `collides` returns True. But more optimised than that.
+
+        Args:
+            othershape (Shape / Shapes / Iterable[Shape]): The shape to check if it is fully enclosed within this shape.
+
+        Returns:
+            bool: Whether the shape is fully enclosed within this shape.
         """
     def isCorner(self, point: pointLike, precision: Number = ...) -> Dict[Shape | Shapes, bool]:
         """
@@ -370,11 +409,12 @@ class Shapes:
         Makes a copy of this class but keeps the same shapes.
         """
     def __iter__(self): ...
+    def __len__(self) -> int: ...
     def __getitem__(self, index: int) -> Shape | Shapes: ...
     def __setitem__(self, index: int, new: Shape | Shapes) -> None: ...
 
 class Point(Shape):
-    """An infintesimally small point in space defined by an x and y coordinate."""
+    TYPE: Incomplete
     def __init__(self, x: Number, y: Number, bounciness: float = ...) -> None:
         """
         Args:
@@ -470,6 +510,7 @@ class Point(Shape):
 class Line(Shape):
     """A line segment object defined by a start and an end point."""
     GROUPS: Incomplete
+    TYPE: Incomplete
     def __init__(self, p1: pointLike, p2: pointLike, bounciness: float = ...) -> None:
         """
         Args:
@@ -600,6 +641,7 @@ class Circle(Shape):
     """A perfect circle. Defined as an x and y centre coordinate of the circle and a radius.
     Please be mindful when checking for this class as it is technically a closed shape, but if you try to run     `.toLines()` or `.toPoints()` it will return an empty list; so please check for it *before* closed shapes."""
     GROUPS: Incomplete
+    TYPE: Incomplete
     def __init__(self, x: Number, y: Number, r: Number, bounciness: float = ...) -> None:
         """
         Args:
@@ -677,7 +719,7 @@ class Circle(Shape):
         """
     def isCorner(self, point: pointLike, precision: Number = ...) -> bool:
         """
-        Finds whether a point is on a corner of this shape.
+        Finds whether a point is on a corner of this shape. But because circles don't have any corners, this will return False.
 
         Args:
             point (pointLike): The point to find if it's a corner
@@ -714,6 +756,7 @@ class Arc(Circle):
     
     **ANGLES ARE MEASURED IN DEGREES.**"""
     GROUPS: Incomplete
+    TYPE: Incomplete
     precision: Incomplete
     bounciness: Incomplete
     def __init__(self, x: Number, y: Number, rad: Number, startAngle: Number, endAngle: Number, precision: Number = ..., bounciness: float = ...) -> None:
@@ -773,6 +816,22 @@ class Arc(Circle):
 
         Returns:
             Iterable[Number]: (min x, min y, max x, max y)
+        """
+    def isCorner(self, point: pointLike, precision: Number = ...) -> bool:
+        """
+        Finds whether a point is on a corner of this shape.
+
+        Args:
+            point (pointLike): The point to find if it's a corner
+            precision (Number, optional): The decimal places to round to to check. Defaults to 5.
+
+        Returns:
+            bool: Whether the point is on a corner of this shape
+        """
+    def toPoints(self):
+        """
+        Returns:
+            Iterable[pointLike]: Get a list of all the Points that make up this object.
         """
     def copy(self) -> Arc:
         """
@@ -881,6 +940,7 @@ class ClosedShape(Shape):
 
 class Rect(ClosedShape):
     """A Rectangle. It is defined with an x, y, width and height."""
+    TYPE: Incomplete
     def __init__(self, x: Number, y: Number, w: Number, h: Number, bounciness: float = ...) -> None:
         """
         Args:
@@ -924,6 +984,7 @@ class RotatedRect(ClosedShape):
     """A rectangle...... That is rotated.
     It is rotated around it's x and y coordinates.
     Defined as an x, y, width, height and rotation."""
+    TYPE: Incomplete
     cachedPoints: Incomplete
     cacheRequirements: Incomplete
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number, bounciness: float = ...) -> None:
@@ -977,6 +1038,7 @@ class RotatedRect(ClosedShape):
 
 class Polygon(ClosedShape):
     """A convex or concave polygon. It is defined with a list of points."""
+    TYPE: Incomplete
     points: Incomplete
     def __init__(self, *points: pointLike, errorOnLT3: bool = True, bounciness: float = ...) -> None:
         """
