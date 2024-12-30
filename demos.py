@@ -666,32 +666,6 @@ def TsetCollDemo():
     
     Main()()
 
-# GENERATION STUFF
-
-def TWorldsDemo():
-    from BlazeSudio.utils import World
-    World('test', 'Test World', 'A world for testing random stuff', 5, 100, override=True, callback=print)
-
-def TTerrainGenDemo():
-    from random import randint
-    from BlazeSudio.utils import MapGen
-    size = 500 # 1500
-    n = 256
-    inp = input('Input nothing to use random seed, input "." to use a preset good seed, or input your own INTEGER seed > ')
-    if inp == '':
-        map_seed = randint(0, 999999)
-    elif inp == '.':
-        map_seed = 762345
-    else:
-        map_seed = int(inp)
-    useall = input('Type anything here to show all steps in terrain generation, or leave this blank and press enter to just show the finished product. > ') != ''
-    m = MapGen()
-    for txt in m.generate(size, map_seed, n, useall=useall, showAtEnd=True):
-        print(txt)
-    outs, trees = m.outs
-    print(outs[0])
-    pass
-
 if __name__ == '__main__':
     try:
         import tkinter as Tk
@@ -734,11 +708,6 @@ if __name__ == '__main__':
     label('Collisions [collisions]:')
     button('Collisions Demo',              CollisionsDemo,                   )
     button('DEBUG Collisions Demo',        lambda: CollisionsDemo(True),     )
-
-    # Broken generation stuff
-    #button('Generate World Demo',          TWorldsDemo,                       )
-    #button('Generate Terrain Demo',        TTerrainGenDemo,                   )
-
 
     label('Misc stuff:')
     button('Wrap Demo [game]',              WrapDemo,                        )
