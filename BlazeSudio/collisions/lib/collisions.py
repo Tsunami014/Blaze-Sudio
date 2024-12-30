@@ -1,6 +1,6 @@
 import math
-from enum import Enum
-from typing import Type, Union, Iterable, Any, Dict
+from enum import IntEnum
+from typing import Union, Iterable, Any, Dict
 
 # Just for utility funcs, not the actual collision library
 try: # This library was not made for pygame, but it can be used with it
@@ -28,6 +28,7 @@ __all__ = [
     'drawShape',
 
     'ShpGroups',
+    'ShpTyps',
     'checkShpType',
     'ClosedShape',
 
@@ -119,7 +120,7 @@ def pointOnCircle(angle: Number, strength: Number=1) -> pointLike:
     """
     return math.cos(angle)*strength, math.sin(angle)*strength
 
-class ShpGroups(Enum):
+class ShpGroups(IntEnum):
     """
     An enum representing the different groups you can put shapes in.
     """
@@ -132,24 +133,36 @@ class ShpGroups(Enum):
     GROUP = 3
     """A group of other shapes"""
 
-def checkShpType(shape: Union['Shape', 'Shapes'], typs: Union[Type, ShpGroups, Iterable[Union[Type, ShpGroups]]]) -> bool:
+class ShpTyps(IntEnum):
+    """
+    An enum representing the different possible shapes.
+    """
+    NoShape = -1
+    Group = -2
+    Point = -3
+    Line = -4
+    Circle = -5
+    Arc = -6
+    Rect = -7
+    RotRect = -8
+    Polygon = -9
+
+def checkShpType(shape: Union['Shape', 'Shapes'], *typs: Union[ShpTyps, ShpGroups]) -> bool:
     """
     Checks to see if a shape is of a certain type or group.
 
+    This checks if it is of ANY of the specified types or groups.
+
     Args:
         shape (Shape or Shapes]): The input shape or shapes to check the type of.
-        typs (ShpTypes, ShpGroups, or an Iterable[ShpTypes or ShpGroups]): The shape type(s) &/or group(s) to check for.
+        *typs (Iterable[ShpTypes | ShpGroups]): The shape type(s) &/or group(s) to check for.
 
     Returns:
         bool: Whether the shape is of the specified type(s) or group(s).
     """
-    if not isinstance(typs, Iterable):
-        typs = [typs]
-    if not isinstance(shape, (Shape, Shapes)):
-        return False
-    for i in typs:
-        if i in shape.GROUPS or type(shape) is i:
-            return True
+    typ_set = set(typs)
+    if typ_set.intersection(shape.GROUPS) or shape.TYPE in typ_set:
+        return True
     return False
 
 def shapelyToColl(shapelyShape: shapelyGeom.base.BaseGeometry) -> Union['Shape', 'Shapes']:
@@ -184,11 +197,11 @@ def collToShapely(collShape: 'Shape') -> shapelyGeom.base.BaseGeometry:
     Returns:
         shapely.geometry.base.BaseGeometry: The converted shape.
     """
-    if checkShpType(collShape, Point):
+    if checkShpType(collShape, ShpTyps.Point):
         return shapelyGeom.Point(collShape.x, collShape.y)
-    if checkShpType(collShape, Line):
+    if checkShpType(collShape, ShpTyps.Line):
         return shapelyGeom.LineString([(collShape.p1[0], collShape.p1[1]), (collShape.p2[0], collShape.p2[1])])
-    if checkShpType(collShape, Circle):
+    if checkShpType(collShape, ShpTyps.Circle):
         return shapelyGeom.Point(collShape.x, collShape.y).buffer(collShape.r)
     if checkShpType(collShape, ShpGroups.CLOSED):
         return shapelyGeom.Polygon([(i[0], i[1]) for i in collShape.toPoints()])
@@ -207,18 +220,18 @@ def drawShape(surface: Any, shape: 'Shape', colour: tuple[int, int, int], width:
         width (int, optional): The width of the lines to draw. Defaults to 0.
     """
     checkForPygame()
-    if checkShpType(shape, Point):
+    if checkShpType(shape, ShpTyps.Point):
         pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), width)
-    elif checkShpType(shape, Line):
+    elif checkShpType(shape, ShpTyps.Line):
         if tuple(shape.p1) == tuple(shape.p2):
             pygame.draw.circle(surface, colour, (int(shape.p1[0]), int(shape.p1[1])), int(width/2))
         pygame.draw.line(surface, colour, (int(shape.p1[0]), int(shape.p1[1])), 
                                            (int(shape.p2[0]), int(shape.p2[1])), width)
-    elif checkShpType(shape, Arc):
+    elif checkShpType(shape, ShpTyps.Arc):
         pygame.draw.arc(surface, colour, 
                          (int(shape.x)-int(shape.r), int(shape.y)-int(shape.r), int(shape.r*2), int(shape.r*2)), 
                          math.radians(-shape.endAng), math.radians(-shape.startAng), width)
-    elif checkShpType(shape, Circle):
+    elif checkShpType(shape, ShpTyps.Circle):
         pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), int(shape.r), width)
     elif checkShpType(shape, ShpGroups.CLOSED):
         ps = shape.toPoints()
@@ -244,7 +257,8 @@ def drawShape(surface: Any, shape: 'Shape', colour: tuple[int, int, int], width:
 class Shape:
     """The base Shape class. This defaults to always collide.
     This class always collides; so *can* be used as an infinite plane, but why?"""
-    GROUPS = []
+    GROUPS = set()
+    TYPE = ShpTyps.NoShape
     x: Number = 0
     y: Number = 0
     def __init__(self, bounciness: float = BASEBOUNCINESS):
@@ -485,7 +499,8 @@ class NoShape(Shape):
 
 class Shapes:
     """A class which holds multiple shapes and can be used to do things with all of them at once."""
-    GROUPS = [ShpGroups.GROUP]
+    GROUPS = {ShpGroups.GROUP}
+    TYPE = ShpTyps.Group
     def __init__(self, *shapes: Shape):
         """
         Args:
@@ -696,6 +711,7 @@ class Shapes:
 # Also each is kinda in order of complexity.
 
 class Point(Shape):
+    TYPE = ShpTyps.Point
     """An infintesimally small point in space defined by an x and y coordinate."""
     def __init__(self, x: Number, y: Number, bounciness: float = BASEBOUNCINESS):
         """
@@ -733,12 +749,12 @@ class Point(Shape):
         return [self]
     
     def _collides(self, othershape: Shape) -> bool:
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             return self.x == othershape.x and self.y == othershape.y
         return othershape._collides(self)
     
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             return [[self.x, self.y]] if (self.x == othershape.x and self.y == othershape.y) else []
         return othershape._where(self)
     
@@ -899,7 +915,8 @@ class Point(Shape):
 
 class Line(Shape):
     """A line segment object defined by a start and an end point."""
-    GROUPS = [ShpGroups.LINES]
+    GROUPS = {ShpGroups.LINES}
+    TYPE = ShpTyps.Line
     def __init__(self, p1: pointLike, p2: pointLike, bounciness: float = BASEBOUNCINESS):
         """
         Args:
@@ -983,9 +1000,9 @@ class Line(Shape):
         return False
     
     def _collides(self, othershape: Shape) -> bool:
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             return self.check_rects(othershape) and self._onSegment([othershape.x, othershape.y], self.p1, self.p2)
-        if checkShpType(othershape, Line):
+        if checkShpType(othershape, ShpTyps.Line):
             if not self.check_rects(othershape):
                 return False
             # Calculate the direction of the lines
@@ -1010,9 +1027,9 @@ class Line(Shape):
         return othershape._collides(self)
     
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             return [[othershape.x, othershape.y]] if self.collides(othershape) else []
-        if checkShpType(othershape, Line):
+        if checkShpType(othershape, ShpTyps.Line):
             if not self.collides(othershape):
                 return []
             # This finds where the lines are colliding if they are infinite, which is why we check if they collide first
@@ -1044,7 +1061,7 @@ class Line(Shape):
         Returns:
             pointLike / Iterable[pointLike]: The closest points ON this object TO the other object
         """
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             dx, dy = self.p2[0] - self.p1[0], self.p2[1] - self.p1[1]
             det = dx * dx + dy * dy
             if det == 0:
@@ -1055,7 +1072,7 @@ class Line(Shape):
             if returnAll:
                 return [p]
             return p
-        elif checkShpType(othershape, Line):
+        elif checkShpType(othershape, ShpTyps.Line):
             colls = self.whereCollides(othershape)
             if colls != []:
                 if returnAll:
@@ -1078,9 +1095,9 @@ class Line(Shape):
             if returnAll:
                 return [i[0] for i in tries]
             return tries[0][0]
-        elif checkShpType(othershape, Circle):
+        elif checkShpType(othershape, ShpTyps.Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
-        elif checkShpType(othershape, Arc):
+        elif checkShpType(othershape, ShpTyps.Arc):
             return self.closestPointTo(Point(*othershape.closestPointTo(self)))
         else: # Rects, Rotated rects and polygons
             colls = self.whereCollides(othershape)
@@ -1215,13 +1232,13 @@ class Line(Shape):
             paralell = not thisIsOnP
         if not paralell:
             cLine = None
-            if checkShpType(closestObj, Line):
+            if checkShpType(closestObj, ShpTyps.Line):
                 cLine = closestObj
             elif checkShpType(closestObj, ShpGroups.CLOSED):
                 colllidingLns = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
                 if colllidingLns != []:
                     cLine = colllidingLns[0]
-            elif checkShpType(closestObj, Circle) and (not thisIsOnP):
+            elif checkShpType(closestObj, ShpTyps.Circle) and (not thisIsOnP):
                 paralell = True
             if cLine is not None:
                 sortedOtherLn = Line(*sorted([cLine.p1, cLine.p2], key=lambda x: x[0]))
@@ -1352,7 +1369,8 @@ class Circle(Shape):
     """A perfect circle. Defined as an x and y centre coordinate of the circle and a radius.
     Please be mindful when checking for this class as it is technically a closed shape, but if you try to run \
     `.toLines()` or `.toPoints()` it will return an empty list; so please check for it *before* closed shapes."""
-    GROUPS = [ShpGroups.CLOSED, ShpGroups.NOTSTRAIGHT]
+    GROUPS = {ShpGroups.CLOSED, ShpGroups.NOTSTRAIGHT}
+    TYPE = ShpTyps.Circle
     def __init__(self, x: Number, y: Number, r: Number, bounciness: float = BASEBOUNCINESS):
         """
         Args:
@@ -1383,22 +1401,22 @@ class Circle(Shape):
         return math.pi * self.r**2
     
     def _contains(self, othershape: Shape) -> bool:
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < self.r**2
-        if checkShpType(othershape, Line):
+        if checkShpType(othershape, ShpTyps.Line):
             return self._contains(Point(*othershape.p1)) and self._contains(Point(*othershape.p2))
-        if checkShpType(othershape, Circle):
+        if checkShpType(othershape, ShpTyps.Circle):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < max(self.r-othershape.r, 0)**2
-        if checkShpType(othershape, Arc):
+        if checkShpType(othershape, ShpTyps.Arc):
             ps = othershape.toPoints()
             return self._contains(ps[0]) and self._contains(ps[1])
-        if checkShpType(othershape, ClosedShape):
-            return all(self._contains(p) for p in othershape.toPoints())
+        if checkShpType(othershape, ShpGroups.CLOSED):
+            return all(self._contains(Point(*p)) for p in othershape.toPoints())
     
     def _collides(self, othershape: Shape) -> bool:
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 <= self.r**2
-        if checkShpType(othershape, Line):
+        if checkShpType(othershape, ShpTyps.Line):
             if not self.check_rects(othershape):
                 return False
             # Calculate the distance from point to the line segment
@@ -1411,14 +1429,14 @@ class Circle(Shape):
             ix = othershape.p1[0] + u * (othershape.p2[0] - othershape.p1[0])
             iy = othershape.p1[1] + u * (othershape.p2[1] - othershape.p1[1])
             return (self.x - ix) ** 2 + (self.y - iy) ** 2 <= self.r ** 2
-        if checkShpType(othershape, Circle):
+        if checkShpType(othershape, ShpTyps.Circle):
             return (self.x - othershape.x)**2 + (self.y - othershape.y)**2 < (self.r + othershape.r)**2
         return othershape._collides(self)
     
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             return [[othershape.x, othershape.y]] if ((self.x - othershape.x)**2 + (self.y - othershape.y)**2 == self.r**2) else []
-        if checkShpType(othershape, Line):
+        if checkShpType(othershape, ShpTyps.Line):
             if not self.check_rects(othershape):
                 return []
             def sign(x):
@@ -1454,7 +1472,7 @@ class Circle(Shape):
             tb = (xb-x1)*dx/dr + (yb-y1)*dy/dr
             xpt += [(xb + self.x, yb + self.y)] if 0 < tb < dr else []
             return xpt
-        if checkShpType(othershape, Circle):
+        if checkShpType(othershape, ShpTyps.Circle):
             if not self.check_rects(othershape):
                 return []
             # circle 1: (x0, y0), radius r0
@@ -1497,7 +1515,7 @@ class Circle(Shape):
         Returns:
             pointLike / Iterable[pointLike]: The closest point(s, depending on returnAll) ON this object TO the othershape
         """
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             x, y = othershape.x - self.x, othershape.y - self.y
             #if abs(x)**2 + abs(y)**2 < self.r**2:
             #    return othershape
@@ -1509,7 +1527,7 @@ class Circle(Shape):
             if returnAll:
                 return [[qx, qy]]
             return qx, qy
-        elif checkShpType(othershape, Line):
+        elif checkShpType(othershape, ShpTyps.Line):
             if self._collides(othershape):
                 wheres = self._where(othershape)
                 if wheres != []:
@@ -1522,9 +1540,9 @@ class Circle(Shape):
                     return sort
                 return sort[0]
             return self.closestPointTo(Point(*othershape.closestPointTo(Point(self.x, self.y))), returnAll)
-        elif checkShpType(othershape, Circle):
+        elif checkShpType(othershape, ShpTyps.Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
-        elif checkShpType(othershape, Arc):
+        elif checkShpType(othershape, ShpTyps.Arc):
             return self.closestPointTo(Point(*othershape.closestPointTo(self)), returnAll)
         else:
             ps = []
@@ -1730,7 +1748,8 @@ class Arc(Circle):
     This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take.
     
     **ANGLES ARE MEASURED IN DEGREES.**"""
-    GROUPS = [ShpGroups.LINES, ShpGroups.NOTSTRAIGHT]
+    GROUPS = {ShpGroups.LINES, ShpGroups.NOTSTRAIGHT}
+    TYPE = ShpTyps.Arc
     def __init__(self, 
                  x: Number, 
                  y: Number, 
@@ -1771,13 +1790,13 @@ class Arc(Circle):
         return (diff/360) * 2*math.pi * self.r
     
     def _collides(self, othershape: Shape) -> bool:
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             if round((self.x - othershape.x)**2 + (self.y - othershape.y)**2, self.precision) != round(self.r**2, self.precision):
                 return False
             angle = math.degrees(math.atan2(othershape.y - self.y, othershape.x - self.x))
             return self.angleInRange(angle)
-        if checkShpType(othershape, (Line, Circle)):
-            if checkShpType(othershape, Circle):
+        if checkShpType(othershape, ShpTyps.Line, ShpTyps.Circle):
+            if checkShpType(othershape, ShpTyps.Circle):
                 if any(othershape._collides(Point(*i)) for i in self.endPoints()):
                     return True
             intersections = Circle(self.x, self.y, self.r).whereCollides(othershape)
@@ -1785,7 +1804,7 @@ class Arc(Circle):
                 if self._collides(Point(*pt)):
                     return True
             return False
-        if checkShpType(othershape, Arc):
+        if checkShpType(othershape, ShpTyps.Arc):
             intersections = Circle(self.x, self.y, self.r).whereCollides(othershape)
             for pt in intersections:
                 p = Point(*pt)
@@ -1804,14 +1823,14 @@ class Arc(Circle):
         return False
     
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             if self._collides(othershape):
                 return [(othershape.x, othershape.y)]
             return []
-        if checkShpType(othershape, (Line, Circle)):
+        if checkShpType(othershape, ShpTyps.Line, ShpTyps.Circle):
             intersections = Circle(self.x, self.y, self.r).whereCollides(othershape)
             return [pt for pt in intersections if self._collides(Point(*pt))]
-        if checkShpType(othershape, Arc):
+        if checkShpType(othershape, ShpTyps.Arc):
             intersections = Circle(self.x, self.y, self.r).whereCollides(othershape)
             return [pt for pt in intersections if self._collides(Point(*pt)) and othershape._collides(Point(*pt))]
         return othershape._where(self)
@@ -1827,7 +1846,7 @@ class Arc(Circle):
         Returns:
             pointLike|Iterable[pointLike]: The closest point(s) on this object to the other object. Whether this is an iterable or not depends on the `returnAll` parameter.
         """
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             x, y = othershape.x - self.x, othershape.y - self.y
             #if abs(x)**2 + abs(y)**2 < self.r**2:
             #    return othershape
@@ -1840,7 +1859,7 @@ class Arc(Circle):
             if returnAll:
                 return [[qx, qy]]
             return qx, qy
-        elif checkShpType(othershape, Line):
+        elif checkShpType(othershape, ShpTyps.Line):
             cirO = Circle(self.x, self.y, self.r)
             if cirO.collides(othershape):
                 def checkP(p, this):
@@ -1860,9 +1879,9 @@ class Arc(Circle):
                     return [i[0] for i in alls]
                 return alls[0][0]
             return self.closestPointTo(Point(*cirO.closestPointTo(othershape)), returnAll)
-        elif checkShpType(othershape, Circle):
+        elif checkShpType(othershape, ShpTyps.Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
-        elif checkShpType(othershape, Arc):
+        elif checkShpType(othershape, ShpTyps.Arc):
             wheres = self.whereCollides(othershape)
             if wheres != []:
                 if returnAll:
@@ -2047,11 +2066,11 @@ class Arc(Circle):
 class ClosedShape(Shape):
     """These are shapes like rects and polygons; if you split them into a list of lines all the lines join with one another.
     Please do not use this class as it is just a building block for subclasses and to provide them with some basic methods."""
-    GROUPS = [ShpGroups.CLOSED]
+    GROUPS = {ShpGroups.CLOSED}
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
         if not self.check_rects(othershape):
             return []
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             for i in self.toLines():
                 if i.collides(othershape):
                     return [[othershape.x, othershape.y]]
@@ -2107,13 +2126,13 @@ class ClosedShape(Shape):
         Returns:
             pointLike / Iterable[pointLike]: The closest point(s, depending on returnAll) ON this object TO the othershape
         """
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             ps = [i.closestPointTo(othershape) for i in self.toLines()]
             ps.sort(key=lambda x: abs(x[0]-othershape[0])**2+abs(x[1]-othershape[1])**2)
             if returnAll:
                 return ps
             return ps[0]
-        elif checkShpType(othershape, Line):
+        elif checkShpType(othershape, ShpTyps.Line):
             colls = self.whereCollides(othershape)
             if colls != []:
                 if returnAll:
@@ -2136,9 +2155,9 @@ class ClosedShape(Shape):
             if returnAll:
                 return [i[0] for i in tries]
             return tries[0][0]
-        elif checkShpType(othershape, Circle):
+        elif checkShpType(othershape, ShpTyps.Circle):
             return self.closestPointTo(Point(othershape.x, othershape.y), returnAll)
-        elif checkShpType(othershape, Arc):
+        elif checkShpType(othershape, ShpTyps.Arc):
             closests = []
             for ln in self.toLines():
                 cp = othershape.closestPointTo(ln)
@@ -2260,11 +2279,11 @@ class ClosedShape(Shape):
             paralell = not thisIsOnP
         else:
             cLines = []
-            if checkShpType(closestObj, Line):
+            if checkShpType(closestObj, ShpTyps.Line):
                 cLines = [closestObj]
             elif checkShpType(closestObj, ShpGroups.CLOSED):
                 cLines = [i for i in closestObj.toLines() if i.collides(Point(*closestP))]
-            elif checkShpType(closestObj, Circle) and (not thisIsOnP):
+            elif checkShpType(closestObj, ShpTyps.Circle) and (not thisIsOnP):
                 paralell = True
             if cLines != []:
                 for cLine in cLines:
@@ -2367,14 +2386,14 @@ class ClosedShape(Shape):
         return self._collides(point) and self.whereCollides(point) == []
 
     def _contains(self, othershape: Shape) -> bool:
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             return self._containsPoint(othershape)
-        if checkShpType(othershape, Line):
+        if checkShpType(othershape, ShpTyps.Line):
             return self._contains(Point(*othershape.p1)) and self._contains(Point(*othershape.p2))
-        if checkShpType(othershape, Circle) or checkShpType(othershape, Arc):
+        if checkShpType(othershape, ShpTyps.Circle) or checkShpType(othershape, ShpTyps.Arc):
             return self._collides(othershape) and self.whereCollides(othershape) == []
-        if checkShpType(othershape, ClosedShape):
-            return all(self._contains(p) for p in othershape.toPoints())
+        if checkShpType(othershape, ShpGroups.CLOSED):
+            return all(self._contains(Point(*p)) for p in othershape.toPoints())
     
     def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
         """
@@ -2417,6 +2436,7 @@ class ClosedShape(Shape):
 
 class Rect(ClosedShape):
     """A Rectangle. It is defined with an x, y, width and height."""
+    TYPE = ShpTyps.Rect
     def __init__(self, x: Number, y: Number, w: Number, h: Number, bounciness: float = BASEBOUNCINESS):
         """
         Args:
@@ -2453,15 +2473,15 @@ class Rect(ClosedShape):
     
     def _collides(self, othershape: Shape) -> bool:
         x, y, mx, my = self.rect()
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             return x <= othershape.x <= mx and y <= othershape.y and my >= othershape.y
-        if checkShpType(othershape, Line):
+        if checkShpType(othershape, ShpTyps.Line):
             return self.check_rects(othershape) and (
                    (x < othershape.p1[0] and mx > othershape.p1[0] and y < othershape.p1[1] and my > othershape.p1[1]) or \
                    (x < othershape.p2[0] and mx > othershape.p2[0] and y < othershape.p2[1] and my > othershape.p2[1]) or \
                    any([i.collides(othershape) for i in self.toLines()])
             )
-        if checkShpType(othershape, Circle):
+        if checkShpType(othershape, ShpTyps.Circle):
             return self.check_rects(othershape) and (
                    (x - othershape.r < othershape.x and mx + othershape.r > othershape.x and y < othershape.y and my > othershape.y) or \
                    (x < othershape.x and mx > othershape.x and y - othershape.r < othershape.y and my + othershape.r > othershape.y) or \
@@ -2470,14 +2490,14 @@ class Rect(ClosedShape):
                    ((x - othershape.x)**2 + ((my) - othershape.y)**2 < othershape.r**2) or \
                    (((mx) - othershape.x)**2 + ((my) - othershape.y)**2 < othershape.r**2)
             )
-        if checkShpType(othershape, Arc):
+        if checkShpType(othershape, ShpTyps.Arc):
             if any(self._collides(Point(*i)) for i in othershape.endPoints()):
                 return True
             for i in self.toLines():
                 if othershape.collides(i):
                     return True
             return False
-        if checkShpType(othershape, Rect):
+        if checkShpType(othershape, ShpTyps.Rect):
             ox, oy, omx, omy = othershape.rect()
             return x <= omx and mx >= ox and y <= omy and my >= oy
         return othershape._collides(self)
@@ -2533,6 +2553,7 @@ class RotatedRect(ClosedShape):
     """A rectangle...... That is rotated.
     It is rotated around it's x and y coordinates.
     Defined as an x, y, width, height and rotation."""
+    TYPE = ShpTyps.RotRect
     def __init__(self, x: Number, y: Number, w: Number, h: Number, rotation: Number, bounciness: float = BASEBOUNCINESS):
         """
         Args:
@@ -2598,31 +2619,31 @@ class RotatedRect(ClosedShape):
     def _collides(self, othershape: Shape) -> bool:
         if not self.check_rects(othershape):
             return False
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             newp = rotate((self.x, self.y), othershape, -self.rot)
             return self.x <= newp[0] <= (self.x+self.w) and self.y <= newp[1] <= (self.y+self.h)
-        if checkShpType(othershape, Line):
+        if checkShpType(othershape, ShpTyps.Line):
             for li in self.toLines():
                 if li.collides(othershape):
                     return True
             if self._collides(Point(*othershape.p1)) or self._collides(Point(*othershape.p2)):
                 return True
             return False
-        if checkShpType(othershape, Circle):
+        if checkShpType(othershape, ShpTyps.Circle):
             if self._collides(Point(othershape.x, othershape.y)):
                 return True
             for li in self.toLines():
                 if li.collides(othershape):
                     return True
             return False
-        if checkShpType(othershape, Arc):
+        if checkShpType(othershape, ShpTyps.Arc):
             if any(self._collides(Point(*i)) for i in othershape.endPoints()):
                 return True
             for i in self.toLines():
                 if othershape.collides(i):
                     return True
             return False
-        if checkShpType(othershape, Rect) or checkShpType(othershape, RotatedRect):
+        if checkShpType(othershape, ShpTyps.Rect, ShpTyps.RotRect):
             for li in self.toLines():
                 if li.collides(othershape):
                     return True
@@ -2678,6 +2699,7 @@ class RotatedRect(ClosedShape):
 
 class Polygon(ClosedShape):
     """A convex or concave polygon. It is defined with a list of points."""
+    TYPE = ShpTyps.Polygon
     def __init__(self, *points: pointLike, errorOnLT3: bool = True, bounciness: float = BASEBOUNCINESS):
         """
         Args:
@@ -2737,7 +2759,7 @@ class Polygon(ClosedShape):
     def _collides(self, othershape: Shape) -> bool:
         if not self.check_rects(othershape):
             return False
-        if checkShpType(othershape, Point):
+        if checkShpType(othershape, ShpTyps.Point):
             ps = self.points
             c = False
             j = len(ps) - 1
@@ -2747,33 +2769,33 @@ class Polygon(ClosedShape):
                     c = not c
                 j = i
             return c
-        if checkShpType(othershape, Line):
+        if checkShpType(othershape, ShpTyps.Line):
             for li in self.toLines():
                 if li.collides(othershape):
                     return True
             if self._collides(Point(*othershape.p1)) or self._collides(Point(*othershape.p2)):
                 return True
             return False
-        if checkShpType(othershape, Circle):
+        if checkShpType(othershape, ShpTyps.Circle):
             if self._collides(Point(othershape.x, othershape.y)):
                 return True
             for li in self.toLines():
                 if li.collides(othershape):
                     return True
             return False
-        if checkShpType(othershape, Arc):
+        if checkShpType(othershape, ShpTyps.Arc):
             if any(self._collides(Point(*i)) for i in othershape.endPoints()):
                 return True
             for i in self.toLines():
                 if othershape.collides(i):
                     return True
             return False
-        if checkShpType(othershape, Rect) or checkShpType(othershape, RotatedRect):
+        if checkShpType(othershape, ShpTyps.Rect, ShpTyps.RotRect):
             for li in self.toLines():
                 if li.collides(othershape):
                     return True
             return othershape.collides(Point(self.points[0][0], self.points[0][1])) or self.collides(Point(othershape.x, othershape.y))
-        if checkShpType(othershape, Polygon):
+        if checkShpType(othershape, ShpTyps.Polygon):
             for li in self.toLines():
                 if li.collides(othershape):
                     return True
@@ -2854,7 +2876,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         """
         if not shapes:
             return Shapes()
-        shapes, others = [i for i in shapes if checkShpType(i, Rect)], [i for i in shapes if not checkShpType(i, Rect)]
+        shapes, others = [i for i in shapes if checkShpType(i, ShpTyps.Rect)], [i for i in shapes if not checkShpType(i, ShpTyps.Rect)]
         merged = True
         while merged:
             merged = False
@@ -2903,7 +2925,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         def reformat(obj):
             if checkShpType(obj, ShpGroups.CLOSED):
                 return obj
-            elif checkShpType(s, Line):
+            elif checkShpType(s, ShpTyps.Line):
                 return Polygon(obj.p1, obj.p2, obj.p2, obj.p1)
             # TODO: More
         reform = [reformat(s) for s in shapes]
