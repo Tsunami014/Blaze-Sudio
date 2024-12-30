@@ -6,7 +6,7 @@ pygame.init()
 win = pygame.display.set_mode()
 run = True
 header_opts = ['point', 'line', 'arc', 'circle', 'rect', 'rotated rect', 'polygon', 'eraser', 'combiner', 'help']
-types = [collisions.Point, collisions.Line, collisions.Arc, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.Polygon]
+types = [collisions.Point, collisions.Line, collisions.Arc, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.Polygon, collisions.NoShape]
 font = pygame.font.Font(None, 36)
 header_sze = 50
 typ = 0
