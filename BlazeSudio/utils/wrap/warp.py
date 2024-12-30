@@ -10,6 +10,7 @@ def lerp2d(p1, p2, f):
 def draw_quad(surface, quad, img):
     points = []
 
+    pixel_array = pygame.surfarray.array3d(img)
     wid, hei = img.get_size()
 
     for i in range(hei+1):
@@ -23,8 +24,9 @@ def draw_quad(surface, quad, img):
 
     for x in range(wid):
         for y in range(hei):
+            color = pixel_array[x, y]  # (r, g, b)
             pygame.draw.polygon(
                 surface,
-                img.get_at((x,y)),
+                color,
                 [points[b][a] for a, b in [(x,y), (x,y+1), (x+1,y+1), (x+1,y)]] 
             )

@@ -518,7 +518,7 @@ def WrapDemo():
             ])
 
             CCENTER = GO.PNEW((0.5, 0.5), (1, 0), (True, True))
-            botF['Main'].append(GUI.Static(botF, CCENTER, pygame.Surface((0, 0))))
+            botF['Main'].append(GUI.ImageViewer(botF, CCENTER, pygame.Surface((0, 0)), (800, 400)))
 
             self.makeSur()
         
@@ -586,8 +586,6 @@ def WrapDemo():
                 )
 
                 yield 'Finishing up'
-
-                slf['surf'] = pygame.transform.scale(slf['surf'], (500, 500))
             fin, outs = load()
             if fin:
                 self.botF['Main'][-1].set(outs['surf'])
@@ -596,6 +594,7 @@ def WrapDemo():
 
 def TsetCollDemo():
     from BlazeSudio.graphics import Screen, Loading, options as GO, GUI
+    from BlazeSudio.utils import genCollisions as gen
     from functools import partial
     import pygame
     
@@ -610,24 +609,45 @@ def TsetCollDemo():
         
         @Loading.decor
         def calcPoly(slf, self):
-            self.poly = [(0, 0), (32, 0), (32, 32), (0, 32)]
+            chosen = self.opts.index(self.chooser.get())
+            if chosen == 0:
+                self.poly = None
+            elif chosen == 1:
+                self.poly = [(0, 0), (32, 0), (32, 32), (0, 32)]
+            elif chosen == 2:
+                self.poly = gen.bounding_box(self.tile)
+            elif chosen == 3:
+                self.poly = gen.approximate_polygon(self.tile)
         
         def __init__(self):
             self.getTile(0)
+            self.opts = [
+                'No collisions', 
+                'Cover entire shape',
+                'Bounding box', 
+                'Trace shape'
+            ]
             super().__init__()
+
+        def _Event(self, event):
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    self.calcPoly(self)
         
         def _LoadUI(self):
             self.layers[0].add('Main')
 
             PCTOP = GO.PNEW((0.5, 0), (1, 0), (True, False))
-            self.scale = GUI.NumInputBox(self, PCTOP, 100, GO.RNONE, start=None, empty=1, min=1, max=30, placeholder='Scale by size', decimals=2)
+            self.scale = GUI.NumInputBox(self, PCTOP, 100, GO.RNONE, start=None, empty=10, min=1, max=30, placeholder='Scale by size', decimals=2)
             chooser = GUI.DropdownButton(self, PCTOP, ['Tile %i'%i for i in range(tset.get_width()//32)], func=lambda i: self.getTile(i))
+            self.chooser = GUI.DropdownButton(self, PCTOP, self.opts)
 
             goBtn = GUI.Button(self, GO.PCBOTTOM, GO.CGREEN, 'Go!', func=partial(self.calcPoly, self))
 
             self['Main'].extend([
                 self.scale,
                 chooser,
+                self.chooser,
                 goBtn
             ])
         
@@ -642,7 +662,7 @@ def TsetCollDemo():
             self.WIN.blit(pygame.transform.scale(self.tile, (32*scale, 32*scale)), outPos(0, 0))
 
             if self.poly is not None:
-                pygame.draw.polygon(self.WIN, (0, 0, 0), [outPos(*p) for p in self.poly], 4)
+                pygame.draw.polygon(self.WIN, (125, 125, 125), [outPos(*p) for p in self.poly], 4)
     
     Main()()
 
