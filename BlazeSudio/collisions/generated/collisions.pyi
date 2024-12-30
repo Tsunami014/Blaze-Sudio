@@ -1,7 +1,7 @@
 import shapely.geometry as shapelyGeom
 from _typeshed import Incomplete
 from enum import IntEnum
-from typing import Any, Dict, Iterable
+from typing import Any, Iterable
 
 __all__ = ['rotate', 'rotateBy0', 'direction', 'pointOnCircle', 'shapelyToColl', 'collToShapely', 'drawShape', 'ShpGroups', 'ShpTyps', 'checkShpType', 'ClosedShape', 'Shape', 'NoShape', 'Shapes', 'Point', 'Line', 'Circle', 'Arc', 'Rect', 'RotatedRect', 'Polygon', 'ShapeCombiner']
 
@@ -61,24 +61,24 @@ class ShpGroups(IntEnum):
     """
     An enum representing the different groups you can put shapes in.
     """
-    CLOSED: int
-    LINES: int
-    NOTSTRAIGHT: int
-    GROUP: int
+    CLOSED = 0
+    LINES = 1
+    NOTSTRAIGHT = 2
+    GROUP = 3
 
 class ShpTyps(IntEnum):
     """
     An enum representing the different possible shapes.
     """
-    NoShape: int
-    Group: int
-    Point: int
-    Line: int
-    Circle: int
-    Arc: int
-    Rect: int
-    RotRect: int
-    Polygon: int
+    NoShape = -1
+    Group = -2
+    Point = -3
+    Line = -4
+    Circle = -5
+    Arc = -6
+    Rect = -7
+    RotRect = -8
+    Polygon = -9
 
 def checkShpType(shape: Shape | Shapes, *typs: ShpTyps | ShpGroups) -> bool:
     """
@@ -364,7 +364,7 @@ class Shapes:
         Returns:
             bool: Whether the shape is fully enclosed within this shape.
         """
-    def isCorner(self, point: pointLike, precision: Number = ...) -> Dict[Shape | Shapes, bool]:
+    def isCorner(self, point: pointLike, precision: Number = ...) -> dict[Shape | Shapes, bool]:
         """
         Takes each object and finds whether the input point is on the corner of that object.
 
