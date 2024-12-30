@@ -1,5 +1,37 @@
 import BlazeSudio.collisions as colls
 
+__all__ = [
+    "bounding_box",
+    "approximate_polygon"
+]
+
+def bounding_box(surface):
+    """
+    Simplifies a polygon into 4 points.
+
+    Args:
+        surface (pygame.Surface): The surface to simplify.
+    """
+    width, height = surface.get_size()
+    points = []
+    for x in range(width):
+        for y in range(height):
+            if surface.get_at((x, y)).a > 125:
+                points.append((x, y))
+    if not points:
+        return None
+    
+    xs, ys = zip(*points)
+    x1 = min(xs)
+    x2 = max(xs)
+    y1 = min(ys)
+    y2 = max(ys)
+    if x2 == width-1:
+        x2 = width
+    if y2 == height-1:
+        y2 = height
+    return colls.Polygon((x1, y1), (x2, y1), (x2, y2), (x1, y2))
+
 def approximate_polygon(surface, tolerance=3, ratio=0.1): # TODO: Seriously boost performance
     """
     Returns a concave polygon that approximates the non-transparent area of a Pygame surface.
