@@ -251,6 +251,8 @@ def drawShape(surface: Any, shape: 'Shape', colour: tuple[int, int, int], width:
     elif checkShpType(shape, ShpGroups.GROUP):
         for i in shape.shapes:
             drawShape(surface, i, colour, width)
+    elif checkShpType(shape, ShpTyps.NoShape):
+        pass
     else:
         raise ValueError(f'Cannot draw BlazeSudio shape of type {type(shape)}')
 
