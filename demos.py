@@ -697,22 +697,24 @@ if __name__ == '__main__':
             cmds.append(command)
     
     label('Node generator [image]:')
-    button('Node Editor Demo',             NodeEditorDemo,                   )
+    button('Node Editor Demo',              NodeEditorDemo,                   )
 
     label('Graphics [graphics] / [game]:')
-    button('Graphics Demo',                GraphicsDemo,                     )
-    button('Lorem Ipsum Graphics Demo',    LoremGraphicsDemo,                )
-    button('Theme Playground Demo',        ThemePgDemo,                  True)
+    button('Graphics Demo',                 GraphicsDemo,                     )
+    button('Lorem Ipsum Graphics Demo',     LoremGraphicsDemo,                )
+    button('Theme Playground Demo',         ThemePgDemo,                  True)
 
     # TODO: Sound editor demo
     label('Collisions [collisions]:')
-    button('Collisions Demo',              CollisionsDemo,                   )
-    button('DEBUG Collisions Demo',        lambda: CollisionsDemo(True),     )
+    button('Collisions Demo',               CollisionsDemo,                   )
+    button('DEBUG Collisions Demo',         lambda: CollisionsDemo(True),     )
+
+    label('Wrapping [game]:')
+    button('Wrap Demo',                     WrapDemo,                         )
+    button('Wrap Basic Demo',               WrapBasicDemo,                    )
 
     label('Misc stuff:')
-    button('Wrap Demo [game]',              WrapDemo,                        )
-    button('Wrap Basic Demo [game]',        WrapBasicDemo,                   )
-    button('Tileset Collision Demo [game]', TsetCollDemo,                    )
+    button('Tileset Collision Demo [game]', TsetCollDemo,                     )
     
     if has_tk:
         root.after(1, lambda: root.attributes('-topmost', True))
