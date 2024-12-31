@@ -480,7 +480,7 @@ def update(img: pygame.Surface,
     out = pygame.Surface((ms, modify(h1+h2+h3)), pygame.SRCALPHA)
     out.blit(out1, (0, 0))
     out.blit(thisOut, (0, h1))
-    out.blit(out2, (0, h3))
+    out.blit(out2, (0, modify(h1+h2)))
 
     pygame.image.save(out, fname)
 
