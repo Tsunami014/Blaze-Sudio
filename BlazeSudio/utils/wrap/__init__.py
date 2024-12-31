@@ -200,7 +200,8 @@ def wrapSurface(pg: pygame.Surface,
 
         totd = 0
         total = sum(shape.jointDists)
-        lastP1 = None
+        lastinp1 = None
+        lastoutp1 = None
         lnsLen = len(lns.shapes)
 
         yield 'Calculating segments', {'amount': len(collsegs), 'done': 0}
@@ -209,36 +210,43 @@ def wrapSurface(pg: pygame.Surface,
             d = shape.jointDists[idx]
 
             if top != 0:
-                out1 = closestTo(lns[idx].whereCollides(hitsLge), seg.p1)
-                out2 = closestTo(lns[(idx+1)%lnsLen].whereCollides(hitsLge), seg.p2)
-                if top == 1:
-                    outerp1, outerp2 = out1, out2
+                if lastoutp1 is not None:
+                    outerp1 = lastoutp1
                 else:
-                    outerp1 = ((seg.p1[0]-out1[0]) * top + out1[0], (seg.p1[1]-out1[1]) * top + out1[1])
-                    outerp2 = ((seg.p2[0]-out2[0]) * top + out2[0], (seg.p2[1]-out2[1]) * top + out2[1])
+                    outerp1 = closestTo(lns[idx].whereCollides(hitsLge), seg.p1)
+                    if top != 1:
+                        outerp1 = ((seg.p1[0]-outerp1[0]) * top + outerp1[0], (seg.p1[1]-outerp1[1]) * top + outerp1[1])
+                
+                outerp2 = closestTo(lns[(idx+1)%lnsLen].whereCollides(hitsLge), seg.p2)
+                if top != 1:
+                    outerp2 = ((seg.p2[0]-outerp2[0]) * top + outerp2[0], (seg.p2[1]-outerp2[1]) * top + outerp2[1])
+                lastoutp1 = outerp2
             else:
                 outerp1, outerp2 = seg.p1, seg.p2
 
             if bottom != 0:
-                p1Closest = closestTo(small.closestPointTo(collisions.Point(*seg.p1)), seg.p1) if lastP1 is None else lastP1
-                p2Closest = closestTo(small.closestPointTo(collisions.Point(*seg.p2)), seg.p2)
-                lastP1 = p2Closest
-
-                if bottom == -1:
-                    innerP1, innerP2 = p1Closest, p2Closest
+                if lastinp1 is not None:
+                    innerp1 = lastinp1
                 else:
-                    innerP1 = ((p1Closest[0]-seg.p1[0]) * abs(bottom) + seg.p1[0], (p1Closest[1]-seg.p1[1]) * abs(bottom) + seg.p1[1])
-                    innerP2 = ((p2Closest[0]-seg.p2[0]) * abs(bottom) + seg.p2[0], (p2Closest[1]-seg.p2[1]) * abs(bottom) + seg.p2[1])
+                    innerp1 = closestTo(small.closestPointTo(collisions.Point(*seg.p1)), seg.p1)
+                    if bottom != -1:
+                        innerp1 = ((innerp1[0]-seg.p1[0]) * abs(bottom) + seg.p1[0], (innerp1[1]-seg.p1[1]) * abs(bottom) + seg.p1[1])
+                
+                innerp2 = closestTo(small.closestPointTo(collisions.Point(*seg.p2)), seg.p2)
+                if bottom != -1:
+                    innerp2 = ((innerp2[0]-seg.p2[0]) * abs(bottom) + seg.p2[0], (innerp2[1]-seg.p2[1]) * abs(bottom) + seg.p2[1])
+                
+                lastinp1 = innerp2
             else:
-                innerP1, innerP2 = seg.p1, seg.p2
+                innerp1, innerp2 = seg.p1, seg.p2
 
             if limit:
-                phi1 = collisions.direction(outerp1, innerP1)
-                innerP1 = collisions.rotate(outerp1, (outerp1[0], outerp1[1]-height), math.degrees(phi1)+90)
-                phi2 = collisions.direction(outerp2, innerP2)
-                innerP2 = collisions.rotate(outerp2, (outerp2[0], outerp2[1]-height), math.degrees(phi2)+90)
+                phi1 = collisions.direction(outerp1, innerp1)
+                innerp1 = collisions.rotate(outerp1, (outerp1[0], outerp1[1]-height), math.degrees(phi1)+90)
+                phi2 = collisions.direction(outerp2, innerp2)
+                innerp2 = collisions.rotate(outerp2, (outerp2[0], outerp2[1]-height), math.degrees(phi2)+90)
 
-            poly = [outerp1, outerp2, innerP2, innerP1]
+            poly = [outerp1, outerp2, innerp2, innerp1]
 
             draw_quad(cir, poly, pg.subsurface(((totd/total)*width, 0, math.ceil((d/total)*width), pg.get_height())))
             if pg2IsPygame:
