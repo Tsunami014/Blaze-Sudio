@@ -61,6 +61,8 @@ class Tileset:
         self.uid: int = self.data['uid']
         self.tileGridSize: int = self.data['tileGridSize']
 
+        self.width: int = self.data['__cWid']
+
         self.tilesetPath: str|None = None
         self.tileSet: pygame.Surface|None = None
         if self.data['relPath'] is not None:
@@ -71,6 +73,24 @@ class Tileset:
         elif self.data['embedAtlas'] == 'LdtkIcons' and self.data['relPath'] is None:
             self.tilesetPath = str(files('BlazeSudio') / 'ldtk/internal-icons.png')
             self.tileSet = pygame.image.load(self.tilesetPath).convert_alpha()
+    
+    def getTileData(self, x: int, y: int) -> List[str]:
+        """
+        Get the tile data at a specific position.
+
+        Args:
+            x (int): The x ordinate of the tile.
+            y (int): The y ordinate of the tile.
+
+        Returns:
+            List[str]: The tile data.
+        """
+        idx = (y//self.tileGridSize)*self.width + (x//self.tileGridSize)
+        datas = []
+        for tag in self.data['enumTags']:
+            if idx in tag['tileIds']:
+                datas.append(tag['enumValueId'])
+        return datas
     
     def subsurface(self, x: int, y: int, w: int, h: int) -> pygame.Surface:
         """
@@ -246,7 +266,33 @@ class Ldtklevel:
                 self.entities.extend([Entity(layobj, i, self.tilesets) for i in lay['entityInstances']])
             else:
                 self.layers.append(layer(lay, self))
-        self.layers.reverse() 
+        self.layers.reverse()
+    
+    def Render(self, transparent_bg=False):
+        end = pygame.Surface(self.sizePx, pygame.SRCALPHA)
+        if transparent_bg:
+            end.fill((0, 0, 0, 0))
+        else:
+            end.fill(self.bgColour)
+        for i in self.layers:
+            end.blit(i.getImg(), (0, 0))
+        return end
+    
+    def CollisionLayer(self, collisionFunc: Callable[[Tileset], pygame.Surface]) -> 'Ldtklevel':
+        """
+        Copy this level but with a collision tileset.
+
+        Args:
+            collisionFunc (Callable[[Tileset, int, int], pygame.Surface]): The function that will be used to generate the collision data.
+            This function should take in a tileset and the x and y position of the tile, and return a pygame.Surface where transparency is no collisions.
+        
+        Returns:
+            Ldtklevel: The new level with the collision data.
+        """
+        newLevel = Ldtklevel(self.data, self.tilesets, self.defs)
+        for i in range(len(newLevel.layers)):
+            newLevel.layers[i] = newLevel.layers[i].CollisionLayer(collisionFunc)
+        return newLevel
     
     def GetLayerById(self, layerid: str) -> 'layer':
         """
@@ -441,6 +487,27 @@ class layer:
             t = self.tileset.getTile(i)
             end.blit(t, self.add_offset(i.pos, t.get_size()))
         return end
+    
+    def CollisionLayer(self, collisionFunc: Callable[[Tileset, int, int], pygame.Surface]) -> 'layer':
+        """
+        Copy this layer but with a collision tileset.
+
+        Args:
+            collisionFunc (Callable[[Tileset, int, int], pygame.Surface]): The function that will be used to generate the collision data.
+            This function should take in a tileset and the x and y position of the tile, and return a pygame.Surface where transparency is no collisions.
+        
+        Returns:
+            layer: The new layer with the collision data.
+        """
+        newLayer = layer(self.data, self.level)
+        tset = Tileset(newLayer.tileset.fileLoc, newLayer.tileset.data)
+        newSur = pygame.Surface(tset.tileSet.get_size(), pygame.SRCALPHA)
+        for x in range(0, tset.width*tset.tileGridSize, tset.tileGridSize):
+            for y in range(0, tset.width*tset.tileGridSize, tset.tileGridSize):
+                newSur.blit(collisionFunc(tset, x, y), (x, y))
+        tset.tileSet = newSur
+        newLayer.tileset = tset
+        return newLayer
     
     def add_offset(self, pos: Iterable[int|float], sze: Iterable[int|float]) -> Tuple[int|float]:
         """

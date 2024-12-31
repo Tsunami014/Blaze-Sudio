@@ -60,12 +60,4 @@ class World:
         return self.ldtk.levels[lvl]
 
     def get_pygame(self, lvl=0, transparent_bg=False):
-        level = self.ldtk.levels[lvl]
-        end = Surface(level.sizePx, pygame.SRCALPHA)
-        if transparent_bg:
-            end.fill((0, 0, 0, 0))
-        else:
-            end.fill(level.bgColour)
-        for i in level.layers:
-            end.blit(i.getImg(), (0, 0))
-        return end
+        return self.ldtk.levels[lvl].Render(transparent_bg)
