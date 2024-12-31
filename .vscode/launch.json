@@ -37,6 +37,10 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${cwd}"
+            },
             "console": "integratedTerminal",
             "justMyCode": false
         }
