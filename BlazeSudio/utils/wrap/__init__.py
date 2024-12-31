@@ -155,6 +155,16 @@ def wrapSurface(pg: pygame.Surface,
         constraint_ranges = [(con.pos[0], con.pos[1]) for con in constraints]
         segs = [x for x in range(width) if not any(start < x < end for start, end in constraint_ranges)]
 
+        npg = pygame.Surface((width, height), pygame.SRCALPHA)
+        npg.fill(halo)
+        npg.blit(pg, (0, 0))
+        pg = npg
+        if pg2IsPygame:
+            npg = pygame.Surface((width, height), pygame.SRCALPHA)
+            npg.fill(halo)
+            npg.blit(pg2, (0, 0))
+            pg2 = npg
+
         shape = MakeShape(width)
         shape.joints = [(i, 0) for i in segs]
         shape.setAngs = [
@@ -229,13 +239,28 @@ def wrapSurface(pg: pygame.Surface,
                 points[index] = future.result()
                 yield 'Calculating points'
         
-        points.append(calcPoints(collsegs[-1].p2, len(collsegs)-1))
+        points.append(points[0])
 
-        yield 'Calculating segments', {'amount': len(collsegs), 'done': 0}
+        yield 'Calculating subsurfaces', {'amount': len(collsegs), 'done': 0}
 
+        pgSubs = []
+        pg2Subs = []
+        totd = 0
+        pgh, pg2h = pg.get_height(), pg2.get_height() if pg2IsPygame else 0
         for idx, seg in enumerate(collsegs):
             d = shape.jointDists[idx]
+            x, w = (totd/total)*width, math.ceil((d/total)*width)
+            pgSubs.append(pg.subsurface((x, 0, w, pgh)))
+            if pg2IsPygame:
+                pg2Subs.append(pg2.subsurface((x, 0, w, pg2h)))
+            
+            totd += d
+            
+            yield 'Calculating subsurfaces'
+        
+        yield 'Calculating segments', {'amount': len(collsegs), 'done': 0}
 
+        def process_segment(idx):
             innerp1, outerp1 = points[idx]
             innerp2, outerp2 = points[idx+1]
 
@@ -247,12 +272,15 @@ def wrapSurface(pg: pygame.Surface,
 
             poly = [outerp1, outerp2, innerp2, innerp1]
 
-            draw_quad(cir, poly, pg.subsurface(((totd/total)*width, 0, math.ceil((d/total)*width), pg.get_height())))
+            draw_quad(cir, poly, pgSubs[idx])
             if pg2IsPygame:
-                draw_quad(cir2, poly, pg2.subsurface(((totd/total)*width, 0, math.ceil((d/total)*width), pg2.get_height())))
+                draw_quad(cir2, poly, pg2Subs[idx])
 
-            totd += d
-            yield 'Calculating segments'
+            return d
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for d in executor.map(process_segment, range(len(collsegs))):
+                yield 'Calculating segments'
 
         if pg2 is True: # just mask the output
             surface_array = pygame.surfarray.pixels3d(cir)
