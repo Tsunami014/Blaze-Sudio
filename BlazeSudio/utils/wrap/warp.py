@@ -10,17 +10,23 @@ def lerp2d(p1, p2, f):
 def draw_quad(surface, quad, img):
     pixel_array = pygame.surfarray.pixels3d(img)
     wid, hei = img.get_size()
+    inv_wid = 1 / wid
+    inv_hei = 1 / hei
     for y in range(hei):
-        b1 = lerp2d(quad[1], quad[2], y/hei)
-        b2 = lerp2d(quad[1], quad[2], (y+1)/hei)
-        c1 = lerp2d(quad[0], quad[3], y/hei)
-        c2 = lerp2d(quad[0], quad[3], (y+1)/hei)
+        fy = y * inv_hei
+        fy1 = (y + 1) * inv_hei
+        b1 = lerp2d(quad[1], quad[2], fy)
+        b2 = lerp2d(quad[1], quad[2], fy1)
+        c1 = lerp2d(quad[0], quad[3], fy)
+        c2 = lerp2d(quad[0], quad[3], fy1)
         for x in range(wid):
+            fx = x * inv_wid
+            fx1 = (x + 1) * inv_wid
             color = pixel_array[x, y]
             poly = [
-                lerp2d(c1, b1, x/wid),
-                lerp2d(c1, b1, (x+1)/wid),
-                lerp2d(c2, b2, (x+1)/wid),
-                lerp2d(c2, b2, x/wid),
+                lerp2d(c1, b1, fx),
+                lerp2d(c1, b1, fx1),
+                lerp2d(c2, b2, fx1),
+                lerp2d(c2, b2, fx),
             ]
             pygame.draw.polygon(surface, color, poly)

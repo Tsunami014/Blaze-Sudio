@@ -149,39 +149,22 @@ def wrapSurface(pg: pygame.Surface,
             raise ValueError(
                 'Top must be >= 0 and bottom must be <= 0 and >= -1'
             )
-        shape = MakeShape(width)
-        def checkX1(x):
-            for con in constraints:
-                if x > con.pos[0] and x < con.pos[1]:
-                    return False
-            return True
-        segs = [x for x in range(width) if checkX1(x)]
-        def checkX2(x):
-            for con in constraints:
-                if x == con.pos[0]:
-                    return con.angle
-            return None
-        
-        npg = pygame.Surface((width, height), pygame.SRCALPHA)
-        npg.fill(halo)
-        npg.blit(pg, (0, 0))
-        pg = npg
-        if pg2IsPygame:
-            npg = pygame.Surface((width, height), pygame.SRCALPHA)
-            npg.fill(halo)
-            npg.blit(pg2, (0, 0))
-            pg2 = npg
 
-        segrots = [checkX2(x) for x in segs]
+        # Precompute constraint ranges
+        constraint_ranges = [(con.pos[0], con.pos[1]) for con in constraints]
+        segs = [x for x in range(width) if not any(start < x < end for start, end in constraint_ranges)]
+
+        shape = MakeShape(width)
         shape.joints = [(i, 0) for i in segs]
-        shape.setAngs = segrots
-        # shape.joints = [(0, 100), (100, 200), (200, 200), (300, 100), (200, 0), (100, 0), (0, 100)]
+        shape.setAngs = [
+            next((con.angle for con in constraints if con.pos[0] == x), None) 
+            for x in segs
+        ]
         shape.recalculate_dists()
-        large, main, small = shape.generateBounds(height, True, False, False) # main and small set to None
+        large, main, small = shape.generateBounds(height, True, False, False)
         largePs = large.toPoints()
         mins = (min(i[0] for i in largePs), min(i[1] for i in largePs))
-        for i in range(len(shape.joints)):
-            shape.joints[i] = (shape.joints[i][0]-mins[0], shape.joints[i][1]-mins[1])
+        shape.joints = [(x - mins[0], y - mins[1]) for x, y in shape.joints]
         large, main, small = shape.generateBounds(height, True, False, True)
         collsegs = shape.collSegments
         largePs = large.toPoints()
@@ -191,7 +174,6 @@ def wrapSurface(pg: pygame.Surface,
             cir2 = pygame.Surface(sze, pygame.SRCALPHA)
 
         angs = [collisions.direction(i.p1, i.p2) for i in collsegs]
-
         yield 'Initialising lines'
 
         lns = []
@@ -200,44 +182,24 @@ def wrapSurface(pg: pygame.Surface,
         r = (shape.lastRadius + height)*2
 
         for idx, seg in enumerate(collsegs):
-            #d2 = shape.jointDists[idx]**2
-
             sin_sum = math.sin(angs[idx]) + math.sin(angs[idx-1])
             cos_sum = math.cos(angs[idx]) + math.cos(angs[idx-1])
-
-            # Calculate the circular mean using arctan2
             mean_rad = math.atan2(sin_sum, cos_sum)
             avg = math.degrees(mean_rad)
             angs2.append(avg)
-        
-            lns.append(collisions.Line(collisions.rotate(seg.p1, (seg.p1[0], seg.p1[1]-r), avg), 
-                                        collisions.rotate(seg.p1, (seg.p1[0], seg.p1[1]+r), avg)))
-            
-            # pygame.draw.line(cirs[0], (255, 50, 255), seg[0], seg[1], 2)
+
+            rotated_p1 = collisions.rotate(seg.p1, (seg.p1[0], seg.p1[1]-r), avg)
+            rotated_p2 = collisions.rotate(seg.p1, (seg.p1[0], seg.p1[1]+r), avg)
+            lns.append(collisions.Line(rotated_p1, rotated_p2))
 
         lns = collisions.Shapes(*lns)
-
         hitsLge = collisions.Shapes(*large.toLines())
 
         def closestTo(li, p):
-            d = None
-            clo = None
-            for p2 in li:
-                d2 = (p2[0]-p[0])**2+(p2[1]-p[1])**2
-                if d is None or d2 < d:
-                    d = d2
-                    clo = p2
-            return clo
-        
-        # for ln in lns:
-        #     pygame.draw.line(cir, (125, 125, 125), ln[0], ln[1])
-        
-        # for p in lns.whereCollides(lns):
-        #     pygame.draw.circle(cir, (0, 0, 0), p, 2)
+            return min(li, key=lambda p2: (p2[0]-p[0])**2 + (p2[1]-p[1])**2)
 
         totd = 0
         total = sum(shape.jointDists)
-
         lastP1 = None
         lnsLen = len(lns.shapes)
 
@@ -246,67 +208,37 @@ def wrapSurface(pg: pygame.Surface,
         for idx, seg in enumerate(collsegs):
             d = shape.jointDists[idx]
 
-            # TODO: Trace the large poly along bcos it may have multiple segments
-            
             if top != 0:
                 out1 = closestTo(lns[idx].whereCollides(hitsLge), seg.p1)
                 out2 = closestTo(lns[(idx+1)%lnsLen].whereCollides(hitsLge), seg.p2)
                 if top == 1:
-                    outerp1 = out1
-                    outerp2 = out2
+                    outerp1, outerp2 = out1, out2
                 else:
-                    inner1 = seg.p1
-                    outerp1 = (
-                        (inner1[0]-out1[0])*top+out1[0],
-                        (inner1[1]-out1[1])*top+out1[1]
-                    )
-                    inner2 = seg.p2
-                    outerp2 = (
-                        (inner2[0]-out2[0])*top+out2[0],
-                        (inner2[1]-out2[1])*top+out2[1]
-                    )
+                    outerp1 = ((seg.p1[0]-out1[0]) * top + out1[0], (seg.p1[1]-out1[1]) * top + out1[1])
+                    outerp2 = ((seg.p2[0]-out2[0]) * top + out2[0], (seg.p2[1]-out2[1]) * top + out2[1])
             else:
-                outerp1 = seg.p1
-                outerp2 = seg.p2
-            
+                outerp1, outerp2 = seg.p1, seg.p2
+
             if bottom != 0:
-                if lastP1 is None:
-                    p1Closests = small.closestPointTo(collisions.Point(*seg.p1))
-                    p1Closest = closestTo(p1Closests, seg.p1)
-                else:
-                    p1Closest = lastP1
-                p2Closests = small.closestPointTo(collisions.Point(*seg.p2))
-                p2Closest = closestTo(p2Closests, seg.p2)
+                p1Closest = closestTo(small.closestPointTo(collisions.Point(*seg.p1)), seg.p1) if lastP1 is None else lastP1
+                p2Closest = closestTo(small.closestPointTo(collisions.Point(*seg.p2)), seg.p2)
                 lastP1 = p2Closest
 
                 if bottom == -1:
-                    innerP1 = p1Closest
-                    innerP2 = p2Closest
+                    innerP1, innerP2 = p1Closest, p2Closest
                 else:
-                    innerP1 = (
-                        (p1Closest[0]-seg.p1[0])*abs(bottom)+seg.p1[0],
-                        (p1Closest[1]-seg.p1[1])*abs(bottom)+seg.p1[1]
-                    )
-                    innerP2 = (
-                        (p2Closest[0]-seg.p2[0])*abs(bottom)+seg.p2[0],
-                        (p2Closest[1]-seg.p2[1])*abs(bottom)+seg.p2[1]
-                    )
+                    innerP1 = ((p1Closest[0]-seg.p1[0]) * abs(bottom) + seg.p1[0], (p1Closest[1]-seg.p1[1]) * abs(bottom) + seg.p1[1])
+                    innerP2 = ((p2Closest[0]-seg.p2[0]) * abs(bottom) + seg.p2[0], (p2Closest[1]-seg.p2[1]) * abs(bottom) + seg.p2[1])
             else:
-                innerP1 = seg.p1
-                innerP2 = seg.p2
-            
+                innerP1, innerP2 = seg.p1, seg.p2
+
             if limit:
                 phi1 = collisions.direction(outerp1, innerP1)
                 innerP1 = collisions.rotate(outerp1, (outerp1[0], outerp1[1]-height), math.degrees(phi1)+90)
                 phi2 = collisions.direction(outerp2, innerP2)
                 innerP2 = collisions.rotate(outerp2, (outerp2[0], outerp2[1]-height), math.degrees(phi2)+90)
 
-            poly = [
-                outerp1,
-                outerp2,
-                innerP2,
-                innerP1,
-            ]
+            poly = [outerp1, outerp2, innerP2, innerP1]
 
             draw_quad(cir, poly, pg.subsurface(((totd/total)*width, 0, math.ceil((d/total)*width), pg.get_height())))
             if pg2IsPygame:
@@ -314,7 +246,7 @@ def wrapSurface(pg: pygame.Surface,
 
             totd += d
             yield 'Calculating segments'
-        
+
         if pg2 is True: # just mask the output
             surface_array = pygame.surfarray.pixels3d(cir)
             alpha_array = pygame.surfarray.pixels_alpha(cir)
@@ -522,3 +454,11 @@ def update(img: pygame.Surface,
 
     with open(dataFname, 'w') as f:
         f.write(new.replace('\n\n', '\n').strip('\n'))
+
+if __name__ == '__main__':
+    pygame.init()
+    pygame.display.set_mode((1, 1))
+    sur = pygame.Surface((1,2), pygame.SRCALPHA)
+    sur.set_at((0, 0), (255, 255, 255))
+    sur.set_at((0, 1), (0, 0, 0))
+    wrapSurface(pygame.transform.scale(sur, (500, 300)), 0.5, -0.5)
