@@ -9,6 +9,7 @@ def lerp2d(p1, p2, f):
 
 def draw_quad(surface, quad, img):
     pixel_array = pygame.surfarray.pixels3d(img)
+    alpha_array = pygame.surfarray.pixels_alpha(img)
     wid, hei = img.get_size()
     inv_wid = 1 / wid
     inv_hei = 1 / hei
@@ -22,7 +23,7 @@ def draw_quad(surface, quad, img):
         for x in range(wid):
             fx = x * inv_wid
             fx1 = (x + 1) * inv_wid
-            color = pixel_array[x, y]
+            color = (*pixel_array[x, y], alpha_array[x, y])
             poly = [
                 lerp2d(c1, b1, fx),
                 lerp2d(c1, b1, fx1),
