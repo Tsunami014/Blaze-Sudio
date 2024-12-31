@@ -134,7 +134,7 @@ def wrapSurface(pg: pygame.Surface,
     """
     def wrap():
         nonlocal pg, pg2
-        yield 'Initialising wrap', {'amount': 3}
+        yield 'Initialising wrap', {'amount': 4, 'done': 0}
         width, height = pg.get_size()
         if isinstance(pg2, pygame.Surface):
             pg2IsPygame = True
@@ -200,45 +200,40 @@ def wrapSurface(pg: pygame.Surface,
 
         totd = 0
         total = sum(shape.jointDists)
-        lastinp1 = None
-        lastoutp1 = None
-        lnsLen = len(lns.shapes)
+
+        points = []
+        yield 'Calculating points', {'amount': len(collsegs)+1, 'done': 0}
+        def calcPoints(point):
+            if top != 0:
+                outerp = closestTo(lns[idx].whereCollides(hitsLge), point)
+                if top != 1:
+                    outerp = ((point[0]-outerp[0]) * top + outerp[0], (point[1]-outerp[1]) * top + outerp[1])
+            else:
+                outerp = point
+
+            if bottom != 0:
+                innerp = closestTo(small.closestPointTo(collisions.Point(*point)), point)
+
+                if bottom != -1:
+                    innerp = ((innerp[0]-point[0]) * abs(bottom) + point[0], (innerp[1]-point[1]) * abs(bottom) + point[1])
+            else:
+                innerp = point
+            
+            return [innerp, outerp]
+        
+        for idx, seg in enumerate(collsegs):
+            points.append(calcPoints(seg.p1))
+            yield 'Calculating points'
+        
+        points.append(calcPoints(collsegs[-1].p2))
 
         yield 'Calculating segments', {'amount': len(collsegs), 'done': 0}
 
         for idx, seg in enumerate(collsegs):
             d = shape.jointDists[idx]
 
-            if top != 0:
-                if lastoutp1 is not None:
-                    outerp1 = lastoutp1
-                else:
-                    outerp1 = closestTo(lns[idx].whereCollides(hitsLge), seg.p1)
-                    if top != 1:
-                        outerp1 = ((seg.p1[0]-outerp1[0]) * top + outerp1[0], (seg.p1[1]-outerp1[1]) * top + outerp1[1])
-                
-                outerp2 = closestTo(lns[(idx+1)%lnsLen].whereCollides(hitsLge), seg.p2)
-                if top != 1:
-                    outerp2 = ((seg.p2[0]-outerp2[0]) * top + outerp2[0], (seg.p2[1]-outerp2[1]) * top + outerp2[1])
-                lastoutp1 = outerp2
-            else:
-                outerp1, outerp2 = seg.p1, seg.p2
-
-            if bottom != 0:
-                if lastinp1 is not None:
-                    innerp1 = lastinp1
-                else:
-                    innerp1 = closestTo(small.closestPointTo(collisions.Point(*seg.p1)), seg.p1)
-                    if bottom != -1:
-                        innerp1 = ((innerp1[0]-seg.p1[0]) * abs(bottom) + seg.p1[0], (innerp1[1]-seg.p1[1]) * abs(bottom) + seg.p1[1])
-                
-                innerp2 = closestTo(small.closestPointTo(collisions.Point(*seg.p2)), seg.p2)
-                if bottom != -1:
-                    innerp2 = ((innerp2[0]-seg.p2[0]) * abs(bottom) + seg.p2[0], (innerp2[1]-seg.p2[1]) * abs(bottom) + seg.p2[1])
-                
-                lastinp1 = innerp2
-            else:
-                innerp1, innerp2 = seg.p1, seg.p2
+            innerp1, outerp1 = points[idx]
+            innerp2, outerp2 = points[idx+1]
 
             if limit:
                 phi1 = collisions.direction(outerp1, innerp1)
