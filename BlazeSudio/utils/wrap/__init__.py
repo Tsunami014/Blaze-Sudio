@@ -1,6 +1,7 @@
 from BlazeSudio import collisions
 from BlazeSudio.utils.wrap.makeShape import MakeShape
 from BlazeSudio.utils.wrap.warp import draw_quad
+import concurrent.futures
 import numpy as np
 import os
 import pygame
@@ -203,7 +204,7 @@ def wrapSurface(pg: pygame.Surface,
 
         points = []
         yield 'Calculating points', {'amount': len(collsegs)+1, 'done': 0}
-        def calcPoints(point):
+        def calcPoints(point, idx):
             if top != 0:
                 outerp = closestTo(lns[idx].whereCollides(hitsLge), point)
                 if top != 1:
@@ -213,7 +214,6 @@ def wrapSurface(pg: pygame.Surface,
 
             if bottom != 0:
                 innerp = closestTo(small.closestPointTo(collisions.Point(*point)), point)
-
                 if bottom != -1:
                     innerp = ((innerp[0]-point[0]) * abs(bottom) + point[0], (innerp[1]-point[1]) * abs(bottom) + point[1])
             else:
@@ -221,11 +221,15 @@ def wrapSurface(pg: pygame.Surface,
             
             return [innerp, outerp]
         
-        for idx, seg in enumerate(collsegs):
-            points.append(calcPoints(seg.p1))
-            yield 'Calculating points'
+        points = [None] * len(collsegs)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = {executor.submit(calcPoints, seg.p1, i): i for i, seg in enumerate(collsegs)}
+            for future in concurrent.futures.as_completed(futures):
+                index = futures[future]
+                points[index] = future.result()
+                yield 'Calculating points'
         
-        points.append(calcPoints(collsegs[-1].p2))
+        points.append(calcPoints(collsegs[-1].p2, len(collsegs)-1))
 
         yield 'Calculating segments', {'amount': len(collsegs), 'done': 0}
 
