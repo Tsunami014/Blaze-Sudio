@@ -1,4 +1,6 @@
+from typing import Callable
 from BlazeSudio import collisions
+from BlazeSudio.Game.world import World
 from BlazeSudio.utils.wrap.makeShape import MakeShape
 from BlazeSudio.utils.wrap.warp import draw_quad
 import concurrent.futures
@@ -37,8 +39,9 @@ class Segment:
     def __repr__(self): return str(self)
 
 def wrapLevel(
-        world, 
+        world: World, 
         lvl: int, 
+        collFunc: Callable = None,
         top: int|float = 1,
         bottom: int|float = 0, 
         limit: bool = True, 
@@ -51,8 +54,9 @@ def wrapLevel(
     Wrap a level and get it's wrapped surface and also it's collision surface.
 
     Args:
-        world (_type_): The world to get the level from.
+        world (BlazeSudio.Game.world.World): The world to get the level from.
         lvl (int): The level number.
+        collFunc (Callable, optional): The collision function to use. Defaults to None (just removes the tileset).
         top (int|float, optional): The position of the top of the wrapped image. See below 'positioning'. Defaults to 1.
         bottom (int|float, optional): The position of the bottom of the wrapped image. See below 'positioning'. Defaults to 0.
         limit (bool, optional): Whether to limit the warp so it MUST be a height of `pg.get_height()`. Making this False may give some very warped results. Constrains the bottom of the image. Defaults to True.
@@ -76,9 +80,13 @@ def wrapLevel(
     """
     def wrap():
         pg = world.get_pygame(lvl, transparent_bg=True)
-        for i in world.get_level(lvl).layers:
-            i.tileset = None  # So it has to render blocks instead >:)
-        pg2 = world.get_pygame(lvl, transparent_bg=True)
+        if collFunc is not None:
+            level = world.get_level(lvl).CollisionLayer(collFunc)
+            pg2 = level.Render(transparent_bg=True)
+        else:
+            for i in world.get_level(lvl).layers:
+                i.tileset = None  # So it has to render blocks instead >:)
+            pg2 = world.get_pygame(lvl, transparent_bg=True)
         ret = yield from wrapSurface(pg, top, bottom, limit, startRot, constraints, halo, pg2, True)
         return ret
     
@@ -135,7 +143,7 @@ def wrapSurface(pg: pygame.Surface,
     """
     def wrap():
         nonlocal pg, pg2
-        yield 'Initialising wrap', {'amount': 4, 'done': 0}
+        yield 'Initialising wrap', {'amount': 100, 'done': 0}
         width, height = pg.get_size()
         if isinstance(pg2, pygame.Surface):
             pg2IsPygame = True
@@ -159,11 +167,6 @@ def wrapSurface(pg: pygame.Surface,
         npg.fill(halo)
         npg.blit(pg, (0, 0))
         pg = npg
-        if pg2IsPygame:
-            npg = pygame.Surface((width, height), pygame.SRCALPHA)
-            npg.fill(halo)
-            npg.blit(pg2, (0, 0))
-            pg2 = npg
 
         shape = MakeShape(width)
         shape.joints = [(i, 0) for i in segs]
