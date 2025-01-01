@@ -1,6 +1,6 @@
 import math
 from enum import IntEnum
-from typing import Union, Iterable, Any, Dict
+from typing import Union, Iterable, Any
 
 # Just for utility funcs, not the actual collision library
 try: # This library was not made for pygame, but it can be used with it
@@ -130,7 +130,9 @@ class ShpGroups(IntEnum):
     """Shapes that make the outer edges of other shapes"""
     NOTSTRAIGHT = 2
     """Shapes that are not straight; e.g. Circles"""
-    GROUP = 3
+    SPLITTABLE = 3
+    """Shapes that can be split into lines (e.g. Polygons)"""
+    GROUP = 4
     """A group of other shapes"""
 
 class ShpTyps(IntEnum):
@@ -505,14 +507,16 @@ class Shapes:
     """A class which holds multiple shapes and can be used to do things with all of them at once."""
     GROUPS = {ShpGroups.GROUP}
     TYPE = ShpTyps.Group
-    def __init__(self, *shapes: Shape):
+    def __init__(self, *shapes: Shape, bounciness: float = BASEBOUNCINESS):
         """
         Args:
             *shapes (Shape): The shapes to start off with in this object.
+            bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
         
         Example:
         `Shapes(Shape1, Shape2)` OR `Shapes(*[Shape1, Shape2])`
         """
+        self.bounciness = bounciness
         self.shapes = list(shapes)
     
     def add_shape(self, shape: Shape) -> None:
@@ -590,23 +594,34 @@ class Shapes:
     
     def closestPointTo(self, othershape: Shape, returnAll: bool = False) -> Iterable[pointLike]:
         """
-        Finds the closest point ON all of these objects TO the input shape.
-        PLEASE NOTE that this won't have the list in order of closest to furthest, you have to do that yourself.
+        Finds the closest point ON ANY of these objects TO the input shape.
 
         Args:
-            othershape (Shape): The shape to find the cosest points towards
+            othershape (Shape): The shape to find the closest points towards
             returnAll (bool, optional): Whether to return EVERY possible option, sorted from closest to furthest. Defaults to False.
 
         Returns:
             Iterable[pointLike]: All the closest point(s) ON each of these objects
         """
-        points = []
-        for s in self.shapes:
-            if returnAll:
+        if returnAll:
+            points = []
+            for s in self.shapes:
                 points.extend(s.closestPointTo(othershape, True))
-            else:
-                points.append(s.closestPointTo(othershape, False))
-        return points
+            def sortFunc(p):
+                op = othershape.closestPointTo(Point(*p), False)
+                return math.hypot(p[0]-op[0], p[1]-op[1])
+            return sorted(points, key=sortFunc)
+        else:
+            point = None
+            d = None
+            for s in self.shapes:
+                np = s.closestPointTo(othershape, False)
+                op = othershape.closestPointTo(Point(*np), False)
+                nd = math.hypot(np[0]-op[0], np[1]-op[1])
+                if d is None or nd < d:
+                    d = nd
+                    point = np
+            return point
 
     def isContaining(self, othershape: Union[Shape,'Shapes',Iterable[Shape]]) -> bool:
         """
@@ -622,31 +637,29 @@ class Shapes:
             if s.isContaining(othershape):
                 return True
         return False
-    
-    # TODO: Pick one method: either the dict or the list, not both (see below 2 funcs)
 
-    def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> Dict[Union[Shape,'Shapes'], bool]:
+    def isCorner(self, point: pointLike, precision: Number = BASEPRECISION) -> bool:
         """
-        Takes each object and finds whether the input point is on the corner of that object.
+        Finds if the point is a corner on any of the objects.
 
         Args:
             point (pointLike): The point to find if it's on the corner or not
             precision (Number, optional): The decimal places to round to to check. Defaults to 5.
 
         Returns:
-            dict[Shape / Shapes: bool]: A dictionary of each object in this and whether the point is a corner on it or not.
+            bool: Whether the point is on a corner of any of the objects.
         """
-        cs = {}
         for s in self.shapes:
-            cs[s] = s.isCorner(point, precision)
-        return cs
+            if s.isCorner(point, precision):
+                return True
+        return False
     
-    def tangent(self, point: pointLike, vel: pointLike) -> Iterable[Number]:
+    def tangent(self, point: pointLike, vel: pointLike) -> Iterable[Number]: # TODO: Make it return just one number
         """
         Finds the tangent on each of these objects for the specified point. -90 = normal.
 
         Args:
-            point (pointLike): The point to find the tangent from
+            point (pointLike): The point to find the tangent from.
             vel (pointLike): Which direction the point is moving (useful for example with lines for finding which side of the line the tangent should be of)
 
         Returns:
@@ -659,7 +672,25 @@ class Shapes:
     
     # TODO: handleCollisions
 
-    # TODO: to_points and to_lines
+    def toPoints(self) -> Iterable[pointLike]:
+        """
+        Returns:
+            Iterable[pointLike]: Get a list of all the Points that make up this object. For a few shapes (e.g. circles), this will be empty.
+        """
+        points = []
+        for s in self.shapes:
+            points.extend(s.toPoints())
+        return points
+    
+    def toLines(self) -> Iterable['Line']:
+        """
+        Returns:
+            Iterable[Line]: Get a list of all the Lines that make up this object. For anything under a ClosedShape, this will most likely be empty.
+        """
+        lines = []
+        for s in self.shapes:
+            lines.extend(s.toLines())
+        return lines
 
     def area(self) -> Number:
         """
@@ -1667,7 +1698,10 @@ class Circle(Shape):
         vel = rotateBy0(vel, 180-diff*2)
         vel = [vel[0]*closestObj.bounciness, vel[1]*closestObj.bounciness]
         # HACK
-        smallness = rotateBy0([0, AVERYSMALLNUMBER], normal-diff)
+        angle = direction((0, 0), vel)-quart
+        qx = -math.sin(angle) * AVERYSMALLNUMBER
+        qy =  math.cos(angle) * AVERYSMALLNUMBER
+        smallness = (qx, qy)
         out, outvel = self.handleCollisionsPos(Circle(ThisClosestP[0]+smallness[0], ThisClosestP[1]+smallness[1], newCir.r), 
                                                Circle(*pos, oldCir.r), objs, vel, False, precision)
         if replaceSelf:
@@ -1773,6 +1807,11 @@ class Circle(Shape):
 class Arc(Circle):
     """A section of a circle's circumfrance. This is in the 'lines' group because it can be used as the outer edge of another shape.
     This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take.
+
+    FIXME: **ARCS ARE VERY BROKEN BEWARNED**
+    TOFIX:
+     - Arc to arc get closest point when both end points are close to the middle of the other arc
+     - Circle-arc handle collisions when circle bouncing off the inside of the arc
     
     **ANGLES ARE MEASURED IN DEGREES.**"""
     GROUPS = {ShpGroups.LINES, ShpGroups.NOTSTRAIGHT}
@@ -2093,7 +2132,7 @@ class Arc(Circle):
 class ClosedShape(Shape):
     """These are shapes like rects and polygons; if you split them into a list of lines all the lines join with one another.
     Please do not use this class as it is just a building block for subclasses and to provide them with some basic methods."""
-    GROUPS = {ShpGroups.CLOSED}
+    GROUPS = {ShpGroups.CLOSED, ShpGroups.SPLITTABLE}
     def _where(self, othershape: Shape) -> Iterable[pointLike]:
         if not self.check_rects(othershape):
             return []
