@@ -185,6 +185,7 @@ def shapelyToColl(shapelyShape: shapelyGeom.base.BaseGeometry) -> Union['Shape',
         return ShapeCombiner.pointsToShape(*list(zip(*[list(i) for i in shapelyShape.exterior.coords.xy])))
     if isinstance(shapelyShape, (shapelyGeom.MultiPoint, shapelyGeom.MultiLineString, shapelyGeom.MultiPolygon, shapelyGeom.GeometryCollection)):
         return Shapes(*[shapelyToColl(i) for i in shapelyShape.geoms])
+    return NoShape()
     raise ValueError(f'Cannot convert shapely shape of type {type(shapelyShape)} to BlazeSudio Shape')
 
 def collToShapely(collShape: 'Shape') -> shapelyGeom.base.BaseGeometry:
@@ -207,6 +208,7 @@ def collToShapely(collShape: 'Shape') -> shapelyGeom.base.BaseGeometry:
         return shapelyGeom.Polygon([(i[0], i[1]) for i in collShape.toPoints()])
     if checkShpType(collShape, ShpGroups.GROUP):
         return shapelyGeom.GeometryCollection([collToShapely(i) for i in collShape.shapes])
+    return shapelyGeom.GeometryCollection()
     raise ValueError(f'Cannot convert BlazeSudio shape of type {type(collShape)} to shapely shape')
 
 def drawShape(surface: Any, shape: 'Shape', colour: tuple[int, int, int], width: int = 0):
@@ -1384,6 +1386,15 @@ class Circle(Shape):
         super().__init__(bounciness)
         self.x, self.y, self.r = x, y, r
     
+    @property
+    def d(self):
+        """The diameter of the circle."""
+        return self.r*2
+
+    @d.setter
+    def d(self, value):
+        self.r = value/2
+    
     def rect(self) -> Iterable[Number]:
         """
         Returns the rectangle bounding box surrounding this circle.
@@ -1571,8 +1582,6 @@ class Circle(Shape):
         But if you are to use this, remember to still provide the vel param. It will sometimes provide weird results if you don't.
         It could even just be the difference in positions, it just needs to be something realistic.
 
-        FIXME; This is currently broken plz do not use until I fix it
-
         Args:
             oldCir (Circle): The old position of this object.
             newCir (Circle): The new position of this object.
@@ -1608,41 +1617,57 @@ class Circle(Shape):
             return newCir, vel
         points = []
         for o in objs:
-            cs = o.whereCollides(mvement)
+            if mvement.isContaining(o):
+                cs = o.toPoints()
+            else:
+                cs = o.whereCollides(mvement)
             if cs != []:
                 cs.extend([i for j in [mvement[0], mvement[2]] for i in o.closestPointTo(j, True) if Point(*i).collides(mvement)])
                 points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         points.sort(key=lambda x: abs(x[0][0]-oldCir[0])**2+abs(x[0][1]-oldCir[1])**2)
         closestP = points[0][0]
         closestObj = points[0][1]
-        t = closestObj.tangent(closestP, vel)
-        normal = t-90
-        cpoMvemnt = Line((oldCir.x + oldCir.r * math.cos(velphi-math.pi), oldCir.y + oldCir.r * math.sin(velphi-math.pi)),
-                         (newCir.x + newCir.r * math.cos(velphi), newCir.y + newCir.r * math.sin(velphi))
-                        ).closestPointTo(Point(*closestP))
-        dist_left = (
-            math.hypot(oldCir[0]-cpoMvemnt[0], oldCir[1]-cpoMvemnt[1]) - \
-                math.sqrt(round(newCir.r**2, precision)-( # math.sqrt(max(0, newCir.r**2 - ((cpoMvemnt[0] - closestP[0])**2 + (cpoMvemnt[1] - closestP[1])**2)))????
-                        round(math.hypot(cpoMvemnt[0]-closestP[0], cpoMvemnt[1]-closestP[1]), precision)
-                    )
+        def calculate(point):
+            cpoMvemnt = Line((oldCir.x + oldCir.r * math.cos(velphi-math.pi), oldCir.y + oldCir.r * math.sin(velphi-math.pi)),
+                            (newCir.x + newCir.r * math.cos(velphi), newCir.y + newCir.r * math.sin(velphi))
+                            ).closestPointTo(Point(*point))
+            dist_to = math.hypot(oldCir[0]-cpoMvemnt[0], oldCir[1]-cpoMvemnt[1]) - (
+                math.sqrt(
+                    newCir.r**2 - \
+                    math.hypot(cpoMvemnt[0]-point[0], cpoMvemnt[1]-point[1])**2
                 )
-        ) * closestObj.bounciness
-        dist_to = math.hypot(vel[0], vel[1])-dist_left
-        if dist_left == 0:
+            )
+            dist_left = (math.hypot(oldCir[0]-newCir[0], oldCir[1]-newCir[1])-dist_to)*closestObj.bounciness
+            ThisClosestP = (oldCir.x + dist_to * math.cos(velphi), oldCir.y + dist_to * math.sin(velphi))
+            return ThisClosestP, dist_left
+        ThisClosestP, dist_left = calculate(closestP)
+        tries = 0
+        while tries < precision:
+            ps = Circle(ThisClosestP[0], ThisClosestP[1], newCir.r).whereCollides(closestObj)
+            if len(ps) == 2:
+                closestP = closestObj.closestPointTo(Point((ps[0][0]+ps[1][0])/2, (ps[0][1]+ps[1][1])/2))
+                ThisClosestP, dist_left = calculate(closestP)
+            elif len(ps) > 2:
+                raise ValueError(
+                    'Too many points of collision! This may be if a polygon had a lot of points VERY VERY close together.'
+                )
+            else:
+                break
+            tries += 1
+        if dist_left <= 0:
             if verbose:
                 return oldCir, [0, 0], [True]
             return oldCir, [0, 0]
-        ThisClosestP = (oldCir.x + dist_to * math.cos(velphi), oldCir.y + dist_to * math.sin(velphi))
-        x, y = oldCir[0] - ThisClosestP[0], oldCir[1] - ThisClosestP[1]
-        phi = math.degrees(math.atan2(y, x))+90
+        normal = math.degrees(direction(ThisClosestP, closestP))-90
+        phi = math.degrees(velphi)+90
         diff = (phi-normal) % 360
         if diff > 180:
             diff = diff - 360
-        pos = rotate(ThisClosestP, [ThisClosestP[0], ThisClosestP[1]+dist_left], phi-180-diff*2)
-        vel = list(rotateBy0(vel, 180-diff*2))
+        pos = rotate(ThisClosestP, [ThisClosestP[0], ThisClosestP[1]+dist_left], normal-diff)
+        vel = rotateBy0(vel, 180-diff*2)
         vel = [vel[0]*closestObj.bounciness, vel[1]*closestObj.bounciness]
         # HACK
-        smallness = rotateBy0([0,AVERYSMALLNUMBER], phi-180-diff*2)
+        smallness = rotateBy0([0, AVERYSMALLNUMBER], normal-diff)
         out, outvel = self.handleCollisionsPos(Circle(ThisClosestP[0]+smallness[0], ThisClosestP[1]+smallness[1], newCir.r), 
                                                Circle(*pos, oldCir.r), objs, vel, False, precision)
         if replaceSelf:
@@ -2927,7 +2952,7 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         def reformat(obj):
             if checkShpType(obj, ShpGroups.CLOSED):
                 return obj
-            elif checkShpType(s, ShpTyps.Line):
+            elif checkShpType(obj, ShpTyps.Line):
                 return Polygon(obj.p1, obj.p2, obj.p2, obj.p1)
             # TODO: More
         reform = [reformat(s) for s in shapes]
