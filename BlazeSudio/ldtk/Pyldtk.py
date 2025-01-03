@@ -30,7 +30,7 @@ class LdtkJSON:
             t = Tileset(fileloc, i)
             self.tilesets[t.uid] = t
         
-        self.levels: List[Ldtklevel] = [Ldtklevel(lvl, self.tilesets, self.defs) for lvl in self.ldtkData['levels']]
+        self.levels: List[Ldtklevel] = [Ldtklevel(lvl, self.tilesets, self.defs, fileloc) for lvl in self.ldtkData['levels']]
 
 class Ldtk(LdtkJSON):
     def __init__(self, ldtkfile: str): ## It takes in the file path
@@ -232,7 +232,7 @@ class Entity:
         return outsur
 
 class Ldtklevel:
-    def __init__(self, data: Dict, tilesets: Dict[int, Tileset], defs: Dict):
+    def __init__(self, data: Dict, tilesets: Dict[int, Tileset], defs: Dict, fileloc: str):
         """
         An LDtk Level object which contains multiple layers.
 
@@ -240,16 +240,21 @@ class Ldtklevel:
             data (Dict): The data that has info about the layer in it.
             tilesets (Dict[int, Tileset]): All the tilesets.
             defs (Dict): The defs from the main LDtk file.
+            fileloc (str): The location of the LDtk file.
         """
         self.defs: Dict = defs
         self.data: Dict = data
         self.tilesets: Dict[int, Tileset] = tilesets
+        self.fileLoc: str = fileloc
         
         self.identifier: str = self.data['identifier']
         self.iid: str = self.data['iid']
         self.uid: int = self.data['uid']
         self.worldPos: List[int] = [self.data['worldX'], self.data['worldY'], self.data['worldDepth']]
         self.bgColour: str = self.data['bgColor'] or self.data['__bgColor']
+        self.bgPic: pygame.Surface|None = None
+        if self.data['bgRelPath'] is not None:
+            self.bgPic = pygame.image.load(os.path.abspath(os.path.join(fileloc,'../',self.data['bgRelPath'])))
         self.fieldInstances: List[Dict] = self.data['fieldInstances'] # The specific level flags
         self.sizePx: List[int] = [self.data['pxWid'], self.data['pxHei']]
         self.neighbours: List[Dict] = self.data['__neighbours']
@@ -273,7 +278,12 @@ class Ldtklevel:
         if transparent_bg:
             end.fill((0, 0, 0, 0))
         else:
-            end.fill(self.bgColour)
+            bg = self.bgPic
+            if bg is not None:
+                sf = max(self.sizePx[0] / bg.get_width(), self.sizePx[1] / bg.get_height())
+                end.blit(pygame.transform.scale(bg, (int(bg.get_width() * sf), int(bg.get_height() * sf))), (0, 0))
+            else:
+                end.fill(self.bgColour)
         for i in self.layers:
             end.blit(i.getImg(), (0, 0))
         return end
@@ -289,7 +299,7 @@ class Ldtklevel:
         Returns:
             Ldtklevel: The new level with the collision data.
         """
-        newLevel = Ldtklevel(self.data, self.tilesets, self.defs)
+        newLevel = Ldtklevel(self.data, self.tilesets, self.defs, self.fileLoc)
         for i in range(len(newLevel.layers)):
             newLevel.layers[i] = newLevel.layers[i].CollisionLayer(collisionFunc)
         return newLevel
