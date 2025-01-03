@@ -693,7 +693,7 @@ class Circle(Shape):
         Returns:
             pointLike / Iterable[pointLike]: The closest point(s, depending on returnAll) ON this object TO the othershape
         """
-    def handleCollisionsPos(self, oldCir: Circle, newCir: Circle, objs: Shapes | Iterable[Shape], vel: pointLike = [0, 0], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple[pointLike, pointLike, verboseOutput]:
+    def handleCollisionsPos(self, oldCir: Circle, newCir: Circle, objs: Shapes | Iterable[Shape], vel: pointLike = [0, 0], unstuckable: bool = True, maxTries: int = 50, replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple[pointLike, pointLike, verboseOutput]:
         """
         Handles movement of this Circle and it bouncing off of other objects.
         It is recommended you use `.handleCollisionsVel` instead of this, as it handles velocity instead of raw movement and is easier to use.
@@ -706,6 +706,8 @@ class Circle(Shape):
             newCir (Circle): The new position of this object.
             objs (Shapes / Iterable[Shape]): The objects this will bounce off.
             vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
+            unstuckable (bool, optional): Whether being in an object but having enough speed to get out allows you to get out or not. Defaults to True.                 This makes it so if you occasionally get stuck in a wall, you can get out and not be stuck forever. But it also means that if you move too fast                 or have too thin a wall, you will be able to clip through it. //FIXME: Make you not need this. When circles rest in a v shape, they get stuck.
+            maxTries (int, optional): The maximum amount of tries it will do to get the circle to stop colliding when it hits something. Defaults to 50.
             replaceSelf (bool, optional): Whether to replace self.x and self.y with the new position of the object after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
@@ -716,7 +718,7 @@ class Circle(Shape):
         VerboseOutput:
             DidReflect (bool): Whether the line reflected off of something
         """
-    def handleCollisionsVel(self, vel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple['Circle', pointLike, verboseOutput]:
+    def handleCollisionsVel(self, vel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, unstuckable: bool = True, maxTries: int = 50, precision: Number = ..., verbose: bool = False) -> tuple['Circle', pointLike, verboseOutput]:
         """
         Handles movement of this Circle via velocity and it bouncing off of other objects.
 
@@ -724,6 +726,8 @@ class Circle(Shape):
             vel (pointLike): The velocity of this Circle
             objs (Shapes / Iterable[Shape]): The objects to bounce off of
             replaceSelf (bool, optional): Whether or not to replace self.x and self.y with the new position. Defaults to True.
+            unstuckable (bool, optional): Whether being in an object but having enough speed to get out allows you to get out or not. Defaults to True.                 This makes it so if you occasionally get stuck in a wall, you can get out and not be stuck forever. But it also means that if you move too fast                 or have too thin a wall, you will be able to clip through it. //FIXME: Make you not need this. When circles rest in a v shape, they get stuck.
+            maxTries (int, optional): The maximum amount of tries it will do to get the circle to stop colliding when it hits something. Defaults to 50.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
@@ -769,10 +773,7 @@ class Arc(Circle):
     """A section of a circle's circumfrance. This is in the 'lines' group because it can be used as the outer edge of another shape.
     This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take.
 
-    FIXME: **ARCS ARE VERY BROKEN BEWARNED**
-    TOFIX:
-     - Arc to arc get closest point when both end points are close to the middle of the other arc
-     - Circle-arc handle collisions when circle bouncing off the inside of the arc
+    FIXME: Arc to arc get closest point when both end points are close to the middle of the other arc, kinda like a chain but only one half.
     
     **ANGLES ARE MEASURED IN DEGREES.**"""
     GROUPS: Incomplete
