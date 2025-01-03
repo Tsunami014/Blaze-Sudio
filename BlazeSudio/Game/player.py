@@ -23,7 +23,11 @@ class Player(Element):
         realpos = self.Game.curScene.CamPos
         realpos = [realpos[0] * scale, realpos[1] * scale]
         
-        win.fill(self.Game.currentLvL.bgColour)
+        bg = self.Game.currentLvL.bgPic
+        if bg is not None:
+            win.blit(pygame.transform.scale(bg, sze), (0, 0))
+        else:
+            win.fill(self.Game.currentLvL.bgColour)
         sur = rend or pygame.Surface((0, 0))
         
         bounds = self.Game.curScene.CamBounds
