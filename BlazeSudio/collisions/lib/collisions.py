@@ -1602,6 +1602,7 @@ class Circle(Shape):
                             newCir: 'Circle', 
                             objs: Union[Shapes, Iterable[Shape]], 
                             vel: pointLike = [0,0], 
+                            maxTries: int = 50,
                             replaceSelf: bool = True, 
                             precision: Number = BASEPRECISION, 
                             verbose: bool = False
@@ -1618,6 +1619,7 @@ class Circle(Shape):
             newCir (Circle): The new position of this object.
             objs (Shapes / Iterable[Shape]): The objects this will bounce off.
             vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
+            maxTries (int, optional): The maximum amount of tries it will do to get the circle to stop colliding when it hits something. Defaults to 50.
             replaceSelf (bool, optional): Whether to replace self.x and self.y with the new position of the object after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
@@ -1657,7 +1659,17 @@ class Circle(Shape):
                 points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         points.sort(key=lambda x: abs(x[0][0]-oldCir[0])**2+abs(x[0][1]-oldCir[1])**2)
         closestP = points[0][0]
-        closestObj = points[0][1]
+        if checkShpType(points[0][1], ShpGroups.SPLITTABLE):
+            lns = []
+            collP = Point(*closestP)
+            factor = 1/(10**precision)
+            for ln in points[0][1].toLines():
+                p = ln.closestPointTo(collP)
+                if math.hypot(p[0]-closestP[0], p[1]-closestP[1]) < factor:
+                    lns.append(ln)
+            closestObj = Shapes(*lns)
+        else:
+            closestObj = points[0][1]
         def calculate(point):
             cpoMvemnt = Line((oldCir.x + oldCir.r * math.cos(velphi-math.pi), oldCir.y + oldCir.r * math.sin(velphi-math.pi)),
                             (newCir.x + newCir.r * math.cos(velphi), newCir.y + newCir.r * math.sin(velphi))
@@ -1673,16 +1685,15 @@ class Circle(Shape):
             return ThisClosestP, dist_left
         ThisClosestP, dist_left = calculate(closestP)
         tries = 0
-        while tries < precision:
+        while tries < maxTries:
+            closestP = closestObj.closestPointTo(Point(ThisClosestP[0], ThisClosestP[1]))
+            ThisClosestP, dist_left = calculate(closestP)
             ps = Circle(ThisClosestP[0], ThisClosestP[1], newCir.r).whereCollides(closestObj)
-            if len(ps) == 2:
-                closestP = closestObj.closestPointTo(Point((ps[0][0]+ps[1][0])/2, (ps[0][1]+ps[1][1])/2))
-                ThisClosestP, dist_left = calculate(closestP)
-            elif len(ps) > 2:
-                raise ValueError(
-                    'Too many points of collision! This may be if a polygon had a lot of points VERY VERY close together.'
-                )
-            else:
+            if len(ps) < 2:
+                break
+            xs, ys = zip(*ps)
+            diff = math.hypot(max(xs)-min(xs),(max(ys)-min(ys))**2)
+            if diff < AVERYSMALLNUMBER/2: # It needs to be able to get back out
                 break
             tries += 1
         if dist_left <= 0:
@@ -1705,7 +1716,7 @@ class Circle(Shape):
         out, outvel = self.handleCollisionsPos(Circle(ThisClosestP[0]+smallness[0], ThisClosestP[1]+smallness[1], newCir.r), 
                                                Circle(*pos, oldCir.r), objs, vel, False, precision)
         if replaceSelf:
-            self.x, self.y = out[0][0], out[0][1]
+            self.x, self.y = out[0], out[1]
         if verbose:
             return out, outvel, [True]
         return out, outvel
@@ -1714,6 +1725,7 @@ class Circle(Shape):
                               vel: pointLike, 
                               objs: Union[Shapes,Iterable[Shape]], 
                               replaceSelf: bool = True, 
+                              maxTries: int = 50,
                               precision: Number = BASEPRECISION, 
                               verbose: bool = False
                              ) -> tuple['Circle', pointLike, verboseOutput]:
@@ -1724,6 +1736,7 @@ class Circle(Shape):
             vel (pointLike): The velocity of this Circle
             objs (Shapes / Iterable[Shape]): The objects to bounce off of
             replaceSelf (bool, optional): Whether or not to replace self.x and self.y with the new position. Defaults to True.
+            maxTries (int, optional): The maximum amount of tries it will do to get the circle to stop colliding when it hits something. Defaults to 50.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
 
@@ -1733,7 +1746,7 @@ class Circle(Shape):
         VerboseOutput:
             DidReflect (bool): Whether the line reflected off of something
         """
-        o = self.handleCollisionsPos(self, Circle(self.x+vel[0], self.y+vel[1], self.r), objs, vel, False, precision, verbose)
+        o = self.handleCollisionsPos(self, Circle(self.x+vel[0], self.y+vel[1], self.r), objs, vel, maxTries, False, precision, verbose)
         if replaceSelf:
             self.x, self.y = o[0][0], o[0][1]
         if verbose:
@@ -1808,10 +1821,7 @@ class Arc(Circle):
     """A section of a circle's circumfrance. This is in the 'lines' group because it can be used as the outer edge of another shape.
     This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take.
 
-    FIXME: **ARCS ARE VERY BROKEN BEWARNED**
-    TOFIX:
-     - Arc to arc get closest point when both end points are close to the middle of the other arc
-     - Circle-arc handle collisions when circle bouncing off the inside of the arc
+    FIXME: Arc to arc get closest point when both end points are close to the middle of the other arc, kinda like a chain but only one half.
     
     **ANGLES ARE MEASURED IN DEGREES.**"""
     GROUPS = {ShpGroups.LINES, ShpGroups.NOTSTRAIGHT}
