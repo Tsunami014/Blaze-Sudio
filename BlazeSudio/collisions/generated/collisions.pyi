@@ -64,7 +64,8 @@ class ShpGroups(IntEnum):
     CLOSED = 0
     LINES = 1
     NOTSTRAIGHT = 2
-    GROUP = 3
+    SPLITTABLE = 3
+    GROUP = 4
 
 class ShpTyps(IntEnum):
     """
@@ -279,11 +280,13 @@ class Shapes:
     """A class which holds multiple shapes and can be used to do things with all of them at once."""
     GROUPS: Incomplete
     TYPE: Incomplete
+    bounciness: Incomplete
     shapes: Incomplete
-    def __init__(self, *shapes: Shape) -> None:
+    def __init__(self, *shapes: Shape, bounciness: float = ...) -> None:
         """
         Args:
             *shapes (Shape): The shapes to start off with in this object.
+            bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
         
         Example:
         `Shapes(Shape1, Shape2)` OR `Shapes(*[Shape1, Shape2])`
@@ -344,11 +347,10 @@ class Shapes:
         """
     def closestPointTo(self, othershape: Shape, returnAll: bool = False) -> Iterable[pointLike]:
         """
-        Finds the closest point ON all of these objects TO the input shape.
-        PLEASE NOTE that this won't have the list in order of closest to furthest, you have to do that yourself.
+        Finds the closest point ON ANY of these objects TO the input shape.
 
         Args:
-            othershape (Shape): The shape to find the cosest points towards
+            othershape (Shape): The shape to find the closest points towards
             returnAll (bool, optional): Whether to return EVERY possible option, sorted from closest to furthest. Defaults to False.
 
         Returns:
@@ -364,27 +366,37 @@ class Shapes:
         Returns:
             bool: Whether the shape is fully enclosed within this shape.
         """
-    def isCorner(self, point: pointLike, precision: Number = ...) -> dict[Shape | Shapes, bool]:
+    def isCorner(self, point: pointLike, precision: Number = ...) -> bool:
         """
-        Takes each object and finds whether the input point is on the corner of that object.
+        Finds if the point is a corner on any of the objects.
 
         Args:
             point (pointLike): The point to find if it's on the corner or not
             precision (Number, optional): The decimal places to round to to check. Defaults to 5.
 
         Returns:
-            dict[Shape / Shapes: bool]: A dictionary of each object in this and whether the point is a corner on it or not.
+            bool: Whether the point is on a corner of any of the objects.
         """
     def tangent(self, point: pointLike, vel: pointLike) -> Iterable[Number]:
         """
         Finds the tangent on each of these objects for the specified point. -90 = normal.
 
         Args:
-            point (pointLike): The point to find the tangent from
+            point (pointLike): The point to find the tangent from.
             vel (pointLike): Which direction the point is moving (useful for example with lines for finding which side of the line the tangent should be of)
 
         Returns:
             Iterable[Number]: A list of all the tangents to the specified point.
+        """
+    def toPoints(self) -> Iterable[pointLike]:
+        """
+        Returns:
+            Iterable[pointLike]: Get a list of all the Points that make up this object. For a few shapes (e.g. circles), this will be empty.
+        """
+    def toLines(self) -> Iterable['Line']:
+        """
+        Returns:
+            Iterable[Line]: Get a list of all the Lines that make up this object. For anything under a ClosedShape, this will most likely be empty.
         """
     def area(self) -> Number:
         """
@@ -650,6 +662,12 @@ class Circle(Shape):
             r (Number): The radius of the circle
             bounciness (float, optional): How bouncy this object is. 1 = rebounds perfectly, <1 = eventually will stop, >1 = will bounce more each time. Defaults to 0.7.
         """
+    @property
+    def d(self):
+        """The diameter of the circle."""
+    r: Incomplete
+    @d.setter
+    def d(self, value) -> None: ...
     def rect(self) -> Iterable[Number]:
         """
         Returns the rectangle bounding box surrounding this circle.
@@ -682,8 +700,6 @@ class Circle(Shape):
 
         But if you are to use this, remember to still provide the vel param. It will sometimes provide weird results if you don't.
         It could even just be the difference in positions, it just needs to be something realistic.
-
-        FIXME; This is currently broken plz do not use until I fix it
 
         Args:
             oldCir (Circle): The old position of this object.
@@ -746,13 +762,17 @@ class Circle(Shape):
     def __getitem__(self, item: int) -> Number: ...
     x: Incomplete
     y: Incomplete
-    r: Incomplete
     def __setitem__(self, item: int, new: Number) -> None: ...
     def __iter__(self): ...
 
 class Arc(Circle):
     """A section of a circle's circumfrance. This is in the 'lines' group because it can be used as the outer edge of another shape.
     This is defined as an x, y and radius just like a circle, but also with a start and end angle which is used to define the portion of the circle to take.
+
+    FIXME: **ARCS ARE VERY BROKEN BEWARNED**
+    TOFIX:
+     - Arc to arc get closest point when both end points are close to the middle of the other arc
+     - Circle-arc handle collisions when circle bouncing off the inside of the arc
     
     **ANGLES ARE MEASURED IN DEGREES.**"""
     GROUPS: Incomplete
