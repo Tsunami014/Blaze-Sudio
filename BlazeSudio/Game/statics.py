@@ -49,6 +49,18 @@ class BaseScene(SkeletonScene):
     def CamPos(self):
         return [0, 0]
     
+    def postProcessGlobal(sur):
+        """
+        Gets passed the entire sur from the render method.
+        """
+        return sur
+
+    def postProcessScreen(sur):
+        """
+        Gets passed the sur after `postProcessGlobal` and after cropped. The output of this will be rendered to the screen.
+        """
+        return sur
+    
     def renderMap(self):
         self.sur = pygame.Surface(self.currentLvl.sizePx)
         self.sur.fill(self.Game.currentLvL.bgColour)
@@ -88,13 +100,13 @@ class BaseEntity(SkeletonEntity):
         """Decrease in gravity to apply when not holding THE UP KEY (in percent of current gravity strength)"""
         
         # Things to change in your code:
-        self._velocity = [0, 0]
+        self.velocity = [0, 0]
         """What to change to modify the speed you want the player to be at. **Changing this every frame will virtually counteract the physics changes!**"""
         self.gravity = [0, 0]
         """Units constantly added to velocity each frame"""
 
-        self._velocity = [0, 0]
-        """Don't change this directly; use target_velocity instead"""
+        self.velocity = [0, 0]
+        """Don't change this directly; use targetvelocity instead"""
         self.position = [0, 0]
 
         self.holding_any = False
@@ -107,42 +119,42 @@ class BaseEntity(SkeletonEntity):
         # Vertical movement
         if keys[pygame.K_UP] ^ keys[pygame.K_DOWN]:
             if keys[pygame.K_UP]:
-                self._velocity[1] -= self.max_speed
+                self.velocity[1] -= self.max_speed
             elif keys[pygame.K_DOWN]:
-                self._velocity[1] += self.max_speed
+                self.velocity[1] += self.max_speed
         else:
             self.holding_any = False
 
         # Horizontal movement
         if keys[pygame.K_LEFT] ^ keys[pygame.K_RIGHT]:
             if keys[pygame.K_LEFT]:
-                self._velocity[0] -= self.max_speed
+                self.velocity[0] -= self.max_speed
             elif keys[pygame.K_RIGHT]:
-                self._velocity[0] += self.max_speed
+                self.velocity[0] += self.max_speed
         else:
             self.holding_any = False
     
     def apply_physics(self):
         # Cap the target speed to max_speed
-        self._velocity = [max(-self.max_speed, min(self._velocity[0], self.max_speed)),
-                                max(-self.max_speed, min(self._velocity[1], self.max_speed))]
+        self.velocity = [max(-self.max_speed, min(self.velocity[0], self.max_speed)),
+                                max(-self.max_speed, min(self.velocity[1], self.max_speed))]
 
         # Apply deceleration to target, so over time (if not constantly set) will slow down
-        self._velocity = [self._velocity[0] * (1-(self.friction+(self.not_hold_fric if not self.holding_any else 0))),
-                                self._velocity[1] * (1-(self.friction+(self.not_hold_fric if not self.holding_any else 0)))]
+        self.velocity = [self.velocity[0] * (1-(self.friction+(self.not_hold_fric if not self.holding_any else 0))),
+                                self.velocity[1] * (1-(self.friction+(self.not_hold_fric if not self.holding_any else 0)))]
 
         # Add gravity
-        self._velocity = [
-            self._velocity[0]+(self.gravity[0]*(1 if not self.holding_jmp else (1-self.not_hold_grav[0]))),
-            self._velocity[1]+(self.gravity[1]*(1 if not self.holding_jmp else (1-self.not_hold_grav[1])))
+        self.velocity = [
+            self.velocity[0]+(self.gravity[0]*(1 if not self.holding_jmp else (1-self.not_hold_grav[0]))),
+            self.velocity[1]+(self.gravity[1]*(1 if not self.holding_jmp else (1-self.not_hold_grav[1])))
         ]
 
         # Cap the speed to max_speed
-        self._velocity = [max(-self.max_speed, min(self._velocity[0], self.max_speed)),
-                         max(-self.max_speed, min(self._velocity[1], self.max_speed))]
+        self.velocity = [max(-self.max_speed, min(self.velocity[0], self.max_speed)),
+                         max(-self.max_speed, min(self.velocity[1], self.max_speed))]
 
     def __call__(self, evs):
         self.handle_keys()
         self.apply_physics()
-        self.position[0] += self._velocity[0]
-        self.position[1] += self._velocity[1]
+        self.position[0] += self.velocity[0]
+        self.position[1] += self.velocity[1]
