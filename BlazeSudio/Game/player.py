@@ -15,6 +15,7 @@ class Player(Element):
         rend = self.Game.curScene.render()
         if not self.Game.curScene.useRenderer:
             return
+        rend = self.Game.curScene.postProcessGlobal(rend)
         win = self.Game.WIN
         sze = self.Game.size
         mw, mh = sze[0] / 2, sze[1] / 2
@@ -23,12 +24,7 @@ class Player(Element):
         realpos = self.Game.curScene.CamPos
         realpos = [realpos[0] * scale, realpos[1] * scale]
         
-        bg = self.Game.currentLvL.bgPic
-        if bg is not None:
-            win.blit(pygame.transform.scale(bg, sze), (0, 0))
-        else:
-            win.fill(self.Game.currentLvL.bgColour)
-        sur = rend or pygame.Surface((0, 0))
+        sur = rend
         
         bounds = self.Game.curScene.CamBounds
         
@@ -60,8 +56,17 @@ class Player(Element):
         # Blit the surface considering the camera bounds and diffs
         newSur = pygame.Surface((sze[0]/scale, sze[1]/scale), pygame.SRCALPHA)
         newSur.blit(sur, (diff_x/scale, diff_y/scale))
+
+        rendSur = pygame.transform.scale(self.Game.curScene.postProcessScreen(newSur), sze)
+
+        bg = self.Game.currentLvL.bgPic
+        if bg is not None:
+            win.blit(pygame.transform.scale(pygame.transform.scale(bg, (sze[0]/scale, sze[1]/scale)), sze), (0, 0))
+        else:
+            win.fill(self.Game.currentLvL.bgColour)
+
         win.blit(
-            pygame.transform.scale(newSur, sze), 
+            rendSur, 
             (0, 0)
         )
 
