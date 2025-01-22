@@ -56,7 +56,10 @@ def GraphicsDemo():
                 'endElms', # These will be the ones I find in the GO.ELAST event
             ])
             # I chose this because you can see the different sections of the screen, but you can do what you want; as long as they end up on the list it's ok.
-            self['TB'].append(GUI.TerminalBar(self))
+            tb = GUI.DebugTerminal(self)
+            tb.addCmd('hi', lambda: self['events'].append(GUI.Toast(self, 'HI!')))
+            tb.addCmd('bye', lambda: self['events'].append(GUI.Toast(self, 'BYE!')))
+            self['TB'].append(tb)
 
             f = GUI.ScaledByFrame(self, GO.PRBOTTOM, (500, 400))
             self['speshs'].append(f)
