@@ -299,10 +299,11 @@ class F___:
 class FNEW(F___):
     pass # Making new fonts
 
-FTITLE =    F___('Comic Sans MS', 64, True)
-FCODEFONT = F___('Lucida Sans Typewriter', 16)
-FFONT =     F___(None, 52)
-FSMALL =    F___(None, 32)
+FTITLE =       F___('Comic Sans MS', 64, True)
+FCODEFONT =    F___('Lucida Sans Typewriter', 16)
+FCODEREGULAR = F___('Lucida Sans Typewriter', 52)
+FFONT =        F___(None, 52)
+FSMALL =       F___(None, 32)
 
 # Positions
 class POverride:

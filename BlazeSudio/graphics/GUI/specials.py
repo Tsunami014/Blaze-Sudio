@@ -1,13 +1,16 @@
 from typing import Iterable
 import pygame
 from time import time
+from difflib import get_close_matches
 from BlazeSudio.graphics import mouse, options as GO
 from BlazeSudio.graphics.GUI.base import Element, ReturnState
+from BlazeSudio.graphics import GUI
 from BlazeSudio.graphics.stacks import Stack
 from BlazeSudio.graphics.stuff import Collection
 
 __all__ = [
     'TerminalBar',
+    'DebugTerminal',
     'ScrollableFrame',
     'ScaledByFrame',
     'PopupFrame',
@@ -237,7 +240,7 @@ class BaseFrame(GraphicBase, Element):
         mousePos.outOfRange = not coll
         
         calls = self._updateStuff(mousePos, events)
-        self.G.WIN.blit(self.WIN, (x, y))
+        self.G.WIN.blit(self.WIN.subsurface((0, 0, *self.size)), (x, y))
         if self.outline[0] != 0:
             pygame.draw.rect(self.G.WIN, self.outline[1], pygame.Rect(x, y, *self.size), self.outline[0], 3)
         
@@ -720,7 +723,7 @@ class GridLayout(BaseLayout):
         return super().update(mousePos, events, force_redraw)
 
 class TerminalBar(Element):
-    def __init__(self, G, spacing=5):
+    def __init__(self, G, spacing=5, prefix='> ', cursor='_'):
         """
         Adds a terminal bar to the bottom of your screen! You can use this for debugging and can run commands using it also for debugging!
         Or just have it as a feature in your game!
@@ -728,6 +731,8 @@ class TerminalBar(Element):
         Args:
             G (Graphic): The graphic screen to attach to
             spacing (int, optional): The spacing between the text and the top and bottom of the bar. Defaults to 5.
+            prefix (str, optional): The prefix of the terminal. Defaults to '> '.
+            cursor (str, optional): The cursor of the terminal. Defaults to '_'.
         """
         self.G = G
         self.spacing = spacing
@@ -736,23 +741,13 @@ class TerminalBar(Element):
         super().__init__(G, (0, self.G.WIN.get_height()-h), (self.G.WIN.get_width(), h))
         self.active = -1
         self.txt = ''
+        self.prefix = prefix
+        self.cur = cursor
         self._onEnters = []
     
     def onEnter(self, func):
         self._onEnters.append(func)
         return func
-    
-    def pressed(self, event):
-        if event.key == pygame.K_RETURN:
-            txt = self.txt
-            self.txt = ""
-            for f in self._onEnters:
-                f(txt)
-            self.active = -1
-        elif event.key == pygame.K_BACKSPACE:
-            self.txt = self.txt[:-1]
-        else:
-            self.txt += event.unicode
     
     def toggleactive(self, forceactive=None):
         if forceactive is not None:
@@ -774,12 +769,17 @@ class TerminalBar(Element):
                 mouse.Mouse.set(mouse.MouseState.TEXT)
             for event in events:
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_F5:
-                        self.toggleactive()
-                        if self.txt == "" and self.active != -1:
-                            self.txt = "/"
-                    elif self.active != -1:
-                        self.pressed(event)
+                    if self.active != -1:
+                        if event.key == pygame.K_RETURN:
+                            txt = self.txt
+                            self.txt = ""
+                            for f in self._onEnters:
+                                f(txt)
+                            self.active = -1
+                        elif event.key == pygame.K_BACKSPACE:
+                            self.txt = self.txt[:-1]
+                        else:
+                            self.txt += event.unicode
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT and not self.G.pause:
                     if event.button == pygame.BUTTON_LEFT:
                         self.toggleactive(not self.collides(*mousePos.pos))
@@ -800,9 +800,9 @@ class TerminalBar(Element):
         return self.render().get_height()+self.spacing*2
 
     def render(self):
-        t = '> '+self.txt
+        t = self.prefix+self.txt
         if self.active >= 30:
-            t += '_'
+            t += self.cur
         r = GO.FCODEFONT.render(t, GO.CWHITE)
         return r
     
@@ -820,3 +820,111 @@ class TerminalBar(Element):
     def __str__(self):
         return '<TerminalBar>'
     def __repr__(self): return str(self)
+
+class DebugTerminal(TerminalBar):
+    def __init__(self, G, spacing=5, prefix='> ', cursor='_'):
+        """
+        Adds a terminal bar to the bottom of your screen! You can set instructions, and it comes with autocomplete, history and error messages!
+
+        Args:
+            G (Graphic): The graphic screen to attach to
+            spacing (int, optional): The spacing between the text and the top and bottom of the bar. Defaults to 5.
+            prefix (str, optional): The prefix of the terminal. Defaults to '> '.
+            cursor (str, optional): The cursor of the terminal. Defaults to '_'.
+        """
+        super().__init__(G, spacing, prefix, cursor)
+        self.cmds = {}
+        self.history = []
+        self.historyIndex = -1
+        self.popup = None
+        self._onEnters = None
+    
+    def onEnter(self, func):
+        """Only used if doesn't start with `/` (so not a command)"""
+        self._onEnters = func
+        return func
+    
+    def addCmd(self, name, func):
+        """You don't need to add the `/` to the name, it will be added automatically"""
+        self.cmds[name] = func
+    
+    def UpdateDraw(self, mousePos, events, force_redraw=False):
+        if not force_redraw:
+            return ReturnState.REDRAW_HIGHEST
+        if self.popup is not None:
+            self.popup.UpdateDraw(mousePos, events, force_redraw)
+        return super().UpdateDraw(mousePos, events, force_redraw)
+    
+    def _delPopup(self):
+        self.popup = None
+    
+    def makePopup(self):
+        self.popup = PopupFrame(self.G, GO.PCCENTER, (0, 0), 5)
+        self.popup.layers[0].add('Main')
+        self.popup['Main'].append(GUI.Button(self.popup, GO.PRTOP, GO.CRED, '❌', func=self._delPopup))
+        return self.popup['Main']
+    
+    def _resizePopup(self):
+        self.popup.sizeOfScreen = self.popup.size = (max(e2.size[0] for e2 in self.popup['Main'])+self.popup['Main'][0].size[0]+20, sum(e.size[1] for e in self.popup['Main'][1:])+10)
+    
+    def update(self, mousePos, events, force_redraw=False):
+        for event in events.copy():
+            if event.type == pygame.KEYDOWN:
+                self._delPopup()
+                if event.key == pygame.K_F5:
+                    self.toggleactive()
+                    if self.txt == "" and self.active != -1:
+                        self.txt = "/"
+                elif self.active != -1:
+                    if event.key == pygame.K_RETURN:
+                        if self.txt.startswith("/"):
+                            if self.txt[1:] in self.cmds:
+                                self.cmds[self.txt[1:]]()
+                            else:
+                                opts = get_close_matches(self.txt, self.cmds.keys(), cutoff=0.3)
+                                pop = self.makePopup()
+                                LTOP = GO.PNEW((0, 0), (0, 1))
+                                pop.extend([
+                                    GUI.Empty(self.popup, LTOP, (10, 10)),
+                                    GUI.Text(self.popup, LTOP, f"Command '{self.txt}' not found!"),
+                                ])
+                                if opts:
+                                    rainbow = GO.CRAINBOW()
+                                    def doIt(i):
+                                        self.set('/'+i)
+                                        self._delPopup()
+                                        self.active = -2
+                                    pop.extend([
+                                        GUI.Text(self.popup, LTOP, "Did you mean: ")
+                                    ] + [
+                                        GUI.Button(self.popup, LTOP, next(rainbow), f"  '{i}'", func=lambda i=i: doIt(i))
+                                        for i in opts
+                                    ])
+                                self._resizePopup()
+                        else:
+                            if self._onEnters is not None:
+                                self._onEnters(self.txt)
+                        if self.historyIndex != -1:
+                            self.history[-1] = self.txt
+                        self.txt = ""
+                        del events[events.index(event)]
+                        self.active = -1
+                    # elif event.key == pygame.K_UP:
+                    #     if self.historyIndex == -1:
+                    #         self.history.append(self.txt)
+                    #         self.historyIndex = len(self.history)-2
+                    #     else:
+                    #         self.historyIndex = max(0, self.historyIndex-1)
+                    #     self.txt = self.history[self.historyIndex]
+                    # elif event.key == pygame.K_DOWN:
+                    #     self.historyIndex = max(0, self.historyIndex-1)
+                    #     self.txt = self.history[self.historyIndex]
+                    # else:
+                    #     self.historyIndex = -1
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT and not self.G.pause:
+                if self.active == -2:
+                    self.active = 60
+                    del events[events.index(event)]
+                self._delPopup()
+
+        return super().update(mousePos, events, force_redraw)
