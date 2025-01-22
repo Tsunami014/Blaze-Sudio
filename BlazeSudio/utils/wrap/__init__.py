@@ -226,7 +226,7 @@ def wrapSurface(pg: pygame.Surface,
                 outerp = point
 
             if bottom != 0:
-                innerp = closestTo(small.closestPointTo(collisions.Point(*point)), point)
+                innerp = small.closestPointTo(collisions.Point(*point))
                 if bottom != -1:
                     innerp = ((innerp[0]-point[0]) * abs(bottom) + point[0], (innerp[1]-point[1]) * abs(bottom) + point[1])
             else:
