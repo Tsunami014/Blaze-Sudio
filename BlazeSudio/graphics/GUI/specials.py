@@ -906,21 +906,33 @@ class DebugTerminal(TerminalBar):
                                 self._onEnters(self.txt)
                         if self.historyIndex != -1:
                             self.history[-1] = self.txt
+                        else:
+                            self.history.append(self.txt)
                         self.txt = ""
                         del events[events.index(event)]
-                        self.active = -1
-                    # elif event.key == pygame.K_UP:
-                    #     if self.historyIndex == -1:
-                    #         self.history.append(self.txt)
-                    #         self.historyIndex = len(self.history)-2
-                    #     else:
-                    #         self.historyIndex = max(0, self.historyIndex-1)
-                    #     self.txt = self.history[self.historyIndex]
-                    # elif event.key == pygame.K_DOWN:
-                    #     self.historyIndex = max(0, self.historyIndex-1)
-                    #     self.txt = self.history[self.historyIndex]
-                    # else:
-                    #     self.historyIndex = -1
+                        if self.txt.startswith("/"):
+                            self.active = -1
+                    elif event.key == pygame.K_UP:
+                        if self.historyIndex == -1:
+                            self.history.append(self.txt)
+                            self.historyIndex = len(self.history)-2
+                        else:
+                            self.historyIndex = max(0, self.historyIndex-1)
+                        self.txt = self.history[self.historyIndex]
+                    elif event.key == pygame.K_DOWN:
+                        if self.historyIndex == -1:
+                            self.txt = ''
+                            continue
+                        self.historyIndex += 1
+                        if self.historyIndex >= len(self.history)-1:
+                            self.historyIndex = -1
+                            self.txt = self.history.pop()
+                        else:
+                            self.txt = self.history[self.historyIndex]
+                    else:
+                        if self.historyIndex != -1:
+                            self.historyIndex = -1
+                            self.history.pop()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT and not self.G.pause:
                 if self.active == -2:
                     self.active = 60
