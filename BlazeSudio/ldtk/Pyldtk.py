@@ -67,8 +67,6 @@ class Tileset:
         self.tileSet: pygame.Surface|None = None
         if self.data['relPath'] is not None:
             self.tilesetPath = self.data['relPath']
-            if self.tilesetPath.startswith('..'):
-                self.tilesetPath = os.path.abspath(os.path.join(fileloc,'../',self.tilesetPath))
             self.tileSet = pygame.image.load(os.path.abspath(os.path.join(fileloc,'../',self.tilesetPath))).convert_alpha()
         elif self.data['embedAtlas'] == 'LdtkIcons' and self.data['relPath'] is None:
             self.tilesetPath = str(files('BlazeSudio') / 'ldtk/internal-icons.png')
