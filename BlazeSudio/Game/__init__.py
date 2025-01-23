@@ -91,12 +91,18 @@ class Game(Screen):
             self._LoadDebugUI()
     
     def _LoadDebugUI(gameself):
-        tb = GUI.TerminalBar(gameself)
+        tb = GUI.DebugTerminal(gameself)
         gameself['Main'].append(tb)
+
+        for i in gameself.cmds:
+            def newfun(*args, f=i[2]):
+                return f(*args)
+            newfun.__doc__ = i[1]
+            tb.addCmd(i[0], newfun)
         
         class help(Screen, RunInstantly):
             """
-            List all the commands!
+            /help ... : List all the commands!
             """
             def _LoadUI(self):
                 self.layers[0].add('OverlayGUI')
@@ -143,7 +149,7 @@ class Game(Screen):
         
         class items(Screen, RunInstantly):
             """
-            List all the entities and other things in the game and their ids and stuff!
+            /items ... : List all the entities and other things in the game and their ids and stuff!
             """
             def _LoadUI(self):
                 self.layers[0].add('OverlayGUI')
@@ -206,21 +212,14 @@ Please note: If you used the internal icons it will appear blurry and without tr
                 self['OverlayGUI'].append(GUI.Text(self, TOPRIGHT, 'Entities in this level', font=GO.FTITLE))
                 # TODO
         
-        @tb.onEnter
-        def tbEnter(txt):
-            txt = txt.lower().strip()
-            cmdNms = [i[0] for i in gameself.cmds]
-            if not txt.startswith('/'):
-                return
-            args = txt.split(' ')
-            if args[0] == '/help':
-                help()
-            elif args[0] == '/items':
-                items()
-            elif args[0] in cmdNms:
-                gameself.cmds[cmdNms.index(args[0])][2](*args[1:])
-            else:
-                gameself['Toasts'].append(GUI.Toast(gameself, 'Invalid command! for help use /help', GO.CRED)) # TODO: Difflib get_close_matches
+        tb.addCmd('help', help)
+        tb.addCmd('items', items)
+
+        @tb.onWrong
+        def onWrong(txt):
+            tb.popup['Main'].append(
+                GUI.Text(tb.popup, tb.popup.stacks[1], 'For help, use /help')
+            )
 
     def __call__(self):
         """

@@ -841,12 +841,18 @@ class DebugTerminal(TerminalBar):
         self.suggestIndex = 0
         self.popup = None
         self._onEnters = None
+        self._onWrong = None
         self.maxSuggests = max_suggests
         self.jumpShort = jump_to_shortcut
     
     def onEnter(self, func):
         """Only used if doesn't start with `/` (so not a command)"""
         self._onEnters = func
+        return func
+    
+    def onWrong(self, func):
+        """Only used if the command is not found. Takes in an argument of a list of the command and the arguments."""
+        self._onWrong = func
         return func
     
     def addCmd(self, name, func):
@@ -887,9 +893,16 @@ class DebugTerminal(TerminalBar):
                     continue
                 self._delPopup()
                 if event.key == self.jumpShort:
-                    self.toggleactive()
-                    if self.txt == "" and self.active != -1:
+                    doneSmthn = False
+                    if self.active < 0:
+                        self.active = 60
+                        doneSmthn = True
+                    if self.txt == "":
                         self.txt = "/"
+                        doneSmthn = True
+                    if doneSmthn:
+                        del events[events.index(event)]
+                        continue
                 elif self.active != -1:
                     if event.key == pygame.K_TAB:
                         if (not self.txt.startswith("/")) or ' ' in self.txt:
@@ -924,6 +937,8 @@ class DebugTerminal(TerminalBar):
                                     GUI.Empty(self.popup, LTOP, (10, 10)),
                                     GUI.Text(self.popup, LTOP, f"Command '/{cmd}' not found!"),
                                 ])
+                                if self._onWrong is not None:
+                                    self._onWrong(args)
                                 if opts:
                                     rainbow = GO.CRAINBOW()
                                     def doIt(i):
@@ -944,10 +959,10 @@ class DebugTerminal(TerminalBar):
                             self.history[-1] = self.txt
                         else:
                             self.history.append(self.txt)
-                        self.txt = ""
-                        del events[events.index(event)]
                         if self.txt.startswith("/"):
                             self.active = -1
+                        self.txt = ""
+                        del events[events.index(event)]
                     elif event.key == pygame.K_UP:
                         if self.historyIndex == -1:
                             self.history.append(self.txt)
