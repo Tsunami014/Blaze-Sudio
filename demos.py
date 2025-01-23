@@ -58,7 +58,11 @@ def GraphicsDemo():
             # I chose this because you can see the different sections of the screen, but you can do what you want; as long as they end up on the list it's ok.
             tb = GUI.DebugTerminal(self, jump_to_shortcut=pygame.K_F5)
             for word in ['hi', 'bye', 'hello', 'goodbye', 'greetings', 'farewell']:
-                tb.addCmd(word, lambda: self['events'].append(GUI.Toast(self, word.upper()+'!')))
+                f = lambda *args, word=word: self['events'].append(GUI.Toast(self,  # noqa: E731
+                    f'{word[0].upper()}{word[1:]}{" " if len(args) > 0 else ""}{", ".join(args[:-1])}{" & " if len(args) > 1 else ""}{args[-1]}!'
+                ))
+                f.__doc__ = f"{word} *<str> : Says {word} with the given arguments"
+                tb.addCmd(word, f)
             self['TB'].append(tb)
 
             f = GUI.ScaledByFrame(self, GO.PRBOTTOM, (500, 400))
