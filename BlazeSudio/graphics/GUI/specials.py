@@ -1,5 +1,6 @@
-from typing import Iterable
 import pygame
+import inspect
+from typing import Iterable
 from time import time
 from difflib import get_close_matches
 from BlazeSudio.graphics import mouse, options as GO
@@ -856,7 +857,7 @@ class DebugTerminal(TerminalBar):
         return func
     
     def addCmd(self, name, func):
-        """You don't need to add the `/` to the name, it will be added automatically. The name is lowercase. It NEEDS *args. The first line in it's docstring will be shown."""
+        """You don't need to add the `/` to the name, it will be added automatically. The name is lowercase. It NEEDS *args. The first non-empty line in it's docstring will be shown."""
         self.cmds[name.lower()] = func
     
     def UpdateDraw(self, mousePos, events, force_redraw=False):
@@ -928,9 +929,28 @@ class DebugTerminal(TerminalBar):
                             args = self.txt[1:].split(' ')
                             cmd = args[0].lower()
                             if cmd in self.cmds:
-                                self.cmds[cmd](*[a for a in args[1:] if a])
+                                func = self.cmds[cmd]
+                                passArgs = [a for a in args[1:] if a]
+                                error = False
+                                args = inspect.getfullargspec(func)
+                                if args.varargs is None:
+                                    numargs = len(args.args)
+                                    defaults = numargs-len(args.defaults or [])
+                                    if inspect.isclass(func):
+                                        numargs -= 1 # For the 'self' argument
+                                    if not (defaults <= len(passArgs) <= numargs):
+                                        error = True
+                                        pop = self.makePopup()
+                                        LTOP = GO.PNEW((0, 0), (0, 1))
+                                        pop.extend([
+                                            GUI.Empty(self.popup, LTOP, (10, 10)),
+                                            GUI.Text(self.popup, LTOP, f"Command '/{cmd}' requires {defaults} - {numargs} arguments but was provided {len(passArgs)}!"),
+                                        ])
+                                        self._resizePopup()
+                                if not error:
+                                    func(*passArgs)
                             else:
-                                opts = get_close_matches(cmd, self.cmds.keys(), n=3, cutoff=0.3) # n=self.maxSuggests
+                                opts = get_close_matches(cmd, self.cmds.keys(), n=3, cutoff=0.35) # n=self.maxSuggests
                                 pop = self.makePopup()
                                 LTOP = GO.PNEW((0, 0), (0, 1))
                                 pop.extend([
@@ -942,7 +962,7 @@ class DebugTerminal(TerminalBar):
                                 if opts:
                                     rainbow = GO.CRAINBOW()
                                     def doIt(i):
-                                        self.set('/'+i)
+                                        self.set('/'+i+' ')
                                         self._delPopup()
                                         self.active = -2
                                     pop.extend([
@@ -1019,20 +1039,30 @@ class DebugTerminal(TerminalBar):
     def draw(self):
         super().draw()
         if self.active >= 0 and self.maxSuggests > 0 and self.txt.startswith("/"):
+            cmd = self.txt.split(' ')[0].lower()[1:]
             if ' ' in self.txt:
-                cmd = self.txt.split(' ')[0].lower()[1:]
                 if cmd in self.cmds:
-                    doc = self.cmds[cmd].__doc__
+                    doc = [i for i in self.cmds[cmd].__doc__.split('\n') if i]
                     if doc:
-                        suggests = [doc.split('\n')[0]]
+                        suggests = [doc[0].strip()]
                     else:
-                        suggests = [cmd]
+                        suggests = ['/'+cmd]
                     self.suggestIndex = 0
                 else:
                     suggests = []
             else:
-                suggests = self.suggests()
-            rends = [GO.FCODEFONT.render((' '*len(self.prefix))+' /'+sug, (GO.CYELLOW if idx == self.suggestIndex else GO.CWHITE)) for idx, sug in enumerate(suggests)]
+                suggests = []
+                for val in self.suggests():
+                    if val == self.txt[1:]:
+                        suggests = ['/'+cmd] + suggests
+                    else:
+                        suggests.append('/'+val)
+            
+            doc = [i for i in self.cmds[suggests[self.suggestIndex][1:]].__doc__.split('\n') if i]
+            if doc:
+                suggests[self.suggestIndex] = doc[0].strip()
+
+            rends = [GO.FCODEFONT.render((' '*len(self.prefix))+' '+sug, (GO.CYELLOW if idx == self.suggestIndex else GO.CWHITE)) for idx, sug in enumerate(suggests)]
             szes = [r.get_size() for r in rends]
             h = self.height
             for idx in range(len(suggests)):
