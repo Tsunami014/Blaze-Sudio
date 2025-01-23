@@ -5,6 +5,7 @@ from BlazeSudio.Game.player import Player
 from pyperclip import copy
 
 import pygame.transform
+import inspect
 
 import BlazeSudio.Game.world as world
 import BlazeSudio.Game.statics as statics
@@ -95,15 +96,19 @@ class Game(Screen):
         gameself['Main'].append(tb)
 
         for i in gameself.cmds:
-            def newfun(*args, f=i[2]):
-                return f(*args)
-            newfun.__doc__ = i[1]
-            tb.addCmd(i[0], newfun)
+            if inspect.ismethod(i[2]):
+                i[2].__func__.__doc__ = i[1]
+            else:
+                i[2].__doc__ = i[1]
+            tb.addCmd(i[0], i[2])
         
         class help(Screen, RunInstantly):
             """
             /help ... : List all the commands!
             """
+            def __init__(self, *args):
+                super().__init__()
+            
             def _LoadUI(self):
                 self.layers[0].add('OverlayGUI')
                 self['OverlayGUI'].append(GUI.Text(self, GO.PCTOP, 'Press "esc" to go back'))
@@ -151,6 +156,9 @@ class Game(Screen):
             """
             /items ... : List all the entities and other things in the game and their ids and stuff!
             """
+            def __init__(self, *args):
+                super().__init__()
+            
             def _LoadUI(self):
                 self.layers[0].add('OverlayGUI')
                 self['OverlayGUI'].append(GUI.Text(self, GO.PCTOP, """
@@ -217,8 +225,10 @@ Please note: If you used the internal icons it will appear blurry and without tr
 
         @tb.onWrong
         def onWrong(txt):
+            alls = tb.popup.stacks.alls.keys()
+            LTOP = [i for i in alls if i.weighting == (0, 0)][0]
             tb.popup['Main'].append(
-                GUI.Text(tb.popup, tb.popup.stacks[1], 'For help, use /help')
+                GUI.Text(tb.popup, LTOP, 'For help, use /help')
             )
 
     def __call__(self):
