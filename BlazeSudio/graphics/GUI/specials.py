@@ -850,8 +850,8 @@ class DebugTerminal(TerminalBar):
         return func
     
     def addCmd(self, name, func):
-        """You don't need to add the `/` to the name, it will be added automatically"""
-        self.cmds[name] = func
+        """You don't need to add the `/` to the name, it will be added automatically. The name is lowercase. It NEEDS *args. The first line in it's docstring will be shown."""
+        self.cmds[name.lower()] = func
     
     def UpdateDraw(self, mousePos, events, force_redraw=False):
         if not force_redraw:
@@ -892,7 +892,7 @@ class DebugTerminal(TerminalBar):
                         self.txt = "/"
                 elif self.active != -1:
                     if event.key == pygame.K_TAB:
-                        if not self.txt.startswith("/"):
+                        if (not self.txt.startswith("/")) or ' ' in self.txt:
                             del events[events.index(event)]
                             continue
                         suggests = self.suggests()
@@ -912,15 +912,17 @@ class DebugTerminal(TerminalBar):
                         self.suggestIndex = 0
                     if event.key == pygame.K_RETURN:
                         if self.txt.startswith("/"):
-                            if self.txt[1:] in self.cmds:
-                                self.cmds[self.txt[1:]]()
+                            args = self.txt[1:].split(' ')
+                            cmd = args[0].lower()
+                            if cmd in self.cmds:
+                                self.cmds[cmd](*[a for a in args[1:] if a])
                             else:
-                                opts = get_close_matches(self.txt, self.cmds.keys(), n=3, cutoff=0.3) # n=self.maxSuggests
+                                opts = get_close_matches(cmd, self.cmds.keys(), n=3, cutoff=0.3) # n=self.maxSuggests
                                 pop = self.makePopup()
                                 LTOP = GO.PNEW((0, 0), (0, 1))
                                 pop.extend([
                                     GUI.Empty(self.popup, LTOP, (10, 10)),
-                                    GUI.Text(self.popup, LTOP, f"Command '{self.txt}' not found!"),
+                                    GUI.Text(self.popup, LTOP, f"Command '/{cmd}' not found!"),
                                 ])
                                 if opts:
                                     rainbow = GO.CRAINBOW()
@@ -976,9 +978,9 @@ class DebugTerminal(TerminalBar):
         return super().update(mousePos, events, force_redraw)
 
     def suggests(self):
-        if not self.txt.startswith("/"):
+        if (not self.txt.startswith("/")) or ' ' in self.txt:
             return []
-        t = self.txt[1:]
+        t = self.txt[1:].lower()
         suggests = [k for k in self.cmds if k.startswith(t)]
         def order(suggests):
             seen = set()
@@ -1002,8 +1004,20 @@ class DebugTerminal(TerminalBar):
     def draw(self):
         super().draw()
         if self.active >= 0 and self.maxSuggests > 0 and self.txt.startswith("/"):
-            suggests = self.suggests()
-            rends = [GO.FCODEFONT.render('/'+sug, (GO.CYELLOW if idx == self.suggestIndex else GO.CWHITE)) for idx, sug in enumerate(suggests)]
+            if ' ' in self.txt:
+                cmd = self.txt.split(' ')[0].lower()[1:]
+                if cmd in self.cmds:
+                    doc = self.cmds[cmd].__doc__
+                    if doc:
+                        suggests = [doc.split('\n')[0]]
+                    else:
+                        suggests = [cmd]
+                    self.suggestIndex = 0
+                else:
+                    suggests = []
+            else:
+                suggests = self.suggests()
+            rends = [GO.FCODEFONT.render((' '*len(self.prefix))+' /'+sug, (GO.CYELLOW if idx == self.suggestIndex else GO.CWHITE)) for idx, sug in enumerate(suggests)]
             szes = [r.get_size() for r in rends]
             h = self.height
             for idx in range(len(suggests)):
