@@ -56,9 +56,9 @@ def GraphicsDemo():
                 'endElms', # These will be the ones I find in the GO.ELAST event
             ])
             # I chose this because you can see the different sections of the screen, but you can do what you want; as long as they end up on the list it's ok.
-            tb = GUI.DebugTerminal(self)
-            tb.addCmd('hi', lambda: self['events'].append(GUI.Toast(self, 'HI!')))
-            tb.addCmd('bye', lambda: self['events'].append(GUI.Toast(self, 'BYE!')))
+            tb = GUI.DebugTerminal(self, jump_to_shortcut=pygame.K_F5)
+            for word in ['hi', 'bye', 'hello', 'goodbye', 'greetings', 'farewell']:
+                tb.addCmd(word, lambda: self['events'].append(GUI.Toast(self, word.upper()+'!')))
             self['TB'].append(tb)
 
             f = GUI.ScaledByFrame(self, GO.PRBOTTOM, (500, 400))
