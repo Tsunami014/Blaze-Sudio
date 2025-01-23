@@ -822,7 +822,7 @@ class TerminalBar(Element):
     def __repr__(self): return str(self)
 
 class DebugTerminal(TerminalBar):
-    def __init__(self, G, spacing=5, prefix='> ', cursor='_'):
+    def __init__(self, G, spacing=5, prefix='> ', cursor='_', max_suggests=5, jump_to_shortcut=pygame.K_SLASH):
         """
         Adds a terminal bar to the bottom of your screen! You can set instructions, and it comes with autocomplete, history and error messages!
 
@@ -831,13 +831,18 @@ class DebugTerminal(TerminalBar):
             spacing (int, optional): The spacing between the text and the top and bottom of the bar. Defaults to 5.
             prefix (str, optional): The prefix of the terminal. Defaults to '> '.
             cursor (str, optional): The cursor of the terminal. Defaults to '_'.
+            max_suggests (int, optional): The maximum amount of suggestions to show. Defaults to 5.
+            jump_to_shortcut (int, optional): The key to press to jump to the terminal. Defaults to pygame.K_SLASH.
         """
         super().__init__(G, spacing, prefix, cursor)
         self.cmds = {}
         self.history = []
         self.historyIndex = -1
+        self.suggestIndex = 0
         self.popup = None
         self._onEnters = None
+        self.maxSuggests = max_suggests
+        self.jumpShort = jump_to_shortcut
     
     def onEnter(self, func):
         """Only used if doesn't start with `/` (so not a command)"""
@@ -870,18 +875,47 @@ class DebugTerminal(TerminalBar):
     def update(self, mousePos, events, force_redraw=False):
         for event in events.copy():
             if event.type == pygame.KEYDOWN:
+                if event.type in (
+                    pygame.K_LSHIFT, pygame.K_RSHIFT, 
+                    pygame.K_LCTRL, pygame.K_RCTRL, 
+                    pygame.K_LALT, pygame.K_RALT, 
+                    pygame.K_LMETA, pygame.K_RMETA, 
+                    pygame.K_LSUPER, pygame.K_RSUPER,
+                    pygame.K_CAPSLOCK, pygame.K_NUMLOCK,
+                ):
+                    del events[events.index(event)]
+                    continue
                 self._delPopup()
-                if event.key == pygame.K_F5:
+                if event.key == self.jumpShort:
                     self.toggleactive()
                     if self.txt == "" and self.active != -1:
                         self.txt = "/"
                 elif self.active != -1:
+                    if event.key == pygame.K_TAB:
+                        if not self.txt.startswith("/"):
+                            del events[events.index(event)]
+                            continue
+                        suggests = self.suggests()
+                        if pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                            self.suggestIndex += 1
+                            if self.suggestIndex >= len(suggests):
+                                self.suggestIndex = 0
+                        else:
+                            if self.historyIndex != -1:
+                                self.historyIndex = -1
+                                self.history.pop()
+                            self.txt = '/'+suggests[self.suggestIndex]
+                            self.suggestIndex = 0
+                        del events[events.index(event)]
+                        continue
+                    else:
+                        self.suggestIndex = 0
                     if event.key == pygame.K_RETURN:
                         if self.txt.startswith("/"):
                             if self.txt[1:] in self.cmds:
                                 self.cmds[self.txt[1:]]()
                             else:
-                                opts = get_close_matches(self.txt, self.cmds.keys(), cutoff=0.3)
+                                opts = get_close_matches(self.txt, self.cmds.keys(), n=3, cutoff=0.3) # n=self.maxSuggests
                                 pop = self.makePopup()
                                 LTOP = GO.PNEW((0, 0), (0, 1))
                                 pop.extend([
@@ -940,3 +974,54 @@ class DebugTerminal(TerminalBar):
                 self._delPopup()
 
         return super().update(mousePos, events, force_redraw)
+
+    def suggests(self):
+        if not self.txt.startswith("/"):
+            return []
+        t = self.txt[1:]
+        suggests = [k for k in self.cmds if k.startswith(t)]
+        def order(suggests):
+            seen = set()
+            unique_list = []
+            for item in suggests:
+                if item not in seen:
+                    unique_list.append(item)
+                    seen.add(item)
+            return unique_list
+        if len(suggests) < self.maxSuggests:
+            suggests.extend(get_close_matches(t, self.cmds.keys(), n=self.maxSuggests, cutoff=0.4))
+            suggests = order(suggests)
+        if len(suggests) < self.maxSuggests:
+            suggests.extend([k for k in self.cmds if t.startswith(k)])
+            suggests = order(suggests)
+        if len(suggests) < self.maxSuggests:
+            suggests.extend([k for k in self.cmds if t in k])
+            suggests = order(suggests)
+        return suggests[:self.maxSuggests]
+
+    def draw(self):
+        super().draw()
+        if self.active >= 0 and self.maxSuggests > 0 and self.txt.startswith("/"):
+            suggests = self.suggests()
+            rends = [GO.FCODEFONT.render('/'+sug, (GO.CYELLOW if idx == self.suggestIndex else GO.CWHITE)) for idx, sug in enumerate(suggests)]
+            szes = [r.get_size() for r in rends]
+            h = self.height
+            for idx in range(len(suggests)):
+                r = rends[idx]
+                th = szes[idx][1]+self.spacing*2
+                h += th
+                toprad = -1
+                if idx < len(suggests)-1:
+                    toprad = min(max(szes[idx][0]-szes[idx+1][0], -1), 5)
+                else:
+                    toprad = min(szes[idx][0], 5)
+                botrad = -1
+                if idx != 0:
+                    botrad = min(max(szes[idx][0]-szes[idx-1][0], -1), 5)
+                pygame.draw.rect(self.G.WIN, 
+                                 GO.CBLACK, 
+                                 pygame.Rect(0, self.G.WIN.get_height()-h, szes[idx][0]+self.spacing*2, th), 
+                                 border_top_right_radius=toprad,
+                                 border_bottom_right_radius=botrad)
+                y = self.G.WIN.get_height()-h+self.spacing
+                self.G.WIN.blit(r, (self.spacing, y))
