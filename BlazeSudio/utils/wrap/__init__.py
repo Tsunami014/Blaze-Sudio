@@ -48,6 +48,7 @@ def wrapLevel(
         startRot: int|float = 0, 
         constraints: list[Segment] = [],
         halo: list[int] = [0, 0, 0, 0],
+        flip: bool = False,
         isIter: bool = False
     ) -> tuple[pygame.Surface]:
     """
@@ -63,6 +64,7 @@ def wrapLevel(
         startRot (int|float, optional): The starting rotation. Defaults to 0.
         constraints (list[Segment], optional): A list of constraints to apply to the image. Defaults to [].
         halo (list[int, int, int, int], optional): The halo around the image. Defaults to `[0, 0, 0, 0]` (no halo). A good halo is `[255, 255, 255, 10]` (a very faint glow).
+        flip (bool, optional): Whether to flip the image. Defaults to False.
         isIter (bool, optional): Whether to return a generator or just run the func itself. Defaults to False (just run the func). The generator is in a format aplicable to `graphics.loading.Progress`.
 
     Returns:
@@ -87,7 +89,7 @@ def wrapLevel(
             for i in world.get_level(lvl).layers:
                 i.tileset = None  # So it has to render blocks instead >:)
             pg2 = world.get_pygame(lvl, transparent_bg=True)
-        ret = yield from wrapSurface(pg, top, bottom, limit, startRot, constraints, halo, pg2, True)
+        ret = yield from wrapSurface(pygame.transform.flip(pg, False, True), top, bottom, limit, startRot, constraints, halo, pygame.transform.flip(pg2, False, True), True)
         return ret
     
     if isIter:
