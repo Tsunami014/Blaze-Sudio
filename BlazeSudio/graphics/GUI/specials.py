@@ -1058,9 +1058,9 @@ class DebugTerminal(TerminalBar):
                     else:
                         suggests.append('/'+val)
             
-            doc = [i for i in self.cmds[suggests[self.suggestIndex][1:]].__doc__.split('\n') if i]
-            if doc:
-                suggests[self.suggestIndex] = doc[0].strip()
+                doc = [i for i in self.cmds[suggests[self.suggestIndex][1:]].__doc__.split('\n') if i]
+                if doc:
+                    suggests[self.suggestIndex] = doc[0].strip()
 
             rends = [GO.FCODEFONT.render((' '*len(self.prefix))+' '+sug, (GO.CYELLOW if idx == self.suggestIndex else GO.CWHITE)) for idx, sug in enumerate(suggests)]
             szes = [r.get_size() for r in rends]
