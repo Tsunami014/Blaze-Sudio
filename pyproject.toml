@@ -48,7 +48,7 @@ BlazeSudio = "BlazeSudio:main"
 
 [project.optional-dependencies]
 graphics = [
-    "pygame",
+    "pygame-ce",
 ]
 
 image = [
