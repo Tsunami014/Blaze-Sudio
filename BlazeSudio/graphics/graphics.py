@@ -20,7 +20,7 @@ __all__ = ['Screen', 'RunInstantly']
 
 class Screen(GUI.GraphicBase):
     # Things you *can* modify, but need to use `super()`
-    def __init__(self, bgcol: GO.C___ = GO.CWHITE, win: pygame.Surface = None):
+    def __init__(self, bgcol: GO.C___ = GO.CWHITE, maxFPS: int | None = 60, win: pygame.Surface = None):
         """
         The class for making really cool graphic screens :)
 
@@ -28,6 +28,7 @@ class Screen(GUI.GraphicBase):
 
         Args:
             bgcol (tuple[int, int, int] | GO.C___, optional): _description_. Defaults to GO.CWHITE.
+            maxFPS (int | None, optional): The maximum FPS the screen should run at. Defaults to 60.
             win (pygame.Surface, optional): \
                 **IF YOU DO NOT SPECIFY:** If you have already made a pygame window it finds that and prints to that. \
                 **IF YOU SPECIFY A SURFACE:** Instead of printing to the screen it prints to the surface. *Defaults to None.*
@@ -36,17 +37,25 @@ class Screen(GUI.GraphicBase):
             if pygame.display.get_active():
                 self.WIN = pygame.display.get_surface()
             else:
-                self.WIN = pygame.display.set_mode()
-                pygame.display.toggle_fullscreen()
+                self.WIN = pygame.display.set_mode(flags=pygame.NOFRAME | pygame.FULLSCREEN)
         else:
             self.WIN = win
         self.bgcol = bgcol
-        self._clock = pygame.time.Clock()
+        self.clock = pygame.time.Clock()
         self.stacks = STACKS.Stack()
         self.Stuff = GS.Collection()
         self.run = False
         self.rel = False
         self.pause = False
+
+        self.maxFPS = maxFPS
+    
+    @property
+    def deltaTime(self):
+        """
+        The time between the last frame and the current frame in seconds.
+        """
+        return self.clock.get_time() / 1000
     
     def __call__(self):
         """
@@ -138,7 +147,8 @@ class Screen(GUI.GraphicBase):
                     self._Event(event)
             self._DrawAft()
             pygame.display.flip()
-            self._clock.tick(60)
+            if self.maxFPS is not None:
+                self.clock.tick(self.maxFPS)
         return self._Last(self.run is None)
     
     @property

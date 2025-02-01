@@ -55,15 +55,16 @@ class Player(Element):
         
         # Blit the surface considering the camera bounds and diffs
         newSur = pygame.Surface((sze[0]/scale, sze[1]/scale), pygame.SRCALPHA)
-        newSur.blit(sur, (diff_x/scale, diff_y/scale))
-
-        rendSur = pygame.transform.scale(self.Game.curScene.postProcessScreen(newSur), sze)
 
         bg = self.Game.currentLvL.bgPic
         if bg is not None:
-            win.blit(pygame.transform.scale(pygame.transform.scale(bg, (sze[0]/scale, sze[1]/scale)), sze), (0, 0))
+            newSur.blit(pygame.transform.scale(bg, (sze[0]/scale, sze[1]/scale)), (0, 0))
         else:
-            win.fill(self.Game.currentLvL.bgColour)
+            newSur.fill(self.Game.currentLvL.bgColour)
+        
+        newSur.blit(sur, (diff_x/scale, diff_y/scale))
+
+        rendSur = pygame.transform.scale(self.Game.curScene.postProcessScreen(newSur), sze)
 
         win.blit(
             rendSur, 
