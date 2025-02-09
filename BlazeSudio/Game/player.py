@@ -1,4 +1,5 @@
 import pygame
+from functools import lru_cache
 from BlazeSudio.graphics.GUI.base import Element
 from BlazeSudio.graphics import options as GO
 
@@ -10,6 +11,15 @@ class Player(Element):
 
     def update(self, mPos, events):
         self.Game.curScene.tick(events.copy())
+    
+    @lru_cache
+    def _find_bg(self, bg, col, nsize):
+        if bg is not None:
+            return pygame.transform.scale(bg, nsize)
+        else:
+            newSur = pygame.Surface(nsize, pygame.SRCALPHA)
+            newSur.fill(col)
+            return newSur
 
     def draw(self):
         rend = self.Game.curScene.render()
@@ -52,16 +62,8 @@ class Player(Element):
         
         diff_x = mw - diff_x
         diff_y = mh - diff_y
-        
-        # Blit the surface considering the camera bounds and diffs
-        newSur = pygame.Surface((sze[0]/scale, sze[1]/scale), pygame.SRCALPHA)
 
-        bg = self.Game.currentLvL.bgPic
-        if bg is not None:
-            newSur.blit(pygame.transform.scale(bg, (sze[0]/scale, sze[1]/scale)), (0, 0))
-        else:
-            newSur.fill(self.Game.currentLvL.bgColour)
-        
+        newSur = self._find_bg(self.Game.currentLvL.bgPic, self.Game.currentLvL.bgColour, (sze[0]/scale, sze[1]/scale)).copy()
         newSur.blit(sur, (diff_x/scale, diff_y/scale))
 
         rendSur = pygame.transform.scale(self.Game.curScene.postProcessScreen(newSur), sze)
