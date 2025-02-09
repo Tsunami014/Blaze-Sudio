@@ -252,7 +252,7 @@ class Ldtklevel:
         self.bgColour: str = self.data['bgColor'] or self.data['__bgColor']
         self.bgPic: pygame.Surface|None = None
         if self.data['bgRelPath'] is not None:
-            self.bgPic = pygame.image.load(os.path.abspath(os.path.join(fileloc,'../',self.data['bgRelPath'])))
+            self.bgPic = pygame.image.load(os.path.abspath(os.path.join(fileloc,'../',self.data['bgRelPath']))).convert_alpha()
         self.fieldInstances: List[Dict] = self.data['fieldInstances'] # The specific level flags
         self.sizePx: List[int] = [self.data['pxWid'], self.data['pxHei']]
         self.neighbours: List[Dict] = self.data['__neighbours']

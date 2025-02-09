@@ -285,10 +285,8 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
             if pygame.key.get_pressed()[pygame.K_SLASH]:
                 cpoints = objs.closestPointTo(curObj) # [(i, i.closestPointTo(curObj)) for i in objs]
                 if cpoints:
-                    cpoints.sort(key=lambda x: (curObj.x-x[0])**2+(curObj.y-x[1])**2)
                     # Find the point on the unit circle * 0.2 that is closest to the object
-                    closest = cpoints[0]
-                    angle = math.atan2(curObj.y-closest[1], curObj.x-closest[0])
+                    angle = math.atan2(curObj.y-cpoints[1], curObj.x-cpoints[0])
                     gravity = [-0.2*math.cos(angle), -0.2*math.sin(angle)]
                 else:
                     gravity = [0, 0]
