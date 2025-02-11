@@ -89,7 +89,10 @@ def wrapLevel(
             for i in world.get_level(lvl).layers:
                 i.tileset = None  # So it has to render blocks instead >:)
             pg2 = world.get_pygame(lvl, transparent_bg=True)
-        ret = yield from wrapSurface(pygame.transform.flip(pg, False, True), top, bottom, limit, startRot, constraints, halo, pygame.transform.flip(pg2, False, True), True)
+        if flip:
+            pg = pygame.transform.flip(pg, False, True)
+            pg2 = pygame.transform.flip(pg2, False, True)
+        ret = yield from wrapSurface(pg, top, bottom, limit, startRot, constraints, halo, pg2, True)
         return ret
     
     if isIter:
