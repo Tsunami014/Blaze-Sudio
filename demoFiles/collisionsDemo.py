@@ -173,6 +173,10 @@ while run:
                 combineTyp = (combineTyp + 1) % len(combineFs)
             elif event.key == pygame.K_PERIOD and typ == 8:
                 combineTyp = (combineTyp - 1) % len(combineFs)
+            elif event.key == pygame.K_MINUS:
+                curObj.bounciness = max(0.1, round(curObj.bounciness-0.05, 3))
+            elif event.key == pygame.K_EQUALS:
+                curObj.bounciness = min(1.5, round(curObj.bounciness+0.05, 3))
             elif event.key == pygame.K_r:
                 objs = collisions.Shapes()
             elif not playMode:
@@ -220,7 +224,7 @@ while run:
                     win.blit(FFONT.render("""How to use:
 Click on one of the options at the top to change your tool. Pressing space adds it to the board (or applies some function to existing objects).\
 The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too. When not holding alt to be in play mode, wsad does the same as the arrow keys but is more precise.
-Holding '[' and ']' changes the bounciness of the object.
+Holding '[' and ']' changes the bounciness of the object, and '-' and '=' are to fine-tune.
 Holding shift in this mode shows the normals, and holding control shows the closest points to the object!
 And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity! Holding 'L' makes you have no friction. \
 And holding '/' while holding shift will... well... I'll let you find that out for yourself.
@@ -260,9 +264,9 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
         vel[0] += 1
     
     if btns[pygame.K_LEFTBRACKET]:
-        curObj.bounciness = max(0.1, curObj.bounciness-0.05)
+        curObj.bounciness = max(0.1, round(curObj.bounciness-0.05, 3))
     if btns[pygame.K_RIGHTBRACKET]:
-        curObj.bounciness = min(1.5, curObj.bounciness+0.05)
+        curObj.bounciness = min(1.5, round(curObj.bounciness+0.05, 3))
         
     if playMode:
         win.fill(0)
@@ -344,6 +348,8 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
         for p in curObj.toPoints():
             pygame.draw.circle(sur, (255, 255, 255, 100), (p[0], p[1]), 4)
         win.blit(sur, (0, 0))
+        if typ < 7:
+            win.blit(font.render(f'Bounciness: {curObj.bounciness}', 1, (255, 255, 255)), (0, header_sze+2))
     if typ == 8:
         win.blit(font.render(list(combineFs.keys())[combineTyp], 1, (255, 255, 255)), (0, header_sze+2))
     pygame.display.update()
