@@ -21,7 +21,7 @@ testPoint('Perfect rebound',
         (2, 0, 0, 2))
 ```
 
-For more examples, see `BlazeSudio/test/testfuncs.py`.
+For more examples, see `BlazeSudio/test/tests.py`.
 """
 from typing import Any, Callable
 import time
