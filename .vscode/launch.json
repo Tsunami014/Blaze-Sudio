@@ -24,7 +24,7 @@
             "name": "Run Tests",
             "type": "debugpy",
             "request": "launch",
-            "program": "BlazeSudio/test/testfuncs.py",
+            "program": "BlazeSudio/test/tests.py",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "env": {
