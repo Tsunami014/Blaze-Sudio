@@ -1,4 +1,6 @@
 import BlazeSudio.collisions as colls
+import numpy as np
+import pygame
 
 __all__ = [
     "bounding_box",
@@ -31,6 +33,45 @@ def bounding_box(surface):
     if y2 == height-1:
         y2 = height
     return colls.Polygon((x1, y1), (x2, y1), (x2, y2), (x1, y2))
+
+def corners(surface: pygame.Surface):
+    alphas = pygame.surfarray.array_alpha(surface)
+    rows = [np.any(i) for i in alphas.T]
+    cols = [np.any(i) for i in alphas]
+
+    if not np.any(rows+cols):
+        return []
+
+    points = []
+    topR = None
+    for idx, r in enumerate(rows):
+        if r:
+            topR = idx
+            break
+    else:
+        return []
+    botR = None
+    for idx, r in enumerate(rows[::-1]):
+        if r:
+            botR = len(rows)-idx
+            break
+    else:
+        return []
+    for r, dir, off in ((topR, 1, 0), (botR, -1, -1)):
+        for dir2 in (1, -1)[::dir]:
+            col = None
+            li = alphas.T[r+off][::dir2]
+            for idx, c in enumerate(li):
+                if c:
+                    if dir2 == -1:
+                        col = len(li)-idx
+                    else:
+                        col = idx
+                    break
+            else:
+                return []
+            points.append((col, r))
+    return colls.Polygon(*points)
 
 def approximate_polygon(surface, tolerance=3, ratio=0.1): # TODO: Seriously boost performance
     """
