@@ -624,6 +624,8 @@ def TsetCollDemo():
             elif chosen == 2:
                 self.poly = gen.bounding_box(self.tile)
             elif chosen == 3:
+                self.poly = gen.corners(self.tile)
+            elif chosen == 4:
                 self.poly = gen.approximate_polygon(self.tile)
         
         def __init__(self):
@@ -632,6 +634,7 @@ def TsetCollDemo():
                 'No collisions', 
                 'Cover entire shape',
                 'Bounding box', 
+                'Corners',
                 'Trace shape'
             ]
             super().__init__()
