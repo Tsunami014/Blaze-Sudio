@@ -52,7 +52,6 @@ graphics = [
 ]
 
 image = [
-    "noise",
     "Pillow",
     "scikit-image",
     # Maybe remove the below
@@ -72,7 +71,6 @@ game = [
 
 all = [
     "Blaze-Sudio[image]",
-    "Blaze-Sudio[collisions]",
     "Blaze-Sudio[game]",
 ]
 
