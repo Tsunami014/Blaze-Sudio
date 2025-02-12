@@ -12,7 +12,8 @@ pointLike = Iterable[Number]
 def rotate(origin: pointLike, point: pointLike, angle: Number) -> pointLike:
     """
     Rotate a point clockwise by a given angle around a given origin.
-    The angle should be given in degrees.
+    
+    ### The angle should be given in **degrees**.
 
     Args:
         origin (pointLike): The point to rotate around
@@ -25,7 +26,8 @@ def rotate(origin: pointLike, point: pointLike, angle: Number) -> pointLike:
 def rotateBy0(point: pointLike, angle: Number) -> pointLike:
     """
     Rotate a point clockwise by a given angle around the origin.
-    The angle should be given in degrees.
+
+    ### The angle should be given in **degrees**.
 
     Args:
         point (pointLike): The point to rotate
@@ -38,6 +40,8 @@ def direction(fromPoint: pointLike, toPoint: pointLike) -> Number:
     """
     Finds the direction of `toPoint` from the origin of `fromPoint`
 
+    ### The angle returned is in **radians**.
+
     Args:
         fromPoint (pointLike): The origin point
         toPoint (pointLike): The point to find the direction to
@@ -48,6 +52,8 @@ def direction(fromPoint: pointLike, toPoint: pointLike) -> Number:
 def pointOnCircle(angle: Number, strength: Number = 1) -> pointLike:
     """
     Finds the point on the unit circle at a given angle with a given strength
+
+    ### The angle should be given in **radians**.
 
     Args:
         angle (Number): The angle in radians
@@ -132,7 +138,7 @@ class Shape:
     TYPE: Incomplete
     x: Number
     y: Number
-    bounciness: Incomplete
+    bounciness: Number
     def __init__(self, bounciness: float = ...) -> None:
         """
         Args:
@@ -693,7 +699,7 @@ class Circle(Shape):
         Returns:
             pointLike / Iterable[pointLike]: The closest point(s, depending on returnAll) ON this object TO the othershape
         """
-    def handleCollisionsPos(self, oldCir: Circle, newCir: Circle, objs: Shapes | Iterable[Shape], vel: pointLike = [0, 0], unstuckable: bool = True, maxTries: int = 50, replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple[pointLike, pointLike, verboseOutput]:
+    def handleCollisionsPos(self, oldCir: Circle, newCir: Circle, objs: Shapes | Iterable[Shape], vel: pointLike = [0, 0], maxTries: int = 50, replaceSelf: bool = True, precision: Number = ..., verbose: bool = False) -> tuple[pointLike, pointLike, verboseOutput]:
         """
         Handles movement of this Circle and it bouncing off of other objects.
         It is recommended you use `.handleCollisionsVel` instead of this, as it handles velocity instead of raw movement and is easier to use.
@@ -705,8 +711,7 @@ class Circle(Shape):
             oldCir (Circle): The old position of this object.
             newCir (Circle): The new position of this object.
             objs (Shapes / Iterable[Shape]): The objects this will bounce off.
-            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
-            unstuckable (bool, optional): Whether being in an object but having enough speed to get out allows you to get out or not. Defaults to True.                 This makes it so if you occasionally get stuck in a wall, you can get out and not be stuck forever. But it also means that if you move too fast                 or have too thin a wall, you will be able to clip through it. //FIXME: Make you not need this. When circles rest in a v shape, they get stuck.
+            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0]
             maxTries (int, optional): The maximum amount of tries it will do to get the circle to stop colliding when it hits something. Defaults to 50.
             replaceSelf (bool, optional): Whether to replace self.x and self.y with the new position of the object after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
@@ -718,7 +723,7 @@ class Circle(Shape):
         VerboseOutput:
             DidReflect (bool): Whether the line reflected off of something
         """
-    def handleCollisionsVel(self, vel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, unstuckable: bool = True, maxTries: int = 50, precision: Number = ..., verbose: bool = False) -> tuple['Circle', pointLike, verboseOutput]:
+    def handleCollisionsVel(self, vel: pointLike, objs: Shapes | Iterable[Shape], replaceSelf: bool = True, maxTries: int = 50, precision: Number = ..., verbose: bool = False) -> tuple['Circle', pointLike, verboseOutput]:
         """
         Handles movement of this Circle via velocity and it bouncing off of other objects.
 
@@ -726,7 +731,6 @@ class Circle(Shape):
             vel (pointLike): The velocity of this Circle
             objs (Shapes / Iterable[Shape]): The objects to bounce off of
             replaceSelf (bool, optional): Whether or not to replace self.x and self.y with the new position. Defaults to True.
-            unstuckable (bool, optional): Whether being in an object but having enough speed to get out allows you to get out or not. Defaults to True.                 This makes it so if you occasionally get stuck in a wall, you can get out and not be stuck forever. But it also means that if you move too fast                 or have too thin a wall, you will be able to clip through it. //FIXME: Make you not need this. When circles rest in a v shape, they get stuck.
             maxTries (int, optional): The maximum amount of tries it will do to get the circle to stop colliding when it hits something. Defaults to 50.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
@@ -1172,6 +1176,8 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         Converts a list of points to a polygon.
         This differs from `ShapeCombiner.pointsToShape` in that **this** will create a polygon encapsulating all the points, *instead* of connecting them all with lines.
 
+        Uses Shapely.
+
         Args:
             points (list[Point]): The points to convert to a polygon.
             ratio (Number): A number in the range [0, 1]. Higher means fewer verticies/less detail.
@@ -1185,6 +1191,8 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         Combine all the input shapes with shapely to be a union.
         If the shapes are not all touching, they will *still* be combined into one shape.
         If you need to combine shapes but don't like the result of this, try the `ShapeCombiner.Union` method.
+
+        Uses Shapely.
 
         Args:
             shapes (list[Shape]): The shapes to combine.
