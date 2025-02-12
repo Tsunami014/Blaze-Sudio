@@ -7,6 +7,8 @@
 
 # ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v3.1.0 (🌿 Kindle)
 
+### `pip install Blaze-Sudio[all]`
+
 <!-- // TODO: Get a better icon (and put it in the banner) -->
 
 [![Built with ♥️](https://badgen.net/badge/Built%20with/%E2%99%A5/orange)]()
@@ -69,7 +71,7 @@ The default theme is entirely taken from the `ThemeWood`, made by [Pixel-boy](ht
 ## 🛠️ Installation
 [![Works on my machine](https://badgen.net/badge/Works%20on/my%20machine/green)]()
 
-Are you ready? This is the most complicated installation process of any python library that exists ever, even Tensorflow (yes, I know!) But, follow the instructions and you'll probably be ok. Remember to [join the discord server](https://discord.gg/xr3phyEZtv) if you need any help.
+Are you ready? This is the most complicated installation process of any python library that exists ever. Remember to [join the discord server](https://discord.gg/xr3phyEZtv) if you need any help.
 
 1. Run `pip install Blaze-Sudio[all]`
 2. Rejoice in happiness as your library gets installed, pain-free (hopefully).
@@ -113,7 +115,7 @@ If you would like to report a bug, security vulnerability, request a feature, et
 
 Please join our Discord server here <small>(I need friends)</small>: [![Discord server link](https://badgen.net/discord/members/xr3phyEZtv?label=Discord&icon=discord)](https://discord.gg/xr3phyEZtv) for any information, queries, bugs, conversations, etc. that you may have! Alternatively (as said before), you can post bug reports/ideas in the [Github issues](https://github.com/Tsunami014/Blaze-Sudio/issues/new/choose).
 
-Just modifying whitespace or anything else that doesn't actually do anything won't be accepted (but if it's a spelling miss-steak or a broken link or something then you can tell me about it on [Discord](https://discord.com/invite/xr3phyEZtv).)
+Just modifying whitespace or anything else that doesn't actually do anything won't be accepted (but if it's a spelling miss-steak or a broken link or something then you can tell me about it on [Discord](https://discord.com/invite/xr3phyEZtv) and I can just fix it myself.)
 
 And if you want more version compatability, please *ask on Discord* as that requires changing the 'auto' build script, and I don't want to do that unless I have to (I feel bad enough taking 6 different computers up every time I want to build the collisions module).
 
