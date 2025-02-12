@@ -15,6 +15,44 @@ def mouseDown(button=1):
         yield ((i != r and r), r)
         i = r
 
+class settings(Screen):
+    def __init__(self, name):
+        self.name = name
+        self.doApply = False
+        super().__init__()
+    
+    def _LoadUI(self):
+        self.layers[0].add_many([
+            'NodeSettings',
+            'EditorSettings',
+            'SettingsBottom'
+        ])
+        CBOT = GO.PNEW((0.5, 1), (1, 0), (True, False))
+        RTOP = GO.PNEW((1, 0), (0, 1))
+        LTOP = GO.PNEW((0, 0), (0, 1))
+        self.Clear()
+        self['NodeSettings'].extend([
+            GUI.Text(self, LTOP, 'SETTINGS FOR NODE "%s":'%self.name, GO.CGREEN),
+            GUI.InputBox(self, LTOP, self.size[0]/3, GO.RNONE, starting_text=self.name)
+        ])
+        self['EditorSettings'].extend([
+            GUI.Text(self, RTOP, 'SETTINGS FOR NODE EDITOR:', GO.CBLUE)
+        ])
+        self['SettingsBottom'].append(GUI.Empty(self, CBOT, (-20, 0)))
+        self.ApplyBtn = GUI.Button(self, CBOT, GO.CGREEN, 'Apply!')
+        self['SettingsBottom'].extend([
+            self.ApplyBtn,
+            GUI.Button(self, CBOT, GO.CGREY, 'Cancel'),
+        ])
+    def _ElementClick(self, obj):
+        if obj == self.ApplyBtn:
+            self.doApply = True
+        self.Abort()
+    def _Last(self, aborted):
+        if self.doApply:
+            return [e.get() for e in self['NodeSettings'][1:]], \
+                    [e.get() for e in self['EditorSettings'][1:]]
+
 class NodeEditor(Screen):
     def __init__(self, path=None):
         """
@@ -110,46 +148,16 @@ class NodeEditor(Screen):
             'EditorSettings',
             'SettingsBottom'
         ])
+        self.settingsBtn = GUI.Button(self, GO.PRTOP, GO.CGREEN, 'Settings')
         self['mainUI'].extend([
             GUI.Text(self, GO.PCTOP, self.name, GO.CGREEN, GO.FTITLE),
-            GUI.Button(self, GO.PRTOP, GO.CGREEN, 'Settings')
+            self.settingsBtn
         ])
     
     def _ElementClick(self, obj): # This is going to be the only button that was created
-        @self.Screen
-        def settings(event, element=None, aborted=False):
-            if event == GO.EFIRST:
-                self.doApply = False
-            elif event == GO.ELOADUI:
-                CBOT = GO.PNEW((0.5, 1), (1, 0), (True, False))
-                RTOP = GO.PNEW((1, 0), (0, 1))
-                LTOP = GO.PNEW((0, 1), (0, 1))
-                self.Clear()
-                self['NodeSettings'].extend([
-                    GUI.Text(self, LTOP, 'SETTINGS FOR NODE "%s":'%self.name, GO.CGREEN),
-                    GUI.InputBox(self, LTOP, self.size[0]/3, GO.RNONE, starting_text=self.name)
-                ])
-                self['EditorSettings'].extend([
-                    GUI.Text(self, RTOP, 'SETTINGS FOR NODE EDITOR:', GO.CBLUE)
-                ])
-                self['SettingsBottom'].append(GUI.Empty(self, CBOT, (-20, 0)))
-                self.ApplyBtn = GUI.Button(self, CBOT, GO.CGREEN, 'Apply!')
-                self['SettingsBottom'].extend([
-                    self.ApplyBtn,
-                    GUI.Button(self, CBOT, GO.CGREY, 'Cancel'),
-                ])
-            elif event == GO.EELEMENTCLICK:
-                if element == self.ApplyBtn:
-                    self.doApply = True
-                self.Abort()
-            elif event == GO.ELAST:
-                if self.doApply:
-                    return [e.get() for e in self['NodeSettings'][1:]], \
-                            [e.get() for e in self['EditorSettings'][1:]]
-        rets = settings()
-        if rets is not None:
-            self.name = rets[0][0]
-        self.Reload()
+        if obj == self.settingsBtn:
+            self.name = settings(self.name)()[0][0]
+            self.Reload()
     
     def _Tick(self):
         lf, l = next(self.md)
