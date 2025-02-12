@@ -54,8 +54,6 @@ graphics = [
 image = [
     "Pillow",
     "scikit-image",
-    # Maybe remove the below
-    "matplotlib"
 ]
 
 collisions = [
