@@ -267,6 +267,7 @@ class Shape:
     TYPE = ShpTyps.NoShape
     x: Number = 0
     y: Number = 0
+    bounciness: Number
     def __init__(self, bounciness: float = BASEBOUNCINESS):
         """
         Args:
@@ -1602,7 +1603,6 @@ class Circle(Shape):
                             newCir: 'Circle', 
                             objs: Union[Shapes, Iterable[Shape]], 
                             vel: pointLike = [0,0], 
-                            unstuckable: bool = True,
                             maxTries: int = 50,
                             replaceSelf: bool = True, 
                             precision: Number = BASEPRECISION, 
@@ -1619,10 +1619,7 @@ class Circle(Shape):
             oldCir (Circle): The old position of this object.
             newCir (Circle): The new position of this object.
             objs (Shapes / Iterable[Shape]): The objects this will bounce off.
-            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0].
-            unstuckable (bool, optional): Whether being in an object but having enough speed to get out allows you to get out or not. Defaults to True. \
-                This makes it so if you occasionally get stuck in a wall, you can get out and not be stuck forever. But it also means that if you move too fast \
-                or have too thin a wall, you will be able to clip through it. //FIXME: Make you not need this. When circles rest in a v shape, they get stuck.
+            vel (pointLike, optional): The velocity that this object is going. Defaults to [0, 0]
             maxTries (int, optional): The maximum amount of tries it will do to get the circle to stop colliding when it hits something. Defaults to 50.
             replaceSelf (bool, optional): Whether to replace self.x and self.y with the new position of the object after bouncing or not. Defaults to True.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
@@ -1644,10 +1641,6 @@ class Circle(Shape):
         ), newCir)
         # Don't let you move when you're in a wall
         if oldCir.collides(objs):
-            if unstuckable and not newCir.collides(objs):
-                if verbose:
-                    return newCir, vel, [True]
-                return newCir, vel
             if verbose:
                 return oldCir, [0, 0], [True]
             return oldCir, [0, 0]
@@ -1657,27 +1650,19 @@ class Circle(Shape):
                 return newCir, vel, [False]
             return newCir, vel
         points = []
+        nshps = Shapes()
         for o in objs:
             if mvement.isContaining(o):
                 cs = o.toPoints()
             else:
                 cs = o.whereCollides(mvement)
             if cs != []:
+                nshps.add_shape(o)
                 cs.extend([i for j in [mvement[0], mvement[2]] for i in o.closestPointTo(j, True) if Point(*i).collides(mvement)])
                 points.extend(list(zip(cs, [o for _ in range(len(cs))])))
         points.sort(key=lambda x: abs(x[0][0]-oldCir[0])**2+abs(x[0][1]-oldCir[1])**2)
         closestP = points[0][0]
-        if checkShpType(points[0][1], ShpGroups.SPLITTABLE):
-            lns = []
-            collP = Point(*closestP)
-            factor = 1/(10**precision)
-            for ln in points[0][1].toLines():
-                p = ln.closestPointTo(collP)
-                if math.hypot(p[0]-closestP[0], p[1]-closestP[1]) < factor:
-                    lns.append(ln)
-            closestObj = Shapes(*lns)
-        else:
-            closestObj = points[0][1]
+        closestObj = nshps
         def calculate(point):
             cpoMvemnt = Line((oldCir.x + oldCir.r * math.cos(velphi-math.pi), oldCir.y + oldCir.r * math.sin(velphi-math.pi)),
                             (newCir.x + newCir.r * math.cos(velphi), newCir.y + newCir.r * math.sin(velphi))
@@ -1695,7 +1680,6 @@ class Circle(Shape):
         tries = 0
         while tries < maxTries:
             closestP = closestObj.closestPointTo(Point(ThisClosestP[0], ThisClosestP[1]))
-            ThisClosestP, dist_left = calculate(closestP)
             ps = Circle(ThisClosestP[0], ThisClosestP[1], newCir.r).whereCollides(closestObj)
             if len(ps) < 2:
                 break
@@ -1704,6 +1688,7 @@ class Circle(Shape):
             if diff < AVERYSMALLNUMBER/2: # It needs to be able to get back out
                 break
             tries += 1
+            ThisClosestP, dist_left = calculate(closestP)
         if dist_left <= 0:
             if verbose:
                 return oldCir, [0, 0], [True]
@@ -1721,8 +1706,13 @@ class Circle(Shape):
         qx = -math.sin(angle) * AVERYSMALLNUMBER
         qy =  math.cos(angle) * AVERYSMALLNUMBER
         smallness = (qx, qy)
-        out, outvel = self.handleCollisionsPos(Circle(ThisClosestP[0]+smallness[0], ThisClosestP[1]+smallness[1], newCir.r), 
-                                               Circle(*pos, oldCir.r), objs, vel, False, precision)
+        midCir = Circle(ThisClosestP[0]+smallness[0], ThisClosestP[1]+smallness[1], newCir.r)
+        if midCir.collides(objs):
+            # TODO: Find out why I need this and fix *that*
+            if verbose:
+                return oldCir, [0, 0], [True]
+            return oldCir, [0, 0]
+        out, outvel = self.handleCollisionsPos(midCir, Circle(*pos, oldCir.r), objs, vel, False, precision)
         if replaceSelf:
             self.x, self.y = out[0], out[1]
         if verbose:
@@ -1733,7 +1723,6 @@ class Circle(Shape):
                               vel: pointLike, 
                               objs: Union[Shapes,Iterable[Shape]], 
                               replaceSelf: bool = True, 
-                              unstuckable: bool = True,
                               maxTries: int = 50,
                               precision: Number = BASEPRECISION, 
                               verbose: bool = False
@@ -1745,9 +1734,6 @@ class Circle(Shape):
             vel (pointLike): The velocity of this Circle
             objs (Shapes / Iterable[Shape]): The objects to bounce off of
             replaceSelf (bool, optional): Whether or not to replace self.x and self.y with the new position. Defaults to True.
-            unstuckable (bool, optional): Whether being in an object but having enough speed to get out allows you to get out or not. Defaults to True. \
-                This makes it so if you occasionally get stuck in a wall, you can get out and not be stuck forever. But it also means that if you move too fast \
-                or have too thin a wall, you will be able to clip through it. //FIXME: Make you not need this. When circles rest in a v shape, they get stuck.
             maxTries (int, optional): The maximum amount of tries it will do to get the circle to stop colliding when it hits something. Defaults to 50.
             precision (Number, optional): The decimal places to round to to check (for things like corner checking). Defaults to 5.
             verbose (bool, optional): Whether to give verbose output or not. Defaults to False.
@@ -1758,7 +1744,7 @@ class Circle(Shape):
         VerboseOutput:
             DidReflect (bool): Whether the line reflected off of something
         """
-        o = self.handleCollisionsPos(self, Circle(self.x+vel[0], self.y+vel[1], self.r), objs, vel, unstuckable, maxTries, False, precision, verbose)
+        o = self.handleCollisionsPos(self, Circle(self.x+vel[0], self.y+vel[1], self.r), objs, vel, maxTries, False, precision, verbose)
         if replaceSelf:
             self.x, self.y = o[0][0], o[0][1]
         if verbose:
