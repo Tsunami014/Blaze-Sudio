@@ -14,7 +14,7 @@ It will first read the file, then overwrite it when you save.')
     except ImportError:
         f = None
     from BlazeSudio.elementGen import NodeEditor
-    NodeEditor(f)
+    NodeEditor(f)()
 
 def GraphicsDemo():
     import BlazeSudio.graphics.options as GO

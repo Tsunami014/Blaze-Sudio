@@ -19,7 +19,7 @@ def getCategoryNodes(category):
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
-    return [Node(getattr(module, i)) for i in dir(module) if not i.startswith('_')]
+    return [Node(getattr(module, i)) for i in module.__all__]
 
 def getAllNodes():
     ns = []

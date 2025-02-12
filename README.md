@@ -8,6 +8,7 @@
 # ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v3.1.0 (🌿 Kindle)
 
 ### `pip install Blaze-Sudio[all]`
+But please see [the installation section](#️-installation) for detailed instructions.
 
 <!-- // TODO: Get a better icon (and put it in the banner) -->
 
