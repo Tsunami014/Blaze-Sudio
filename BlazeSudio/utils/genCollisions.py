@@ -36,42 +36,45 @@ def bounding_box(surface):
 
 def corners(surface: pygame.Surface):
     alphas = pygame.surfarray.array_alpha(surface)
-    rows = [np.any(i) for i in alphas.T]
-    cols = [np.any(i) for i in alphas]
+    # Rows, cols
+    lili2 = [alphas.T, alphas]
+    lili = [[np.any(i) for i in j] for j in lili2]
 
-    if not np.any(rows+cols):
+    if not np.any(lili):
         return []
 
     points = []
-    topR = None
-    for idx, r in enumerate(rows):
-        if r:
-            topR = idx
-            break
-    else:
-        return []
-    botR = None
-    for idx, r in enumerate(rows[::-1]):
-        if r:
-            botR = len(rows)-idx
-            break
-    else:
-        return []
-    for r, dir, off in ((topR, 1, 0), (botR, -1, -1)):
-        for dir2 in (1, -1)[::dir]:
-            col = None
-            li = alphas.T[r+off][::dir2]
-            for idx, c in enumerate(li):
-                if c:
-                    if dir2 == -1:
-                        col = len(li)-idx
-                    else:
-                        col = idx
+    for li, pos, flip in (
+        # List, (top/left; 1) or (bottom/right; -1), flip point order (1 or -1)
+        (0, 1, 1),
+        (1, -1, 1),
+        (0, -1, -1),
+        (1, 1, -1)
+    ):
+        for idx, el in enumerate(lili[li][::pos]):
+            if el:
+                unrealidx = (idx if pos == 1 else (len(lili[li])-idx-1))
+                idx = (idx if pos == 1 else (len(lili[li])-idx))
+                break
+        else:
+            return []
+        for pos2 in (1, -1)[::flip]:
+            for idx2, el in enumerate(lili2[li][unrealidx][::pos2]):
+                if el:
+                    idx2 = (idx2 if pos2 == 1 else (len(lili2[li][unrealidx])-idx2))
+                    points.append((idx, idx2)[::(1 if li == 1 else -1)])
                     break
             else:
                 return []
-            points.append((col, r))
-    return colls.Polygon(*points)
+    nps = []
+    prev = None
+    for p in points:
+        if p != prev:
+            nps.append(p)
+        prev = p
+    if nps[0] == nps[-1]:
+        nps = nps[:-1]
+    return colls.Polygon(*nps)
 
 def approximate_polygon(surface, tolerance=3, ratio=0.1): # TODO: Seriously boost performance
     """
