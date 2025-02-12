@@ -1,3 +1,10 @@
+"""
+A collisions library written by Tsunami014 in Python and compiled using Cython to make it super fast!! :)
+
+Every function or method that uses an external library will say so (unless it is obvious, e.g. `shapelyToColl` or `drawShape`), and NONE of the Shape classes do that.
+
+## **BE CAREFUL WITH THE ROTATE FUNCTIONS AND ALWAYS CHECK WHAT VALUE (degrees or radians) THEY ACCEPT!!!**
+"""
 import math
 from enum import IntEnum
 from typing import Union, Iterable, Any
@@ -55,7 +62,8 @@ def checkForPygame():
 def rotate(origin: pointLike, point: pointLike, angle: Number) -> pointLike:
     """
     Rotate a point clockwise by a given angle around a given origin.
-    The angle should be given in degrees.
+    
+    ### The angle should be given in **degrees**.
 
     Args:
         origin (pointLike): The point to rotate around
@@ -78,7 +86,8 @@ def rotate(origin: pointLike, point: pointLike, angle: Number) -> pointLike:
 def rotateBy0(point: pointLike, angle: Number) -> pointLike:
     """
     Rotate a point clockwise by a given angle around the origin.
-    The angle should be given in degrees.
+
+    ### The angle should be given in **degrees**.
 
     Args:
         point (pointLike): The point to rotate
@@ -98,6 +107,8 @@ def direction(fromPoint: pointLike, toPoint: pointLike) -> Number:
     """
     Finds the direction of `toPoint` from the origin of `fromPoint`
 
+    ### The angle returned is in **radians**.
+
     Args:
         fromPoint (pointLike): The origin point
         toPoint (pointLike): The point to find the direction to
@@ -110,6 +121,8 @@ def direction(fromPoint: pointLike, toPoint: pointLike) -> Number:
 def pointOnCircle(angle: Number, strength: Number=1) -> pointLike:
     """
     Finds the point on the unit circle at a given angle with a given strength
+
+    ### The angle should be given in **radians**.
 
     Args:
         angle (Number): The angle in radians
@@ -233,8 +246,8 @@ def drawShape(surface: Any, shape: 'Shape', colour: tuple[int, int, int], width:
                                            (int(shape.p2[0]), int(shape.p2[1])), width)
     elif checkShpType(shape, ShpTyps.Arc):
         pygame.draw.arc(surface, colour, 
-                         (int(shape.x)-int(shape.r), int(shape.y)-int(shape.r), int(shape.r*2), int(shape.r*2)), 
-                         math.radians(-shape.endAng), math.radians(-shape.startAng), width)
+                         (int(shape.x-shape.r + width/2), int(shape.y-shape.r - width/2), int(shape.r*2 - width), int(shape.r*2 - width)), 
+                         math.radians(-shape.endAng - width/2), math.radians(-shape.startAng + width/2), width)
     elif checkShpType(shape, ShpTyps.Circle):
         pygame.draw.circle(surface, colour, (int(shape.x), int(shape.y)), int(shape.r), width)
     elif checkShpType(shape, ShpGroups.CLOSED):
@@ -3101,6 +3114,8 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         This differs from `ShapeCombiner.pointsToShape` in that **this** will create a polygon encapsulating all the points, \
 *instead* of connecting them all with lines.
 
+        Uses Shapely.
+
         Args:
             points (list[Point]): The points to convert to a polygon.
             ratio (Number): A number in the range [0, 1]. Higher means fewer verticies/less detail.
@@ -3116,6 +3131,8 @@ Instead you just run things like `ShapeCombiner.combineRects(rect1, rect2, rect3
         Combine all the input shapes with shapely to be a union.
         If the shapes are not all touching, they will *still* be combined into one shape.
         If you need to combine shapes but don't like the result of this, try the `ShapeCombiner.Union` method.
+
+        Uses Shapely.
 
         Args:
             shapes (list[Shape]): The shapes to combine.
