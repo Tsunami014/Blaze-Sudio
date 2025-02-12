@@ -61,7 +61,7 @@ class NoisyImage(Image):
         res = (max(1, w // 4), max(1, h // 4))
         noise_img = generate_fractal_noise_2d((w, h), res, self.octaves)
         
-        end = [[(val, val, val) for i in j for val in (int((i + 1) * 127.5),)] for j in noise_img]
+        end = [[(val, val, val) for i in j for val in (max(min(int((i + 1) * 127.5), 255), 0),)] for j in noise_img]
 
         if len(self.cache) > 127:
             self.cache.pop(list(self.cache.keys())[0])
