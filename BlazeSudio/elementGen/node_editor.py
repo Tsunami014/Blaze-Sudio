@@ -115,13 +115,13 @@ class NodeEditor(Screen):
             sur.blit(t, (0, tocenter))
         return sur, cir
 
-    def dropdown(self):
-        p = pygame.mouse.get_pos()
+    def dropdown(self, p=None):
+        p = p or pygame.mouse.get_pos()
         def nxt(resp):
             def nxt2(resp2):
                 if resp2 is not None:
                     if resp2 == 0:
-                        self.dropdown()
+                        self.dropdown(p)
                     else:
                         self.nodes.append((p, allnodes[list(allnodes.keys())[resp]][resp2-1].copy()))
                         next(self.md)
@@ -325,7 +325,7 @@ class NodeEditor(Screen):
                         e = GUI.ColourPickerBTN(scr, LTOP)
                         e.set(*n.value)
                     elif n.strtype == 'any':
-                        e = GUI.InputBox(scr, LTOP, GO.FFONT.winSze('c'*10)[0], font=GO.FFONT, starting_text=str(n.value or ''), placeholdOnNum=None)
+                        e = GUI.InputBox(scr, LTOP, GO.FFONT.winSze('c'*10)[0], font=GO.FFONT, starting_text=str(n.value or ''))
                     if e is None:
                         return ()
                     return (e1, e)
