@@ -20,7 +20,7 @@ But please see [the installation section](#️-installation) for detailed instru
 | [🚀 About](#-about) |
 | [💡 Things to note](#-things-to-note) |
 | [🛠️ Installation](#️-installation) |
-| [📚 Library usage (Demos)](#-library-usage-demos) |
+| [📚 Library usage & features](#-library-usage--features) |
 | [💻️ The terminal script](#️-the-terminal-script) |
 | [🗨️ Contributing](#️-contributing) |
 | [🔜 Next versions](#-next-versions) |
@@ -94,19 +94,31 @@ You don't need to install *everything*, so here is a list of all the optional re
 
 You can also install multiple of these at a time like so: `pip install Blaze-Sudio[graphics,collisions]`.
 
-## 📚 Library usage (Demos)
-Demos are avaliable in `demos.py` for any main part of the library.
-### 🧱 The collisions module
+## 📚 Library usage & features
+Demos are avaliable in `demos.py` for any main part of the library, which are all described in the subheadings below.
+
+And if you want full, in-depth explanation of each thing Blaze Sudio has to offer and how to use it all, visit the docs: [Offine 🖥️](docs/game/README.md) / [Online 🌐](https://tsunami014.gitbook.io/blaze-sudios/main-functionality/game).
+
+### 🧱 The collisions module `[collisions]` / `[game]`
 `BlazeSudio.collisions` is something I have spent a very long time on. It contains many different classes and functions for all sorts of shapes; `Points`, `Lines`, `Circles`, `Rects`, `Polygons`, and more. with functions to check for collision, find where the shape is colliding, where the nearest point on that shape is to any other shape, find the tangent off of the shape at a certain point, **but** also there is a function to calculate what happens to the shape once it bounces off any other objects!! It's too exciting for me to be able to explain it here, so make sure you take a look at the `demos.py` and choose the `Collisions demo`.
-### 💻️ The graphics module
-This is a module for having buttons, switches, colour pickers, scrollable screens, you name it - all in Pygame. It has a demo in `demos.py` too.
-### 🎮️ The Game module
+### 💻️ The graphics module `[graphics]` / `[game]`
+This is a module for having buttons, switches, colour pickers, scrollable screens, you name it - all in Pygame.
+### 🎮️ The Game module `[game]`
 A simple demo is kinda hard because you need an ldtk file to make the levels with, but if you want there are some demo games [here](https://github.com/Tsunami014/BlazeTests) for you to see how making games is structured.
 It may be a little confusing, **BUT DON'T WORRY** as making a game is super easy with the help of the documentation, no matter how hard you think this may look. It is all explained there.
+### 🖼️ The ldtk module `[game]` (`[collisions]` & `[graphics]`)
+This module is built off of [Pyldtk](https://github.com/LGgameLAB/pyLdtk) but with many more features and much more polished. It is for loading `LDtk` files into a form easily able to be used in games and `pygame` applications and things.
+### 🧪 The test module `[collisions]`
+Some functions I made for testing that seemed useful. Also contains tests for different parts of the library (currently just the collisions tho).
+### ➿ Element generation `[graphics]` & `[image]`
+This module was designed to make making game elements easier (e.g. textures and stuff) and was inspired by other similar things (e.g. the one in Blender). It *kinda* works at the moment, but there are very little features (but making more is super easy) and not much functionality except for the editor, so if you wanted something fully complete then don't use this unless you'd like to help too..? PRs mostly\* welcome.
 
-But, the docs for making a game would be helpful, and are here: [Offine 🖥️](docs/game/README.md) / [Online 🌐](https://tsunami014.gitbook.io/blaze-sudios/main-functionality/game)
+<small>*Unless it's about something like spelling or whitespace or other minor bits of the application I could fix very easily in one line; in that case just tell me and I'll fix it</small>
 
-And if you want full, in-depth explanation of each thing Blaze Sudio has to offer and how to use it all, visit [the docs](https://tsunami014.gitbook.io/blaze-sudios/)!
+### 🧩 The utils module `[game]`
+The utils module is full of random things that you may find useful, including:
+ - `genCollisions`: Functions to generate collision Polygons from input pygame surfaces for finding collisions of tiles and things.
+ - `wrap`: An entire module dedicated to the wrapping of images into circles. You **have** to see the demo, it's **AWESOME!**
 
 ## 💻️ The terminal script
 If you have installed BlazeSudio into your global pip, you *should* be able to run the `BlazeSudio` command in your terminal. This is a script to really quickly make a new project or open the docs. you can run with `BlazeSudio --help` to see all the options.
@@ -118,18 +130,18 @@ Please join our Discord server here <small>(I need friends)</small>: [![Discord 
 
 Just modifying whitespace or anything else that doesn't actually do anything won't be accepted (but if it's a spelling miss-steak or a broken link or something then you can tell me about it on [Discord](https://discord.com/invite/xr3phyEZtv) and I can just fix it myself.)
 
-And if you want more version compatability, please *ask on Discord* as that requires changing the 'auto' build script, and I don't want to do that unless I have to (I feel bad enough taking 6 different computers up every time I want to build the collisions module).
+And if you want more version compatability, please *ask on Discord* as that requires changing the 'auto' build script, and I don't want to do that unless I have to (I have to use 6 different computers every time I want to build the collisions module with github actions as it is), but even so due to the reasons stated I probably will not (unless it's upgrading the compatability)
 
 And no, building it yourself and PR'ing that is not going to work. If I change the module it will be painful attempting to recompile the module into a version I don't have myself.
 
 But if you're confused please ask on Discord, and thanks for any help making Blaze Sudios even better!!
 
 # 🔜 [Next versions](progress.md)
- - v4.0.0 - ♨️`Smolder` - Pretty cool so far and have ability to make an OK game that one could submit for a competition or something. (WINGS OF FIRE REFERENCE)
+ - v4.0.0 - ♨️`Smolder` - Pretty cool so far and have ability to make an OK game that one could submit for a competition or something.
  - v5.0.0 - 🌋`Fire` - cos by then it'll be on fire :grin: many cool things and stuff to make good looking games that are super cool and would totally win a competition!
  - v6.0.0 - ❤️‍🔥`Bonfire` - Who knows 🤷
  - v7.0.0 - ☄️`Inferno` - 🤷
- - v8.0.0 - 🍂`Firestorm`- What happens at this stage is a question for tommorow.
+ - v8.0.0 - 🍂`Firestorm`- What happens at this stage is a question for ~~tommorow~~ next year.
 
 # ⭐️ Star History
 (This is Going to be the funnyest thing to look at until I actually get this going really well)
