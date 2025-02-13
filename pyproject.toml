@@ -53,6 +53,7 @@ graphics = [
 
 image = [
     "Pillow",
+    "numpy",
     "scikit-image",
 ]
 
@@ -63,6 +64,7 @@ collisions = [
 game = [
     "Blaze-Sudio[graphics]",
     "Blaze-Sudio[collisions]",
+    "numpy",
     "scikit-image",
     "pyperclip",
 ]
