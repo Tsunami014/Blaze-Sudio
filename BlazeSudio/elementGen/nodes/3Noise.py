@@ -37,7 +37,7 @@ def generate_fractal_noise_2d(shape, res, octaves=1, persistence=0.5):
     frequency = 1
     amplitude = 1
     for _ in range(octaves):
-        noise += amplitude * generate_perlin_noise_2d(shape, (frequency*res[0], frequency*res[1]))
+        noise += amplitude * generate_perlin_noise_2d(shape, (min(frequency*res[0], shape[0]), min(frequency*res[1], shape[1])))
         frequency *= 2
         amplitude *= persistence
     return noise
@@ -57,7 +57,7 @@ class NoisyImage(Image):
         if cacheSearch in self.cache:
             return self.cache[cacheSearch]
         w, h = int(xTo - x), int(yTo - y)
-        np.random.seed(self.seed)
+        np.random.seed(max(min(int(self.seed), 4294967295), 0))
         res = (max(1, w // 4), max(1, h // 4))
         noise_img = generate_fractal_noise_2d((w, h), res, self.octaves)
         
