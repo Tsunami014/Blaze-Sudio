@@ -1725,7 +1725,7 @@ class Circle(Shape):
             if verbose:
                 return oldCir, [0, 0], [True]
             return oldCir, [0, 0]
-        out, outvel = self.handleCollisionsPos(midCir, Circle(*pos, oldCir.r), objs, vel, False, precision)
+        out, outvel = self.handleCollisionsPos(midCir, Circle(*pos, oldCir.r), objs, vel, maxTries, False, precision)
         if replaceSelf:
             self.x, self.y = out[0], out[1]
         if verbose:
