@@ -16,7 +16,7 @@ Options:
   --version, -v      Show the version number and exit""")
     sys.exit(0)
 elif '--version' in sys.argv or '-v' in sys.argv:
-    print('BlazeSudio v3.1.0')
+    print('BlazeSudio v3.2.0')
     sys.exit(0)
 
 txt = """
@@ -40,7 +40,7 @@ txt = re.sub('([`:"\']+)', '\033[92m\\1', txt)
 
 if '--no-title' not in sys.argv and '-nt' not in sys.argv:
     print(txt)
-    print(' '*8+'\033[91mMade by @Tsunami014\033[0m')
+    print(' '*8+'\033[36mMade by @Tsunami014\033[0m')
     print('\n')
 
 def bracketulate(txt):
