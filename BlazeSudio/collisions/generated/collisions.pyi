@@ -67,25 +67,25 @@ class ShpGroups(IntEnum):
     """
     An enum representing the different groups you can put shapes in.
     """
-    CLOSED: int
-    LINES: int
-    NOTSTRAIGHT: int
-    SPLITTABLE: int
-    GROUP: int
+    CLOSED = 0
+    LINES = 1
+    NOTSTRAIGHT = 2
+    SPLITTABLE = 3
+    GROUP = 4
 
 class ShpTyps(IntEnum):
     """
     An enum representing the different possible shapes.
     """
-    NoShape: int
-    Group: int
-    Point: int
-    Line: int
-    Circle: int
-    Arc: int
-    Rect: int
-    RotRect: int
-    Polygon: int
+    NoShape = -1
+    Group = -2
+    Point = -3
+    Line = -4
+    Circle = -5
+    Arc = -6
+    Rect = -7
+    RotRect = -8
+    Polygon = -9
 
 def checkShpType(shape: Shape | Shapes, *typs: ShpTyps | ShpGroups) -> bool:
     """
