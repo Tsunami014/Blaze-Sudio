@@ -1,5 +1,4 @@
-from dataclasses import dataclass, field
-from random import random
+from dataclasses import dataclass
 import pygame
 import pygame.freetype
 from string import printable
@@ -299,9 +298,22 @@ class F___:
 class FNEW(F___):
     pass # Making new fonts
 
-FTITLE =       F___('Comic Sans MS', 64, True)
-FCODEFONT =    F___('Lucida Sans Typewriter', 16)
-FCODEREGULAR = F___('Lucida Sans Typewriter', 52)
+def findAFont(*fontOpts):
+    """
+    Finds the first avaliable font on the user's machine.
+
+    Returns:
+        str | None: The first string in the options list provided that is on the user's machine, on None if none of them are avaliable.
+    """
+    fs = pygame.font.get_fonts()
+    for font in fontOpts:
+        if font in fs:
+            return font
+    return None
+
+FTITLE =       F___(findAFont('conicsansms', 'dejavuserif'), 64, True)
+FCODEFONT =    F___(findAFont('lucidasanstypewriterregular', 'ubuntusansmono'), 16)
+FCODEREGULAR = F___(findAFont('lucidasanstypewriterregular', 'ubuntusansmono'), 52)
 FFONT =        F___(None, 52)
 FSMALL =       F___(None, 32)
 

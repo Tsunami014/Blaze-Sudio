@@ -115,6 +115,8 @@ class GraphicBase:
             redraw_vtops = []
             # TODO: Have return states able to be passed down instead of just the calls
             def handle_returns(returns, care4Redraw=False):
+                if returns is None:
+                    return
                 for obj in returns:
                     retValue = returns[obj]
                     if retValue is None:
@@ -942,10 +944,16 @@ class DebugTerminal(TerminalBar):
                                         error = True
                                         pop = self.makePopup()
                                         LTOP = GO.PNEW((0, 0), (0, 1))
-                                        pop.extend([
-                                            GUI.Empty(self.popup, LTOP, (10, 10)),
-                                            GUI.Text(self.popup, LTOP, f"Command '/{cmd}' requires {defaults} - {numargs} arguments but was provided {len(passArgs)}!"),
-                                        ])
+                                        if defaults == numargs:
+                                            pop.extend([
+                                                GUI.Empty(self.popup, LTOP, (10, 10)),
+                                                GUI.Text(self.popup, LTOP, f"Command '/{cmd}' requires {defaults} arguments but was provided {len(passArgs)}!"),
+                                            ])
+                                        else:
+                                            pop.extend([
+                                                GUI.Empty(self.popup, LTOP, (10, 10)),
+                                                GUI.Text(self.popup, LTOP, f"Command '/{cmd}' requires {defaults} - {numargs} arguments but was provided {len(passArgs)}!"),
+                                            ])
                                         self._resizePopup()
                                 if not error:
                                     func(*passArgs)
@@ -1063,7 +1071,7 @@ class DebugTerminal(TerminalBar):
                     if doc:
                         suggests[self.suggestIndex] = doc[0].strip()
 
-            rends = [GO.FCODEFONT.render((' '*len(self.prefix))+' '+sug, (GO.CYELLOW if idx == self.suggestIndex else GO.CWHITE)) for idx, sug in enumerate(suggests)]
+            rends = [GO.FCODEFONT.render((' '*len(self.prefix))+sug, (GO.CYELLOW if idx == self.suggestIndex else GO.CWHITE)) for idx, sug in enumerate(suggests)]
             szes = [r.get_size() for r in rends]
             h = self.height
             for idx in range(len(suggests)):

@@ -15,14 +15,11 @@ class IncorrectLevelError(TypeError):
 
 class SkeletonScene:
     useRenderer = True
+    CamBounds = [None, None, None, None]
+    CamDist = 1
+    CamPos = [0, 0]
     def __init__(self, G, **settings):
         self.Game: Game = G
-        self.CamBounds = [None, None, None, None]
-        self.CamDist = 1
-    
-    @property
-    def CamPos(self):
-        return [0, 0]
     
     def tick(self, keys):
         pass
@@ -30,8 +27,17 @@ class SkeletonScene:
     def render(self):
         pass
 
-    def renderUI(self, win, scaleFunc):
-        pass
+    def postProcessGlobal(self, sur):
+        """
+        Gets passed the entire sur from the render method.
+        """
+        return sur
+
+    def postProcessScreen(self, sur, diffs):
+        """
+        Gets passed the sur after `postProcessGlobal` and after cropped. The output of this will be rendered to the screen.
+        """
+        return sur
 
 class BaseScene(SkeletonScene):
     useRenderer = True
@@ -49,18 +55,6 @@ class BaseScene(SkeletonScene):
     @property
     def CamPos(self):
         return [0, 0]
-    
-    def postProcessGlobal(sur):
-        """
-        Gets passed the entire sur from the render method.
-        """
-        return sur
-
-    def postProcessScreen(sur):
-        """
-        Gets passed the sur after `postProcessGlobal` and after cropped. The output of this will be rendered to the screen.
-        """
-        return sur
     
     def renderMap(self):
         self.sur = pygame.Surface(self.currentLvl.sizePx)
@@ -91,31 +85,22 @@ class BaseEntity(SkeletonEntity):
     def __init__(self, G, entity):
         super().__init__(G, entity)
         # Things to change in __init__ and most of the time remain the same:
-        self.max_speed = 3
+        self.max_speed = 1.25
         """Max speed"""
-        self.max_grav_speed = 3
-        """Max speed the gravity can get you"""
-        self.friction = 0.1
-        """Friction perpendicular to gravity direction (or if no gravity) (in percent of current speed)"""
-        self.grav_fric = 0.1
-        """Friction applied in gravity direction (in percent of current gravity strength)"""
+        self.friction = 0.2
+        """Friction (in percent of current speed)"""
         self.not_hold_fric = 0.01
         """ADDED friction to apply when not holding ANY KEY (you can modify this to be only left-right or whatever) (in percent of current speed)"""
-        self.not_hold_grav = [0, 0.04]
-        """Decrease in gravity to apply when not holding THE UP KEY (in percent of current gravity strength)"""
         
-        # Things to change in your code:
+        # Things to change in your code if neeed:
         self.velocity = [0, 0]
         """What to change to modify the speed you want the player to be at. **Changing this every frame will virtually counteract the physics changes!**"""
         self.gravity = [0, 0]
         """Units constantly added to velocity each frame"""
 
-        self.velocity = [0, 0]
-        """Don't change this directly; use targetvelocity instead"""
         self.position = [0, 0]
 
         self.holding_any = False
-        self.holding_jmp = False
     
     def handle_keys(self):
         keys = pygame.key.get_pressed()
@@ -146,7 +131,52 @@ class BaseEntity(SkeletonEntity):
         
         dt = self.Game.deltaTime
 
-        # Incorporate delta time into friction calculations
+        # Add friction
+        fric = 1 - ((self.friction + (self.not_hold_fric if not self.holding_any else 0)) * dt)
+        self.velocity = [self.velocity[0]*fric, 
+                            self.velocity[1]*fric]
+        
+        # Apply gravity
+        self.velocity = [self.velocity[0] + self.gravity[0] * dt,
+                         self.velocity[1] + self.gravity[1] * dt]
+
+        # Cap the speed to max_speed again after applying physics
+        self.velocity = [max(-self.max_speed, min(self.velocity[0], self.max_speed)),
+                         max(-self.max_speed, min(self.velocity[1], self.max_speed))]
+
+    def __call__(self, evs):
+        self.handle_keys()
+        self.apply_physics()
+        self.position[0] += self.velocity[0]
+        self.position[1] += self.velocity[1]
+
+class AdvBaseEntity(BaseEntity):
+    """A slightly more advanced version of BaseEntity.
+    
+    If you want to change the values, it is recommended to change them in the `__init__` method of the subclass and use `super().__init__(G, entity)`.
+    
+    Each value is in units per second unless specified; and with percents, 1 = 100% and 0 = 0%."""
+    def __init__(self, G, entity):
+        super().__init__(G, entity)
+        self.max_grav_speed = 1
+        """Max speed the gravity can get you"""
+        self.grav_fric = 0.2
+        """Friction applied in gravity direction (in percent of current gravity strength)"""
+        self.friction = 0.2
+        """Friction perpendicular to gravity direction (or if no gravity) (in percent of current speed)"""
+        self.not_hold_grav = [0, 0.04]
+        """Decrease in gravity to apply when not holding THE UP KEY (in percent of current gravity strength)"""
+        
+        self.holding_jmp = False
+    
+    def apply_physics(self):
+        # Cap the target speed to max_speed
+        self.velocity = [max(-self.max_speed, min(self.velocity[0], self.max_speed)),
+                         max(-self.max_speed, min(self.velocity[1], self.max_speed))]
+        
+        dt = self.Game.deltaTime
+
+        # Calculating friction
         fric = 1 - ((self.friction + (self.not_hold_fric if not self.holding_any else 0)) * dt)
 
         # Project velocity onto gravity direction
@@ -177,9 +207,3 @@ class BaseEntity(SkeletonEntity):
         # Cap the speed to max_speed again after applying physics
         self.velocity = [max(-self.max_speed, min(self.velocity[0], self.max_speed)),
                          max(-self.max_speed, min(self.velocity[1], self.max_speed))]
-
-    def __call__(self, evs):
-        self.handle_keys()
-        self.apply_physics()
-        self.position[0] += self.velocity[0]
-        self.position[1] += self.velocity[1]

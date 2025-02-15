@@ -62,6 +62,10 @@ class Element:
         elif not force_redraw:
             ret = self.update(mousePos.copy(), events)
         
+        if isinstance(ret, (ReturnState, ReturnGroup)):
+            if ReturnState.STOP in ret:
+                return ret
+
         if self.hiddenStatus in (HiddenStatus.SHOWING, HiddenStatus.NOTUPDATING):
             args2 = inspect.getfullargspec(self.draw).args
             if len(args2) == 2: # Includes mousepos
