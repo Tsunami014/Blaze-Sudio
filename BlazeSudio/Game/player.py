@@ -60,20 +60,15 @@ class Player(Element):
             else:
                 diff_y = max(min(realpos[1], bounds[3]*scale-mh), bounds[1]*scale+mh)
         
-        diff_x = mw - diff_x
-        diff_y = mh - diff_y
+        ndiff_x = mw - diff_x
+        ndiff_y = mh - diff_y
 
         newSur = self._find_bg(self.Game.currentLvL.bgPic, self.Game.currentLvL.bgColour, (sze[0]/scale, sze[1]/scale)).copy()
-        newSur.blit(sur, (diff_x/scale, diff_y/scale))
+        newSur.blit(sur, (ndiff_x/scale, ndiff_y/scale))
 
-        rendSur = pygame.transform.scale(self.Game.curScene.postProcessScreen(newSur), sze)
+        rendSur = pygame.transform.scale(self.Game.curScene.postProcessScreen(newSur, (diff_x, diff_y)), sze)
 
         win.blit(
             rendSur, 
             (0, 0)
         )
-
-        def scalef(pos):
-            return (pos[0]*scale+diff_x, pos[1]*scale+diff_y)
-
-        self.Game.curScene.renderUI(win, scalef)
