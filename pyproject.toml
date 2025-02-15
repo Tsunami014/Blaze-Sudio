@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Blaze-Sudio"
-version = "3.1.0"
+version = "3.2.0"
 description = "This is a really cool game/physics/application engine written in pygame!"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -34,11 +34,11 @@ classifiers = [
 
 dependencies = []
 
-requires-python = ">= 3.10"
+requires-python = ">= 3.10,<=3.12"
 
 [project.urls]
 Homepage = "https://github.com/Tsunami014/Blaze-Sudio"
-Download = "https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v3.1.0.tar.gz"
+Download = "https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v3.2.0.tar.gz"
 Documentation = "https://tsunami014.gitbook.io/blaze-sudios/"
 Repository = "https://github.com/Tsunami014/Blaze-Sudio"
 Issues = "https://github.com/Tsunami014/Blaze-Sudio/issues"

@@ -5,7 +5,7 @@
 [![Docs](https://badgen.net/badge/Documentation/tsunami014.gitbook.io?color=orange&icon=wiki)](https://tsunami014.gitbook.io/blaze-sudios/)
 [![Website](https://badgen.net/badge/website/tsunami014.github.io?icon=rss&color=yellow)](https://tsunami014.github.io/Blaze-Sudio/)
 
-# ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v3.1.0 (🌿 Kindle)
+# ![Fox icon](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/FoxIconSmall.png) CURRENT VERSION: v3.2.0 (🌿 Kindle)
 
 ### `pip install Blaze-Sudio[all]`
 But please see [the installation section](#️-installation) for detailed instructions.
