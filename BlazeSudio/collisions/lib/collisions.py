@@ -1733,13 +1733,13 @@ class Circle(Shape):
         return out, outvel
 
     def handleCollisionsVel(self, 
-                              vel: pointLike, 
-                              objs: Union[Shapes,Iterable[Shape]], 
-                              replaceSelf: bool = True, 
-                              maxTries: int = 50,
-                              precision: Number = BASEPRECISION, 
-                              verbose: bool = False
-                             ) -> tuple['Circle', pointLike, verboseOutput]:
+                            vel: pointLike, 
+                            objs: Union[Shapes,Iterable[Shape]], 
+                            replaceSelf: bool = True, 
+                            maxTries: int = 50,
+                            precision: Number = BASEPRECISION, 
+                            verbose: bool = False
+                           ) -> tuple['Circle', pointLike, verboseOutput]:
         """
         Handles movement of this Circle via velocity and it bouncing off of other objects.
 
