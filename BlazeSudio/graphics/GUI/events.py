@@ -1,16 +1,15 @@
 from typing import Callable, Iterable, Literal
 import pygame
 from math import sqrt
-from BlazeSudio.graphics.GUI.base import Element, ReturnState
+from BlazeSudio.graphics.base import Element, ReturnState
 from BlazeSudio.graphics import mouse, options as GO # TODO: Replace more things in here with GO stuff
 
 __all__ = ['Dropdown', 'Toast']
 
 class Dropdown(Element):
     def __init__(self,
-                 G, 
-                 pos: list[int],
-                 elms: list[str], 
+                 pos: Iterable[int],
+                 elms: Iterable[str], 
                  spacing: int = 5, 
                  font: GO.F___ = GO.FFONT, 
                  bgcolour: GO.C___ = GO.CBLACK, 
@@ -24,9 +23,8 @@ class Dropdown(Element):
         Make a dropdown!
 
         Args:
-            G (Graphic): The graphic screen to attach to.
-            pos (list[int, int]): The position on the screen to spawn this dropdown. Having GO.P___ is kinda weird for this...
-            elms (list[str]): The elements present in the dropdown to choose from.
+            pos (Iterable[int, int]): The position on the screen to spawn this dropdown. Having GO.P___ is kinda weird for this...
+            elms (Iterable[str]): The elements present in the dropdown to choose from.
             spacing (int, optional): The spacing between the text and the outside of their enclosing rects. Defaults to 5.
             font (GO.F___, optional): The font to render the text with. Defaults to GO.FFONT.
             bgcolour (GO.C___, optional): The colour of the background of the dropdown. Defaults to GO.CBLACK.
@@ -37,8 +35,7 @@ class Dropdown(Element):
             func (Callable, optional): The function to call when an option is selected. Defaults to a do nothing func. \
                 Func *must* have an input argument which will be the id of the selected element in the list that was selected or None if nothing was selected.
         """
-        if pauseG:
-            G.pause = True
+        self.pauseG = pauseG
         self.spacing = spacing
         self.elements = [font.render(i, txtcolour) for i in elms]
         mx = max([i.get_width() + spacing*2 for i in self.elements]+[extraW or 0])
@@ -53,7 +50,12 @@ class Dropdown(Element):
             sze = (mx, sze[1] + self.spacing*2)
             self.rects.append(pygame.Rect(pos[0], pos[1]+y, *sze))
             y += sze[1]
-        super().__init__(G, GO.PSTATIC(*pos), (mx, my))
+        super().__init__(GO.PSTATIC(*pos), (mx, my))
+    
+    def _init2(self):
+        if self.pauseG:
+            self.G.pause = True
+        super()._init2()
     
     def update(self, mousePos, events):
         for event in events:
@@ -87,7 +89,6 @@ class Dropdown(Element):
 class Toast(Element):
     type = GO.TTOAST
     def __init__(self, 
-                 G, 
                  text: str, 
                  BGcol: GO.C___ = GO.CORANGE, 
                  txtcol: GO.C___ = GO.CBLACK, 
@@ -102,7 +103,6 @@ class Toast(Element):
         A Toast; or popup message.
 
         Args:
-            G (Graphic): The graphic screen to attach to.
             text (str): The text in the toast.
             BGcol (GO.C___, optional): The colour of the background of the toast. Defaults to GO.CORANGE.
             txtcol (GO.C___, optional): The colour of the text inside the toast. Defaults to GO.CBLACK.
@@ -119,7 +119,7 @@ class Toast(Element):
         pygame.draw.rect(sur, BGcol, pygame.Rect(0, 0, *sur.get_size()), border_radius=8)
         sur.blit(txt, (spacing, spacing))
         pos = pos.copy()
-        super().__init__(G, pos, sur.get_size())
+        super().__init__(pos, sur.get_size())
         self.surf = sur
         endpos = self.stackP()
         bottompos = (endpos[0]+pos.stack[0]*sur.get_width(), endpos[1]+pos.stack[1]*sur.get_height())

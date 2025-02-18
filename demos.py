@@ -19,8 +19,8 @@ It will first read the file, then overwrite it when you save.')
 def GraphicsDemo():
     import BlazeSudio.graphics.options as GO
     from BlazeSudio.graphics import Screen, Loading, Progressbar, GUI
-    from BlazeSudio.graphics.GUI.base import HiddenStatus
-    from BlazeSudio.graphics.GUI.base import ReturnState
+    from BlazeSudio.graphics.base import HiddenStatus
+    from BlazeSudio.graphics.base import ReturnState
     import pygame
     from time import sleep
     @Loading.decor
@@ -56,93 +56,93 @@ def GraphicsDemo():
                 'endElms', # These will be the ones I find in the GO.ELAST event
             ])
             # I chose this because you can see the different sections of the screen, but you can do what you want; as long as they end up on the list it's ok.
-            tb = GUI.DebugTerminal(self, jump_to_shortcut=pygame.K_F5)
+            tb = GUI.DebugTerminal(jump_to_shortcut=pygame.K_F5)
             for word in ['hi', 'bye', 'hello', 'goodbye', 'greetings', 'farewell']:
-                f = lambda *args, word=word: self['events'].append(GUI.Toast(self,  # noqa: E731
+                f = lambda *args, word=word: self['events'].append(GUI.Toast(  # noqa: E731
                     f'{word[0].upper()}{word[1:]}{" " if len(args) > 0 else ""}{", ".join(args[:-1])}{" & " if len(args) > 1 else ""}{args[-1]}!'
                 ))
                 f.__doc__ = f"{word} *<str> : Says {word} with the given arguments"
                 tb.addCmd(word, f)
             self['TB'].append(tb)
 
-            f = GUI.ScaledByFrame(self, GO.PRBOTTOM, (500, 400))
+            f = GUI.ScaledByFrame(GO.PRBOTTOM, (500, 400))
             self['speshs'].append(f)
             f.layers[0].add('Alls')
             LTOP = GO.PNEW((0, 0), (0, 1))
             f['Alls'].extend([
-                GUI.Text(f, LTOP, 'Scaled Frame', GO.CBLUE),
-                GUI.Empty(f, LTOP, (0, 15)),
-                GUI.Text(f, LTOP, 'Change scale:', GO.CGREEN),
+                GUI.Text(LTOP, 'Scaled Frame', GO.CBLUE),
+                GUI.Empty(LTOP, (0, 15)),
+                GUI.Text(LTOP, 'Change scale:', GO.CGREEN),
             ])
-            self.changeScale = GUI.NumInputBox(f, LTOP, 100, GO.RHEIGHT, start=2, min=1, placeholdOnNum=None, decimals=True)
+            self.changeScale = GUI.NumInputBox(LTOP, 100, GO.RHEIGHT, empty=2, minim=1, placeholdOnNum=None, decimals=True)
             f['Alls'].append(self.changeScale)
 
-            self['texts'].append(GUI.Text(self, GO.PCCENTER, 'This is a cool thing', GO.CBLUE))
-            self.Invisi_T = GUI.Text(self, GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED)
+            self['texts'].append(GUI.Text(GO.PCCENTER, 'This is a cool thing', GO.CBLUE))
+            self.Invisi_T = GUI.Text(GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED)
             self['texts'].append(self.Invisi_T)
-            self.txt = GUI.Text(self, GO.PCCENTER, self.txt, GO.CGREEN)
+            self.txt = GUI.Text(GO.PCCENTER, self.txt, GO.CGREEN)
             self['texts'].append(self.txt)
-            self.inp = GUI.InputBox(self, GO.PCCENTER, 500, GO.RHEIGHT, font=GO.FFONT)
+            self.inp = GUI.InputBox(GO.PCCENTER, 500, GO.RHEIGHT, font=GO.FFONT)
             self['endElms'].append(self.inp)
-            self['space'].append(GUI.Empty(self, GO.PCCENTER, (0, 50)))
-            self['endElms'].append(GUI.NumInputBox(self, GO.PCCENTER, 100, font=GO.FFONT, min=-255, max=255, placeholdOnNum=None))
-            self['endElms'].append(GUI.NumInputBox(self, GO.PCCENTER, 100, font=GO.FFONT, min=-255, max=255, start=None, empty=100, decimals=3))
-            self['space'].append(GUI.Empty(self, GO.PCCENTER, (0, 50)))
-            self['endElms'].append(GUI.DropdownButton(self, GO.PCCENTER, ['HI', 'BYE']))
+            self['space'].append(GUI.Empty(GO.PCCENTER, (0, 50)))
+            self['endElms'].append(GUI.NumInputBox(GO.PCCENTER, 100, font=GO.FFONT, minim=-255, maxim=255, placeholdOnNum=None))
+            self['endElms'].append(GUI.NumInputBox(GO.PCCENTER, 100, font=GO.FFONT, minim=-255, maxim=255, placeholder='Type decimal here!', empty=100, decimals=3))
+            self['space'].append(GUI.Empty(GO.PCCENTER, (0, 50)))
+            self['endElms'].append(GUI.DropdownButton(GO.PCCENTER, ['HI', 'BYE']))
 
-            self['space'].append(GUI.Empty(self, LBOT, (0, 20)))
-            self['buttons'].append(GUI.Button(self, LBOT, GO.CYELLOW, 'Button 1 :D'))
-            self['texts'].append(GUI.Text(self, LBOT, 'Buttons above [^] and below [v]', GO.CBLUE))
-            self.PopupBtn = GUI.Button(self, LBOT, GO.CMAUVE, 'Popup test')
+            self['space'].append(GUI.Empty(LBOT, (0, 20)))
+            self['buttons'].append(GUI.Button(LBOT, GO.CYELLOW, 'Button 1 :D'))
+            self['texts'].append(GUI.Text(LBOT, 'Buttons above [^] and below [v]', GO.CBLUE))
+            self.PopupBtn = GUI.Button(LBOT, GO.CMAUVE, 'Popup test')
             self['buttons'].append(self.PopupBtn)
-            self.TextboxBtn = GUI.Button(self, LBOT, GO.CBLUE, 'Textbox test')
+            self.TextboxBtn = GUI.Button(LBOT, GO.CBLUE, 'Textbox test')
             self['buttons'].append(self.TextboxBtn)
-            self.LoadingBtn = GUI.Button(self, LBOT, GO.CGREEN, 'Loading test')
+            self.LoadingBtn = GUI.Button(LBOT, GO.CGREEN, 'Loading test')
             self['buttons'].append(self.LoadingBtn)
-            self.LoadingBtn2 = GUI.Button(self, LBOT, GO.CGREY, 'Progressbar loading test')
+            self.LoadingBtn2 = GUI.Button(LBOT, GO.CGREY, 'Progressbar loading test')
             self['buttons'].append(self.LoadingBtn2)
-            self.exitbtn = GUI.Button(self, GO.PLCENTER, GO.CRED, 'EXIT', GO.CWHITE, func=lambda: self.Abort())
+            self.exitbtn = GUI.Button(GO.PLCENTER, GO.CRED, 'EXIT', GO.CWHITE, func=lambda: self.Abort())
             self['buttons'].append(self.exitbtn)
 
             self['texts'].extend([
-                GUI.Text(self, CTOP, 'Are you '),
-                GUI.Text(self, CTOP, 'happy? ', GO.CGREEN),
-                GUI.Text(self, CTOP, 'Or sad?', GO.CRED)
+                GUI.Text(CTOP, 'Are you '),
+                GUI.Text(CTOP, 'happy? ', GO.CGREEN),
+                GUI.Text(CTOP, 'Or sad?', GO.CRED)
             ])
 
             self.switches = [
-                GUI.Switch(self, GO.PRTOP, 40, 2),
-                GUI.Switch(self, GO.PRTOP, default=True),
+                GUI.Switch(GO.PRTOP, 40, 2),
+                GUI.Switch(GO.PRTOP, default=True),
             ]
             self['endElms'].extend(self.switches)
-            self.colour = GUI.ColourPickerBTN(self, GO.PRTOP)
+            self.colour = GUI.ColourPickerBTN(GO.PRTOP)
             self['endElms'].append(self.colour)
 
-            L = GUI.GridLayout(self, GO.PCBOTTOM, outline=5)
+            L = GUI.GridLayout(GO.PCBOTTOM, outline=5)
             self['speshs'].append(L)
-            self.sw = GUI.Switch(L, L.LP)
+            self.sw = GUI.Switch(L.LP)
             L.grid = [
-                [GUI.Text(L, L.LP, 'HI'), None, GUI.Text(L, L.LP, 'BYE')],
-                [GUI.Text(L, L.LP, 'YES'), GUI.Checkbox(L, L.LP), GUI.Text(L, L.LP, 'NO')],
-                [GUI.Checkbox(L, L.LP, 20, check_size=10), GUI.Checkbox(L, L.LP, thickness=2), GUI.Checkbox(L, L.LP, check_size=40)],
-                [GUI.Button(L, L.LP, GO.CORANGE, 'Hello!'), None, self.sw]
+                [GUI.Text(L.LP, 'HI'), None, GUI.Text(L.LP, 'BYE')],
+                [GUI.Text(L.LP, 'YES'), GUI.Checkbox(L.LP), GUI.Text(L.LP, 'NO')],
+                [GUI.Checkbox(L.LP, 20, check_size=10), GUI.Checkbox(L.LP, thickness=2), GUI.Checkbox(L.LP, check_size=40)],
+                [GUI.Button(L.LP, GO.CORANGE, 'Hello!'), None, self.sw]
             ]
 
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
-            S = GUI.ScrollableFrame(self, TOPLEFT, (250, 200), (400, 450))
+            S = GUI.ScrollableFrame(TOPLEFT, (250, 200), (400, 450))
             self['speshs'].append(S)
             # This is another way of setting out your Stuff; having everything under one name.
             S.layers[0].add('Alls')
             S['Alls'].extend([
-                GUI.Empty(S, GO.PCTOP, (0, 10)),
-                GUI.Text(S, GO.PCTOP, 'Scroll me!', GO.CBLUE),
-                GUI.Empty(S, GO.PCTOP, (0, 50)),
-                GUI.InputBox(S, GO.PCTOP, 200, GO.RHEIGHT, weight=GO.SWLEFT),
-                GUI.Empty(S, GO.PCTOP, (0, 50)),
-                GUI.Button(S, GO.PCTOP, GO.CGREEN, 'Press me!', func=lambda: self.txt.set('You pressed the button in the Scrollable :)')),
-                GUI.Empty(S, GO.PCTOP, (0, 50)),
-                GUI.Text(S, GO.PCTOP, 'Auto adjust scrollable height', GO.CORANGE, allowed_width=200),
-                GUI.Switch(S, GO.PCTOP, speed=0.5)
+                GUI.Empty(GO.PCTOP, (0, 10)),
+                GUI.Text(GO.PCTOP, 'Scroll me!', GO.CBLUE),
+                GUI.Empty(GO.PCTOP, (0, 50)),
+                GUI.InputBox(GO.PCTOP, 200, GO.RHEIGHT, weight=GO.SWLEFT),
+                GUI.Empty(GO.PCTOP, (0, 50)),
+                GUI.Button(GO.PCTOP, GO.CGREEN, 'Press me!', func=lambda: self.txt.set('You pressed the button in the Scrollable :)')),
+                GUI.Empty(GO.PCTOP, (0, 50)),
+                GUI.Text(GO.PCTOP, 'Auto adjust scrollable height', GO.CORANGE, allowed_width=200),
+                GUI.Switch(GO.PCTOP, speed=0.5)
             ])
         def _Tick(self): # This runs every 1/60 secs (each tick)
             # Return False if you want to quit the screen. This is not needed if you never want to do this.
@@ -159,29 +159,29 @@ def GraphicsDemo():
                 if obj == self.LoadingBtn:
                     succeeded, ret = test_loading()
                     self.txt.set('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
-                if obj == self.LoadingBtn2:
+                elif obj == self.LoadingBtn2:
                     succeeded, ret = test_loading2()
                     self.txt.set('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
                 elif obj == self.TextboxBtn:
                     bot = GO.PNEW((0.5, 1), (0, 0), (True, False))
-                    dialog_box = GUI.TextBoxAdv(self, bot, text='HALOOO!!')
+                    dialog_box = GUI.TextBoxAdv(bot, text='HALOOO!!')
                     dialog_box.set_indicator()
                     dialog_box.set_portrait()
                     self['events'].append(dialog_box)
                     self.idx = 0
                 elif obj == self.PopupBtn:
-                    pop = GUI.PopupFrame(self, GO.PCCENTER, (350, 300))
+                    pop = GUI.PopupFrame(GO.PCCENTER, (350, 300))
                     pop.layers[0].add('Alls')
                     def rmpop(pop):
                         pop.remove()
                         return ReturnState.DONTCALL
                     pop['Alls'].extend([
-                        GUI.Empty(pop, GO.PCTOP, (0, 10)),
-                        GUI.Text(pop, GO.PCTOP, 'Popup', font=GO.FTITLE),
-                        GUI.Text(pop, GO.PCCENTER, 'This is an example of a popup!', allowed_width=250),
-                        GUI.Button(pop, GO.PRTOP, GO.CYELLOW, '❌', func=lambda p=pop: rmpop(p)),
-                        GUI.Empty(pop, GO.PCBOTTOM, (0, 10)),
-                        GUI.InputBox(pop, GO.PCBOTTOM, 250, GO.RNONE, 'Example textbox', maxim=16),
+                        GUI.Empty(GO.PCTOP, (0, 10)),
+                        GUI.Text(GO.PCTOP, 'Popup', font=GO.FTITLE),
+                        GUI.Text(GO.PCCENTER, 'This is an example of a popup!', allowed_width=250),
+                        GUI.Button(GO.PRTOP, GO.CYELLOW, '❌', func=lambda p=pop: rmpop(p)),
+                        GUI.Empty(GO.PCBOTTOM, (0, 10)),
+                        GUI.InputBox(GO.PCBOTTOM, 250, GO.RNONE, 'Example textbox', max=16),
                     ])
                     self['events'].append(pop) # I know it's not an event, but o well.
                 else:
@@ -203,7 +203,7 @@ def GraphicsDemo():
         def _Event(self, event): # When something like a mouse or keyboard button is pressed. Is passed 'element' too, but this time it is an event
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_s and event.mod & pygame.KMOD_CTRL:
-                    self['events'].append(GUI.Toast(self, 'Saved! (Don\'t worry - this does nothing)', GO.CGREEN))
+                    self['events'].append(GUI.Toast('Saved! (Don\'t worry - this does nothing)', GO.CGREEN))
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_RIGHT:
                 opts = ['HI', 'BYE', 'HI AGAIN']
                 def dropdownSelect(resp):

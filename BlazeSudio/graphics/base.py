@@ -1,10 +1,18 @@
 from BlazeSudio.graphics.stacks import StackPart
 from BlazeSudio.graphics import options as GO
 import inspect
-from typing import Any, Iterable
+from typing import Any, Iterable, TYPE_CHECKING
 from enum import Enum
 
-__all__ = ['HiddenStatus', 'Element', 'ReturnState', 'ReturnGroup']
+if TYPE_CHECKING:
+    from BlazeSudio.graphics.GUI import GraphicBase
+
+__all__ = [
+    'HiddenStatus', 
+    'Element', 
+    'ReturnState', 
+    'ReturnGroup'
+]
 
 class HiddenStatus(Enum):
     """Different states an Element can be in relation to drawing and updating"""
@@ -21,26 +29,28 @@ class HiddenStatus(Enum):
 class Element:
     NEXT_UID = [0]
     type = None
-    def __init__(self, G, pos: GO.P___, size: Iterable[int|float]):
+    G: 'GraphicBase'
+    def __init__(self, pos: GO.P___, size: Iterable[int|float]):
         """
-        Base element class, do not directly use.
+        Base element class, do not directly use, but instead subclass to make your own Elements.
 
         Args:
-            G (Graphic): The graphic screen to put this element on.
             pos (GO.P___): The position of this element on the screen. 
             size (Iterable[number, number]): The size of this element.
         """
-        self.G = G
         self.pos: GO.P___ = pos
         self.hiddenStatus = HiddenStatus.SHOWING
         self.size = size
-        if isinstance(pos, GO.POverride):
-            self.stackP = pos.copy()
-            self.stackP.setup(self, G)
-        else:
-            self.stackP = StackPart(self, G.stacks, pos, G.sizeOfScreen)
         self.uid = self.NEXT_UID[0]
         self.NEXT_UID[0] += 1
+        self._init2Ran = False
+    
+    def _init2(self):
+        if isinstance(self.pos, GO.POverride):
+            self.stackP = self.pos.copy()
+            self.stackP.setup(self, self.G)
+        else:
+            self.stackP = StackPart(self, self.G.stacks, self.pos, self.G.sizeOfScreen)
     
     def remove(self):
         self.stackP.remove()
@@ -100,6 +110,12 @@ class Element:
     def __getattribute__(self, name: str) -> Any:
         if name == 'size' and 'size' in self.__dict__ and 'hiddenStatus' in self.__dict__ and self.hiddenStatus == HiddenStatus.GONE:
             return (0, 0)
+        elif name in ('G', 'stackP') and 'G' not in self.__dict__:
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute '{name}'. This is because you are trying to run something that is trying to access this variable \
+when this object has not been initialised yet. Initialise this object first (by e.g. adding it to a `Collection`) before running whatever it was that made this error. \
+If you are a developer, try putting whatever code that requires this variable inside `_init2`."
+            )
         else:
             return super().__getattribute__(name)
     

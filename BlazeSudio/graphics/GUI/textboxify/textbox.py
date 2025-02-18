@@ -22,32 +22,14 @@ from BlazeSudio.graphics.GUI.textboxify import borders
 from . import settings
 from .util import CustomSprite
 
-from BlazeSudio.graphics.GUI.base import Element, ReturnState
+from BlazeSudio.graphics.base import Element, ReturnState
 import BlazeSudio.graphics.options as GO
 
 class TextBox(Element):
     type = GO.TTEXTBOX
-    """Class for creating simple text boxes.
-
-    Args:
-        G (Graphic): The graphic screen to be on (required).
-        pos (GO.P___): The position of the textbox on the screen (required).
-        font (GO.F___, optional): The font to render the text with.
-        dist (int, optional): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
-        padding (Iterable, optional): Space between text and edge
-        speeds (Iterable, optional): The speeds of the text, in frames: (regular char speed, punctuation char speed).
-        lines (int, optional): Number of printed lines.
-        text (str, optional): Text to print.
-        font_colour (GO.C___, optional): Text colour, RGB value.
-        text_wid (Iterable, optional): The maximum width of the text.
-        bg_colour (GO.C___, optional): Background colour, RGB value.
-        transparent (bool, optional): if the box should be transparent or have a background colour.
-
-    """
 
     def __init__(
         self,
-        G,
         pos: GO.P___,
         font: GO.F___ = GO.FFONT,
         dist: int = 20,
@@ -60,6 +42,22 @@ class TextBox(Element):
         bg_colour: GO.C___ = GO.CMAUVE,
         transparent: bool = False,
     ):
+        """Class for creating simple text boxes.
+
+        Args:
+            pos (GO.P___): The position of the textbox on the screen (required).
+            font (GO.F___, optional): The font to render the text with.
+            dist (int, optional): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
+            padding (Iterable, optional): Space between text and edge
+            speeds (Iterable, optional): The speeds of the text, in frames: (regular char speed, punctuation char speed).
+            lines (int, optional): Number of printed lines.
+            text (str, optional): Text to print.
+            font_colour (GO.C___, optional): Text colour, RGB value.
+            text_wid (Iterable, optional): The maximum width of the text.
+            bg_colour (GO.C___, optional): Background colour, RGB value.
+            transparent (bool, optional): if the box should be transparent or have a background colour.
+
+        """
 
         self.full = False
         self.forceFull = False
@@ -81,7 +79,7 @@ class TextBox(Element):
         self._lines = lines
         self._bg_colour = (transparent, bg_colour)
         
-        super().__init__(G, pos.copy(), self._adjust())
+        super().__init__(pos.copy(), self._adjust())
 
     def set(self, text):
         """Set new text message to print out.
@@ -170,29 +168,8 @@ class TextBox(Element):
 
 
 class TextBoxAdv(TextBox):
-    """Class for creating customizable dialog boxes.
-
-    Args:
-        G (Graphic): The graphic screen to be on (required).
-        pos (GO.P___): The position of the textbox on the screen (required).
-        font (GO.F___, optional): The font to render the text with.
-        dist (int, optional): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
-        padding (Iterable, optional): The spacing between the border of the box and the text itself.
-        portrait_padding (Iterable, optional): The padding between the border and the portrait and the text (border to portrait x, border to portrait y, portrait to text x)
-        speeds (Iterable, optional): The speeds of the text, in frames: (regular char speed, punctuation char speed).
-        lines (int, optional): Number of printed lines.
-        text (str, optional): Text to print.
-        font_colour (GO.C___, optional): Text colour, RGB value.
-        text_wid (int, optional): Max width of the printed text.
-        bg_colour (GO.C___, optional): Background colour, RGB value.
-        border (graphics.GUI.textboxify.borders._____ | dict, optional): Border sprite settings.
-        transparent (bool, optional): if the box should be transparent or have a background colour.
-
-    """
-
     def __init__(
         self,
-        G,
         pos: GO.P___,
         font: GO.F___ = GO.FFONT,
         dist: int = 20,
@@ -207,6 +184,24 @@ class TextBoxAdv(TextBox):
         border: dict = borders.LIGHT,
         transparent: bool = False,
     ):
+        """Class for creating customizable dialog boxes.
+
+        Args:
+            pos (GO.P___): The position of the textbox on the screen (required).
+            font (GO.F___, optional): The font to render the text with.
+            dist (int, optional): The distance from the position to where you want the textbox to be (e.g. if you specified the position being at the bottom centre, then this would be the distance up from that point)
+            padding (Iterable, optional): The spacing between the border of the box and the text itself.
+            portrait_padding (Iterable, optional): The padding between the border and the portrait and the text (border to portrait x, border to portrait y, portrait to text x)
+            speeds (Iterable, optional): The speeds of the text, in frames: (regular char speed, punctuation char speed).
+            lines (int, optional): Number of printed lines.
+            text (str, optional): Text to print.
+            font_colour (GO.C___, optional): Text colour, RGB value.
+            text_wid (int, optional): Max width of the printed text.
+            bg_colour (GO.C___, optional): Background colour, RGB value.
+            border (graphics.GUI.textboxify.borders._____ | dict, optional): Border sprite settings.
+            transparent (bool, optional): if the box should be transparent or have a background colour.
+
+        """
         self.portrait_padding = portrait_padding
 
         self._indicator = None
@@ -214,7 +209,6 @@ class TextBoxAdv(TextBox):
         self._border = border
         
         super().__init__(
-            G,
             pos,
             font,
             dist,

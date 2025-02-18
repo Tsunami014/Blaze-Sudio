@@ -1,5 +1,5 @@
 import pygame
-from BlazeSudio.graphics.GUI.base import Element, ReturnState
+from BlazeSudio.graphics.base import Element, ReturnState
 from BlazeSudio.graphics import mouse, options as GO # TODO: Replace more values in here with the GO variants
 
 # Thanks to https://stackoverflow.com/questions/73517832/how-to-make-an-color-picker-in-pygame :)
@@ -159,7 +159,6 @@ class ColourPicker:
 class ColourPickerBTN(Element):
     type = GO.TCOLOURPICK
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  size: int = 20, 
                  sizeofpicker: int = 200,
@@ -169,13 +168,12 @@ class ColourPickerBTN(Element):
         A colour picker button :)
 
         Args:
-            G (Graphic): The graphic screen to attach to
             pos (GO.P___): The position on the graphic screen this will be positioned in.
             size (int, optional): The size of the button. Defaults to 20.
             sizeofpicker (int, optional): The size of the picker window. Defaults to 200.
             default (GO.C___, optional): The starting colour. Defaults to (255, 10, 10).
         """
-        super().__init__(G, pos, (size, size))
+        super().__init__(pos, (size, size))
         self.sop = sizeofpicker
         self.picker = ColourPicker(0, 0, border=self.sop//10, w=self.sop)
         self.picker.p = (0, 0.5)

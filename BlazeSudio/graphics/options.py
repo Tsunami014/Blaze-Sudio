@@ -152,10 +152,10 @@ class F___:
             return combined
         else:
             masterlines = []
-            for l in txt.split('\n'):
+            for ln in txt.split('\n'):
                 # Thanks to https://stackoverflow.com/questions/49432109/how-to-wrap-text-in-pygame-using-pygame-font-font for the font wrapping thing
                 # Split text into words
-                words = l.split(' ')
+                words = ln.split(' ')
                 # now, construct lines out of these words
                 lines = []
                 while len(words) > 0:

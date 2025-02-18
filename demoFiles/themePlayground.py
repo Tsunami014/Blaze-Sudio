@@ -5,7 +5,7 @@ except ImportError as e:
     raise e
 from math import floor
 from BlazeSudio.graphics import Screen, mouse, GUI, options as GO
-from BlazeSudio.graphics.GUI.base import HiddenStatus, ReturnState
+from BlazeSudio.graphics.base import HiddenStatus, ReturnState
 from threading import Thread
 import pygame
 

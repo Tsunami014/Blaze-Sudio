@@ -1,6 +1,6 @@
 from BlazeSudio.graphics import Screen, RunInstantly, GUI
 from BlazeSudio.graphics import options as GO
-from BlazeSudio.graphics.GUI.base import ReturnState
+from BlazeSudio.graphics.base import ReturnState
 from BlazeSudio.Game.player import Player
 from pyperclip import copy
 

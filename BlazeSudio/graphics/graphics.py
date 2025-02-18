@@ -4,7 +4,7 @@ from BlazeSudio.graphics import stuff as GS
 from BlazeSudio.graphics import options as GO
 from BlazeSudio.graphics import stacks as STACKS
 from BlazeSudio.graphics import GUI, mouse
-from BlazeSudio.graphics.GUI.base import Element
+from BlazeSudio.graphics.base import Element
 
 
 # TODO: make initial creation of elements faster
@@ -43,7 +43,7 @@ class Screen(GUI.GraphicBase):
         self.bgcol = bgcol
         self.clock = pygame.time.Clock()
         self.stacks = STACKS.Stack()
-        self.Stuff = GS.Collection()
+        self.Stuff = GS.Collection(self)
         self.run = False
         self.rel = False
         self.pause = False

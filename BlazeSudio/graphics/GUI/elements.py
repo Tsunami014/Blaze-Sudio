@@ -1,10 +1,10 @@
 from math import floor
 import pygame
-from typing import Callable
+from typing import Callable, Iterable
 from string import printable
 from random import random
 from BlazeSudio.graphics import mouse, options as GO
-from BlazeSudio.graphics.GUI.base import Element, ReturnGroup, ReturnState
+from BlazeSudio.graphics.base import Element, ReturnGroup, ReturnState
 from BlazeSudio.graphics.GUI.theme import GLOBALTHEME
 from BlazeSudio.graphics.GUI.events import Dropdown
 
@@ -23,19 +23,18 @@ __all__ = [
 
 class Switch(Element):
     type = GO.TSWITCH
-    def __init__(self, G, pos: GO.P___, size=20, speed=1, default=False):
+    def __init__(self, pos: GO.P___, size=20, speed=1, default=False):
         """
         A switch that can be either on or off.
 
         Args:
-            G (Graphic): The graphic screen to attach to.
             pos (GO.P___): The position of this element in the screen.
             size (int, optional): The size of this element. Defaults to 20.
             speed (int, optional): The speed of the toggling of the switch. Defaults to 1.
             default (bool, optional): Whether the switch is either on or off on creation. Defaults to False.
         """
         self.btnSze = size
-        super().__init__(G, pos, (size*2, size))
+        super().__init__(pos, (size*2, size))
         self.anim = 0
         self.speed = speed
         self.state = default
@@ -78,12 +77,11 @@ class Switch(Element):
 
 class Checkbox(Element):
     type = GO.TCHECKBOX
-    def __init__(self, G, pos: GO.P___, size=40, thickness=5, check_size=15, radius=5, default=False):
+    def __init__(self, pos: GO.P___, size=40, thickness=5, check_size=15, radius=5, default=False):
         """
         A checkbox that can be either checked or unchecked.
 
         Args:
-            G (Graphic): The graphic screen to attach to.
             pos (GO.P___): The position of this element in the screen.
             size (int, optional): The size of this element. Defaults to 40.
             thickness (int, optional): The thickness of the lines. Defaults to 5.
@@ -95,7 +93,7 @@ class Checkbox(Element):
         self.BR = radius
         self.Csize = check_size
         self.rerandomise()
-        super().__init__(G, pos, (size, size))
+        super().__init__(pos, (size, size))
         self.state = default
     
     def rerandomise(self):
@@ -145,7 +143,6 @@ class Checkbox(Element):
 class InputBox(Element): # TODO: Change colours
     type = GO.TINPUTBOX
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  width: int, 
                  resize: GO.R___ = GO.RWIDTH, 
@@ -159,7 +156,6 @@ class InputBox(Element): # TODO: Change colours
         A box for inputting text.
 
         Args:
-            G (Graphic): The graphic screen to attach to.
             pos (GO.P___): The position of this element in the screen.
             width (int): The width of the box. This will get overridden if using GO.RWIDTH.
             resize (GO.R___, optional): How to overflow text if the box is too large. Defaults to GO.RWIDTH.
@@ -182,7 +178,7 @@ class InputBox(Element): # TODO: Change colours
 
         self.size = [width+5, font.linesize+5]
         self._render_txt()
-        super().__init__(G, pos, self.size)
+        super().__init__(pos, self.size)
     
     def get(self):
         """Get the text in the inputbox"""
@@ -246,15 +242,14 @@ class InputBox(Element): # TODO: Change colours
 class NumInputBox(InputBox):
     type = GO.TNUMBOX
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  width: int, 
                  resize: GO.R___ = GO.RWIDTH, 
                  font: GO.F___ = GO.FSMALL, 
-                 start: int|None = 0, 
-                 empty: int|None = None,
-                 max: int = float('inf'), 
-                 min: int = float('-inf'), 
+                 start: int|None = None, 
+                 empty: int|None = 0,
+                 maxim: int = float('inf'), 
+                 minim: int = float('-inf'), 
                  decimals: bool|int = False,
                  placeholder: str = 'Type number here!',
                  placeholdOnNum: None|bool|int = False
@@ -263,15 +258,14 @@ class NumInputBox(InputBox):
         A box for inputting numbers.
 
         Args:
-            G (Graphic): The graphic screen to attach to.
             pos (GO.P___): The position of this element in the screen.
             width (int): The width of the box. This will get overridden if using GO.RWIDTH.
             resize (GO.R___, optional): How to overflow text if the box is too large. Defaults to GO.RWIDTH.
             font (GO.F___, optional): The font of the text in the box. Defaults to GO.FSMALL.
-            start (int|None, optional): The number present in the box on creation, or None to start empty. Defaults to 0.
-            empty (int|None, optional): The number to set the box to if the box is empty, or None to be the 'start' param. Defaults to None.
-            max (int, optional): The maximum value that can be submitted in this box. Defaults to infinity.
-            min (int, optional): The minimum value that can be submitted in this box. Defaults to -infinity.
+            start (int|None, optional): The number present in the box on creation, or None to start empty. Defaults to None.
+            empty (int|None, optional): The number to set the box to if the box is empty, or None to be the 'start' param. Defaults to 0.
+            maxim (int, optional): The maximum value that can be submitted in this box. Defaults to infinity.
+            minim (int, optional): The minimum value that can be submitted in this box. Defaults to -infinity.
             decimals (bool|int, optional): Whether to allow decimals in the number (and if an int, to how many decimal places). Defaults to False.
             placeholder (str, optional): The placeholder text visible when there is no text in the box. Defaults to 'Type number here!'.
             placeholdOnNum (bool|int, optional): **True** = show the placeholder on empty, \
@@ -291,8 +285,9 @@ class NumInputBox(InputBox):
             self.emptyValue = start or 0
         else:
             self.emptyValue = empty
-        super().__init__(G, pos, width, resize, placeholder, font, None, starting_text=(str(start) if start is not None else ''))
-        self.limits = (min, max)
+        self.emptyValue = min(max(self.emptyValue, minim), maxim)
+        super().__init__(pos, width, resize, placeholder, font, None, starting_text=(str(start) if start is not None else ''))
+        self.limits = (minim, maxim)
         self.decimals = decimals
         self.renderdash = False
         self.fix()
@@ -380,7 +375,7 @@ class NumInputBox(InputBox):
 
 class Empty(Element):
     type = GO.TEMPTY
-    def __init__(self, G, pos: GO.P___, size):
+    def __init__(self, pos: GO.P___, size):
         """
         Some empty space.
 
@@ -389,7 +384,7 @@ class Empty(Element):
             pos (GO.P___): The position of this element in the screen.
             size (Iterable[number, number]): The size of the empty space.
         """
-        super().__init__(G, pos, size)
+        super().__init__(pos, size)
     
     def get(self):
         """Get the size"""
@@ -401,17 +396,16 @@ class Empty(Element):
 
 class Static(Element):
     type = GO.TSTATIC
-    def __init__(self, G, pos: GO.P___, sur: pygame.Surface):
+    def __init__(self, pos: GO.P___, sur: pygame.Surface):
         """
         A static surface.
 
         Args:
-            G (Graphic): The graphic screen to attach to.
             pos (GO.P___): The position of this element in the screen.
             sur (pygame.Surface): The surface.
         """
         self.sur = sur
-        super().__init__(G, pos, self.sur.get_size())
+        super().__init__(pos, self.sur.get_size())
     
     def get(self):
         """Get the surface"""
@@ -428,7 +422,6 @@ class Static(Element):
 class Text(Element):
     type = GO.TSTATIC
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  txt: str, 
                  col: GO.C___ = GO.CBLACK, 
@@ -438,7 +431,6 @@ class Text(Element):
         A Text element.
 
         Args:
-            G (Graphic): The graphic this element is in.
             pos (GO.P___): The position of this element.
             txt (str): The text that will be displayed.
             col (GO.C___, optional): The colour of the text. Defaults to GO.CBLACK.
@@ -453,7 +445,7 @@ class Text(Element):
         self.col = col
         self.settings = settings
         self.set(txt)
-        super().__init__(G, pos, self.size)
+        super().__init__(pos, self.size)
     
     def get(self):
         """Get the text of this text element"""
@@ -472,7 +464,6 @@ class Text(Element):
 class Button(Element):
     type = GO.TBUTTON
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  BGcol: GO.C___, 
                  txt: str, 
@@ -487,7 +478,6 @@ class Button(Element):
         A Button element.
 
         Args:
-            G (Graphic): The graphic this element is in.
             pos (GO.P___): The position of this element.
             BGcol (GO.C___): The background colour of the button.
             txt (str): The text on the button.
@@ -509,7 +499,7 @@ class Button(Element):
         self.func = func
 
         self._set_txt(txt) # Sets self.txt and generates self.TxtSur
-        super().__init__(G, pos, self.size)
+        super().__init__(pos, self.size)
     
     def get(self):
         """Get the text on the button"""
@@ -569,9 +559,8 @@ class Button(Element):
 
 class DropdownButton(Button): # TODO: Different button and dropdown colours
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
-                 opts: list[str],
+                 opts: Iterable[str],
                  BGcol: GO.C___ = GO.CBLACK, 
                  TXTcol: GO.C___ = GO.CWHITE, 
                  Selectcol: GO.C___ = GO.CBLUE, 
@@ -583,12 +572,11 @@ class DropdownButton(Button): # TODO: Different button and dropdown colours
                  **settings
                 ):
         """
-        _summary_
+        A button which when pressed allows you to change the selected element.
 
         Args:
-            G (Graphic): The graphic this element is in.
             pos (GO.P___): The position of this element.
-            opts (list[str]): The options in the dropdown.
+            opts (Iterable[str]): The options in the dropdown.
             BGcol (GO.C___, optional): The background colour of the button and dropdown. Defaults to GO.CBLACK.
             TXTcol (GO.C___, optional): The colour of the text and dropdown. Defaults to GO.CWHITE.
             Selectcol (GO.C___, optional): The colour of selected dropdown elements. Defaults to GO.CBLUE.
@@ -607,7 +595,7 @@ class DropdownButton(Button): # TODO: Different button and dropdown colours
         self.actualuserfunc = func
         self.selected = default
         self.dropdown = None
-        super().__init__(G, pos, BGcol, self.formatted, TXTcol, font, spacing, 0, self.onclick, **settings)
+        super().__init__(pos, BGcol, self.formatted, TXTcol, font, spacing, 0, self.onclick, **settings)
         self.cols.update({"SELECT": Selectcol})
     
     @property
@@ -641,8 +629,7 @@ class DropdownButton(Button): # TODO: Different button and dropdown colours
     
     def onclick(self):
         x, y = self.stackP()
-        self.dropdown = Dropdown(self.G, 
-                                 (x, y+self.size[1]), 
+        self.dropdown = Dropdown((x, y+self.size[1]), 
                                  self.opts, 
                                  self.spacing, 
                                  self.font, 
@@ -653,6 +640,9 @@ class DropdownButton(Button): # TODO: Different button and dropdown colours
                                  self.size[0],
                                  self.actualfunc
         )
+        self.dropdown.G = self.G
+        self.dropdown._init2()
+        self.dropdown._init2Ran = True
 
     def update(self, mousePos, events):
         resp = None
@@ -677,8 +667,16 @@ def buildTransparencySur(size, squareSize=10):
     return s
 
 class ImageViewer(Element):
-    def __init__(self, G, pos, sur, size=(300, 300)):
-        super().__init__(G, pos, size)
+    def __init__(self, pos: GO.P___, sur: pygame.Surface, size: Iterable[int]=(300, 300)):
+        """
+        A
+
+        Args:
+            pos (GO.P___): The position of this element.
+            sur (pygame.Surface): The image to display.
+            size (Iterable[int], optional): The size of the element in the Screen. Defaults to (300, 300).
+        """
+        super().__init__(pos, size)
         self._sur = sur
         self.scrollVel = 0
         self.lastMP = (0, 0)

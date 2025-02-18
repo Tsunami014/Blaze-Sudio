@@ -1,6 +1,6 @@
 import pygame
 from functools import lru_cache
-from BlazeSudio.graphics.GUI.base import Element
+from BlazeSudio.graphics.base import Element
 from BlazeSudio.graphics import options as GO
 
 class Player(Element):

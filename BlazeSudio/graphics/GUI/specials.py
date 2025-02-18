@@ -4,7 +4,7 @@ from typing import Iterable
 from time import time
 from difflib import get_close_matches
 from BlazeSudio.graphics import mouse, options as GO
-from BlazeSudio.graphics.GUI.base import Element, ReturnState
+from BlazeSudio.graphics.base import Element, ReturnState
 from BlazeSudio.graphics import GUI
 from BlazeSudio.graphics.stacks import Stack
 from BlazeSudio.graphics.stuff import Collection
@@ -93,8 +93,10 @@ class GraphicBase:
     WIN: pygame.Surface = pygame.Surface((0, 0))
     size: tuple[int, int] = (0, 0)
     stacks: Stack = Stack()
-    Stuff: Collection = Collection()
     pause: bool = False
+
+    def __init__(self):
+        self.Stuff: Collection = Collection(self)
 
     # Functions that need replacing:
     def Abort(self):
@@ -182,7 +184,6 @@ class GraphicBase:
 class BaseFrame(GraphicBase, Element):
     type = GO.TFRAME
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  size: Iterable[int], 
                  outline: int = 10, 
@@ -193,19 +194,19 @@ class BaseFrame(GraphicBase, Element):
         The base Frame object from which many other Frames are made from.
 
         Args:
-            G (Graphic): The Graphic object to add this to.
             pos (GO.P___): The position of this object in the Graphic screen.
             size (Iterable[int]): The size of the screen
             outline (int, optional): The thickness of the outline of the element. Defaults to 10.
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
-        super().__init__(G, pos, size)
+        GraphicBase.__init__(self)
+        Element.__init__(self, pos, size)
         self.WIN = pygame.Surface(size)
         self.bgcol = bgcol
         self.outline = (outline, outlinecol)
         self.stacks = Stack()
-        self.Stuff = Collection()
+        self.Stuff = Collection(self)
     
     @property
     def pause(self):
@@ -259,8 +260,8 @@ A Preset Frame! This should not be used directly, but instead used as a parent f
 ## TO USE:
 - Override the `__init__` method, e.g.;
 ```python
-def __init__(self, G, pos: GO.P___):
-    super().__init__(G, pos, outline=10) # This defines the outline, background and initial size of the frame, you can change this here!
+def __init__(self, pos: GO.P___):
+    super().__init__(pos, outline=10) # This defines the outline, background and initial size of the frame, you can change this here!
 ```
 <br>
     - You can add paramaters to this if you want to add some things to the class, which you can use in the `_init_objects` method! (if you initialised them *before* the super() call)
@@ -286,7 +287,6 @@ If you want to resize the frame to fit any objects, you can either;
  - Do the resizing, then the fitObjects. This is for when you have objects that attach to the sides of the screen and such.
     """
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  initialSze: Iterable[int] = (0, 0),
                  outline: int = 0, 
@@ -297,13 +297,12 @@ If you want to resize the frame to fit any objects, you can either;
         A Frame you can preset! Please see this class' docstring for info on how to use.
 
         Args:
-            G (Graphic): The graphic screen to attach to.
             pos (GO.P___): The position of this object in the Graphic screen.
             outline (int, optional): The thickness of the outline of the element. Defaults to 0.
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
-        super().__init__(G, pos, initialSze, outline, outlinecol, bgcol)
+        super().__init__(pos, initialSze, outline, outlinecol, bgcol)
         self._init_objects()
         self.fitObjects()
     
@@ -342,7 +341,6 @@ If you want to resize the frame to fit any objects, you can either;
 
 class PopupFrame(BaseFrame):
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  size: Iterable[int], 
                  outline: int = 10, 
@@ -353,18 +351,16 @@ class PopupFrame(BaseFrame):
         A popup frame.
 
         Args:
-            G (Graphic): The Graphic object to add this to.
             pos (GO.P___): The position of this object in the Graphic screen.
             size (Iterable[int]): The size of the screen
             outline (int, optional): The thickness of the outline of the element. Defaults to 10.
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
-        super().__init__(G, pos.copy(), size, outline, outlinecol, bgcol)
+        super().__init__(pos.copy(), size, outline, outlinecol, bgcol)
 
 class ScrollableFrame(BaseFrame):
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  goalrect: Iterable[int], 
                  sizeOfScreen: Iterable[int], 
@@ -379,7 +375,6 @@ class ScrollableFrame(BaseFrame):
         A scrollable object which is just like a Graphic but can be scrolled through and used as an Element in existing Graphics.
 
         Args:
-            G (Graphic): The Graphic object to add this to.
             pos (GO.P___): The position of this object in the Graphic screen.
             goalrect (Iterable[int]): The size of *this* object in the *existing* Graphic screen.
             sizeOfScreen (Iterable[int]): The size of the *new* Graphic screen.
@@ -390,7 +385,7 @@ class ScrollableFrame(BaseFrame):
             decay (float, optional): The decay of the scroll. Defaults to 0.6.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
-        super().__init__(G, pos, goalrect, outline, outlinecol, bgcol)
+        super().__init__(pos, goalrect, outline, outlinecol, bgcol)
         self.WIN = pygame.Surface(sizeOfScreen)
         self.bar = bar
         self.scroll = [0, 0]
@@ -439,7 +434,6 @@ class ScrollableFrame(BaseFrame):
 
 class ScaledByFrame(BaseFrame):
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  size: Iterable[int], 
                  scale: int = 2,
@@ -451,7 +445,6 @@ class ScaledByFrame(BaseFrame):
         A frame that scales the surface by a certain amount. It dynamically creates a window that is your specified size / scale to put the elements on.
 
         Args:
-            G (Graphic): The Graphic object to add this to.
             pos (GO.P___): The position of this object in the Graphic screen.
             size (Iterable[int]): The size of the screen.
             scale (int, optional): The scale of the screen. Defaults to 2.
@@ -459,7 +452,7 @@ class ScaledByFrame(BaseFrame):
             outlinecol (GO.C___, optional): The colour of the outline. Defaults to GO.CGREY.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
-        super().__init__(G, pos, size, outline, outlinecol, bgcol)
+        super().__init__(pos, size, outline, outlinecol, bgcol)
         self._scale = None
         self.scale = scale
     
@@ -515,10 +508,9 @@ class LayoutPos(GO.POverride):
         ms = self.layout.max_size
         return (idx[1]*ms[0]+(ms[0]-self.elm.size[0])*self.layout.weights[1].w, idx[0]*ms[1]+(ms[1]-self.elm.size[1])*self.layout.weights[0].w)
 
-class BaseLayout(Element):
+class BaseLayout(GraphicBase, Element):
     type = GO.TLAYOUT
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  size: Iterable[int], 
                  gap: int = 5,
@@ -532,7 +524,6 @@ class BaseLayout(Element):
         The base Layout object from which many other Layouts are made from.
 
         Args:
-            G (Graphic): The Graphic object to add this to.
             pos (GO.P___): The position of this object in the Graphic screen.
             size (Iterable[int]): The size of the screen.
             gap (int, optional): The gap between each element in the layout. Defaults to 5.
@@ -542,14 +533,29 @@ class BaseLayout(Element):
             leftrightWeight (GO.SW__, optional): The horizontal weighting of each element in the layout. Defaults to GO.SWMID.
             bgcol (GO.C___, optional): The background colour to the new Graphic-like object. Defaults to GO.CWHITE.
         """
-        super().__init__(G, pos, size)
+        GraphicBase.__init__(self)
+        Element.__init__(self, pos, size)
         self.WIN = pygame.Surface(size)
         self.bgcol = bgcol
         self.outline = (outline, outlinecol)
-        self.grid = [[]]
+        self._grid = [[]]
         self.gap = gap / 2
         self.weights = [updownWeight, leftrightWeight]
         self.LP = LayoutPos(self)
+    
+    @property
+    def grid(self):
+        return self._grid
+
+    @grid.setter
+    def grid(self, newgrid):
+        for i in newgrid:
+            for it in i:
+                if (it is not None) and (not it._init2Ran):
+                    it.G = self
+                    it._init2()
+                    it._init2Ran = True
+        self._grid = newgrid
     
     @property
     def pause(self):
@@ -682,7 +688,6 @@ class BaseLayout(Element):
 
 class GridLayout(BaseLayout):
     def __init__(self, 
-                 G, 
                  pos: GO.P___, 
                  gap: int = 5,
                  gridSze: Iterable[int] = None,
@@ -697,7 +702,6 @@ class GridLayout(BaseLayout):
         A grid layout!
 
         Args:
-            G (Graphic): The Graphic object to add this to.
             pos (GO.P___): The position of this object in the Graphic screen.
             gap (int, optional): The gap between each element in the layout. Defaults to 5.
             gridSze (Iterable[int], optional): The size of the grid. Defaults to None (auto generate).
@@ -710,7 +714,7 @@ class GridLayout(BaseLayout):
         """
         self.autoAdjust = size is None
         self.gridSze = gridSze
-        super().__init__(G, pos, size or (0, 0), gap, outline, outlinecol, updownWeight, leftrightWeight, bgcol)
+        super().__init__(pos, size or (0, 0), gap, outline, outlinecol, updownWeight, leftrightWeight, bgcol)
     
     @property
     def max_size(self):
@@ -726,27 +730,29 @@ class GridLayout(BaseLayout):
         return super().update(mousePos, events, force_redraw)
 
 class TerminalBar(Element):
-    def __init__(self, G, spacing=5, prefix='> ', cursor='_'):
+    def __init__(self, spacing=5, prefix='> ', cursor='_'):
         """
         Adds a terminal bar to the bottom of your screen! You can use this for debugging and can run commands using it also for debugging!
         Or just have it as a feature in your game!
 
         Args:
-            G (Graphic): The graphic screen to attach to
             spacing (int, optional): The spacing between the text and the top and bottom of the bar. Defaults to 5.
             prefix (str, optional): The prefix of the terminal. Defaults to '> '.
             cursor (str, optional): The cursor of the terminal. Defaults to '_'.
         """
-        self.G = G
         self.spacing = spacing
         r = GO.FCODEFONT.render('> ', GO.CWHITE)
         h = r.get_height()+self.spacing*2
-        super().__init__(G, (0, self.G.WIN.get_height()-h), (self.G.WIN.get_width(), h))
+        super().__init__(lambda: (0, self.G.WIN.get_height()-h), (0, h))
         self.active = -1
         self.txt = ''
         self.prefix = prefix
         self.cur = cursor
         self._onEnters = []
+    
+    def _init2(self):
+        self.size = (self.G.WIN.get_width(), self.size[1])
+        super()._init2()
     
     def onEnter(self, func):
         self._onEnters.append(func)
@@ -825,19 +831,18 @@ class TerminalBar(Element):
     def __repr__(self): return str(self)
 
 class DebugTerminal(TerminalBar):
-    def __init__(self, G, spacing=5, prefix='> ', cursor='_', max_suggests=5, jump_to_shortcut=pygame.K_SLASH):
+    def __init__(self, spacing=5, prefix='> ', cursor='_', max_suggests=5, jump_to_shortcut=pygame.K_SLASH):
         """
         Adds a terminal bar to the bottom of your screen! You can set instructions, and it comes with autocomplete, history and error messages!
 
         Args:
-            G (Graphic): The graphic screen to attach to
             spacing (int, optional): The spacing between the text and the top and bottom of the bar. Defaults to 5.
             prefix (str, optional): The prefix of the terminal. Defaults to '> '.
             cursor (str, optional): The cursor of the terminal. Defaults to '_'.
             max_suggests (int, optional): The maximum amount of suggestions to show. Defaults to 5.
             jump_to_shortcut (int, optional): The key to press to jump to the terminal. Defaults to pygame.K_SLASH.
         """
-        super().__init__(G, spacing, prefix, cursor)
+        super().__init__(spacing, prefix, cursor)
         self.cmds = {}
         self.history = []
         self.historyIndex = -1

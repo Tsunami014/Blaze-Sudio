@@ -1,13 +1,12 @@
 import pygame
 
 __all__ = [
-    'Thing',
+    'Things',
     'Stuff',
     'Layers',
     'Collection',
 ]
 
-# A Thing is an object
 # Stuff is an organisated dictionary of Things
 # A Layer is a list that can be filled with Stuff
 # A Collection is a collection of Layers of Stuff
@@ -24,25 +23,84 @@ def handle_events():
             break
     return evs, cont
 
-class Thing:
-    def __init__(self, obj):
-        self.obj = obj
+class Things(list):
+    def __init__(self, parent, data=()):
+        self.parent = parent
+        super().__init__((self._checkIt(i) for i in data))
     
-    def update(self, mousePos, events):
-        return {self.obj: self.obj.update(mousePos, events)}
+    def _checkIt(self, it):
+        if not it._init2Ran:
+            it.G = self.parent
+            it._init2()
+            it._init2Ran = True
+        return it
+    
+    def append(self, it):
+        super().append(self._checkIt(it))
+    
+    def appendRaw(self, it):
+        super().append(it)
+    
+    def extend(self, its):
+        super().extend((self._checkIt(i) for i in its))
+    
+    def extendRaw(self, its):
+        super().extend(its)
+    
+    def insert(self, index, it):
+        super().insert(index, self._checkIt(it))
+    
+    def insertRaw(self, index, it):
+        super().insert(index, it)
+    
+    def __iadd__(self, its):
+        self.extend(its)
+        return self
+
+    def iaddRaw(self, its):
+        self.extendRaw(its)
+        return self
+    
+    def __add__(self, its):
+        new_data = list(self)
+        extra = [self._checkIt(i) for i in its]
+        new_data.extend(extra)
+        return Things(self.parent, new_data)
+    
+    def addRaw(self, its):
+        new_data = list(self)
+        new_data.extend(its)
+        return Things(self.parent, new_data)
+    
+    def __getitem__(self, key):
+        result = super().__getitem__(key)
+        if isinstance(key, slice):
+            return Things(self.parent, result)
+        return result
+    
+    def __setitem__(self, key, value):
+        if isinstance(key, slice):
+            transformed = [self._checkIt(v) for v in value]
+            super().__setitem__(key, transformed)
+        else:
+            super().__setitem__(key, value(self.parent))
+    
+    def setitemRaw(self, key, value):
+        super().__setitem__(key, value)
 
 class Stuff:
-    def __init__(self, categories=None):
+    def __init__(self, parent, categories=None):
+        self.parent = parent
         if categories is not None:
             self.categories = categories
         else:
             self.categories = {}
     
     def clear(self, ignores=[]):
-        self.categories = {i: ([] if i not in ignores else self.categories[i]) for i in self.categories}
+        self.categories = {i: (Things(self.parent) if i not in ignores else self.categories[i]) for i in self.categories}
 
     def copy(self):
-        return Stuff(self.categories.copy())
+        return Stuff(self.parent, self.categories.copy())
     
     def get(self):
         li = []
@@ -61,10 +119,10 @@ class Stuff:
     
     def add(self, _name):
         if _name not in self.categories:
-            self.categories[_name] = []
+            self.categories[_name] = Things(self.parent)
     
     def add_many(self, _names):
-        self.categories.update({i: [] for i in _names if i not in self.categories})
+        self.categories.update({i: Things(self.parent) for i in _names if i not in self.categories})
     
     def remove(self, obj):
         for i in self.categories:
@@ -91,27 +149,43 @@ class Stuff:
             raise KeyError(
                 f'Category {_key} does not exist!'
             )
-        self.categories[_key] = _value
+        if not isinstance(_value, Things):
+            self.categories[_key] = Things(self.parent, _value)
+        else:
+            self.categories[_key] = _value
     
     def __str__(self):
         return '<Stuff with %i objects>'%len(self)
     def __repr__(self): return str(self)
 
 class Layers(list):
+    def __init__(self, parent, data=()):
+        self.parent = parent
+        super().__init__(data)
+    
     def __getitem__(self, _idx):
         if not isinstance(_idx, int):
             raise TypeError(
                 'Index must be an integer!'
             )
         if _idx >= len(self):
-            self.extend([Stuff() for _ in range(_idx - len(self) + 1)])
+            self.extend([Stuff(self.parent) for _ in range(_idx - len(self) + 1)])
         
         return super().__getitem__(_idx)
 
+    def copy(self):
+        return Layers(self.parent, iter(self))
+
+    def __str__(self):
+        return f'<Layers {super().__str__()}>'
+    def __repr__(self):
+        return f'<Layers {super().__repr__()}>'
+
 class Collection:
-    def __init__(self, layers=None):
+    def __init__(self, parent, layers=None):
+        self.parent = parent
         if layers is None:
-            self.layers = Layers([Stuff()])
+            self.layers = Layers(self.parent, [Stuff(self.parent)])
         else:
             self.layers = layers
     
@@ -131,12 +205,12 @@ class Collection:
             i.clear(ignores)
     
     def copy(self):
-        return Collection(Layers([i.copy() for i in self.layers]))
+        return Collection(self.parent, Layers(self.parent, [i.copy() for i in self.layers]))
     
     def insert_layer(self, pos=None) -> Stuff:
         if pos is None:
             pos = len(self.layers)
-        s = Stuff()
+        s = Stuff(self.parent)
         self.layers.insert(pos, s)
         return s
     

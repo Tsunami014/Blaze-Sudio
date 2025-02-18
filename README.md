@@ -29,11 +29,11 @@ But please see [the installation section](#️-installation) for detailed instru
 The docs are in progress. If you are working offline, you can look in [the docs folder of *this* repo (not the built package)](docs/SUMMARY.md) or if you're online, [https://tsunami014.gitbook.io/blaze-sudios](https://tsunami014.gitbook.io/blaze-sudios)
 
 # 🚀 About
-[![Powered by Wi-Fi and wild optimism](https://badgen.net/badge/Powered%20by/Wi-Fi%20&%20wild%20optimism/yellow)]()
+[![Powered by Wild optimism](https://badgen.net/badge/Powered%20by/Wild%20optimism/yellow)]()
 
 Blaze Sudio is an open source graphical game creation software.
 
-Thanks to the one and only `@Imzafish` for the name! (Yes, it was originally a typo I decided to incorperate into the idea.)
+Thanks to the one and only `@Imzafish` for the name! (Yes, it was originally a typo I decided to incorporate into the idea.)
 
 Also known as:
  - The putgamecreatorsoutofbusinessanator (Thanks to `@Faunder.real` for that one)
@@ -44,7 +44,7 @@ Also known as:
 |---------------|
 [![PyPi version](https://badgen.net/pypi/v/Blaze-Sudio?label=PyPi%20version&icon=pypi)](https://pypi.org/project/Blaze-Sudio/)
 [![Python versions: 3.10, 3.11, 3.12](https://badgen.net/static/Python%20versions/3.10%203.11%203.12/purple)]()
-[![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]()
+[![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]() (MacOS Untested and not bothered to test. Linux distro used: Ubuntu.)
 
 | Statuses |
 |-----------|
