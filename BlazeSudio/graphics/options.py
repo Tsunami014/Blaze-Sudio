@@ -379,14 +379,14 @@ Which direction new elements will be placed. 1 = going right/down, -1 = going le
     def __hash__(self):
         return hash((id(self), self.weighting, self.stack, self.centre))
 
-PLTOP =    P___((0, 0), (1, 0), (False, False))
-PLCENTER = P___((0, 0.5), (1, 0), (False, True))
+PLTOP =    P___((0, 0), (0, 1), (False, False))
+PLCENTER = P___((0, 0.5), (0, 1), (False, True))
 PLBOTTOM = P___((0, 1), (1, 0), (False, False))
 PCTOP =    P___((0.5, 0), (0, 1), (True, False))
 PCCENTER = P___((0.5, 0.5), (0, 1), (True, True))
 PCBOTTOM = P___((0.5, 1), (0, -1), (True, False))
-PRTOP =    P___((1, 0), (-1, 0), (False, False))
-PRCENTER = P___((1, 0.5), (-1, 0), (False, True))
+PRTOP =    P___((1, 0), (0, 1), (False, False))
+PRCENTER = P___((1, 0.5), (0, 1), (False, True))
 PRBOTTOM = P___((1, 1), (-1, 0), (False, False))
 
 def PNEW(weighting, stack, centre=(False, False)): # To create new layouts

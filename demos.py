@@ -44,7 +44,8 @@ def GraphicsDemo():
         
         def _LoadUI(self): # Load the graphics in!
             CTOP = GO.PNEW((0.5, 0), (1, 0), (True, False)) # Bcos usually the Center Top makes the elements stack down, so I make a new thing that stacks sideways
-            LBOT = GO.PNEW((0, 1), (0, -1))
+            LBOT = GO.PNEW((0, 1), (0, -1)) # Going up instead of right
+            RTOP = GO.PNEW((1, 0), (-1, 0)) # Going left instead of down
             self.layers[0].add_many([
                 # You can name these whatever you want, but I like to keep them the same as the type.
                 'TB',
@@ -56,6 +57,7 @@ def GraphicsDemo():
                 'endElms', # These will be the ones I find in the GO.ELAST event
             ])
             # I chose this because you can see the different sections of the screen, but you can do what you want; as long as they end up on the list it's ok.
+            # I also showcase below many ways of doing the same things.
             tb = GUI.DebugTerminal(jump_to_shortcut=pygame.K_F5)
             for word in ['hi', 'bye', 'hello', 'goodbye', 'greetings', 'farewell']:
                 f = lambda *args, word=word: self['events'].append(GUI.Toast(  # noqa: E731
@@ -68,20 +70,22 @@ def GraphicsDemo():
             f = GUI.ScaledByFrame(GO.PRBOTTOM, (500, 400))
             self['speshs'].append(f)
             f.layers[0].add('Alls')
-            LTOP = GO.PNEW((0, 0), (0, 1))
             f['Alls'].extend([
-                GUI.Text(LTOP, 'Scaled Frame', GO.CBLUE),
-                GUI.Empty(LTOP, (0, 15)),
-                GUI.Text(LTOP, 'Change scale:', GO.CGREEN),
+                GUI.Text(GO.PLTOP, 'Scaled Frame', GO.CBLUE),
+                GUI.Empty(GO.PLTOP, (0, 15)),
+                GUI.Text(GO.PLTOP, 'Change scale:', GO.CGREEN),
+                (cs := GUI.NumInputBox(GO.PLTOP, 100, GO.RHEIGHT, empty=2, minim=1, placeholdOnNum=None, decimals=True))
             ])
-            self.changeScale = GUI.NumInputBox(LTOP, 100, GO.RHEIGHT, empty=2, minim=1, placeholdOnNum=None, decimals=True)
-            f['Alls'].append(self.changeScale)
+            self.changeScale = cs
 
-            self['texts'].append(GUI.Text(GO.PCCENTER, 'This is a cool thing', GO.CBLUE))
-            self.Invisi_T = GUI.Text(GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED)
-            self['texts'].append(self.Invisi_T)
-            self.txt = GUI.Text(GO.PCCENTER, self.txt, GO.CGREEN)
-            self['texts'].append(self.txt)
+            self['texts'].extend([
+                GUI.Text(GO.PCCENTER, 'This is a cool thing', GO.CBLUE),
+                (ivt := GUI.Text(GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED)),
+                (txt := GUI.Text(GO.PCCENTER, self.txt, GO.CGREEN))
+            ])
+            self.Invisi_T = ivt
+            self.txt = txt
+
             self.inp = GUI.InputBox(GO.PCCENTER, 500, GO.RHEIGHT, font=GO.FFONT)
             self['endElms'].append(self.inp)
             self['space'].append(GUI.Empty(GO.PCCENTER, (0, 50)))
@@ -94,15 +98,17 @@ def GraphicsDemo():
             self['buttons'].append(GUI.Button(LBOT, GO.CYELLOW, 'Button 1 :D'))
             self['texts'].append(GUI.Text(LBOT, 'Buttons above [^] and below [v]', GO.CBLUE))
             self.PopupBtn = GUI.Button(LBOT, GO.CMAUVE, 'Popup test')
-            self['buttons'].append(self.PopupBtn)
             self.TextboxBtn = GUI.Button(LBOT, GO.CBLUE, 'Textbox test')
-            self['buttons'].append(self.TextboxBtn)
             self.LoadingBtn = GUI.Button(LBOT, GO.CGREEN, 'Loading test')
-            self['buttons'].append(self.LoadingBtn)
             self.LoadingBtn2 = GUI.Button(LBOT, GO.CGREY, 'Progressbar loading test')
-            self['buttons'].append(self.LoadingBtn2)
             self.exitbtn = GUI.Button(GO.PLCENTER, GO.CRED, 'EXIT', GO.CWHITE, func=lambda: self.Abort())
-            self['buttons'].append(self.exitbtn)
+            self['buttons'].extend([
+                self.PopupBtn,
+                self.TextboxBtn,
+                self.LoadingBtn,
+                self.LoadingBtn2,
+                self.exitbtn
+            ])
 
             self['texts'].extend([
                 GUI.Text(CTOP, 'Are you '),
@@ -111,22 +117,22 @@ def GraphicsDemo():
             ])
 
             self.switches = [
-                GUI.Switch(GO.PRTOP, 40, 2),
-                GUI.Switch(GO.PRTOP, default=True),
+                GUI.Switch(RTOP, 40, 2),
+                GUI.Switch(RTOP, default=True),
             ]
             self['endElms'].extend(self.switches)
-            self.colour = GUI.ColourPickerBTN(GO.PRTOP)
+            self.colour = GUI.ColourPickerBTN(RTOP)
             self['endElms'].append(self.colour)
 
             L = GUI.GridLayout(GO.PCBOTTOM, outline=5)
             self['speshs'].append(L)
-            self.sw = GUI.Switch(L.LP)
             L.grid = [
                 [GUI.Text(L.LP, 'HI'), None, GUI.Text(L.LP, 'BYE')],
                 [GUI.Text(L.LP, 'YES'), GUI.Checkbox(L.LP), GUI.Text(L.LP, 'NO')],
                 [GUI.Checkbox(L.LP, 20, check_size=10), GUI.Checkbox(L.LP, thickness=2), GUI.Checkbox(L.LP, check_size=40)],
-                [GUI.Button(L.LP, GO.CORANGE, 'Hello!'), None, self.sw]
+                [GUI.Button(L.LP, GO.CORANGE, 'Hello!'), None, (sw := GUI.Switch(L.LP))]
             ]
+            self.sw = sw
 
             TOPLEFT = GO.PSTATIC(10, 10) # Set a custom coordinate that never changes
             S = GUI.ScrollableFrame(TOPLEFT, (250, 200), (400, 450))
@@ -676,6 +682,23 @@ def TsetCollDemo():
     
     Main()()
 
+def SoundDemo():
+    from BlazeSudio.graphics import Screen, GUI
+    import BlazeSudio.graphics.options as GO
+    from BlazeSudio.Game.sound import beep
+    class Main(Screen):
+        def _LoadUI(self):
+            self.layers[0].add('Main')
+            self['Main'].extend([
+                GUI.Text(GO.PCTOP, 'Sounds demo', font=GO.FTITLE),
+                GUI.Text(GO.PLCENTER, 'OPTIONS', font=GO.FTITLE),
+                GUI.Text(GO.PLCENTER, 'Frequency'),
+                (freq := GUI.NumInputBox(GO.PLCENTER, 100, GO.RNONE, minim=1, empty=500, placeholdOnNum=None)),
+                GUI.Button(GO.PCCENTER, GO.CORANGE, 'Beep', func=lambda: beep(freq.get()))
+            ])
+    
+    Main()()
+
 if __name__ == '__main__':
     try:
         import tkinter as Tk
@@ -725,12 +748,13 @@ if __name__ == '__main__':
 
     label('Misc stuff:')
     button('Tileset Collision Demo [game]', TsetCollDemo,                     )
+    button('Sound Demo [game]',             SoundDemo,                        )
     
     if has_tk:
         root.after(1, lambda: root.attributes('-topmost', True))
         root.mainloop()
     else:
-        print("*Requires TKinter")
+        print("*Requires TKinter for the demo")
         try:
             cmds[int(input('Enter the number of the demo you want to run > '))]()
         except ValueError:

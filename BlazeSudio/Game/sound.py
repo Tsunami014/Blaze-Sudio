@@ -1,16 +1,6 @@
-from BlazeSudio.graphics import Graphic
-import BlazeSudio.graphics.options as GO
 import pygame
 import numpy as np
 pygame.mixer.init()
-
-G = Graphic()
-
-@G.Graphic
-def soundEdit(event, element, aborted, **kwargs): # TODO: Finish
-    if event == GO.ELOADUI:
-        G.add_text('Sound Editor', GO.CACTIVE, GO.PCTOP, GO.FTITLE)
-        G.add_button('▶️', GO.CBLACK, GO.PRBOTTOM, callback=lambda elm: beep())
 
 def beep(frequency: int = 500, duration: int = 100):
     """
