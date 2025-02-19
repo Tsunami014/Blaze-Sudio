@@ -38,13 +38,13 @@ class Line:
         return coll
 
 class ImageEditor(GUI.ImageViewer):
-    def __init__(self, G, pos, themePart, size=(300, 300), defaultLinePoss=(None, None, None, None)):
+    def __init__(self, pos, themePart, size=(300, 300), defaultLinePoss=(None, None, None, None)):
         self.themePart = themePart
         self.theme = GUI.GLOBALTHEME.THEME
         self.lastSur = None
         self.lines = [Line(self, 0, 0), Line(self, 1, 0), Line(self, 0, 0, 1), Line(self, 1, 0, 1)]
         self.defLinePs = defaultLinePoss
-        super().__init__(G, pos, pygame.Surface((0, 0)), size)
+        super().__init__(pos, pygame.Surface((0, 0)), size)
     
     def modifySur(self, sur):
         if sur.get_size() == (0, 0):
@@ -99,13 +99,12 @@ class ImageEditor(GUI.ImageViewer):
             mouse.Mouse.set(mouse.MouseState.PICK)
 
 class ThemeProperties(GUI.PresetFrame):
-    def __init__(self, G, pos: GO.P___, themePart):
+    def __init__(self, pos: GO.P___, themePart):
         self.themePart = themePart
-        super().__init__(G, pos)
+        super().__init__(pos)
     
     def _init_objects(self):
         self.layers[0].add('main')
-        PRTOP = GO.PNEW((1, 0), (0, 1))
         def updateThemeInps(chosen):
             if isinstance(chosen, int):
                 chosen = list(self.themeInps[4].keys())[chosen]
@@ -141,15 +140,15 @@ class ThemeProperties(GUI.PresetFrame):
                 x.hiddenStatus = HiddenStatus.GONE
             updateThemeInps('None')
             return ReturnState.DONTCALL
-        b1 = GUI.Button(self, PRTOP, GO.CORANGE, 'Change the image source 🔁', func=change, allowed_width=300)
-        b2 = GUI.Button(self, PRTOP, GO.CRED, 'Unset the image source ❎', func=unset, allowed_width=300)
+        b1 = GUI.Button(GO.PRTOP, GO.CORANGE, 'Change the image source 🔁', func=change, allowed_width=300)
+        b2 = GUI.Button(GO.PRTOP, GO.CRED, 'Unset the image source ❎', func=unset, allowed_width=300)
         p = getattr(GUI.GLOBALTHEME.THEME, self.themePart)
         if p is None:
             n = 'None'
         else:
             n = p.fname
-        t1 = GUI.Text(self, PRTOP, n, allowed_width=600, leftrightweight=GO.SWRIGHT)
-        im = ImageEditor(self, PRTOP, self.themePart, size=(400, 400))
+        t1 = GUI.Text(GO.PRTOP, n, allowed_width=600, leftrightweight=GO.SWRIGHT)
+        im = ImageEditor(GO.PRTOP, self.themePart, size=(400, 400))
         im.active = n is not None
         if p is None:
             scales = (1, 1)
@@ -157,12 +156,12 @@ class ThemeProperties(GUI.PresetFrame):
             scales = p.scale
             im.defLinePs = (*p.crop[:2], p.crop[2]-p.crop[0], p.crop[3]-p.crop[1])
 
-        g = GUI.GridLayout(self, PRTOP, leftrightWeight=GO.SWLEFT)
-        n1 = GUI.NumInputBox(g, g.LP, 100, start=scales[0], placeholdOnNum=None, max=1000, min=-1000)
-        n2 = GUI.NumInputBox(g, g.LP, 100, start=scales[1], placeholdOnNum=None, max=1000, min=-1000)
+        g = GUI.GridLayout(GO.PRTOP, leftrightWeight=GO.SWLEFT)
+        n1 = GUI.NumInputBox(g.LP, 100, start=scales[0], placeholdOnNum=None, maxim=1000, minim=-1000)
+        n2 = GUI.NumInputBox(g.LP, 100, start=scales[1], placeholdOnNum=None, maxim=1000, minim=-1000)
         g.grid = [
-            [GUI.Text(g, g.LP, 'Horizontal scale: '), n1],
-            [GUI.Text(g, g.LP, 'Vertical scale: '), n2]
+            [GUI.Text(g.LP, 'Horizontal scale: '), n1],
+            [GUI.Text(g.LP, 'Vertical scale: '), n2]
         ]
 
         self.themeInps = [
@@ -173,17 +172,17 @@ class ThemeProperties(GUI.PresetFrame):
 
         opts = {}
 
-        g = opts['test 1'] = GUI.GridLayout(self, PRTOP, leftrightWeight=GO.SWLEFT)
+        g = opts['test 1'] = GUI.GridLayout(GO.PRTOP, leftrightWeight=GO.SWLEFT)
         g.grid = [
-            [GUI.Text(g, g.LP, 'Test 1')]
+            [GUI.Text(g.LP, 'Test 1')]
         ]
-        g = opts['test 2'] = GUI.GridLayout(self, PRTOP, leftrightWeight=GO.SWLEFT)
+        g = opts['test 2'] = GUI.GridLayout(GO.PRTOP, leftrightWeight=GO.SWLEFT)
         g.grid = [
-            [GUI.Text(g, g.LP, 'Test 2')]
+            [GUI.Text(g.LP, 'Test 2')]
         ]
 
         self.themeInps.extend([
-            GUI.DropdownButton(self, PRTOP, list(opts.keys()), func=updateThemeInps),
+            GUI.DropdownButton(GO.PRTOP, list(opts.keys()), func=updateThemeInps),
             opts
         ])
         self['main'].extend([
@@ -194,7 +193,7 @@ class ThemeProperties(GUI.PresetFrame):
             self.themeInps[2],
             self.themeInps[3],
             *opts.values(),
-            GUI.Empty(self, PRTOP, (0, self.themeInps[3].linesize*len(opts)))
+            GUI.Empty(GO.PRTOP, (0, self.themeInps[3].linesize*len(opts)))
         ])
 
         if p is None:
@@ -222,14 +221,13 @@ class BaseThemeTest(Screen, RunInstantly):
         ])
         self.main = self.load_main()
         self['Main'].append(self.main)
-        self['Main'].append(GUI.Text(self, GO.PCTOP, self.NAME.upper(), font=GO.FTITLE))
-        LTOP = GO.PNEW((0, 0), (0, 1))
-        self['Left'].append(GUI.Text(self, LTOP, 'Sample %s properties'%self.NAME.lower(), font=GO.FTITLE))
-        self['Left'].extend(self.load_props(LTOP))
+        self['Main'].append(GUI.Text(GO.PCTOP, self.NAME.upper(), font=GO.FTITLE))
+        self['Left'].append(GUI.Text(GO.PLTOP, 'Sample %s properties'%self.NAME.lower(), font=GO.FTITLE))
+        self['Left'].extend(self.load_props(GO.PLTOP))
         RTOP = GO.PNEW((1, 0), (0, 1))
         self['Right'].extend([
-            GUI.Text(self, RTOP, self.NAME+' theme properties', font=GO.FTITLE),
-            ThemeProperties(self, RTOP, self.THEMENAME),
+            GUI.Text(RTOP, self.NAME+' theme properties', font=GO.FTITLE),
+            ThemeProperties(RTOP, self.THEMENAME),
         ])
     
     def _Last(self, aborted):
@@ -245,23 +243,23 @@ class TextTest(BaseThemeTest):
     NAME = 'Text'
     THEMENAME = 'BUTTON' # TODO: Add theme for text (fonts)
     def load_main(self):
-        return GUI.Text(self, GO.PCCENTER, 'Hello!')
+        return GUI.Text(GO.PCCENTER, 'Hello!')
     
-    def load_props(self, LTOP):
+    def load_props(self, POS):
         return [
-            GUI.Text(self, LTOP, 'Text'),
-            GUI.InputBox(self, LTOP, 300, GO.RHEIGHT, starting_text='Sample'),
-            GUI.Text(self, LTOP, 'Colour of text'),
-            GUI.ColourPickerBTN(self, LTOP, default=(0, 0, 0)),
-            GUI.Text(self, LTOP, 'Render dash?'),
-            GUI.Switch(self, LTOP, default=True),
-            GUI.Text(self, LTOP, 'leftrightweight'),
-            GUI.DropdownButton(self, LTOP, ['Left', 'Mid', 'Right'], default=1),
-            GUI.Text(self, LTOP, 'updownweight'),
-            GUI.DropdownButton(self, LTOP, ['Top', 'Mid', 'Bottom'], default=1),
+            GUI.Text(POS, 'Text'),
+            GUI.InputBox(POS, 300, GO.RHEIGHT, starting_text='Sample'),
+            GUI.Text(POS, 'Colour of text'),
+            GUI.ColourPickerBTN(POS, default=(0, 0, 0)),
+            GUI.Text(POS, 'Render dash?'),
+            GUI.Switch(POS, default=True),
+            GUI.Text(POS, 'leftrightweight'),
+            GUI.DropdownButton(POS, ['Left', 'Mid', 'Right'], default=1),
+            GUI.Text(POS, 'updownweight'),
+            GUI.DropdownButton(POS, ['Top', 'Mid', 'Bottom'], default=1),
             # TODO: Font
-            GUI.Text(self, LTOP, 'Allowed width'),
-            GUI.NumInputBox(self, LTOP, 300, GO.RHEIGHT, start=0, min=0, placeholdOnNum=None),
+            GUI.Text(POS, 'Allowed width'),
+            GUI.NumInputBox(POS, 300, GO.RHEIGHT, start=0, minim=0, placeholdOnNum=None),
         ]
     
     def _Tick(self):
@@ -280,17 +278,17 @@ class ButtonTest(TextTest):
     NAME = 'Button'
     THEMENAME = 'BUTTON'
     def load_main(self):
-        return GUI.Button(self, GO.PCCENTER, GO.CRED, 'Hello!')
+        return GUI.Button(GO.PCCENTER, GO.CRED, 'Hello!')
     
-    def load_props(self, LTOP):
+    def load_props(self, POS):
         return [
-            *super().load_props(LTOP),
-            GUI.Text(self, LTOP, 'Colour of button'),
-            GUI.ColourPickerBTN(self, LTOP),
-            GUI.Text(self, LTOP, 'On hover enlarge'),
-            GUI.NumInputBox(self, LTOP, 100, GO.RHEIGHT, start=5, min=0, placeholdOnNum=None),
-            GUI.Text(self, LTOP, 'Spacing'),
-            GUI.NumInputBox(self, LTOP, 100, GO.RHEIGHT, start=2, min=0, placeholdOnNum=None),
+            *super().load_props(POS),
+            GUI.Text(POS, 'Colour of button'),
+            GUI.ColourPickerBTN(POS),
+            GUI.Text(POS, 'On hover enlarge'),
+            GUI.NumInputBox(POS, 100, GO.RHEIGHT, start=5, minim=0, placeholdOnNum=None),
+            GUI.Text(POS, 'Spacing'),
+            GUI.NumInputBox(POS, 100, GO.RHEIGHT, start=2, minim=0, placeholdOnNum=None),
         ]
     
     def _Tick(self):
@@ -308,11 +306,13 @@ class Main(Screen, RunInstantly):
             'Right'
         ])
         self.Clear()
-        self['Main'].append(GUI.Text(self, GO.PCTOP, 'THEME EDITOR', font=GO.FTITLE))
-        rainbow = GO.CRAINBOW()
-        LTOP = GO.PNEW((0, 0), (0, 1))
         self['Main'].extend([
-            GUI.Button(self, LTOP, next(rainbow), txt, func=func) for txt, func in [
+            GUI.Text(GO.PCTOP, 'THEME EDITOR', font=GO.FTITLE),
+            GUI.Empty(GO.PLTOP, (30, 30))
+        ])
+        rainbow = GO.CRAINBOW()
+        self['Main'].extend([
+            GUI.Button(GO.PLTOP, next(rainbow), txt, func=func) for txt, func in [
                 ('Test text', TextTest),
                 ('Test button', ButtonTest)
             ]
