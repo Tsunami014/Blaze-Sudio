@@ -110,7 +110,7 @@ class Element:
     def __getattribute__(self, name: str) -> Any:
         if name == 'size' and 'size' in self.__dict__ and 'hiddenStatus' in self.__dict__ and self.hiddenStatus == HiddenStatus.GONE:
             return (0, 0)
-        elif name in ('G', 'stackP') and 'G' not in self.__dict__:
+        elif name == ('G', 'stackP') and 'G' not in self.__dict__:
             raise AttributeError(
                 f"'{self.__class__.__name__}' object has no attribute '{name}'. This is because you are trying to run something that is trying to access this variable \
 when this object has not been initialised yet. Initialise this object first (by e.g. adding it to a `Collection`) before running whatever it was that made this error. \

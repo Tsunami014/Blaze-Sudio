@@ -78,8 +78,8 @@ class NodeEditor(Screen):
         super().__init__()
     
     def CAT(self, txt, front=True, bgcol=GO.CWHITE, colour=GO.CGREEN, colour2=None, filled=False, docircle=True): # Circle And Text
-        t = GO.FFONT.render(txt, GO.CBLACK)
-        sze = max(GO.FFONT.linesize, t.get_height())
+        t = GO.FREGULAR.render(txt, GO.CBLACK)
+        sze = max(GO.FREGULAR.linesize, t.get_height())
         tocenter = (sze - t.get_height()) / 2
         sur = pygame.Surface((t.get_width() + sze + 5, sze))
         sur.fill(bgcol)
@@ -173,7 +173,7 @@ class NodeEditor(Screen):
             self.highlighting = None
         for p, node in self.nodes:
             col = GO.CBLUE
-            txt = GO.FFONT.render(node.name, GO.CBLACK)
+            txt = GO.FREGULAR.render(node.name, GO.CBLACK)
             sur = pygame.Surface(self.size, pygame.SRCALPHA)
             sur.blit(txt, p)
             start = txt.get_height() + 5
@@ -316,16 +316,16 @@ class NodeEditor(Screen):
                     e1 = GUI.Text(scr, LTOP, n.name+':')
                     e = None
                     if n.strtype == 'number':
-                        e = GUI.NumInputBox(scr, LTOP, 10, font=GO.FFONT, start=n.value, placeholdOnNum=None)
+                        e = GUI.NumInputBox(scr, LTOP, 10, font=GO.FREGULAR, start=n.value, placeholdOnNum=None)
                     elif n.strtype == 'str':
-                        e = GUI.InputBox(scr, LTOP, GO.FFONT.winSze('c'*10)[0], font=GO.FFONT, start=n.value, placeholdOnNum=None)
+                        e = GUI.InputBox(scr, LTOP, GO.FREGULAR.winSze('c'*10)[0], font=GO.FREGULAR, start=n.value, placeholdOnNum=None)
                     elif n.strtype == 'bool':
                         e = GUI.Switch(scr, LTOP, default=n.value)
                     elif n.strtype == 'colour':
                         e = GUI.ColourPickerBTN(scr, LTOP)
                         e.set(*n.value)
                     elif n.strtype == 'any':
-                        e = GUI.InputBox(scr, LTOP, GO.FFONT.winSze('c'*10)[0], font=GO.FFONT, starting_text=str(n.value or ''))
+                        e = GUI.InputBox(scr, LTOP, GO.FREGULAR.winSze('c'*10)[0], font=GO.FREGULAR, starting_text=str(n.value or ''))
                     if e is None:
                         return ()
                     return (e1, e)

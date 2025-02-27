@@ -136,9 +136,9 @@ class Loading(BaseLoadingScreen):
     A Loading screen with a little loading pic in the middle that spins around.
 
     Args:
-        font (pygame.Font, optional): The font of the text. Defaults to GO.FFONT.
+        font (pygame.Font, optional): The font of the text. Defaults to GO.FREGULAR.
     """
-    def __init__(self, font=GO.FFONT):
+    def __init__(self, font=GO.FREGULAR):
         self.pic = pygame.font.Font(None, 256).render('C', 2, (0, 50, 50))
         self.font = font
     

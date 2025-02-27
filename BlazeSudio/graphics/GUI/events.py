@@ -11,7 +11,7 @@ class Dropdown(Element):
                  pos: Iterable[int],
                  elms: Iterable[str], 
                  spacing: int = 5, 
-                 font: GO.F___ = GO.FFONT, 
+                 font: GO.F___ = GO.FREGULAR, 
                  bgcolour: GO.C___ = GO.CBLACK, 
                  txtcolour: GO.C___ = GO.CWHITE, 
                  selectedcol: GO.C___ = GO.CBLUE, 
@@ -26,7 +26,7 @@ class Dropdown(Element):
             pos (Iterable[int, int]): The position on the screen to spawn this dropdown. Having GO.P___ is kinda weird for this...
             elms (Iterable[str]): The elements present in the dropdown to choose from.
             spacing (int, optional): The spacing between the text and the outside of their enclosing rects. Defaults to 5.
-            font (GO.F___, optional): The font to render the text with. Defaults to GO.FFONT.
+            font (GO.F___, optional): The font to render the text with. Defaults to GO.FREGULAR.
             bgcolour (GO.C___, optional): The colour of the background of the dropdown. Defaults to GO.CBLACK.
             txtcolour (GO.C___, optional): The colour of the text inside the dropdown. Defaults to GO.CWHITE.
             selectedcol (GO.C___, optional): The colour of the selection highlight. Defaults to GO.CBLUE.
@@ -92,7 +92,7 @@ class Toast(Element):
                  text: str, 
                  BGcol: GO.C___ = GO.CORANGE, 
                  txtcol: GO.C___ = GO.CBLACK, 
-                 font: GO.F___ = GO.FFONT, 
+                 font: GO.F___ = GO.FREGULAR, 
                  pos: GO.P___ = GO.PCBOTTOM, 
                  spacing: int = 5, 
                  dist: int = 20, 
@@ -106,7 +106,7 @@ class Toast(Element):
             text (str): The text in the toast.
             BGcol (GO.C___, optional): The colour of the background of the toast. Defaults to GO.CORANGE.
             txtcol (GO.C___, optional): The colour of the text inside the toast. Defaults to GO.CBLACK.
-            font (GO.F___, optional): The font of the toast's text. Defaults to GO.FFONT.
+            font (GO.F___, optional): The font of the toast's text. Defaults to GO.FREGULAR.
             pos (GO.P___, optional): The position where the toast is in the screen. Defaults to GO.PCBOTTOM.
             spacing (int, optional): The spacing between the text and the outer edge of the toast. Defaults to 5.
             dist (int, optional): The distance inwards to travel from `pos`. Defaults to 20.
@@ -118,20 +118,26 @@ class Toast(Element):
         sur.fill((0, 0, 0, 0))
         pygame.draw.rect(sur, BGcol, pygame.Rect(0, 0, *sur.get_size()), border_radius=8)
         sur.blit(txt, (spacing, spacing))
-        pos = pos.copy()
+        self.__initArgs = (pos, dist)
         super().__init__(pos, sur.get_size())
         self.surf = sur
-        endpos = self.stackP()
-        bottompos = (endpos[0]+pos.stack[0]*sur.get_width(), endpos[1]+pos.stack[1]*sur.get_height())
-        endpos = (endpos[0]-pos.stack[0]*dist, endpos[1]-pos.stack[1]*dist)
-        self.curPos = list(bottompos)
-        self.end = list(bottompos)
-        self.goto = list(endpos)
-        self.initdist = 255 / self.dist()
         self.timeout = timeout
         self.time = 0
         self.speed = speed
         self.living = True
+    
+    def stackP(self):
+        return self.curPos
+    
+    def _init2(self):
+        super()._init2()
+        origPos = self.__initArgs[0]
+        dist = self.__initArgs[1]
+        pos = origPos(self.G.size, self.surf.get_size(), [], 0)
+        self.curPos = [pos[0]-origPos.stack[0]*self.surf.get_width(), pos[1]-origPos.stack[1]*self.surf.get_height()]
+        self.goto = [pos[0]-origPos.stack[0]*dist, pos[1]-origPos.stack[1]*dist]
+        self.end = self.curPos.copy()
+        self.initdist = 255 / self.dist()
     
     def get(self):
         """Get the time through the animation"""

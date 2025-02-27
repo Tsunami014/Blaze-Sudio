@@ -31,7 +31,7 @@ class TextBox(Element):
     def __init__(
         self,
         pos: GO.P___,
-        font: GO.F___ = GO.FFONT,
+        font: GO.F___ = GO.FREGULAR,
         dist: int = 20,
         padding: Iterable = (10, 10),
         speeds: Iterable = (2, 5),
@@ -171,7 +171,7 @@ class TextBoxAdv(TextBox):
     def __init__(
         self,
         pos: GO.P___,
-        font: GO.F___ = GO.FFONT,
+        font: GO.F___ = GO.FREGULAR,
         dist: int = 20,
         padding: Iterable = (10, 10),
         portrait_padding: Iterable = (10, 10, 10),

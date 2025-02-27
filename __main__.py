@@ -317,7 +317,7 @@ if __name__ == '__main__':
                     else:
                         dems[cat] = [i[1:]]
                 
-                font = GO.FFONT
+                font = GO.FREGULAR
                 aw = G.size[0]-50
                 
                 size = (G.size[0], max(

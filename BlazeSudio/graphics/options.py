@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+import re
+from warnings import warn
 import pygame
 import pygame.freetype
 from string import printable
@@ -75,20 +77,35 @@ SDLEFTRIGHT = SD__(0)
 SDUPDOWN =    SD__(1)
 
 # Fonts
-FERRORED = False
+class FParsingError(ValueError):
+    """For when parsing the markdown failed. You have to do something *real* hacky to get this to occur."""
+
 class F___:
-    def __init__(self, name, size, bold=False, italic=False):
-        self.font = pygame.font.SysFont(name, size, bold, italic)
+    _fontcache = {}
+    __Warned = False
+    def __init__(self, name, baseSize=32):
+        self.font = name
+        self.baseSize = baseSize
         fonts = pygame.sysfont.get_fonts()
         emojis = [font for font in fonts if "emoji" in font]
         if len(emojis) == 0:
-            global FERRORED
-            if not FERRORED:
-                print("Unable to find a font that supports emojis for your system! Using regular fonts instead.")
-                FERRORED = True
+            if not self.__Warned:
+                warn("Unable to find a font that supports emojis for your system! Using regular fonts instead.")
+                self.__Warned = True
             self.emojifont = self.font
         else:
-            self.emojifont = pygame.font.SysFont(emojis[0], size, bold, italic)
+            self.emojifont = emojis[0]
+    
+    def getFont(self, emoji=False, size=None, bold=False, italic=False) -> pygame.font.Font:
+        if size is None:
+            size = self.baseSize
+        font = self.font if not emoji else self.emojifont
+        check = (font, size, bold, italic) # Should we use hash((x, y, z)) here?
+        if check in self._fontcache:
+            return self._fontcache[check]
+        f = pygame.font.SysFont(font, size, bold, italic)
+        self._fontcache[check] = f
+        return f
     
     def render(self, 
                txt: str, 
@@ -97,6 +114,7 @@ class F___:
                leftrightweight: SW__ = SWMID, 
                allowed_width: int = None, 
                renderdash: bool = True, 
+               useMD: bool = True,
                verbose: bool = False
         ):
         """
@@ -121,6 +139,8 @@ class F___:
             None disables it
         renderdash : bool, optional
             Whether or not to render the '-' at the end of lines of text that are too big to fit on screen, by default True
+        useMD : bool, optional
+            Whether to render markdown or not, defaults to True.
         verbose : bool, optional
             Returns extra information, by default False
 
@@ -190,12 +210,20 @@ class F___:
                         lines.extend(out)
                     lines.append(line)
                 masterlines.extend(lines)
-            combined = self.combine([self.combine(self.split(i, col), updownweight) for i in masterlines if i != ''], leftrightweight, SDUPDOWN)
+            combined = self.combine([self.combine(self.split(i, col, useMD), updownweight) for i in masterlines if i != ''], leftrightweight, SDUPDOWN)
             if verbose:
                 return combined, len(masterlines)
             return combined
     
-    def split(self, txt, col):
+    _Rules = [
+        (r'[*_]{2}([^*_\n]+)[*_]{2}', r'<b>\g<1></b>'),
+        (r'[*_]([^*_\n]+)[*_]', r'<i>\g<1></i>'),
+        (r'^(#{1,6}) (.+)', r'<\g<1>>\g<2></\g<1>>'),
+        (r'`([^`\n]+)`', r'<ef>\g<1></ef>'),
+        ('[^'+re.escape(printable)+']+', r'<ef>\g<0></ef>'),
+    ]
+    
+    def split(self, txt, col, useMD=True):
         """
         Splits text and renders it!
         This splits text up into 2 different parts:
@@ -209,33 +237,101 @@ class F___:
             The text to split
         col : tuple[int,int,int]
             The colour of the text
+        useMD : bool, optional
+            Whether to render markdown or not, defaults to True
 
         Returns
         -------
         list[pygame.Surface]
             A list of pygame surfaces of all the different texts rendered!
-            You can use `FNEW.combine(surs)` to combine the surfaces!
+            You can use `F___.combine(surs)` to combine the surfaces!
         """
+        if len(txt) == 0:
+            return []
         parts = []
         part = ''
-        prtable = None
-        for i in list(txt)+[None]:
-            if i is not None:
-                isprt = (i in printable)
+
+        ntxt = txt.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        if useMD:
+            for rule in self._Rules:
+                ntxt = re.sub(rule[0], rule[1], ntxt)
+
+        def endCur():
+            nonlocal part
+            if part == '':
+                return
+            emjfont = 'ef' in struct
+            sze = None
+            for p in struct:
+                if '#' in p:
+                    sze = self.baseSize * 3 - len(p) * self.baseSize * (2.75 / 6)
+                    sze = int(sze)
+            out = self.getFont(emjfont, sze, 'b' in struct, 'i' in struct).render(part, 1, col)
+            if not emjfont:
+                parts.append(out)
             else:
-                isprt = not prtable # Assuming it has been set with something that is an actual character
-            if prtable is None:
-                prtable = isprt
-            if isprt != prtable and i != ' ':
-                if prtable:
-                    parts.append(self.font.render(part, 1, col))
+                ls = self.getFont(False, sze, 'b' in struct, 'i' in struct).get_linesize()
+                parts.append(pygame.transform.scale(out, (out.get_width() * (ls / out.get_height()), ls)))
+            part = ''
+        
+        txli = list(ntxt)
+        struct = []
+        while len(txli) > 0:
+            let = txli.pop(0)
+            if let == '<':
+                if len(txli) == 0:
+                    raise FParsingError(
+                        '< parsing error: no end of < found!'
+                    )
+                returning = False
+                if (nlet := txli.pop(0)) == '/':
+                    returning = True
+                    nlet = ''
+
+                out = ''
+                while nlet != '>':
+                    if len(txli) == 0:
+                        raise FParsingError(
+                            '< parsing error: no end of < found!'
+                        )
+                    out += nlet
+                    nlet = txli.pop(0)
+                
+                if returning:
+                    if struct[-1] != out:
+                        raise FParsingError(
+                            '< parsing error: is returning, but is not last on stack!'
+                        )
+                    endCur()
+                    struct.pop()
                 else:
-                    parts.append(pygame.transform.scale(self.emojifont.render(part, 1, col), (self.font.get_linesize(), self.font.get_linesize())))
-                part = ''
-                if i is not None:
-                    prtable = isprt
-            if i is not None:
-                part += i
+                    endCur()
+                    struct.append(out)
+                continue
+
+            if let == '&':
+                nlet = ''
+                while let != ';':
+                    if len(txli) == 0:
+                        raise FParsingError(
+                            '& parsing error: no end of & found!'
+                        )
+                    nlet += (let := txli.pop(0))
+                match nlet:
+                    case 'amp;':
+                        let = '&'
+                    case 'gt;':
+                        let = '>'
+                    case 'lt;':
+                        let = '<'
+                    case default:
+                        raise FParsingError(
+                            '& parsing error: Unknown & form: '+default
+                        )
+            
+            part += let
+        
+        endCur()
         return parts
     
     def combine(self, surs, weight=SWMID, dir=SDLEFTRIGHT):
@@ -274,9 +370,9 @@ class F___:
     
     @property
     def linesize(self):
-        return self.font.get_linesize() # max(self.font.get_linesize(), self.emojifont.get_linesize())
+        return self.getFont().get_linesize() # max(self.getFont().get_linesize(), self.getFont(True).get_linesize())
     
-    def winSze(self, txt):
+    def winSze(self, txt, useMD=True):
         """
         Gets the winSze of the font if you render a certain text!
 
@@ -284,6 +380,8 @@ class F___:
         ----------
         txt : str
             The text to render and see the winSze of
+        useMD : bool, optional
+            Whether to render markdown or not, defaults to True.
 
         Returns
         -------
@@ -292,7 +390,9 @@ class F___:
         """
         if txt == '':
             return (0, 0)
-        surs = self.split(txt, (0, 0, 0))
+        surs = self.split(txt, (0, 0, 0), useMD)
+        if not surs:
+            return (0, self.linesize)
         return (sum([i.get_width() for i in surs]), max([i.get_height() for i in surs]))
 
 class FNEW(F___):
@@ -311,11 +411,8 @@ def findAFont(*fontOpts):
             return font
     return None
 
-FTITLE =       F___(findAFont('conicsansms', 'dejavuserif'), 64, True)
-FCODEFONT =    F___(findAFont('lucidasanstypewriterregular', 'ubuntusansmono'), 16)
-FCODEREGULAR = F___(findAFont('lucidasanstypewriterregular', 'ubuntusansmono'), 52)
-FFONT =        F___(None, 52)
-FSMALL =       F___(None, 32)
+FCODE =    F___(findAFont('lucidasanstypewriterregular', 'ubuntusansmono'), 16)
+FREGULAR = F___(findAFont('conicsansms', 'dejavuserif'))
 
 # Positions
 class POverride:
@@ -350,6 +447,7 @@ Which direction new elements will be placed. 1 = going right/down, -1 = going le
     centre: tuple[bool,bool]
     
     def __call__(self, winSze, objSze, allSizes, idx):
+        # allSizes = allSizes or [(0, 0)]
         if self.weighting[0] == 0:
             xoff = 0
         elif self.weighting[0] == 1:

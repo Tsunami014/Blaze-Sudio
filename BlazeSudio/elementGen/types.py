@@ -56,5 +56,5 @@ def convertTo(value, type):
         elif valTyp in (int, float):
             return Image([[(value, value, value)]])
         elif valTyp is str:
-            return Image.from_pygame(GO.FFONT.render(value, GO.CWHITE))
+            return Image.from_pygame(GO.FREGULAR.render(value, GO.CWHITE))
         return Image()

@@ -180,7 +180,7 @@ Please note: If you used the internal icons it will appear blurry and without tr
                     scr['Alls'].append(idf)
                     docsze = 0
                     if e['doc']:
-                        doc = GUI.Text(scr, TOPLEFT, e['doc'], font=GO.FSMALL)
+                        doc = GUI.Text(scr, TOPLEFT, e['doc'], font=GO.FREGULAR)
                         scr['Alls'].append(doc)
                         docsze = doc.size[0]
                     size = 60

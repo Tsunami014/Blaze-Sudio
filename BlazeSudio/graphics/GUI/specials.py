@@ -741,7 +741,7 @@ class TerminalBar(Element):
             cursor (str, optional): The cursor of the terminal. Defaults to '_'.
         """
         self.spacing = spacing
-        r = GO.FCODEFONT.render('> ', GO.CWHITE)
+        r = GO.FCODE.render('> ', GO.CWHITE)
         h = r.get_height()+self.spacing*2
         super().__init__(lambda: (0, self.G.WIN.get_height()-h), (0, h))
         self.active = -1
@@ -812,7 +812,7 @@ class TerminalBar(Element):
         t = self.prefix+self.txt
         if self.active >= 30:
             t += self.cur
-        r = GO.FCODEFONT.render(t, GO.CWHITE)
+        r = GO.FCODE.render(t, GO.CWHITE)
         return r
     
     def collides(self, x, y):
@@ -1076,7 +1076,7 @@ class DebugTerminal(TerminalBar):
                     if doc:
                         suggests[self.suggestIndex] = doc[0].strip()
 
-            rends = [GO.FCODEFONT.render((' '*len(self.prefix))+sug, (GO.CYELLOW if idx == self.suggestIndex else GO.CWHITE)) for idx, sug in enumerate(suggests)]
+            rends = [GO.FCODE.render((' '*len(self.prefix))+sug, (GO.CYELLOW if idx == self.suggestIndex else GO.CWHITE)) for idx, sug in enumerate(suggests)]
             szes = [r.get_size() for r in rends]
             h = self.height
             for idx in range(len(suggests)):

@@ -147,7 +147,7 @@ class InputBox(Element): # TODO: Change colours
                  width: int, 
                  resize: GO.R___ = GO.RWIDTH, 
                  placeholder: str = 'Type here!', 
-                 font: GO.F___ = GO.FSMALL, 
+                 font: GO.F___ = GO.FREGULAR, 
                  maxim: int = None, 
                  weight: GO.SW__ = GO.SWMID,
                  starting_text: str = ''
@@ -160,7 +160,7 @@ class InputBox(Element): # TODO: Change colours
             width (int): The width of the box. This will get overridden if using GO.RWIDTH.
             resize (GO.R___, optional): How to overflow text if the box is too large. Defaults to GO.RWIDTH.
             placeholder (str, optional): The placeholder text visible when there is no text in the box. Defaults to 'Type here!'.
-            font (GO.F___, optional): The font of the text in the box. Defaults to GO.FSMALL.
+            font (GO.F___, optional): The font of the text in the box. Defaults to GO.FREGULAR.
             maxim (int, optional): The maximum number of characters that can be inputted. Defaults to None (infinite).
             weight (GO.SW__, optional): The weighting of the text left-right. Defaults to GO.SWMID.
             starting_text (str, optional): The text in the box on creation. Defaults to ''.
@@ -175,6 +175,7 @@ class InputBox(Element): # TODO: Change colours
         self.blanktxt = placeholder
         self.renderdash = True
         self.weight = weight
+        self.useMD = False
 
         self.size = [width+5, font.linesize+5]
         self._render_txt()
@@ -195,7 +196,7 @@ class InputBox(Element): # TODO: Change colours
         if txt == '':
             txt = self.blanktxt
             txtcol = GO.CINACTIVE
-        self.txt_surface = self.font.render(txt, txtcol, leftrightweight=self.weight, allowed_width=(None if self.resize == GO.RWIDTH else self.size[0] - 5), renderdash=self.renderdash)
+        self.txt_surface = self.font.render(txt, txtcol, leftrightweight=self.weight, allowed_width=(None if self.resize == GO.RWIDTH else self.size[0] - 5), useMD=self.useMD, renderdash=self.renderdash)
         if self.resize == GO.RWIDTH:
             self.size[0] = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
@@ -245,7 +246,7 @@ class NumInputBox(InputBox):
                  pos: GO.P___, 
                  width: int, 
                  resize: GO.R___ = GO.RWIDTH, 
-                 font: GO.F___ = GO.FSMALL, 
+                 font: GO.F___ = GO.FREGULAR, 
                  start: int|None = None, 
                  empty: int|None = 0,
                  maxim: int = float('inf'), 
@@ -261,7 +262,7 @@ class NumInputBox(InputBox):
             pos (GO.P___): The position of this element in the screen.
             width (int): The width of the box. This will get overridden if using GO.RWIDTH.
             resize (GO.R___, optional): How to overflow text if the box is too large. Defaults to GO.RWIDTH.
-            font (GO.F___, optional): The font of the text in the box. Defaults to GO.FSMALL.
+            font (GO.F___, optional): The font of the text in the box. Defaults to GO.FREGULAR.
             start (int|None, optional): The number present in the box on creation, or None to start empty. Defaults to None.
             empty (int|None, optional): The number to set the box to if the box is empty, or None to be the 'start' param. Defaults to 0.
             maxim (int, optional): The maximum value that can be submitted in this box. Defaults to infinity.
@@ -325,7 +326,7 @@ class NumInputBox(InputBox):
         if placeholdCol:
             txtcol = GO.CINACTIVE
         
-        self.txt_surface = self.font.render(t, txtcol, leftrightweight=self.weight, allowed_width=(None if self.resize == GO.RWIDTH else self.size[0] - 5), renderdash=self.renderdash)
+        self.txt_surface = self.font.render(t, txtcol, leftrightweight=self.weight, allowed_width=(None if self.resize == GO.RWIDTH else self.size[0] - 5), useMD=self.useMD, renderdash=self.renderdash)
         if self.resize == GO.RWIDTH:
             self.size[0] = self.txt_surface.get_width() + 10
         elif self.resize == GO.RHEIGHT:
@@ -425,7 +426,8 @@ class Text(Element):
                  pos: GO.P___, 
                  txt: str, 
                  col: GO.C___ = GO.CBLACK, 
-                 font: GO.F___ = GO.FFONT, 
+                 font: GO.F___ = GO.FREGULAR, 
+                 useMD: bool = True,
                  **settings):
         """
         A Text element.
@@ -434,7 +436,8 @@ class Text(Element):
             pos (GO.P___): The position of this element.
             txt (str): The text that will be displayed.
             col (GO.C___, optional): The colour of the text. Defaults to GO.CBLACK.
-            font (GO.F___, optional): The font of the text. Defaults to GO.FFONT.
+            font (GO.F___, optional): The font of the text. Defaults to GO.FREGULAR.
+            useMD (bool, optional): Whether or not to use markdown. Defaults to True.
             \\*\\*settings: The settings for rendering the text. See `GO.F___.render` for more information.
         
         Useful Settings:
@@ -444,6 +447,7 @@ class Text(Element):
         self.font = font
         self.col = col
         self.settings = settings
+        self.settings['useMD'] = useMD
         self.set(txt)
         super().__init__(pos, self.size)
     
@@ -468,7 +472,7 @@ class Button(Element):
                  BGcol: GO.C___, 
                  txt: str, 
                  TXTcol: GO.C___ = GO.CBLACK, 
-                 font: GO.F___ = GO.FFONT, 
+                 font: GO.F___ = GO.FREGULAR, 
                  spacing=2, 
                  on_hover_enlarge=5, 
                  func: Callable = lambda: None, 
@@ -482,7 +486,7 @@ class Button(Element):
             BGcol (GO.C___): The background colour of the button.
             txt (str): The text on the button.
             TXTcol (GO.C___, optional): The colour of the text. Defaults to GO.CBLACK.
-            font (GO.F___, optional): The font of the text. Defaults to GO.FFONT.
+            font (GO.F___, optional): The font of the text. Defaults to GO.FREGULAR.
             spacing (int, optional): The spacing between the outer edge of the button and the inner text. Defaults to 2.
             on_hover_enlarge (int, optional): The amount to enlarge the outer edge of the button when hovering. Defaults to 5.
             func (Callable, optional): The function to call when the button is pressed. Defaults to a do nothing func.
@@ -566,7 +570,7 @@ class DropdownButton(Button): # TODO: Different button and dropdown colours
                  Selectcol: GO.C___ = GO.CBLUE, 
                  format: str = '[{0}]',
                  default: int = 0,
-                 font: GO.F___ = GO.FFONT,
+                 font: GO.F___ = GO.FREGULAR,
                  spacing: int = 2,
                  func: Callable = lambda selected: None,
                  **settings
@@ -582,7 +586,7 @@ class DropdownButton(Button): # TODO: Different button and dropdown colours
             Selectcol (GO.C___, optional): The colour of selected dropdown elements. Defaults to GO.CBLUE.
             format (str, optional): The format to display the selected element on on the button, {0} being the currently selected value. Defaults to '[{0}]'.
             default (int, optional): The default index into the opts list of which element is selected. Defaults to 0.
-            font (GO.F___, optional): The font to use to render the text. Defaults to GO.FFONT.
+            font (GO.F___, optional): The font to use to render the text. Defaults to GO.FREGULAR.
             spacing (int, optional): The spacing between the text and the edge of the button/dropdown. Defaults to 2.
             func (_type_, optional): The function to call when a value is selected. Defaults to a do nothing func.
             \\*\\*settings: The settings for rendering the text. See `GUI.Button.__init__` or `GUI.Text.__init__` or `GO.F___.render` for more information.

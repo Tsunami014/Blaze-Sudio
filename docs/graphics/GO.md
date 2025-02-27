@@ -14,7 +14,7 @@ You could just go `from graphics import options` but GO (Standing for Graphics O
 | Category | Description | Character | Examples | Special uses |
 |:---|:---|:---:|---:|:---|
 | Colours | A colour! | C | `GO.CWHITE`, `GO.CRED` | <li>`GO.CNEW(name:str)` gets the colour name (e.g. `GO.CORANGE` will get an orange colour)</li><li>`GO.CRAINBOW()` will return a thing you can loop around colours by calling <pre>l = GO.CRAINBOW()<br>colour = next(l)<br>different_colour = next(l)</pre></li> |
-| Fonts | A `pygame.Font` | F | `GO.FTITLE`, `GO.FSMALL` | |
+| Fonts | A `pygame.Font` | F | `GO.FTITLE`, `GO.FREGULAR` | |
 | Positions| A position of an object on the screen (e.g. `GO.PCBOTTOM`=Center BOTTOM) | P | `GO.PCCENTER`, `GO.PCTOP` | <li>`GO.PNEW(stack:list[int, int], func:function)` Makes a new position. See [the reference](#diy-positions) for information on this.</li><li>`GO.PSTATIC(x:int,y:int)` Makes a new static position wherever you specify that you can use the same as the other positions.</li> |
 | Events | An event, used in the [Graphics class](README.md) | E | `GO.ELOADUI`, `GO.ETICK` | |
 | Types | A type of a UI element, used in the [Graphics class](README.md) | T | `GO.TBUTTON`, `GO.TTEXTBOX` | |

@@ -80,17 +80,17 @@ def GraphicsDemo():
 
             self['texts'].extend([
                 GUI.Text(GO.PCCENTER, 'This is a cool thing', GO.CBLUE),
-                (ivt := GUI.Text(GO.PCCENTER, 'Sorry, I meant a cool TEST', GO.CRED)),
+                (ivt := GUI.Text(GO.PCCENTER, '*Sorry*, I meant a cool *TEST*', GO.CRED)),
                 (txt := GUI.Text(GO.PCCENTER, self.txt, GO.CGREEN))
             ])
             self.Invisi_T = ivt
             self.txt = txt
 
-            self.inp = GUI.InputBox(GO.PCCENTER, 500, GO.RHEIGHT, font=GO.FFONT)
+            self.inp = GUI.InputBox(GO.PCCENTER, 500, GO.RHEIGHT)
             self['endElms'].append(self.inp)
             self['space'].append(GUI.Empty(GO.PCCENTER, (0, 50)))
-            self['endElms'].append(GUI.NumInputBox(GO.PCCENTER, 100, font=GO.FFONT, minim=-255, maxim=255, placeholdOnNum=None))
-            self['endElms'].append(GUI.NumInputBox(GO.PCCENTER, 100, font=GO.FFONT, minim=-255, maxim=255, placeholder='Type decimal here!', empty=100, decimals=3))
+            self['endElms'].append(GUI.NumInputBox(GO.PCCENTER, 100, minim=-255, maxim=255, placeholdOnNum=None))
+            self['endElms'].append(GUI.NumInputBox(GO.PCCENTER, 100, minim=-255, maxim=255, placeholder='Type decimal here!', empty=100, decimals=3))
             self['space'].append(GUI.Empty(GO.PCCENTER, (0, 50)))
             self['endElms'].append(GUI.DropdownButton(GO.PCCENTER, ['HI', 'BYE']))
 
@@ -122,15 +122,20 @@ def GraphicsDemo():
             ]
             self['endElms'].extend(self.switches)
             self.colour = GUI.ColourPickerBTN(RTOP)
-            self['endElms'].append(self.colour)
+            self['endElms'].extend([
+                self.colour,
+                GUI.Empty(RTOP, (10, 10)),
+                (mdInp := GUI.InputBox(RTOP, 600, GO.RHEIGHT, placeholder='Type in Markdown!'))
+            ])
+            mdInp.useMD = True
 
             L = GUI.GridLayout(GO.PCBOTTOM, outline=5)
             self['speshs'].append(L)
             L.grid = [
-                [GUI.Text(L.LP, 'HI'), None, GUI.Text(L.LP, 'BYE')],
-                [GUI.Text(L.LP, 'YES'), GUI.Checkbox(L.LP), GUI.Text(L.LP, 'NO')],
+                [GUI.Text(L.LP, '**HI**'), None, GUI.Text(L.LP, '*BYE*')],
+                [GUI.Text(L.LP, '***YES***'), GUI.Checkbox(L.LP), GUI.Text(L.LP, 'NO')],
                 [GUI.Checkbox(L.LP, 20, check_size=10), GUI.Checkbox(L.LP, thickness=2), GUI.Checkbox(L.LP, check_size=40)],
-                [GUI.Button(L.LP, GO.CORANGE, 'Hello!'), None, (sw := GUI.Switch(L.LP))]
+                [GUI.Button(L.LP, GO.CORANGE, '*Hel-**looo!!***'), None, (sw := GUI.Switch(L.LP))]
             ]
             self.sw = sw
 
@@ -145,7 +150,7 @@ def GraphicsDemo():
                 GUI.Empty(GO.PCTOP, (0, 50)),
                 GUI.InputBox(GO.PCTOP, 200, GO.RHEIGHT, weight=GO.SWLEFT),
                 GUI.Empty(GO.PCTOP, (0, 50)),
-                GUI.Button(GO.PCTOP, GO.CGREEN, 'Press me!', func=lambda: self.txt.set('You pressed the button in the Scrollable :)')),
+                GUI.Button(GO.PCTOP, GO.CGREEN, 'Press me!', func=lambda: self.txt.set('### You pressed the button in the Scrollable :)')),
                 GUI.Empty(GO.PCTOP, (0, 50)),
                 GUI.Text(GO.PCTOP, 'Auto adjust scrollable height', GO.CORANGE, allowed_width=200),
                 GUI.Switch(GO.PCTOP, speed=0.5)
@@ -164,10 +169,10 @@ def GraphicsDemo():
                 # This gets passed 'obj': the element that got clicked.
                 if obj == self.LoadingBtn:
                     succeeded, ret = test_loading()
-                    self.txt.set('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+                    self.txt.set('Ran for %i seconds%s' % (ret['i']+1, (' **Successfully!** :)' if succeeded else ' And *failed* :(')))
                 elif obj == self.LoadingBtn2:
                     succeeded, ret = test_loading2()
-                    self.txt.set('Ran for %i seconds%s' % (ret['i']+1, (' Successfully! :)' if succeeded else ' And failed :(')))
+                    self.txt.set('Ran for %i seconds%s' % (ret['i']+1, (' **Successfully!** :)' if succeeded else ' And *failed* :(')))
                 elif obj == self.TextboxBtn:
                     bot = GO.PNEW((0.5, 1), (0, 0), (True, False))
                     dialog_box = GUI.TextBoxAdv(bot, text='HALOOO!!')
@@ -183,11 +188,11 @@ def GraphicsDemo():
                         return ReturnState.DONTCALL
                     pop['Alls'].extend([
                         GUI.Empty(GO.PCTOP, (0, 10)),
-                        GUI.Text(GO.PCTOP, 'Popup', font=GO.FTITLE),
-                        GUI.Text(GO.PCCENTER, 'This is an example of a popup!', allowed_width=250),
+                        GUI.Text(GO.PCTOP, '# Popup'),
+                        GUI.Text(GO.PCCENTER, 'This is an **example** of a popup!', allowed_width=250),
                         GUI.Button(GO.PRTOP, GO.CYELLOW, '❌', func=lambda p=pop: rmpop(p)),
                         GUI.Empty(GO.PCBOTTOM, (0, 10)),
-                        GUI.InputBox(GO.PCBOTTOM, 250, GO.RNONE, 'Example textbox', max=16),
+                        GUI.InputBox(GO.PCBOTTOM, 250, GO.RNONE, 'Example textbox', maxim=16),
                     ])
                     self['events'].append(pop) # I know it's not an event, but o well.
                 else:
@@ -486,23 +491,23 @@ def WrapDemo():
                 GUI.Text(topF, LTOP, 'Colour 2'),
                 GUI.ColourPickerBTN(topF, LTOP, default=(10,255,50)),
                 GUI.Text(topF, LTOP, 'Width'),
-                GUI.NumInputBox(topF, LTOP, 100, GO.RHEIGHT, start=500, min=1, max=1500, placeholdOnNum=None),
+                GUI.NumInputBox(topF, LTOP, 100, GO.RHEIGHT, start=500, minim=1, maxim=1500, placeholdOnNum=None),
                 GUI.Text(topF, LTOP, 'Height'),
-                GUI.NumInputBox(topF, LTOP, 100, GO.RHEIGHT, start=100, min=1, max=500, placeholdOnNum=None),
+                GUI.NumInputBox(topF, LTOP, 100, GO.RHEIGHT, start=100, minim=1, maxim=500, placeholdOnNum=None),
             ])
 
             RTOP = GO.PNEW((1, 0), (0, 1))
             self.offset = len(topF['Main'])
             topF['Main'].extend([
                 GUI.Text(topF, RTOP, 'Top'),
-                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=0.5, start=None, min=0, max=2, placeholdOnNum=None, decimals=8),
+                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=0.5, start=None, minim=0, maxim=2, placeholdOnNum=None, decimals=8),
                 GUI.Text(topF, RTOP, 'Bottom'),
-                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=-0.5, start=None, min=-1, max=0, placeholdOnNum=None, decimals=8),
+                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=-0.5, start=None, minim=-1, maxim=0, placeholdOnNum=None, decimals=8),
                 GUI.Text(topF, RTOP, 'Limit'),
                 GUI.Switch(topF, RTOP, default=True),
             ])
 
-            topF['Main'].append(GUI.Text(topF, GO.PCTOP, 'INPUT IMAGE', font=GO.FTITLE))
+            topF['Main'].append(GUI.Text(topF, GO.PCTOP, '# INPUT IMAGE'))
 
             def customImg(img):
                 topF['Main'][-1].set(pygame.image.load(img))
@@ -525,7 +530,7 @@ def WrapDemo():
 
             botF['Main'].extend([
                 GUI.Empty(botF, GO.PCTOP, (0, 30)),
-                GUI.Text(botF, GO.PCTOP, 'OUTPUT IMAGE', font=GO.FTITLE),
+                GUI.Text(botF, GO.PCTOP, '# OUTPUT IMAGE'),
 
                 GUI.Button(botF, GO.PRTOP, GO.CORANGE, 'Reset', func=resetBotSur)
             ])
@@ -654,7 +659,7 @@ def TsetCollDemo():
             self.layers[0].add('Main')
 
             PCTOP = GO.PNEW((0.5, 0), (1, 0), (True, False))
-            self.scale = GUI.NumInputBox(self, PCTOP, 100, GO.RNONE, start=None, empty=10, min=1, max=30, placeholder='Scale by size', decimals=2)
+            self.scale = GUI.NumInputBox(self, PCTOP, 100, GO.RNONE, start=None, empty=10, minim=1, maxim=30, placeholder='Scale by size', decimals=2)
             chooser = GUI.DropdownButton(self, PCTOP, ['Tile %i'%i for i in range(tset.get_width()//32)], func=lambda i: self.getTile(i))
             self.chooser = GUI.DropdownButton(self, PCTOP, self.opts)
 
@@ -690,8 +695,8 @@ def SoundDemo():
         def _LoadUI(self):
             self.layers[0].add('Main')
             self['Main'].extend([
-                GUI.Text(GO.PCTOP, 'Sounds demo', font=GO.FTITLE),
-                GUI.Text(GO.PLCENTER, 'OPTIONS', font=GO.FTITLE),
+                GUI.Text(GO.PCTOP, '# Sounds demo'),
+                GUI.Text(GO.PLCENTER, '## OPTIONS'),
                 GUI.Text(GO.PLCENTER, 'Frequency'),
                 (freq := GUI.NumInputBox(GO.PLCENTER, 100, GO.RNONE, minim=1, empty=500, placeholdOnNum=None)),
                 GUI.Button(GO.PCCENTER, GO.CORANGE, 'Beep', func=lambda: beep(freq.get()))
