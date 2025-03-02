@@ -32,17 +32,17 @@ class settings(Screen):
         LTOP = GO.PNEW((0, 0), (0, 1))
         self.Clear()
         self['NodeSettings'].extend([
-            GUI.Text(self, LTOP, 'SETTINGS FOR NODE "%s":'%self.name, GO.CGREEN),
-            GUI.InputBox(self, LTOP, self.size[0]/3, GO.RNONE, starting_text=self.name)
+            GUI.Text(LTOP, 'SETTINGS FOR NODE "%s":'%self.name, GO.CGREEN),
+            GUI.InputBox(LTOP, self.size[0]/3, GO.RNONE, starting_text=self.name)
         ])
         self['EditorSettings'].extend([
-            GUI.Text(self, RTOP, 'SETTINGS FOR NODE EDITOR:', GO.CBLUE)
+            GUI.Text(RTOP, 'SETTINGS FOR NODE EDITOR:', GO.CBLUE)
         ])
-        self['SettingsBottom'].append(GUI.Empty(self, CBOT, (-20, 0)))
-        self.ApplyBtn = GUI.Button(self, CBOT, GO.CGREEN, 'Apply!')
+        self['SettingsBottom'].append(GUI.Empty(CBOT, (-20, 0)))
+        self.ApplyBtn = GUI.Button(CBOT, GO.CGREEN, 'Apply!')
         self['SettingsBottom'].extend([
             self.ApplyBtn,
-            GUI.Button(self, CBOT, GO.CGREY, 'Cancel'),
+            GUI.Button(CBOT, GO.CGREY, 'Cancel'),
         ])
     def _ElementClick(self, obj):
         if obj == self.ApplyBtn:
@@ -126,9 +126,9 @@ class NodeEditor(Screen):
                         self.nodes.append((p, allnodes[list(allnodes.keys())[resp]][resp2-1].copy()))
                         next(self.md)
             if resp is not None:
-                self['Dropdowns'].append(GUI.Dropdown(self, p, ['Back']+[i.name for i in allnodes[list(allnodes.keys())[resp]]], func=nxt2))
+                self['Dropdowns'].append(GUI.Dropdown(p, ['Back']+[i.name for i in allnodes[list(allnodes.keys())[resp]]], func=nxt2))
         
-        self['Dropdowns'].append(GUI.Dropdown(self, p, [i[1:-3] for i in allnodes.keys()], func=nxt))
+        self['Dropdowns'].append(GUI.Dropdown(p, [i[1:-3] for i in allnodes.keys()], func=nxt))
     
     def deleteConn(self, conn):
         self.connections.pop(conn, None)
@@ -148,9 +148,9 @@ class NodeEditor(Screen):
             'EditorSettings',
             'SettingsBottom'
         ])
-        self.settingsBtn = GUI.Button(self, GO.PRTOP, GO.CGREEN, 'Settings')
+        self.settingsBtn = GUI.Button(GO.PRTOP, GO.CGREEN, 'Settings')
         self['mainUI'].extend([
-            GUI.Text(self, GO.PCTOP, self.name, GO.CGREEN, GO.FTITLE),
+            GUI.Text(GO.PCTOP, '# '+self.name, GO.CGREEN),
             self.settingsBtn
         ])
     
@@ -304,7 +304,7 @@ class NodeEditor(Screen):
             node = self.highlighting
             replaceOuts = False
             if self['scrollsables'] == []:
-                scr = GUI.ScrollableFrame(self, GO.PSTATIC(SideRec.x, SideRec.y), (SideRec.w-8, SideRec.h), (0, 0))
+                scr = GUI.ScrollableFrame(GO.PSTATIC(SideRec.x, SideRec.y), (SideRec.w-8, SideRec.h), (0, 0))
                 self['scrollsables'].append(scr)
                 scr.layers[0].add_many([
                     'Inputs',
@@ -313,40 +313,40 @@ class NodeEditor(Screen):
                 ])
                 LTOP = GO.PNEW((0, 0), (0, 1))
                 def parseIn(n):
-                    e1 = GUI.Text(scr, LTOP, n.name+':')
+                    e1 = GUI.Text(LTOP, n.name+':')
                     e = None
                     if n.strtype == 'number':
-                        e = GUI.NumInputBox(scr, LTOP, 10, font=GO.FREGULAR, start=n.value, placeholdOnNum=None)
+                        e = GUI.NumInputBox(LTOP, 10, font=GO.FREGULAR, start=n.value, placeholdOnNum=None)
                     elif n.strtype == 'str':
-                        e = GUI.InputBox(scr, LTOP, GO.FREGULAR.winSze('c'*10)[0], font=GO.FREGULAR, start=n.value, placeholdOnNum=None)
+                        e = GUI.InputBox(LTOP, GO.FREGULAR.winSze('c'*10)[0], font=GO.FREGULAR, start=n.value, placeholdOnNum=None)
                     elif n.strtype == 'bool':
-                        e = GUI.Switch(scr, LTOP, default=n.value)
+                        e = GUI.Switch(LTOP, default=n.value)
                     elif n.strtype == 'colour':
-                        e = GUI.ColourPickerBTN(scr, LTOP)
+                        e = GUI.ColourPickerBTN(LTOP)
                         e.set(*n.value)
                     elif n.strtype == 'any':
-                        e = GUI.InputBox(scr, LTOP, GO.FREGULAR.winSze('c'*10)[0], font=GO.FREGULAR, starting_text=str(n.value or ''))
+                        e = GUI.InputBox(LTOP, GO.FREGULAR.winSze('c'*10)[0], font=GO.FREGULAR, starting_text=str(n.value or ''))
                     if e is None:
                         return ()
                     return (e1, e)
                 def parseOut(n):
                     if n.strtype == 'image':
-                        return GUI.Static(scr, LTOP, n.value.to_pygame())
+                        return GUI.Static(LTOP, n.value.to_pygame())
                     else:
-                        return GUI.Text(scr, LTOP, '')
+                        return GUI.Text(LTOP, '')
 
                 # TODO: Put inputs on the left and outputs on the right
-                scr['Titles'].append(GUI.Empty(scr, LTOP, (10, 10)))
-                scr['Titles'].append(GUI.Text(scr, LTOP, node.name, font=GO.FTITLE))
+                scr['Titles'].append(GUI.Empty(LTOP, (10, 10)))
+                scr['Titles'].append(GUI.Text(LTOP, '## '+node.name))
                 ins = [i for i in node.inputs if np.Mods.NoSidebar not in i.mods]
                 if ins != []:
-                    scr['Titles'].append(GUI.Text(scr, LTOP, 'INPUTS:', font=GO.FTITLE))
+                    scr['Titles'].append(GUI.Text(LTOP, '# INPUTS:'))
                     scr['Inputs'].extend([
                         i for n in ins for i in parseIn(n)
                     ])
                 os = [i for i in node.outputs if np.Mods.NoSidebar not in i.mods]
                 if os != []:
-                    scr['Titles'].append(GUI.Text(scr, LTOP, 'OUTPUTS:', font=GO.FTITLE))
+                    scr['Titles'].append(GUI.Text(LTOP, '# OUTPUTS:'))
                     replaceOuts = True
                     scr['Outputs'].extend([
                         parseOut(n) for n in os
@@ -381,9 +381,9 @@ class NodeEditor(Screen):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_s and event.mod & pygame.KMOD_CTRL:
                 if self.path is None:
-                    self['Toasts'].append(GUI.Toast(self, 'Cannot save file as file location wasn\'t specified!!', GO.CRED))
+                    self['Toasts'].append(GUI.Toast('Cannot save file as file location wasn\'t specified!!', GO.CRED))
                 else:
-                    self['Toasts'].append(GUI.Toast(self, 'Saving...', GO.CORANGE))
+                    self['Toasts'].append(GUI.Toast('Saving...', GO.CORANGE))
                     self.file.nodes = self.nodes
                     self.file.conns = self.connections
                     self.file.name = self.name
@@ -391,7 +391,7 @@ class NodeEditor(Screen):
                         self.path = self.path + '.elm'
                     self.file.save(self.path)
                     self.saved = True
-                    self['Toasts'].append(GUI.Toast(self, 'Saved!', GO.CGREEN))
+                    self['Toasts'].append(GUI.Toast('Saved!', GO.CGREEN))
             elif event.key == pygame.K_DELETE:
                 if self.highlighting is not None:
                     for c in self.connections.copy():

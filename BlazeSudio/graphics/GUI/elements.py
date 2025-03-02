@@ -296,7 +296,7 @@ class NumInputBox(InputBox):
     
     def get(self, noneIfEmpty=False):
         """Get the number in the numbox, optionally returning None if the textbox is empty (default False)"""
-        if noneIfEmpty and self.text == '':
+        if noneIfEmpty and self.text in '-':
             return None
         if self.text == '':
             return self.emptyValue
