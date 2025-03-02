@@ -313,15 +313,14 @@ class NumInputBox(InputBox):
         txtcol = self.colour
 
         t = self.text
-        if self.placehold is True or self.text == self.placehold:
+        if t == '':
+            t = str(self.emptyValue)
+            placeholdCol = True
+        else:
+            placeholdCol = False
+        if self.placehold is True or t == self.placehold or (self.placehold == '0' and t == '-0'):
             placeholdCol = True
             t = self.blanktxt
-        else:
-            if t == '':
-                t = str(self.emptyValue)
-                placeholdCol = True
-            else:
-                placeholdCol = False
         
         if placeholdCol:
             txtcol = GO.CINACTIVE
@@ -351,6 +350,10 @@ class NumInputBox(InputBox):
     def fix(self):
         if self.text == '':
             return
+        if self.text[0] == '-' and self.limits[0] is not None and self.limits[0] >= 0:
+            self.text = self.text[1:]
+            if self.text == '':
+                return
         if self.text == '-':
             num = 0
         else:
