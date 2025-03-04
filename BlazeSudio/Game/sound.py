@@ -5,12 +5,22 @@ pygame.mixer.init()
 class Beep:
     @classmethod
     def sin(cls, freq_left: int = 500, freq_right: int = None, duration: int = 100):
-        cls._beep(cls, np.sin, freq_left, freq_right, duration)
+        cls._beep(lambda samples, freq: np.sin(2 * np.pi * samples * freq), freq_left, freq_right, duration)
     
     @classmethod
     def square(cls, freq_left: int = 500, freq_right: int = None, duration: int = 100):
-        cls._beep(cls, lambda arr: (np.sin(arr)>0).astype(np.uint64), freq_left, freq_right, duration)
+        cls._beep(lambda samples, freq: (np.sin(2 * np.pi * samples * freq) > 0).astype(np.float32) * 2 - 1, freq_left, freq_right, duration)
+    
+    @classmethod
+    def triangle(cls, freq_left: int = 500, freq_right: int = None, duration: int = 100):
+        cls._beep(lambda samples, freq: 2 * np.abs(2 * (samples * freq % 1) - 1) - 1, freq_left, freq_right, duration)
+    
+    @classmethod
+    def noise(cls, avg_freq_left: int = 500, avg_freq_right: int = None, freq_range: int = 100, duration: int = 100):
+        """Generates a noise signal with frequencies fluctuating around the input frequency."""
+        cls._beep(lambda samples, freq: np.sin(2 * np.pi * samples * (freq + np.random.uniform(-freq_range, freq_range, samples.shape))), avg_freq_left, avg_freq_right, duration)
 
+    @classmethod
     def _beep(cls, func, freq_left: int = 500, freq_right: int = None, duration: int = 100):
         """
         Play a beep/tone.
@@ -33,21 +43,15 @@ class Beep:
         fade_in = n_samples(0.01)
         fade_out = n_samples(0.02)
         
-        #kernel = 0.5**np.arange(5)
-
         samples = np.arange(duration) / sample_rate
-        left_signal = func(2 * np.pi * (freq_left-50) * samples)
-        left_signal *= 32767
-        #left_signal[-fade_out:] = np.convolve(left_signal[-fade_out:], kernel, mode='full')[:len(left_signal[-fade_out:])]
+        left_signal = func(samples, freq_left) * 32767
+        right_signal = func(samples, freq_right) * 32767
         
-        right_signal = func(2 * np.pi * (freq_right+50) * samples)
-        right_signal *= 32767
+        buf = np.array(tuple(zip(left_signal.astype(np.int16), right_signal.astype(np.int16))), dtype=np.int16)
         
-        buf = np.array(tuple(zip(left_signal, right_signal)))
-        buf = np.int16(buf)
         if not forever:
-            buf[:fade_in] = [buf[i]*(i / fade_in) for i in range(len(buf[:fade_in]))]
-            buf[-fade_out:] = [buf[fade_out+i]*((duration-i) / duration) for i in range(len(buf[-fade_out:]))]
+            buf[:fade_in] = [buf[i] * (i / fade_in) for i in range(fade_in)]
+            buf[-fade_out:] = [buf[fade_out + i] * ((duration - i) / duration) for i in range(fade_out)]
 
             sound = pygame.sndarray.make_sound(buf)
             sound.set_volume(volume)
@@ -59,7 +63,7 @@ class Beep:
         else:
             sound1 = pygame.sndarray.make_sound(buf)
             sound1.set_volume(volume)
-            buf[:fade_in] = [buf[i]*(i / fade_in) for i in range(len(buf[:fade_in]))]
+            buf[:fade_in] = [buf[i] * (i / fade_in) for i in range(fade_in)]
             sound2 = pygame.sndarray.make_sound(buf)
             sound2.set_volume(volume)
             chan = sound2.play()

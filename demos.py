@@ -697,7 +697,9 @@ def SoundDemo():
             self.layers[0].add_many(['Main', 'go'])
             fs = {
                 'Sin': Beep.sin,
-                'Square': Beep.square
+                'Square': Beep.square,
+                'Triangle': Beep.triangle,
+                'Noise': Beep.noise
             }
             self['Main'].extend([
                 GUI.Text(GO.PCTOP, '# Sounds demo'),
