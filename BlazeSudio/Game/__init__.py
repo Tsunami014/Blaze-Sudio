@@ -92,7 +92,7 @@ class Game(Screen):
             self._LoadDebugUI()
     
     def _LoadDebugUI(gameself):
-        tb = GUI.DebugTerminal(gameself)
+        tb = GUI.DebugTerminal()
         gameself['Main'].append(tb)
 
         for i in gameself.cmds:
@@ -111,9 +111,9 @@ class Game(Screen):
             
             def _LoadUI(self):
                 self.layers[0].add('OverlayGUI')
-                self['OverlayGUI'].append(GUI.Text(self, GO.PCTOP, 'Press "esc" to go back'))
-                newG = GUI.ScrollableFrame(self, GO.PLCENTER, (self.size[0]/3, self.size[1]/2), (self.size[0]/3, 0))
-                newG2 = GUI.ScrollableFrame(self, GO.PRCENTER, (self.size[0]/3, self.size[1]/2), (self.size[0]/3, 0))
+                self['OverlayGUI'].append(GUI.Text(GO.PCTOP, 'Press "esc" to go back'))
+                newG = GUI.ScrollableFrame(GO.PLCENTER, (self.size[0]/3, self.size[1]/2), (self.size[0]/3, 0))
+                newG2 = GUI.ScrollableFrame(GO.PRCENTER, (self.size[0]/3, self.size[1]/2), (self.size[0]/3, 0))
                 self['OverlayGUI'].extend([newG, newG2])
 
                 newG.layers[0].add('Alls')
@@ -122,14 +122,14 @@ class Game(Screen):
                 def add_cmd(cmd, txt, cpy):
                     col = next(rainbow)
                     return [
-                        GUI.Text(newG, GO.PCTOP, cmd, col, allowed_width=self.size[0]/3-10),
-                        GUI.Text(newG, GO.PCTOP, txt, col, allowed_width=self.size[0]/3-10),
-                        GUI.Button(newG, GO.PCTOP, col, 'Copy command', func=lambda e: copy(cpy))
+                        GUI.Text(GO.PCTOP, cmd, col, allowed_width=self.size[0]/3-10),
+                        GUI.Text(GO.PCTOP, txt, col, allowed_width=self.size[0]/3-10),
+                        GUI.Button(GO.PCTOP, col, 'Copy command', func=lambda e: copy(cpy))
                     ]
                 
                 newG['Alls'].extend([
-                    GUI.Empty(newG, GO.PCTOP, (0, 10)),
-                    GUI.Text(newG, GO.PCTOP, 'Built-in commands', font=GO.FTITLE)
+                    GUI.Empty(GO.PCTOP, (0, 10)),
+                    GUI.Text(GO.PCTOP, '# Built-in\n# commands')
                 ] + [
                     *add_cmd('/help ...', 'Get help; a list of all the commands you can use!', '/help'),
                     *add_cmd('/items ...', 'Go to the items page: to view all the entities and other useful information in the game/level!', '/items')
@@ -140,11 +140,11 @@ class Game(Screen):
 
                 def add_sett(txt):
                     col = next(rainbow)
-                    return GUI.Text(newG2, GO.PCTOP, txt, col, allowed_width=self.size[0]/3-10)
+                    return GUI.Text(GO.PCTOP, txt, col, allowed_width=self.size[0]/3-10)
                 
                 newG2['Alls'].extend([
-                    GUI.Empty(self, GO.PCTOP, (0, 10)),
-                    GUI.Text(self, GO.PCTOP, 'Game-specific commands', font=GO.FTITLE)
+                    GUI.Empty(GO.PCTOP, (0, 10)),
+                    GUI.Text(GO.PCTOP, '# Game-specific\n# commands')
                 ] + [
                     add_sett(f'"{i[0]}": {i[1]}') for i in gameself.cmds
                 ])
@@ -161,26 +161,26 @@ class Game(Screen):
             
             def _LoadUI(self):
                 self.layers[0].add('OverlayGUI')
-                self['OverlayGUI'].append(GUI.Text(self, GO.PCTOP, """
+                self['OverlayGUI'].append(GUI.Text(GO.PCTOP, """
 Please note: If you used the internal icons it will appear blurry and without transparency. You're lucky I even provided you with THAT. PLEASE do not use them in your final game; the creator SPECIFICALLY said not to. I accept NO responsibility for you using this WHATSOEVER.
 """, allowed_width=500))
                 
                 TOPLEFT = GO.PNEW((0, 0), (0, 1))
-                self['OverlayGUI'].append(GUI.Text(self, TOPLEFT, 'All entities', font=GO.FTITLE))
-                scr = GUI.ScrollableFrame(self, GO.PLCENTER, (self.size[0]/2-260, self.size[1]/3*2), (self.size[0]/2, 0))
+                self['OverlayGUI'].append(GUI.Text(TOPLEFT, '# All entities'))
+                scr = GUI.ScrollableFrame(GO.PLCENTER, (self.size[0]/2-260, self.size[1]/3*2), (self.size[0]/2, 0))
                 self['OverlayGUI'].append(scr)
                 scr.layers[0].add('Alls')
 
                 rainbow = GO.CRAINBOW()
                 def func(e):
                     copy(e['uid'])
-                    GUI.Toast(self, f'Copied "{e['uid']}" to clipboard!')
+                    GUI.Toast(f'Copied "{e['uid']}" to clipboard!')
                 for e in gameself.world.ldtk.defs['entities']:
-                    idf = GUI.Text(scr, TOPLEFT, e['identifier'])
+                    idf = GUI.Text(TOPLEFT, e['identifier'])
                     scr['Alls'].append(idf)
                     docsze = 0
                     if e['doc']:
-                        doc = GUI.Text(scr, TOPLEFT, e['doc'], font=GO.FREGULAR)
+                        doc = GUI.Text(TOPLEFT, e['doc'], font=GO.FREGULAR)
                         scr['Alls'].append(doc)
                         docsze = doc.size[0]
                     size = 60
@@ -209,15 +209,15 @@ Please note: If you used the internal icons it will appear blurry and without tr
                     idfp = idf.stackP()
                     ms = max(idf.size[0], docsze) + 10
                     scr['Alls'].extend([
-                        GUI.Static(scr, GO.PSTATIC(idfp[0] + ms, idfp[1]), UITile),
-                        GUI.Button(scr, GO.PSTATIC(idfp[0] + ms + size + 10, idfp[1]), next(rainbow), 'Copy uid (%i)'%e['uid'], func=lambda *args, e=e: func(e)),
-                        GUI.Empty(scr, TOPLEFT, (0, e['height'] * scaleby)),
+                        GUI.Static(GO.PSTATIC(idfp[0] + ms, idfp[1]), UITile),
+                        GUI.Button(GO.PSTATIC(idfp[0] + ms + size + 10, idfp[1]), next(rainbow), 'Copy uid (%i)'%e['uid'], func=lambda *args, e=e: func(e)),
+                        GUI.Empty(TOPLEFT, (0, e['height'] * scaleby)),
                     ])
                 
                 scr.sizeOfScreen = (self.size[0]/2-260, max(self.size[1]/2, sum([i.size[1] for i in scr.get()])))
                 
                 TOPRIGHT = GO.PNEW((1, 0), (0, 1))
-                self['OverlayGUI'].append(GUI.Text(self, TOPRIGHT, 'Entities in this level', font=GO.FTITLE))
+                self['OverlayGUI'].append(GUI.Text(TOPRIGHT, '# Entities in\n# this level'))
                 # TODO
         
         tb.addCmd('help', help)
@@ -237,7 +237,7 @@ Please note: If you used the internal icons it will appear blurry and without tr
         """
         self.playing = True
 
-        self.gameplayer = Player(self, self.world)
+        self.gameplayer = Player(self.world)
         if self.needCreateScene:
             self.needCreateScene = False
             self.curScene = self.curScene[0](self, **self.curScene[1])

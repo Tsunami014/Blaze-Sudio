@@ -4,13 +4,16 @@ from BlazeSudio.graphics.base import Element
 from BlazeSudio.graphics import options as GO
 
 class Player(Element):
-    def __init__(self, Game, world):
-        self.Game = Game
+    def __init__(self, world):
         self.world = world
-        super().__init__(Game, GO.PLTOP, Game.size)
+        super().__init__(GO.PLTOP, (0, 0))
+    
+    def _init2(self):
+        self.size = self.G.size
+        super()._init2()
 
     def update(self, mPos, events):
-        self.Game.curScene.tick(events.copy())
+        self.G.curScene.tick(events.copy())
     
     @lru_cache
     def _find_bg(self, bg, col, nsize):
@@ -22,21 +25,21 @@ class Player(Element):
             return newSur
 
     def draw(self):
-        rend = self.Game.curScene.render()
-        if not self.Game.curScene.useRenderer:
+        rend = self.G.curScene.render()
+        if not self.G.curScene.useRenderer:
             return
-        rend = self.Game.curScene.postProcessGlobal(rend)
-        win = self.Game.WIN
-        sze = self.Game.size
+        rend = self.G.curScene.postProcessGlobal(rend)
+        win = self.G.WIN
+        sze = self.G.size
         mw, mh = sze[0] / 2, sze[1] / 2
 
-        scale = self.Game.curScene.CamDist
-        realpos = self.Game.curScene.CamPos
+        scale = self.G.curScene.CamDist
+        realpos = self.G.curScene.CamPos
         realpos = [realpos[0] * scale, realpos[1] * scale]
         
         sur = rend
         
-        bounds = self.Game.curScene.CamBounds
+        bounds = self.G.curScene.CamBounds
         
         # Calculate diff_x
         if sur.get_width() * scale < sze[0] or (bounds[0] is None and bounds[2] is None):
@@ -63,10 +66,10 @@ class Player(Element):
         ndiff_x = mw - diff_x
         ndiff_y = mh - diff_y
 
-        newSur = self._find_bg(self.Game.currentLvL.bgPic, self.Game.currentLvL.bgColour, (sze[0]/scale, sze[1]/scale)).copy()
+        newSur = self._find_bg(self.G.currentLvL.bgPic, self.G.currentLvL.bgColour, (sze[0]/scale, sze[1]/scale)).copy()
         newSur.blit(sur, (ndiff_x/scale, ndiff_y/scale))
 
-        rendSur = pygame.transform.scale(self.Game.curScene.postProcessScreen(newSur, (diff_x, diff_y)), sze)
+        rendSur = pygame.transform.scale(self.G.curScene.postProcessScreen(newSur, (diff_x, diff_y)), sze)
 
         win.blit(
             rendSur, 
