@@ -14,7 +14,7 @@ it is EXTREMELY HIGHLY RECOMMENDED to use a virtual environment and make a local
 i.e. instead of C:/Users/Bob/AppData/Roaming/python/python3.12.3/bin/python3, ../../.venv/bin/python3.
 \
 If you are here because the script isn\'t working, you either did it wrong or someone else did it for their file system and you'll have to do this yourself. \
-Yeah, kinda painfull, I know. And *try* to remember not to commit it. If you need any help remember to reach out on Discord.
+Please also *try* not to commit it. If you need any help remember to reach out on Discord.
 """
 
 def generate_sync_code(file, fromdir):
