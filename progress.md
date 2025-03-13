@@ -1,21 +1,14 @@
 # Roadmap
- - [ ] Finish the wrap function
  - [ ] Use `multiprocessing` instead of `threading`
  - [ ] Finish theme editor
  - [ ] Finish texture editor
- - [ ] Procedural generation testing area
+ - [ ] Procedural generation testing area?
  - [ ] Finish Music/SFX editor/generator
- - Keep adding more features to the main editor, allthewhile doing the below: 
+ - [ ] Fix pyldtk (add type hints & make it work more)
+ - Keep adding more features to the main editor, allthewhile doing the below:
  - [ ] Fix documentation
- - [ ] Look into removing other things (`__main__.py`, `pyguix`, etc.)
- - [ ] Make graphics run WAY faster and **efficient** (currently EXTREMLY SLOW)
- - [ ] Overhaul of `terrainGen.py` to remove most of the dependancies, making there less things to install and also load WAYYY faster.
- - [ ] Make `loading.py` MUCH faster (can rewrite it if you want, just need to also update `graphics.py`)
- - [ ] Make the graphics faster to make elements
- - [ ] Fix import system to make things load faster
- - [ ] Make progressbars load stuff in the background for faster launching of the app
+ - [ ] Overhaul of `terrainGen.py` to remove most of the dependencies, making there less things to install and also load WAYYY faster.
  - [ ] Add more elements
- - [ ] Make multiple different terrain gens for some fast and some slow generation!
  - [ ] Add type annotations to EVERYTHING
 
 # What I'm (not really) working on:

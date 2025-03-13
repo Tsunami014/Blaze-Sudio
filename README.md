@@ -77,11 +77,16 @@ Are you ready? This is the most complicated installation process of any python l
 1. Run `pip install Blaze-Sudio[all]`
 2. Rejoice in happiness as your library gets installed, pain-free (hopefully).
 
-### ⛏️ Installing from source
+### ⛏️ Installing from sauce 🍅
+- Git clone and pip install
 ```bash
 git clone https://github.com/Tsunami014/Blaze-Sudio.git
 cd Blaze-Sudio
 pip install .[all]
+```
+- OR just use the one line command:
+```bash
+pip install "Blaze-Sudio[all] @ git+https://github.com/Tsunami014/Blaze-Sudio.git"
 ```
 ### 📜 Optional requirements
 You don't need to install *everything*, so here is a list of all the optional requirements and what they do:

@@ -100,7 +100,7 @@ permanent ban.
 ### 3. Temporary Ban
 
 **Community Impact**: A serious violation of community standards, including
-sustained inappropriate behavior. ![Serious meme. Don't stress too hard if you can't see it - it's just a silly meme.](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhAGFVp3XbhVv5mQGL_1inuyjmunv6JFwF0w&s)
+sustained inappropriate behavior. ![Serious meme.](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhAGFVp3XbhVv5mQGL_1inuyjmunv6JFwF0w&s)
 
 **Consequence**: A temporary ban from any sort of interaction or public
 communication with the community for a specified period of time. No public or

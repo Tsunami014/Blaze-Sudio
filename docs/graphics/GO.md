@@ -6,19 +6,19 @@ The graphics options are a bunch of preset things, some of which you can make yo
 
 `import BlazeSudio.graphics.options as GO` or `from graphics import options as GO`
 
-You could just go `from graphics import options` but GO (Standing for Graphics Options) is cooler and I use it everywhere and if you use it so much you may as well make it some 2-character thing for ease of typing
+You could just go `from BlazeSudio.graphics import options` but GO (Standing for Graphics Options) is cooler and I use it everywhere and it just makes it slightly easier (like `import numpy as np`)
 
 ## Table of stuff it has in it
 //TODO: update PNEW
 
 | Category | Description | Character | Examples | Special uses |
 |:---|:---|:---:|---:|:---|
-| Colours | A colour! | C | `GO.CWHITE`, `GO.CRED` | <li>`GO.CNEW(name:str)` gets the colour name (e.g. `GO.CORANGE` will get an orange colour)</li><li>`GO.CRAINBOW()` will return a thing you can loop around colours by calling <pre>l = GO.CRAINBOW()<br>colour = next(l)<br>different_colour = next(l)</pre></li> |
-| Fonts | A `pygame.Font` | F | `GO.FTITLE`, `GO.FREGULAR` | |
-| Positions| A position of an object on the screen (e.g. `GO.PCBOTTOM`=Center BOTTOM) | P | `GO.PCCENTER`, `GO.PCTOP` | <li>`GO.PNEW(stack:list[int, int], func:function)` Makes a new position. See [the reference](#diy-positions) for information on this.</li><li>`GO.PSTATIC(x:int,y:int)` Makes a new static position wherever you specify that you can use the same as the other positions.</li> |
-| Events | An event, used in the [Graphics class](README.md) | E | `GO.ELOADUI`, `GO.ETICK` | |
-| Types | A type of a UI element, used in the [Graphics class](README.md) | T | `GO.TBUTTON`, `GO.TTEXTBOX` | |
-| Resizes | The type of resizing a [textbox](README.md) does | R | `GO.RWIDTH`, `GO.RNONE` | |
+| Colours   | A colour! | C | `GO.CWHITE`, `GO.CRED` | <li>`GO.CNEW(name:str)` gets the colour name (e.g. `GO.CORANGE` will get an orange colour)</li><li>`GO.CRAINBOW()` will return a thing you can loop around colours by calling <pre>l = GO.CRAINBOW()<br>colour = next(l)<br>different_colour = next(l)</pre></li> |
+| Fonts     | A `pygame.Font` | F | `GO.FTITLE`, `GO.FREGULAR` | |
+| Positions | A position of an object on the screen (e.g. `GO.PCBOTTOM`=Center BOTTOM) | P | `GO.PCCENTER`, `GO.PCTOP` | <li>`GO.PNEW(stack:list[int, int], func:function)` Makes a new position. See [the reference](#diy-positions) for information on this.</li><li>`GO.PSTATIC(x:int,y:int)` Makes a new static position wherever you specify that you can use the same as the other positions.</li> |
+| Events    | An event, used in the [Graphics class](README.md) | E | `GO.ELOADUI`, `GO.ETICK` | |
+| Types     | A type of a UI element, used in the [Graphics class](README.md) | T | `GO.TBUTTON`, `GO.TTEXTBOX` | |
+| Resizes   | The type of resizing a [textbox](README.md) does | R | `GO.RWIDTH`, `GO.RNONE` | |
 
 ***
 

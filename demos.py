@@ -472,42 +472,42 @@ def WrapDemo():
             self.layers[1].add('Top')
             self.segs = []
             self.cursegidx = None
-            topF = GUI.BaseFrame(self, GO.PCTOP, (self.size[0], self.size[1]//2), 2)
+            topF = GUI.BaseFrame(GO.PCTOP, (self.size[0], self.size[1]//2), 2)
             topF.layers[0].add('Main')
             self.topF = topF
-            botF = GUI.BaseFrame(self, GO.PCTOP, (self.size[0], self.size[1]//2), 2)
+            botF = GUI.BaseFrame(GO.PCTOP, (self.size[0], self.size[1]//2), 2)
             botF.layers[0].add('Main')
             self.botF = botF
 
             self['Main'].extend([topF, botF])
 
-            self.GObtn = GUI.Button(self, GO.PCCENTER, GO.CORANGE, 'Wrap!')
+            self.GObtn = GUI.Button(GO.PCCENTER, GO.CORANGE, 'Wrap!')
             self['Top'].append(self.GObtn)
 
             LTOP = GO.PNEW((0, 0), (0, 1))
             topF['Main'].extend([
-                GUI.Text(topF, LTOP, 'Colour 1'),
-                GUI.ColourPickerBTN(topF, LTOP),
-                GUI.Text(topF, LTOP, 'Colour 2'),
-                GUI.ColourPickerBTN(topF, LTOP, default=(10,255,50)),
-                GUI.Text(topF, LTOP, 'Width'),
-                GUI.NumInputBox(topF, LTOP, 100, GO.RHEIGHT, start=500, minim=1, maxim=1500, placeholdOnNum=None),
-                GUI.Text(topF, LTOP, 'Height'),
-                GUI.NumInputBox(topF, LTOP, 100, GO.RHEIGHT, start=100, minim=1, maxim=500, placeholdOnNum=None),
+                GUI.Text(LTOP, 'Colour 1'),
+                GUI.ColourPickerBTN(LTOP),
+                GUI.Text(LTOP, 'Colour 2'),
+                GUI.ColourPickerBTN(LTOP, default=(10,255,50)),
+                GUI.Text(LTOP, 'Width'),
+                GUI.NumInputBox(LTOP, 100, GO.RHEIGHT, start=500, minim=1, maxim=1500, placeholdOnNum=None),
+                GUI.Text(LTOP, 'Height'),
+                GUI.NumInputBox(LTOP, 100, GO.RHEIGHT, start=100, minim=1, maxim=500, placeholdOnNum=None),
             ])
 
             RTOP = GO.PNEW((1, 0), (0, 1))
             self.offset = len(topF['Main'])
             topF['Main'].extend([
-                GUI.Text(topF, RTOP, 'Top'),
-                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=0.5, start=None, minim=0, maxim=2, placeholdOnNum=None, decimals=8),
-                GUI.Text(topF, RTOP, 'Bottom'),
-                GUI.NumInputBox(topF, RTOP, 100, GO.RHEIGHT, empty=-0.5, start=None, minim=-1, maxim=0, placeholdOnNum=None, decimals=8),
-                GUI.Text(topF, RTOP, 'Limit'),
-                GUI.Switch(topF, RTOP, default=True),
+                GUI.Text(RTOP, 'Top'),
+                GUI.NumInputBox(RTOP, 100, GO.RHEIGHT, empty=0.5, start=None, minim=0, maxim=2, placeholdOnNum=None, decimals=8),
+                GUI.Text(RTOP, 'Bottom'),
+                GUI.NumInputBox(RTOP, 100, GO.RHEIGHT, empty=-0.5, start=None, minim=-1, maxim=0, placeholdOnNum=None, decimals=8),
+                GUI.Text(RTOP, 'Limit'),
+                GUI.Switch(RTOP, default=True),
             ])
 
-            topF['Main'].append(GUI.Text(topF, GO.PCTOP, '# INPUT IMAGE'))
+            topF['Main'].append(GUI.Text(GO.PCTOP, '# INPUT IMAGE'))
 
             def customImg(img):
                 topF['Main'][-1].set(pygame.image.load(img))
@@ -516,12 +516,12 @@ def WrapDemo():
 
             rainbow = GO.CRAINBOW()
             topF['Main'].extend([
-                GUI.Button(topF, GO.PLBOTTOM, next(rainbow), 'Iris',   func=lambda: customImg('demoFiles/wrap1.png')),
-                GUI.Button(topF, GO.PLBOTTOM, next(rainbow), 'Text',   func=lambda: customImg('demoFiles/wrap2.png')),
-                GUI.Button(topF, GO.PLBOTTOM, next(rainbow), 'Planet', func=lambda: customImg('demoFiles/wrap3.png')),
+                GUI.Button(GO.PLBOTTOM, next(rainbow), 'Iris',   func=lambda: customImg('demoFiles/wrap1.png')),
+                GUI.Button(GO.PLBOTTOM, next(rainbow), 'Text',   func=lambda: customImg('demoFiles/wrap2.png')),
+                GUI.Button(GO.PLBOTTOM, next(rainbow), 'Planet', func=lambda: customImg('demoFiles/wrap3.png')),
             ])
 
-            topF['Main'].append(GUI.Static(topF, GO.PCCENTER, pygame.Surface((0, 0))))
+            topF['Main'].append(GUI.Static(GO.PCCENTER, pygame.Surface((0, 0))))
 
             def resetBotSur():
                 botF['Main'][-1].set(pygame.Surface((0, 0)))
@@ -529,14 +529,14 @@ def WrapDemo():
                 self.cursegidx = None
 
             botF['Main'].extend([
-                GUI.Empty(botF, GO.PCTOP, (0, 30)),
-                GUI.Text(botF, GO.PCTOP, '# OUTPUT IMAGE'),
+                GUI.Empty(GO.PCTOP, (0, 30)),
+                GUI.Text(GO.PCTOP, '# OUTPUT IMAGE'),
 
-                GUI.Button(botF, GO.PRTOP, GO.CORANGE, 'Reset', func=resetBotSur)
+                GUI.Button(GO.PRTOP, GO.CORANGE, 'Reset', func=resetBotSur)
             ])
 
             CCENTER = GO.PNEW((0.5, 0.5), (1, 0), (True, True))
-            botF['Main'].append(GUI.ImageViewer(botF, CCENTER, pygame.Surface((0, 0)), (800, 400)))
+            botF['Main'].append(GUI.ImageViewer(CCENTER, pygame.Surface((0, 0)), (800, 400)))
 
             self.makeSur()
         
