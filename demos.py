@@ -659,11 +659,11 @@ def TsetCollDemo():
             self.layers[0].add('Main')
 
             PCTOP = GO.PNEW((0.5, 0), (1, 0), (True, False))
-            self.scale = GUI.NumInputBox(self, PCTOP, 100, GO.RNONE, start=None, empty=10, minim=1, maxim=30, placeholder='Scale by size', decimals=2)
-            chooser = GUI.DropdownButton(self, PCTOP, ['Tile %i'%i for i in range(tset.get_width()//32)], func=lambda i: self.getTile(i))
-            self.chooser = GUI.DropdownButton(self, PCTOP, self.opts)
+            self.scale = GUI.NumInputBox(PCTOP, 100, GO.RNONE, start=None, empty=10, minim=1, maxim=30, placeholder='Scale by size', decimals=2)
+            chooser = GUI.DropdownButton(PCTOP, ['Tile %i'%i for i in range(tset.get_width()//32)], func=lambda i: self.getTile(i))
+            self.chooser = GUI.DropdownButton(PCTOP, self.opts)
 
-            goBtn = GUI.Button(self, GO.PCBOTTOM, GO.CGREEN, 'Go!', func=partial(self.calcPoly, self))
+            goBtn = GUI.Button(GO.PCBOTTOM, GO.CGREEN, 'Go!', func=partial(self.calcPoly, self))
 
             self['Main'].extend([
                 self.scale,

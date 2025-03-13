@@ -1,5 +1,5 @@
 from BlazeSudio import collisions
-from BlazeSudio.graphics.options import CRAINBOWCOLOURS, FFONT
+from BlazeSudio.graphics.options import CRAINBOWCOLOURS, FREGULAR
 import pygame
 import math
 pygame.init()
@@ -221,7 +221,7 @@ while run:
                 else: # Last item in list - help menu
                     ratio = 5
                     pygame.draw.rect(win, (155, 155, 155), (win.get_width()//ratio, win.get_height()//ratio, win.get_width()//ratio*(ratio-2), win.get_height()//ratio*(ratio-2)), border_radius=8)
-                    win.blit(FFONT.render("""How to use:
+                    win.blit(FREGULAR.render("""How to use:
 Click on one of the options at the top to change your tool. Pressing space adds it to the board (or applies some function to existing objects).\
 The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too. When not holding alt to be in play mode, wsad does the same as the arrow keys but is more precise.
 Holding '[' and ']' changes the bounciness of the object, and '-' and '=' are to fine-tune.

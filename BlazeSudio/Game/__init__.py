@@ -174,7 +174,7 @@ Please note: If you used the internal icons it will appear blurry and without tr
                 rainbow = GO.CRAINBOW()
                 def func(e):
                     copy(e['uid'])
-                    GUI.Toast(f'Copied "{e['uid']}" to clipboard!')
+                    GUI.Toast(f'Copied "{e["uid"]}" to clipboard!')
                 for e in gameself.world.ldtk.defs['entities']:
                     idf = GUI.Text(TOPLEFT, e['identifier'])
                     scr['Alls'].append(idf)
