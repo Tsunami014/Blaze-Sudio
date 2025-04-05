@@ -18,6 +18,7 @@ But please see [the installation section](#️-installation) for detailed instru
 | [🔝 Top](#) |
 | :------: |
 | [🚀 About](#-about) |
+| [🖼️ Demos](#-demos) |
 | [💡 Things to note](#-things-to-note) |
 | [🛠️ Installation](#️-installation) |
 | [📚 Library usage & features](#-library-usage--features) |
@@ -39,12 +40,28 @@ Also known as:
  - The putgamecreatorsoutofbusinessanator (Thanks to `@Faunder.real` for that one)
  - One piece of code to rule them all!
 
+# 🖼️ Demos
+- Pygame GUI
+![Overview](https://github.com/user-attachments/assets/7fdaac6d-06a2-4c98-8308-3e1f22b3f96d)
+![Colour picker](https://github.com/user-attachments/assets/e6b15d6d-8426-46f7-a634-683b438915e5)
+![Popup and textbox](https://github.com/user-attachments/assets/a56d7c4b-eced-4429-8734-9740a8af20ea)
+
+- The collisions engine
+
+https://github.com/user-attachments/assets/d473abe1-52a1-47c7-9da8-1eb7a1c3e4a0
+
+- The wrapper
+![Wrapping a planet](https://github.com/user-attachments/assets/073bf66f-a2dc-4991-bee6-2f4d825aff42)
+![Wrapping with segments](https://github.com/user-attachments/assets/00c3fb0c-6c2a-4561-97e7-fd97009dda73)
+
+There are even more demos, and *even more* features that don't have a demo! I have spent a very long time on this, I hope you like it!
+
 # 💡 Things to note
 | Version stuff |
 |---------------|
 [![PyPi version](https://badgen.net/pypi/v/Blaze-Sudio?label=PyPi%20version&icon=pypi)](https://pypi.org/project/Blaze-Sudio/)
 [![Python versions: 3.10, 3.11, 3.12](https://badgen.net/static/Python%20versions/3.10%203.11%203.12/purple)]()
-[![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]() (MacOS Untested and not bothered to test. Linux distro used: Ubuntu.)
+[![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]() (Or at least the ones I want to support) Linux distro tested: Ubuntu
 
 | Statuses |
 |-----------|
