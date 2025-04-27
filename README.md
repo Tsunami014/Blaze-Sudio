@@ -1,6 +1,6 @@
 [![Blaze Sudio Banner](https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/main/images/BlazeBanner.png)]()
 
-<p style="color: grey" align="center"><i>A game engine for Python lovers! ❤️</i></p>
+<p align="center"><i>A game engine for Python lovers! ❤️</i></p>
 
 [![Docs](https://badgen.net/badge/Documentation/tsunami014.gitbook.io?color=orange&icon=wiki)](https://tsunami014.gitbook.io/blaze-sudios/)
 [![Website](https://badgen.net/badge/website/tsunami014.github.io?icon=rss&color=yellow)](https://tsunami014.github.io/Blaze-Sudio/)
@@ -59,23 +59,23 @@ There are even more demos, and *even more* features that don't have a demo! I ha
 # 💡 Things to note
 | Version stuff |
 |---------------|
-[![PyPi version](https://badgen.net/pypi/v/Blaze-Sudio?label=PyPi%20version&icon=pypi)](https://pypi.org/project/Blaze-Sudio/)
-[![Python versions: 3.10, 3.11, 3.12](https://badgen.net/static/Python%20versions/3.10%203.11%203.12/purple)]()
-[![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]() (Or at least the ones I want to support) Linux distro tested: Ubuntu
+| [![PyPi version](https://badgen.net/pypi/v/Blaze-Sudio?label=PyPi%20version&icon=pypi)](https://pypi.org/project/Blaze-Sudio/) |
+| [![Python versions: 3.10, 3.11, 3.12](https://badgen.net/static/Python%20versions/3.10%203.11%203.12/purple)]() |
+| [![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]() (Or at least the ones I want to support) Linux distro tested: Ubuntu |
 
 | Statuses |
 |-----------|
-[![Build collisions status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml)
-[![Doesn't contain tree nuts](https://badgen.net/badge/Doesn't%20contain/Tree%20nuts/grey)]()
-[![Publish to PyPI status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml)
+| [![Build collisions status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/build.yml) |
+| [![Doesn't contain tree nuts](https://badgen.net/badge/Doesn't%20contain/Tree%20nuts/grey)]() |
+| [![Publish to PyPI status](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml/badge.svg)](https://github.com/Tsunami014/Blaze-Sudio/actions/workflows/python-publish.yml) |
 
 | Stats |
 |-------|
-[![I've done a crap ton of commits](https://badgen.net/github/commits/Tsunami014/Blaze-Sudio?color=green&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/commits/)
-[![I've also done a ton of releases too](https://badgen.net/github/releases/Tsunami014/Blaze-Sudio?color=purple&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/releases)
-[![Contributers](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=grey&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors) <small>([But really I did all the work](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors))</small>
-[![v3.0.0 released: Sept 19, 2024](https://badgen.net/badge/v3.0.0%20released:/Sept%2019,%202024?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/releases/tag/v3.0.0)
-[![Worked on since Aug 19, 2023](https://badgen.net/badge/Worked%20on%20since/Aug%2019,%202023?color=orange)](https://github.com/Tsunami014/Blaze-Sudio/commit/c90beeb2d2e290ffff4e5fb9d112453840883ea7) <small>(But back then it was called AIHub, now that's a different thing; if you want to compare to something compare to when v3.0.0 was released)</small>
+| [![I've done a crap ton of commits](https://badgen.net/github/commits/Tsunami014/Blaze-Sudio?color=green&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/commits/) |
+| [![I've also done a ton of releases too](https://badgen.net/github/releases/Tsunami014/Blaze-Sudio?color=purple&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/releases) |
+| [![Contributers](https://badgen.net/github/contributors/Tsunami014/Blaze-Sudio?color=grey&icon=github)](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors) <small>([But really I did all the work](https://github.com/Tsunami014/Blaze-Sudio/graphs/contributors))</small> |
+| [![v3.0.0 released: Sept 19, 2024](https://badgen.net/badge/v3.0.0%20released:/Sept%2019,%202024?color=pink)](https://github.com/Tsunami014/Blaze-Sudio/releases/tag/v3.0.0) |
+| [![Worked on since Aug 19, 2023](https://badgen.net/badge/Worked%20on%20since/Aug%2019,%202023?color=orange)](https://github.com/Tsunami014/Blaze-Sudio/commit/c90beeb2d2e290ffff4e5fb9d112453840883ea7) <small>(But back then it was called AIHub, now that's a different thing; if you want to compare to something compare to when v3.0.0 was released)</small> |
 
 This is a very early version, and there are many things that are not yet implemented. Please be patient, and if you want to help, please do! PRs are welcome!
 
