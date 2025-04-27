@@ -8,8 +8,11 @@
         <script src="https://tsunami014.github.io/bg/make_bg.js" type="module"></script>
         <link rel="stylesheet" href="https://tsunami014.github.io/bg/bg.css">
         <link rel="stylesheet" href="https://tsunami014.github.io/style.css">
-        <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+        <script src="https://tsunami014.github.io/render.js"></script>
         <style>
+img {
+    max-width: 100%
+}
 #MarkdownGoesHere p {
     display: flex;
     flex-direction: row;
@@ -21,23 +24,10 @@
 }
         </style>
     </head>
-    <body>
-        <div id="inside" style="overflow-x: hidden">
-            <div class="row">
-                <a href="https://tsunami014.github.io"><img src="https://badgen.net/badge/-/Go%20home?label=&icon=telegram&color=orange"></img></a>
-                <br>
-                <a href="https://github.com/Tsunami014/Blaze-Sudio/"><img src="https://badgen.net/badge/-/Go%20to%20github%20page?label=&icon=github"></img></a>
-            </div>
-            <div id="MarkdownGoesHere"></div>
-            <script>
-                const md = markdownit();
-                fetch('README.md')
-                    .then(response => response.text())
-                    .then((data) => {
-                        const result = md.render(data);
-                        document.getElementById("MarkdownGoesHere").innerHTML = result;
-                })
-            </script>
-        </div>
-    </body>
+<body>
+    <script>
+        render('https://raw.githubusercontent.com/Tsunami014/Blaze-Sudio/refs/heads/main/README.md')
+    </script>
+    <div id="inside"></div>
+</body>
 </html>
