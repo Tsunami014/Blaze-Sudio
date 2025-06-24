@@ -16,6 +16,15 @@ It will first read the file, then overwrite it when you save.')
     from BlazeSudio.elementGen import NodeEditor
     NodeEditor(f)()
 
+def NewGraphicsDemo():
+    from BlazeSudio.graphicsCore import Window, Colour, Interaction
+    sur = Window.create_win()
+    sur.fill(Colour.from_rgb(255, 255, 255))
+    sur.drawLine((10, 10), (200, 100), 5, 0)
+    while Interaction.eventHandleBasic():
+        Window.flush()
+        Window.flip()
+
 def GraphicsDemo():
     import BlazeSudio.graphics.options as GO
     from BlazeSudio.graphics import Screen, Loading, Progressbar, GUI
@@ -753,6 +762,7 @@ if __name__ == '__main__':
     button('Node Editor Demo',              NodeEditorDemo,                   )
 
     label('Graphics [graphics] / [game]:')
+    button('New Graphics Demo',             NewGraphicsDemo,                  )
     button('Graphics Demo',                 GraphicsDemo,                     )
     button('Lorem Ipsum Graphics Demo',     LoremGraphicsDemo,                )
     button('Theme Playground Demo',         ThemePgDemo,                  True)

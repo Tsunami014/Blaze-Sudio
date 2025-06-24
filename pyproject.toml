@@ -49,6 +49,7 @@ BlazeSudio = "BlazeSudio:main"
 [project.optional-dependencies]
 graphics = [
     "pygame-ce",
+    "numba"
 ]
 
 image = [
