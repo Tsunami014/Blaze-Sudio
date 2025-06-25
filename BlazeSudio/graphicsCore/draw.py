@@ -8,7 +8,8 @@ if TYPE_CHECKING:
 
 # This is so you can use 'graphicsCore.draw.line' in replacement of pygame's 'pygame.draw.line'
 __all__ = [
-    'line'
+    'line',
+    'polygon'
 ]
 
 @njit
@@ -81,9 +82,22 @@ class _PolygonOp(ElmOp):
         p2 = self.ps[0]
         _drawThickLine(arr, p1, p2, self.col, self.thickness)
 
+class _LineOp(_PolygonOp):
+    def __init__(self, p1, p2, thickness, col):
+        self.ps = np.array([p1, p2], dtype=np.float64)
+        assert self.ps.shape == (2, 2), "Points must have only 2 dimensions; an x and a y; [(point 1 x, point 1 y), (point 2 x, point 2 y)]"
+        assert isinstance(col, int)
+        self.thickness = thickness
+        self.col = col
+    
+    def ApplyOnArr(self, arr: np.ndarray):
+        _drawThickLine(arr, self.ps[0], self.ps[1], self.col, self.thickness)
+
 
 def line(sur: 'Surface', p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: int):
     sur.drawLine(p1, p2, thickness, col)
+def polygon(sur: 'Surface', ps: Iterable[Iterable[int|float]], thickness: int|float, col: int):
+    sur.drawPolygon(ps, thickness, col)
 
 
 class _DrawFuncs(Func):
@@ -97,12 +111,23 @@ class _DrawFuncs(Func):
             thickness (int | float): The thickness of the line. Must be > 0.
             col (int): The colour of the line
         """
-        if len(p1) != 2 or len(p2) != 2:
-            raise ValueError(
-                f'p1 and p2 need to be length 2 iterables, found lengths {len(p1)} and {len(p2)}!'
-            )
         if thickness <= 0:
             raise ValueError(
                 'Line has to have a thickness of greater than 0!'
             )
-        self._ops.append(_PolygonOp([p1, p2], thickness, col))
+        self._ops.append(_LineOp(p1, p2, thickness, col))
+    
+    def drawPolygon(self, ps: Iterable[Iterable[int|float]], thickness: int|float, col: int):
+        """
+        Draw a closed polygon
+
+        Args:
+            ps (Iterable[Iterable[int | float]]): The points making up the polygon
+            thickness (int | float): The thickness of the line. Must be > 0.
+            col (int): The colour of the line
+        """
+        if thickness <= 0:
+            raise ValueError(
+                'Line has to have a thickness of greater than 0!'
+            )
+        self._ops.append(_PolygonOp(ps, thickness, col))
