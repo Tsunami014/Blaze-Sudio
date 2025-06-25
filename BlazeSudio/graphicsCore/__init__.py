@@ -7,23 +7,34 @@ pygame.init()
 Clock = pygame.time.Clock()
 
 __all__ = [
+    'Quit',
     'Interaction',
     'Window',
     'Surface',
     'Clock'
 ]
 
-class Colour:
+
+def Quit():
+    """
+    Quits the application, handling all quit code accordingly
+    """
+    pygame.quit()
+
+class Colour: # TODO: themes - repeated colours (and 'highlight 1', 'tone 3', etc.) put in a list so apps can easily theme switch
     """
     A Colour is a hex value represented as an integer.
     
     This class gives some helper functions for creating these tuples based off of different colour types.
+
+    FYI: `Colour(r, g, b)` is a shorter way of writing `Colour.from_rgb(r, g, b)`
     """
     _RGBHEXFMT = "{0:02x}{1:02x}{2:02x}"
-    def __init__(self):
-        raise NotImplementedError(
-            'Colour class should not be instanced!'
-        )
+    def __new__(cls, *args):
+        """
+        A shorter form of `Colour.from_rgb(r, g, b)`
+        """
+        return cls.from_rgb(*args)
     @classmethod
     def from_rgb(cls, r: int, g: int, b: int) -> int:
         def clamp(x): 
