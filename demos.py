@@ -17,13 +17,16 @@ It will first read the file, then overwrite it when you save.')
     NodeEditor(f)()
 
 def NewGraphicsDemo():
-    from BlazeSudio.graphicsCore import Window, Colour, Interaction
+    from BlazeSudio.graphicsCore import Quit, Window, Colour, Interaction
     sur = Window.create_win()
-    sur.fill(Colour.from_rgb(255, 255, 255))
+    sur.fill(Colour(255, 255, 255))
     sur.drawLine((10, 10), (200, 100), 5, 0)
+    sur.drawRect((30, 50), (50, 30), 10, Colour(125, 125, 125))
+    sur.drawPolygon([(100, 100), (200, 300), (0, 300)], 30, Colour(80, 100, 250))
     while Interaction.eventHandleBasic():
         Window.flush()
         Window.flip()
+    Quit()
 
 def GraphicsDemo():
     import BlazeSudio.graphics.options as GO
