@@ -105,7 +105,7 @@ class _RectOp(ElmOp):
     def __init__(self, x, y, width, height, thickness, col, roundness):
         self.pos = (x, y)
         self.sze = (width, height)
-        assert thickness > 0, "Thickness must be >0"
+        assert thickness >= 0, "Thickness must be >=0"
         self.thickness = thickness
         self.col = col
         self.round = roundness
@@ -136,34 +136,51 @@ class _RectOp(ElmOp):
 
         t = self.thickness
 
-        # Clip edges for straight sections (excluding corners)
-        # Top edge
-        arr[clip(y0, h)   : clip(y0+t, h),
-            clip(x0+r, w) : clip(x1-r, w)
-        ] = self.col
-        # Bottom edge
-        arr[clip(y1-t, h) : clip(y1, h),
-            clip(x0+r, w) : clip(x1-r, w)
-        ] = self.col
-        # Left edge
-        arr[clip(y0+r, h) : clip(y1-r, h),
-            clip(x0,w)    : clip(x0+t, w)
-        ] = self.col
-        # Right edge
-        arr[clip(y0+r, h) : clip(y1-r, h),
-            clip(x1-t, w) : clip(x1, w)
-        ] = self.col
+        if t == 0:
+            # Fill entire area
+            if r == 0:
+                # bcos it's faster than otherwise
+                arr[clip(y0, h) : clip(y1, h),
+                    clip(x0, w) : clip(x1, w)] = self.col
+            else:
+                arr[clip(y0+r, h) : clip(y1-r, h),
+                    clip(x0, w)   : clip(x1, w)] = self.col
+                arr[clip(y0, h)   : clip(y1, h),
+                    clip(x0+r, w) : clip(x1-r, w)] = self.col
+        else:
+            # Clip edges for straight sections (excluding corners)
+            # Top edge
+            arr[clip(y0, h)   : clip(y0+t, h),
+                clip(x0+r, w) : clip(x1-r, w)
+            ] = self.col
+            # Bottom edge
+            arr[clip(y1-t, h) : clip(y1, h),
+                clip(x0+r, w) : clip(x1-r, w)
+            ] = self.col
+            # Left edge
+            arr[clip(y0+r, h) : clip(y1-r, h),
+                clip(x0,w)    : clip(x0+t, w)
+            ] = self.col
+            # Right edge
+            arr[clip(y0+r, h) : clip(y1-r, h),
+                clip(x1-t, w) : clip(x1, w)
+            ] = self.col
 
         if r > 0:
             r2 = r*r
-            rthic2 = (r - t) * (r - t)
+            off = 0
+            if t == 0:
+                rthic2 = 0
+                off = 1
+            else:
+                rthic2 = (r - t) * (r - t)
 
             # draw quarter-circles at the four corners
             for cx, cy, xs, xe, ys, ye in [
-                (x0 + r, y0 + r - 1, x0,     x0 + r, y0,     y0 + r),  # TL
-                (x1 - r, y0 + r - 1, x1 - r, x1,     y0,     y0 + r),  # TR
-                (x0 + r, y1 - r - 1, x0,     x0 + r, y1 - r, y1),      # BL
-                (x1 - r, y1 - r - 1, x1 - r, x1,     y1 - r, y1)       # BR
+                (x0 + r - off, y0 + r - 1,       x0,     x0 + r, y0,     y0 + r),  # TL
+                (x1 - r,       y0 + r - 1,       x1 - r, x1,     y0,     y0 + r),  # TR
+                (x0 + r - off, y1 - r - 1 + off, x0,     x0 + r, y1 - r, y1),      # BL
+                (x1 - r,       y1 - r - 1 + off, x1 - r, x1,     y1 - r, y1)       # BR
             ]:
                 xs, xe = clip(xs, w), clip(xe, w)
                 ys, ye = clip(ys, h), clip(ye, h)
@@ -174,6 +191,45 @@ class _RectOp(ElmOp):
                         # only paint the annulus between r-t and r
                         if rthic2 <= d2 < r2:
                             arr[yy, xx] = self.col
+
+class _CircleOp(ElmOp):
+    __slots__ = ['pos', 'radius', 'thickness', 'col']
+    def __init__(self, pos, radius, thickness, col):
+        self.pos = pos
+        self.radius = abs(radius)
+        assert thickness >= 0, "Thickness must be >=0"
+        self.thickness = thickness
+        self.col = col
+ 
+    def ApplyOp(self, op: Op):
+        # TODO: transforms
+        return True
+
+    def ApplyOnArr(self, arr: np.ndarray):
+        h, w = arr.shape
+
+        x, y = self.pos
+
+        limit = lambda x, bound: int(max(min(x, bound), 0)+0.5)
+        x_min = limit(x - self.radius - 1, w)
+        x_max = limit(x + self.radius + 2, w)
+        y_min = limit(y - self.radius - 1, h)
+        y_max = limit(y + self.radius + 2, h)
+
+        radius_outer_sq = self.radius ** 2
+        if self.thickness == 0:
+            radius_inner_sq = 0
+        else:
+            radius_inner_sq = max(self.radius - self.thickness, 0) ** 2
+
+        for yy in range(y_min, y_max):
+            dy = yy - y
+            for xx in range(x_min, x_max):
+                dx = xx - x
+                dist_sq = dx * dx + dy * dy
+
+                if radius_inner_sq <= dist_sq <= radius_outer_sq:
+                    arr[yy, xx] = self.col
 
 
 def line(sur: 'Surface', p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: int):
@@ -206,7 +262,7 @@ def rect(sur: 'Surface', pos: Iterable[int|float], sze: Iterable[int|float], thi
     Args:
         pos: The position of the rect
         sze: The size of the rect
-        thickness: The thickness of the rect. Must be > 0.
+        thickness: The thickness of the rect. If == 0, will fill the entire rect. Must be >= 0.
         col: The colour of the rect
 
     Keyword args:
@@ -222,7 +278,7 @@ def rect(sur: 'Surface', x: int|float, y: int|float, width: int|float, height: i
         y: The y position of the rect
         width: The width of the rect
         height: The height of the rect
-        thickness: The thickness of the rect. Must be > 0.
+        thickness: The thickness of the rect. If == 0, will fill the entire rect. Must be >= 0.
         col: The colour of the rect
 
     Keyword args:
@@ -271,7 +327,7 @@ class _DrawFuncs(Func):
         Args:
             pos: The position of the rect
             sze: The size of the rect
-            thickness: The thickness of the rect. Must be > 0.
+            thickness: The thickness of the rect. If == 0, will fill the entire rect. Must be >= 0.
             col: The colour of the rect
 
         Keyword args:
@@ -287,7 +343,7 @@ class _DrawFuncs(Func):
             y: The y position of the rect
             width: The width of the rect
             height: The height of the rect
-            thickness: The thickness of the rect. Must be > 0.
+            thickness: The thickness of the rect. If == 0, will fill the entire rect. Must be >= 0.
             col: The colour of the rect
 
         Keyword args:
@@ -301,5 +357,38 @@ class _DrawFuncs(Func):
         else:
             raise ValueError(
                 f'Expected 4/6 args, found {len(args)}!'
+            )
+
+    @overload
+    def drawCircle(self, x: int|float, y: int|float, radius: int|float, thickness: int|float, col: int):
+        """
+        Draws a circle!
+
+        Args:
+            x: The X position of the circle
+            y: The y position of the circle
+            radius: The radius of the circle
+            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
+            col: The colour to fill the circle with.
+        """
+    @overload
+    def drawCircle(self, pos: Iterable[int|float], radius: int|float, thickness: int|float, col: int):
+        """
+        Draws a circle!
+
+        Args:
+            pos: The position of the circle
+            radius: The radius of the circle
+            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
+            col: The colour to fill the circle with.
+        """
+    def drawCircle(self, *args):
+        if len(args) == 5:
+            self._ops.append(_CircleOp((args[0], args[1]), args[2], args[3], args[4]))
+        elif len(args) == 4:
+            self._ops.append(_CircleOp(*args))
+        else:
+            raise ValueError(
+                f'Expected 4-5 arguments, found {len(args)}!'
             )
 
