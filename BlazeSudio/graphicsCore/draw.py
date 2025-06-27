@@ -14,46 +14,53 @@ __all__ = [
 
 @njit
 def _drawThickLine(arr, p1, p2, colour, thickness):
-    x0, y0 = p1
+    x, y = p1
     x1, y1 = p2
-    radius = thickness // 2
-    dx = abs(x1 - x0)
-    dy = abs(y1 - y0)
-    x, y = x0, y0
-    sx = 1 if x0 < x1 else -1
-    sy = 1 if y0 < y1 else -1
+    radius = thickness / 2
+    r2 = radius*radius
+    dx = abs(x1 - x)
+    dy = abs(y1 - y)
     if dx > dy:
-        err = dx // 2
-        while x != x1:
+        if x > x1:
+            x, x1 = x1, x
+            y, y1 = y1, y
+        sy = 1 if y < y1 else -1
+        err = dx / 2
+        while x < x1:
             # Draw a filled circle at (x, y)
-            for yy in range(y - radius, y + radius + 1):
-                for xx in range(x - radius, x + radius + 1):
-                    if (xx - x) ** 2 + (yy - y) ** 2 <= radius ** 2:
+            for yy in range(round(y - radius), round(y + radius) + 1):
+                for xx in range(round(x - radius), round(x + radius) + 1):
+                    if (xx - x) ** 2 + (yy - y) ** 2 <= r2:
                         if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
                             arr[yy, xx] = colour
             err -= dy
             if err < 0:
                 y += sy
                 err += dx
-            x += sx
+            x += 1
     else:
-        err = dy // 2
-        while y != y1:
+        if y > y1:
+            x, x1 = x1, x
+            y, y1 = y1, y
+        sx = 1 if x < x1 else -1
+        err = dy / 2
+        while y < y1:
             # Draw a filled circle at (x, y)
-            for yy in range(int(y - radius), int(y + radius + 1)):
-                for xx in range(int(x - radius), int(x + radius + 1)):
-                    if (xx - x) ** 2 + (yy - y) ** 2 <= radius ** 2:
-                        if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
+            for yy in range(round(y - radius), round(y + radius) + 1):
+                for xx in range(round(x - radius), round(x + radius) + 1):
+                    if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
+                        if (xx - x) ** 2 + (yy - y) ** 2 <= r2:
                             arr[yy, xx] = colour
             err -= dx
             if err < 0:
                 x += sx
                 err += dy
-            y += sy
-    # Draw at the last point
-    for yy in range(int(y1 - radius), int(y1 + radius + 1)):
-        for xx in range(int(x1 - radius), int(x1 + radius + 1)):
-            if (xx - x1) ** 2 + (yy - y1) ** 2 <= radius ** 2:
+            y += 1
+
+    # Draw one last filled circles at the end
+    for yy in range(round(y1 - radius), round(y1 + radius + 1)):
+        for xx in range(round(x1 - radius), round(x1 + radius + 1)):
+            if (xx - x1) ** 2 + (yy - y1) ** 2 <= r2:
                 if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
                     arr[yy, xx] = colour
 
@@ -94,13 +101,14 @@ class _LineOp(_PolygonOp):
         _drawThickLine(arr, self.ps[0], self.ps[1], self.col, self.thickness)
 
 class _RectOp(ElmOp):
-    __slots__ = ['pos', 'sze', 'thickness', 'col']
-    def __init__(self, x, y, width, height, thickness, col):
+    __slots__ = ['pos', 'sze', 'thickness', 'col', 'round']
+    def __init__(self, x, y, width, height, thickness, col, roundness):
         self.pos = (x, y)
         self.sze = (width, height)
         assert thickness > 0, "Thickness must be >0"
         self.thickness = thickness
         self.col = col
+        self.round = roundness
 
     def ApplyOp(self, op: Op):
         # TODO: transforms
@@ -109,19 +117,64 @@ class _RectOp(ElmOp):
     def ApplyOnArr(self, arr: np.ndarray):
         h, w = arr.shape
 
-        clip = lambda pos, bound: max(min(pos, bound), 0)
+        clip = lambda pos, bound: int(max(min(pos, bound), 0)+0.5)
 
-        x0, x1 = sorted((self.pos[0], self.pos[0]+self.sze[0]))
-        y0, y1 = sorted((self.pos[1], self.pos[1]+self.sze[1]))
+        if self.sze[0] > 0:
+            x0, x1 = self.pos[0],  self.pos[0] + self.sze[0]
+        else:
+            x0, x1 = self.pos[0] + self.sze[0],  self.pos[0]
+        if self.sze[1] > 0:
+            y0, y1 = self.pos[1],  self.pos[1] + self.sze[1]
+        else:
+            y0, y1 = self.pos[1] + self.sze[1],  self.pos[1]
 
-        # Top
-        arr[clip(y0, h):clip(y0+self.thickness, h), clip(x0, w):clip(x1+1, w)] = self.col
-        # Bottom
-        arr[clip(y1-self.thickness+1, h):clip(y1+1, h), clip(x0, w):clip(x1+1, w)] = self.col
-        # Left
-        arr[clip(y0+self.thickness, h):clip(y1-self.thickness+1, h), clip(x0, w):clip(x0+self.thickness, w)] = self.col
-        # Right
-        arr[clip(y0+self.thickness, h):clip(y1-self.thickness+1, h), clip(x1-self.thickness+1, w):clip(x1+1, w)] = self.col
+        # Compute actual rounding radius (cannot exceed half-size, nor thickness)
+        r = min(self.round,
+                (x1 - x0) / 2,
+                (y1 - y0) / 2)
+        r = max(0, r)
+
+        t = self.thickness
+
+        # Clip edges for straight sections (excluding corners)
+        # Top edge
+        arr[clip(y0, h)   : clip(y0+t, h),
+            clip(x0+r, w) : clip(x1-r, w)
+        ] = self.col
+        # Bottom edge
+        arr[clip(y1-t, h) : clip(y1, h),
+            clip(x0+r, w) : clip(x1-r, w)
+        ] = self.col
+        # Left edge
+        arr[clip(y0+r, h) : clip(y1-r, h),
+            clip(x0,w)    : clip(x0+t, w)
+        ] = self.col
+        # Right edge
+        arr[clip(y0+r, h) : clip(y1-r, h),
+            clip(x1-t, w) : clip(x1, w)
+        ] = self.col
+
+        if r > 0:
+            r2 = r*r
+            rthic2 = (r - t) * (r - t)
+
+            # draw quarter-circles at the four corners
+            for cx, cy, xs, xe, ys, ye in [
+                (x0 + r, y0 + r - 1, x0,     x0 + r, y0,     y0 + r),  # TL
+                (x1 - r, y0 + r - 1, x1 - r, x1,     y0,     y0 + r),  # TR
+                (x0 + r, y1 - r - 1, x0,     x0 + r, y1 - r, y1),      # BL
+                (x1 - r, y1 - r - 1, x1 - r, x1,     y1 - r, y1)       # BR
+            ]:
+                xs, xe = clip(xs, w), clip(xe, w)
+                ys, ye = clip(ys, h), clip(ye, h)
+                for yy in range(ys, ye):
+                    dy2 = (yy - cy) ** 2
+                    for xx in range(xs, xe):
+                        d2 = (xx - cx) ** 2 + dy2
+                        # only paint the annulus between r-t and r
+                        if rthic2 <= d2 < r2:
+                            arr[yy, xx] = self.col
+
 
 def line(sur: 'Surface', p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: int):
     """
@@ -146,7 +199,7 @@ def polygon(sur: 'Surface', ps: Iterable[Iterable[int|float]], thickness: int|fl
     sur.drawPolygon(ps, thickness, col)
 
 @overload
-def rect(sur: 'Surface', pos: Iterable[int|float], sze: Iterable[int|float], thickness: int|float, col: int):
+def rect(sur: 'Surface', pos: Iterable[int|float], sze: Iterable[int|float], thickness: int|float, col: int, /, roundness: int|float = 0):
     """
     Draws a rectangle
 
@@ -155,9 +208,12 @@ def rect(sur: 'Surface', pos: Iterable[int|float], sze: Iterable[int|float], thi
         sze: The size of the rect
         thickness: The thickness of the rect. Must be > 0.
         col: The colour of the rect
+
+    Keyword args:
+        roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
     """
 @overload
-def rect(sur: 'Surface', x: int|float, y: int|float, width: int|float, height: int|float, thickness: int|float, col: int):
+def rect(sur: 'Surface', x: int|float, y: int|float, width: int|float, height: int|float, thickness: int|float, col: int, /, roundness: int|float = 0):
     """
     Draws a rectangle
 
@@ -168,9 +224,12 @@ def rect(sur: 'Surface', x: int|float, y: int|float, width: int|float, height: i
         height: The height of the rect
         thickness: The thickness of the rect. Must be > 0.
         col: The colour of the rect
+
+    Keyword args:
+        roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
     """
-def rect(sur: 'Surface', *args):
-    sur.drawRect(*args)
+def rect(sur: 'Surface', *args, roundness = 0):
+    sur.drawRect(*args, roundness=roundness)
 
 class _DrawFuncs(Func):
     def drawLine(self, p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: int):
@@ -205,7 +264,7 @@ class _DrawFuncs(Func):
         self._ops.append(_PolygonOp(ps, thickness, col))
 
     @overload
-    def drawRect(self, pos: Iterable[int|float], sze: Iterable[int|float], thickness: int|float, col: int):
+    def drawRect(self, pos: Iterable[int|float], sze: Iterable[int|float], thickness: int|float, col: int, /, roundness: int|float = 0):
         """
         Draws a rectangle
 
@@ -214,9 +273,12 @@ class _DrawFuncs(Func):
             sze: The size of the rect
             thickness: The thickness of the rect. Must be > 0.
             col: The colour of the rect
+
+        Keyword args:
+            roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
         """
     @overload
-    def drawRect(self, x: int|float, y: int|float, width: int|float, height: int|float, thickness: int|float, col: int):
+    def drawRect(self, x: int|float, y: int|float, width: int|float, height: int|float, thickness: int|float, col: int, /, roundness: int|float = 0):
         """
         Draws a rectangle
 
@@ -227,12 +289,15 @@ class _DrawFuncs(Func):
             height: The height of the rect
             thickness: The thickness of the rect. Must be > 0.
             col: The colour of the rect
+
+        Keyword args:
+            roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
         """
-    def drawRect(self, *args):
+    def drawRect(self, *args, roundness = 0):
         if len(args) == 4:
-            self._ops.append(_RectOp(args[0][0], args[0][1], args[1][0], args[1][1], args[2], args[3]))
+            self._ops.append(_RectOp(args[0][0], args[0][1], args[1][0], args[1][1], args[2], args[3], roundness))
         elif len(args) == 6:
-            self._ops.append(_RectOp(*args))
+            self._ops.append(_RectOp(*args, roundness=roundness))
         else:
             raise ValueError(
                 f'Expected 4/6 args, found {len(args)}!'
