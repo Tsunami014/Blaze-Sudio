@@ -796,12 +796,21 @@ if __name__ == '__main__':
     
     if has_tk:
         root.after(1, lambda: root.attributes('-topmost', True))
+        def tk_abort(exc, val, tb):
+            raise val.with_traceback(tb)
+        root.report_callback_exception = tk_abort
         root.mainloop()
     else:
         print("*Requires TKinter for the demo")
+        idx = None
         try:
-            cmds[int(input('Enter the number of the demo you want to run > '))]()
+            idx = int(input('Enter the number of the demo you want to run > '))
         except ValueError:
             print('You entered an invalid number. Exiting...')
+            idx = None
         except IndexError:
             print('You entered a number that is not in the list. Exiting...')
+            idx = None
+        if idx is not None:
+            cmds[idx]()
+
