@@ -1,16 +1,7 @@
 import numpy as np
-from typing import overload, Iterable, TYPE_CHECKING
+from typing import overload, Iterable
 from BlazeSudio.graphicsCore.basebase import Op, ElmOp, Func, OpsList
 from numba import njit
-
-if TYPE_CHECKING:
-    from BlazeSudio.graphicsCore import Surface
-
-# This is so you can use 'graphicsCore.draw.line' in replacement of pygame's 'pygame.draw.line'
-__all__ = [
-    'line',
-    'polygon'
-]
 
 @njit
 def _drawThickLine(arr, p1, p2, colour, thickness):
@@ -295,64 +286,6 @@ class _ElipseOp(ElmOp):
                     if dx/xd2 + dy/yd2 <= 1 <= dx/xd1 + dy/yd1:
                         arr[yy, xx] = self.col
 
-
-def line(sur: 'Surface', p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: int):
-    """
-    Draw a line
-
-    Args:
-        p1 (Iterable[int | float]): The starting point of the line
-        p2 (Iterable[int | float]): The ending point of the line
-        thickness (int | float): The thickness of the line. Must be > 0.
-        col (int): The colour of the line
-    """
-    sur.drawLine(p1, p2, thickness, col)
-def polygon(sur: 'Surface', ps: Iterable[Iterable[int|float]], thickness: int|float, col: int):
-    """
-    Draw a closed polygon
-
-    Args:
-        ps (Iterable[Iterable[int | float]]): The points making up the polygon
-        thickness (int | float): The thickness of the line. Must be > 0.
-        col (int): The colour of the line
-    """
-    sur.drawPolygon(ps, thickness, col)
-
-@overload
-def rect(sur: 'Surface', pos: Iterable[int|float], sze: Iterable[int|float], thickness: int|float, col: int, /, roundness: int|float = 0):
-    """
-    Draws a rectangle
-
-    Args:
-        pos: The position of the rect
-        sze: The size of the rect
-        thickness: The thickness of the rect. If == 0, will fill the entire rect. Must be >= 0.
-        col: The colour of the rect
-
-    Keyword args:
-        roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
-    """
-@overload
-def rect(sur: 'Surface', x: int|float, y: int|float, width: int|float, height: int|float, thickness: int|float, col: int, /, roundness: int|float = 0):
-    """
-    Draws a rectangle
-
-    Args:
-        x: The x position of the rect
-        y: The y position of the rect
-        width: The width of the rect
-        height: The height of the rect
-        thickness: The thickness of the rect. If == 0, will fill the entire rect. Must be >= 0.
-        col: The colour of the rect
-
-    Keyword args:
-        roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
-    """
-def rect(sur: 'Surface', *args, roundness = 0):
-    sur.drawRect(*args, roundness=roundness)
-
-# TODO: Draw methods for circle and elipse (I'm not bothered rn)
-
 class _DrawFuncs(Func):
     # TODO: Overload for lines
     def drawLine(self, p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: int):
@@ -427,6 +360,39 @@ class _DrawFuncs(Func):
             )
 
     @overload
+    def drawCircle(self, pos: Iterable[int|float], radius: int|float, thickness: int|float, col: int):
+        """
+        Draws a circle!
+
+        Args:
+            pos: The position of the circle
+            radius: The radius of the circle
+            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
+            col: The colour to fill the circle with.
+        """
+    @overload
+    def drawCircle(self, x: int|float, y: int|float, radius: int|float, thickness: int|float, col: int):
+        """
+        Draws a circle!
+
+        Args:
+            x: The X position of the circle
+            y: The y position of the circle
+            radius: The radius of the circle
+            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
+            col: The colour to fill the circle with.
+        """
+    def drawCircle(self, *args):
+        if len(args) == 5:
+            self._ops.append(_CircleOp((args[0], args[1]), args[2], args[3], args[4]))
+        elif len(args) == 4:
+            self._ops.append(_CircleOp(*args))
+        else:
+            raise ValueError(
+                f'Expected 4-5 arguments, found {len(args)}!'
+            )
+
+    @overload
     def drawElipse(self, pos: Iterable[int|float], xradius: int|float, yradius: int|float, thickness: int|float, col: int):
         """
         Draws an elipse!
@@ -459,38 +425,5 @@ class _DrawFuncs(Func):
         else:
             raise ValueError(
                 f'Expected 5-6 arguments, found {len(args)}!'
-            )
-
-    @overload
-    def drawCircle(self, pos: Iterable[int|float], radius: int|float, thickness: int|float, col: int):
-        """
-        Draws a circle!
-
-        Args:
-            pos: The position of the circle
-            radius: The radius of the circle
-            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
-            col: The colour to fill the circle with.
-        """
-    @overload
-    def drawCircle(self, x: int|float, y: int|float, radius: int|float, thickness: int|float, col: int):
-        """
-        Draws a circle!
-
-        Args:
-            x: The X position of the circle
-            y: The y position of the circle
-            radius: The radius of the circle
-            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
-            col: The colour to fill the circle with.
-        """
-    def drawCircle(self, *args):
-        if len(args) == 5:
-            self._ops.append(_CircleOp((args[0], args[1]), args[2], args[3], args[4]))
-        elif len(args) == 4:
-            self._ops.append(_CircleOp(*args))
-        else:
-            raise ValueError(
-                f'Expected 4-5 arguments, found {len(args)}!'
             )
 
