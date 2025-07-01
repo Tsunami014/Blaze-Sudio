@@ -212,9 +212,9 @@ class _CircleOp(ElmOp):
 
         limit = lambda x, bound: int(max(min(x, bound), 0)+0.5)
         x_min = limit(x - self.radius - 1, w)
-        x_max = limit(x + self.radius + 2, w)
+        x_max = limit(x + self.radius + 1, w)
         y_min = limit(y - self.radius - 1, h)
-        y_max = limit(y + self.radius + 2, h)
+        y_max = limit(y + self.radius + 1, h)
 
         radius_outer_sq = self.radius ** 2
         if self.thickness == 0:
@@ -230,6 +230,70 @@ class _CircleOp(ElmOp):
 
                 if radius_inner_sq <= dist_sq <= radius_outer_sq:
                     arr[yy, xx] = self.col
+
+
+class _ElipseOp(ElmOp):
+    __slots__ = ['pos', 'xradius', 'yradius', 'thickness', 'col']
+    def __init__(self, pos, xradius, yradius, thickness, col):
+        self.pos = pos
+        self.xradius = abs(xradius)
+        self.yradius = abs(yradius)
+        assert thickness >= 0, "Thickness must be >=0"
+        self.thickness = thickness
+        self.col = col
+ 
+    def ApplyOp(self, op: Op):
+        # TODO: transforms
+        return True
+
+    def ApplyOnArr(self, arr: np.ndarray):
+        h, w = arr.shape
+
+        x, y = self.pos
+
+        if self.thickness >= min(self.xradius, self.yradius):
+            t = 0
+        else:
+            t = self.thickness/2
+
+        limit = lambda x, bound: int(max(min(x, bound), 0)+0.5)
+        x_min = limit(x - self.xradius - 1 - t, w)
+        x_max = limit(x + self.xradius + 1 + t, w)
+        y_min = limit(y - self.yradius - 1 - t, h)
+        y_max = limit(y + self.yradius + 1 + t, h)
+
+        if self.thickness == 0 or self.thickness >= min(self.xradius, self.yradius):
+            xd = self.xradius * self.xradius
+            yd = self.yradius * self.yradius
+
+            for yy in range(y_min, y_max):
+                dy = yy - y
+                dy = dy * dy
+                for xx in range(x_min, x_max):
+                    dx = xx - x
+                    dx = dx * dx
+
+                    if dx/xd + dy/yd <= 1:
+                        arr[yy, xx] = self.col
+        else:
+            xd1 = self.xradius - t
+            xd1 = xd1 * xd1
+            yd1 = self.yradius - t
+            yd1 = yd1 * yd1
+            xd2 = self.xradius + t
+            xd2 = xd2 * xd2
+            yd2 = self.yradius + t
+            yd2 = yd2 * yd2
+
+            for yy in range(y_min, y_max):
+                dy = yy - y
+                dy = dy * dy
+                for xx in range(x_min, x_max):
+                    dx = xx - x
+                    dx = dx * dx
+
+                    if dx/xd2 + dy/yd2 <= 1 <= dx/xd1 + dy/yd1:
+                        arr[yy, xx] = self.col
 
 
 def line(sur: 'Surface', p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: int):
@@ -287,7 +351,10 @@ def rect(sur: 'Surface', x: int|float, y: int|float, width: int|float, height: i
 def rect(sur: 'Surface', *args, roundness = 0):
     sur.drawRect(*args, roundness=roundness)
 
+# TODO: Draw methods for circle and elipse (I'm not bothered rn)
+
 class _DrawFuncs(Func):
+    # TODO: Overload for lines
     def drawLine(self, p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: int):
         """
         Draw a line
@@ -360,17 +427,40 @@ class _DrawFuncs(Func):
             )
 
     @overload
-    def drawCircle(self, x: int|float, y: int|float, radius: int|float, thickness: int|float, col: int):
+    def drawElipse(self, pos: Iterable[int|float], xradius: int|float, yradius: int|float, thickness: int|float, col: int):
         """
-        Draws a circle!
+        Draws an elipse!
 
         Args:
-            x: The X position of the circle
-            y: The y position of the circle
-            radius: The radius of the circle
+            pos: The position of the elipse
+            xradius: The radius of the width of the elipse
+            yradius: The radius of the height of the elipse
             thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
             col: The colour to fill the circle with.
         """
+    @overload
+    def drawElipse(self, x: int|float, y: int|float, xradius: int|float, yradius: int|float, thickness: int|float, col: int):
+        """
+        Draws an elipse!
+
+        Args:
+            x: The X position of the elipse
+            y: The y position of the elipse
+            xradius: The radius of the width of the elipse
+            yradius: The radius of the height of the elipse
+            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
+            col: The colour to fill the circle with.
+        """
+    def drawElipse(self, *args):
+        if len(args) == 6:
+            self._ops.append(_ElipseOp((args[0], args[1]), args[2], args[3], args[4], args[5]))
+        elif len(args) == 5:
+            self._ops.append(_ElipseOp(*args))
+        else:
+            raise ValueError(
+                f'Expected 5-6 arguments, found {len(args)}!'
+            )
+
     @overload
     def drawCircle(self, pos: Iterable[int|float], radius: int|float, thickness: int|float, col: int):
         """
@@ -378,6 +468,18 @@ class _DrawFuncs(Func):
 
         Args:
             pos: The position of the circle
+            radius: The radius of the circle
+            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
+            col: The colour to fill the circle with.
+        """
+    @overload
+    def drawCircle(self, x: int|float, y: int|float, radius: int|float, thickness: int|float, col: int):
+        """
+        Draws a circle!
+
+        Args:
+            x: The X position of the circle
+            y: The y position of the circle
             radius: The radius of the circle
             thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
             col: The colour to fill the circle with.

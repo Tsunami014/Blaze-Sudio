@@ -26,6 +26,8 @@ def NewGraphicsDemo():
     sur.drawRect((30.5, 50), (100.25, 80.3333333), 10, Colour(125, 125, 125), roundness=30)
     sur.drawRect(100, 150, 30, 50, 10, 0)
     sur.drawCircle(300, 300, 10, 5, Colour(255, 100, 100))
+    sur.drawElipse((100, 100), 50, 30, 10, Colour(80, 255, 100))
+    sur.drawElipse(700, 100, 30, 70, 0, 0)
     # Testing entirely fill
     sur.drawCircle((500, 300.5), 30.5, 0, 0)
     sur.drawRect(500, 350, 50, 30, 0, 0)
