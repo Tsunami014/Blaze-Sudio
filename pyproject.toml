@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "Blaze-Sudio"
 version = "3.2.0"
-description = "This is a really cool game/physics/application engine written in pygame!"
+description = "This is a really cool game/physics/graphics/application engine written in pygame!"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
@@ -47,9 +47,13 @@ Issues = "https://github.com/Tsunami014/Blaze-Sudio/issues"
 BlazeSudio = "BlazeSudio:main"
 
 [project.optional-dependencies]
+speed = [
+    "numba"
+]
+
 graphics = [
     "pygame-ce",
-    "numba"
+    "numpy"
 ]
 
 image = [
@@ -65,7 +69,6 @@ collisions = [
 game = [
     "Blaze-Sudio[graphics]",
     "Blaze-Sudio[collisions]",
-    "numpy",
     "scikit-image",
     "pyperclip",
 ]
@@ -76,7 +79,7 @@ all = [
 ]
 
 [tool.setuptools.packages.find]
-exclude = ["BlazeSudio.collisions.lib", "BlazeSudio.debug"]
+exclude = ["BlazeSudio.collisions.lib", "BlazeSudio.debug", "BlazeSudio.speedup.cache"]
 
 [tool.setuptools.package-data]
 "BlazeSudio" = [

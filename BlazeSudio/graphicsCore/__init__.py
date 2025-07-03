@@ -1,10 +1,10 @@
 from BlazeSudio.graphicsCore import base
 from BlazeSudio.graphicsCore.apply import Apply
 from typing import overload, Iterable, Tuple
+from collections import deque
+import time
 import pygame
 pygame.init()
-
-Clock = pygame.time.Clock()
 
 __all__ = [
     'Quit',
@@ -20,6 +20,72 @@ def Quit():
     Quits the application, handling all quit code accordingly
     """
     pygame.quit()
+
+class Clock():
+    def __init__(self):
+        self.dt = 0
+        self._lastTime = None
+
+    def tick(self, maxfps: int|float = None):
+        """
+        Ticks the clock, updating FPS count and optionally enforcing a maximum FPS.
+
+        Args:
+            maxfps: The maximum fps the application should run at. Defaults to None (don't enforce)
+        """
+        t = time.time()
+        if self._lastTime is not None:
+            # raw delta-time
+            delta = t - self._lastTime
+            # enforce max FPS if requested
+            if maxfps is not None:
+                target_dt = 1.0 / maxfps
+                if delta < target_dt:
+                    time.sleep(target_dt - delta)
+                    t = time.time()
+                    delta = t - self._lastTime
+            self.dt = delta
+        self._lastTime = t
+
+    def get_fps(self):
+        """
+        Returns the number of frames per second instantly
+        """
+        return 0 if self.dt == 0 else 1.0 / self.dt
+
+class AvgClock(Clock):
+    def __init__(self, secs: int|float):
+        """
+        An average Clock, averaging the fps over a set time.
+
+        Args:
+            secs: The number of seconds to average the fps over
+        """
+        self.secs = secs
+        self._frameTimes = deque()
+        super().__init__()
+
+    def tick(self, maxfps: int|float = None):
+        """
+        Ticks the clock, updating FPS count and optionally enforcing a maximum FPS.
+
+        Args:
+            maxfps: The maximum fps the application should run at. Defaults to None (don't enforce)
+        """
+        super().tick(maxfps)
+        # record this tick
+        self._frameTimes.append(self._lastTime)
+        # drop any frames older than time s
+        cutoff = self._lastTime - self.secs
+        while self._frameTimes and self._frameTimes[0] < cutoff:
+            self._frameTimes.popleft()
+
+    def get_fps_avg(self):
+        """
+        Returns the average FPS over the last secs seconds.
+        """
+        count = len(self._frameTimes)
+        return count / self.secs if self.secs > 0 else 0
 
 class Colour: # TODO: themes - repeated colours (and 'highlight 1', 'tone 3', etc.) put in a list so apps can easily theme switch
     """
@@ -149,7 +215,7 @@ class Window:
         """
         Print the current window to the screen
         """
-        cls._PGWIN.blit(cls._WINDOW(), (0, 0))
+        cls._PGWIN.blit(cls._WINDOW.to_pygame(), (0, 0))
 
     @overload
     @classmethod
@@ -246,7 +312,7 @@ class Window:
             title (str): The new title of the window
             icontitle (str | None, optional): Assumedly, the title of the icon. Defaults to None. TODO: Check pygame docs about this
         """
-        pygame.display.set_caption(title, icontitle)
+        pygame.display.set_caption(title, (title if icontitle is None else icontitle))
     @classmethod
     def set_icon(cls, icon: 'Surface'):
         pygame.display.set_icon(icon())
@@ -299,19 +365,15 @@ class Surface(base.AllFuncs, Apply):
     
     def Test(self):
         """
-        Generate this surface, then apply to the pygame window and apply. Used in testing.
+        Generate this surface, then apply to the pygame window and display it. Used in testing.
+
+        This is for if you want to see what a surface looks like when debugging.
         """
-        Window.fill((0, 0, 0))
         if not self._WinSur:
+            Window.fill((0, 0, 0))
             Window() # TODO: .blit
         Window.flush()
         Window.flip()
-
-    def to_pygame(self) -> pygame.Surface:
-        """
-        A wrapper for the `self()` method
-        """
-        return self()
     
     def copy(self):
         pass
