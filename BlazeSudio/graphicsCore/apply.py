@@ -8,7 +8,10 @@ class Apply:
     _ops: list[base.Op] # Change from list to np.array
     _WinSur: bool
 
-    def __call__(self) -> pygame.Surface:
+    def __call__(self) -> np.ndarray:
+        """
+        Get the numpy array image of this surface!
+        """
         # Get all the elements, applying the operations on them, additionally finding the output size
         elms: list[base.ElmOp] = []
         sze = (0, 0)
@@ -47,6 +50,15 @@ class Apply:
         for e in elms:
             e.ApplyOnArr(arr)
         
+        # Return the array
+        return arr
+
+    def to_pygame(self) -> pygame.Surface:
+        """
+        Get the pygame image for this surface
+        """
+        arr = self()
+
         # Turn the array into a pygame surface, first by converting to rgb
         h, w = arr.shape
         rgb_arr = np.zeros((h, w, 3), dtype=np.uint8)

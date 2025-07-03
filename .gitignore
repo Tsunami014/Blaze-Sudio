@@ -1,9 +1,14 @@
-.envrc
+# Collision stuff
 BlazeSudio/collisions/out/**
+BlazeSudio/collisions/build/**
+# Cache files
 *.pyc
-*.elm
-out/**
+BlazeSudio/speedup/cache/*
+!BlazeSudio/speedup/cache/__init__.py
+# Python building stuff
 Blaze_Sudio.egg-info/**
 build/**
-BlazeSudio/collisions/build/**
+# Misc stuff
+*.elm
+out/**
 temp.dat

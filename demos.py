@@ -17,7 +17,7 @@ It will first read the file, then overwrite it when you save.')
     NodeEditor(f)()
 
 def NewGraphicsDemo():
-    from BlazeSudio.graphicsCore import Quit, Window, Colour, Interaction
+    from BlazeSudio.graphicsCore import Quit, Clock, Window, Colour, Interaction
     sur = Window.create_win()
     sur.fill(Colour(255, 255, 255))
     # It can also handle decimals!
@@ -36,9 +36,13 @@ def NewGraphicsDemo():
     sur.drawRect(500, 500, 0, 0, 5, 0) # Unspecified; in reality, not there..? Would be nice (but too expensive) to make it a dot
     sur.drawRect(500, 510, 50, 50, 1, 0, roundness=100) # A circle; yay!
     sur.drawLine((500, 570), (500, 570), 5, 0) # Unspecified; in reality, a circle (which is great!)
+
+    c = Clock()
     while Interaction.eventHandleBasic():
         Window.flush()
         Window.flip()
+        c.tick()
+        Window.set_title(f'FPS: {c.get_fps()}')
     Quit()
 
 def GraphicsDemo():
@@ -744,6 +748,102 @@ def SoundDemo():
     
     Main()()
 
+def CompileDemo():
+    from BlazeSudio import speedup
+    from BlazeSudio.speedup import compile
+    from importlib import import_module
+    import os
+    import sys
+    import time
+    # Used in test funcs
+    import numpy as np
+    import random as rng
+    speedup.setSpeedupType(1)
+    sectsL = max(len(compile.sects), 3)
+    print("\n"*(sectsL+2))
+    last_res = ""
+    while True:
+        print(f"\033[{sectsL+2}A"+"\n".join(f'{i}: {j[1]} ({j[0]})\033[J' for i, j in compile.sects.items()))
+        print("\033[J\n"*(sectsL - len(compile.sects)), end="")
+        print(last_res+"\033[J")
+        try:
+            inp = input("Which section do you want to look at? (ctrl+c to exit) > \033[J")
+        except KeyboardInterrupt:
+            print("Exiting.")
+            return
+        
+        nxt = False
+        try:
+            inp = int(inp)
+            if inp < 0 or inp >= len(compile.sects):
+                last_res = "Number must be a compile section present in the list"
+            else:
+                nxt = True
+        except ValueError:
+            last_res = "Input must be a number"
+
+        if nxt:
+            last_res = ""
+            sect = inp
+            chosen = compile.sects[sect]
+            while True:
+                print(f"\033[{sectsL+3}A" + f"Chosen: {chosen[1]} ({chosen[0]})\033[J")
+                print("\n\033[J"*(sectsL-3))
+                print(last_res+"\033[J")
+                nt = ""
+                if not compile.isCached(chosen[1]):
+                    nt = " not"
+                print(f"Compiled version does{nt} exist\033[J")
+                print("p = purge compiled, c = compile, r = time regular, t = time compiled\033[J")
+                try:
+                    inp = input("What do you want to do? (ctrl+c to return) > \033[J")
+                except KeyboardInterrupt:
+                    last_res = ""
+                    break
+                inp = inp.lower().strip()
+                if inp == 'p':
+                    pth = os.path.abspath(__file__)
+                    basepth = pth[:pth.rindex('/')]+'/BlazeSudio/speedup/cache/'
+                    for i in os.listdir(basepth):
+                        if i.startswith(chosen[1]):
+                            os.remove(basepth+i)
+                    if chosen[1] in speedup.MODULES:
+                        speedup.MODULES[chosen[1]]['compiled'] = None
+                    modulepth = 'BlazeSudio.speedup.cache.'+chosen[1]
+                    if modulepth in sys.modules:
+                        del sys.modules[modulepth]
+                    last_res = "Purged!"
+                elif inp == 'c':
+                    if compile.isCached(chosen[1]):
+                        last_res = "Already compiled, so cannot recompile!"
+                        continue
+                    compile.compile([sect])
+                    last_res = "Compiled!"
+                elif inp == 'r' or inp == 't':
+                    if inp == 't' and not compile.isCached(chosen[1]):
+                        last_res = "Not compiled, so cannot time!"
+                        continue
+                    totT = 0
+                    eachRuns = 10
+                    import_module('BlazeSudio.'+chosen[0])
+                    for reg, _, comp, test in speedup.MODULES[chosen[1]]['funcs']:
+                        if inp == 'r':
+                            fun = reg
+                        else:
+                            fun = comp
+                        for _ in range(eachRuns):
+                            t = time.time()
+                            fun(*eval(test, {'np': np, 'rng': rng}))
+                            t2 = time.time()
+                            totT += t2-t
+                    totRs = eachRuns*len(speedup.MODULES[chosen[1]]['funcs'])
+
+                    lbl = {'r': 'Regular', 't': 'Compiled'}[inp]
+                    last_res = f"{lbl} functions took a total of {round(totT/totRs, 8)} seconds per run on average (over {totRs} runs)"
+                else:
+                    last_res = f'Input "{inp}" not recognised!'
+
+
 if __name__ == '__main__':
     try:
         import tkinter as Tk
@@ -795,6 +895,7 @@ if __name__ == '__main__':
     label('Misc stuff:')
     button('Tileset Collision Demo [game]', TsetCollDemo,                     )
     button('Sound Demo [game]',             SoundDemo,                        )
+    button('Compile Demo [speed]',          CompileDemo,                      )
     
     if has_tk:
         root.after(1, lambda: root.attributes('-topmost', True))

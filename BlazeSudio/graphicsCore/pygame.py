@@ -1,17 +1,22 @@
-from BlazeSudio.graphicsCore import Surface
+from BlazeSudio.graphicsCore import Clock, Surface
 from typing import Iterable, overload
 
 # This is so you can use 'graphicsCore.draw.line' in replacement of pygame's 'pygame.draw.line'
 __all__ = [
+    'time',
     'draw'
 ]
 
-class draw:
+class _abstractBase:
     def __new__(cls):
         raise NotImplementedError(
             'Do not instance this class! Instead, call the class functions.'
         )
 
+class time(_abstractBase):
+    Clock = Clock
+
+class draw(_abstractBase):
     @staticmethod
     def line(sur: Surface, col: int, start_pos: Iterable[int|float], end_pos: Iterable[int|float], width: int|float = 1):
         """
