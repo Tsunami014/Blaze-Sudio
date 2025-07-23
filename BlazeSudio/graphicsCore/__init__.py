@@ -34,6 +34,7 @@ class Clock():
             maxfps: The maximum fps the application should run at. Defaults to None (don't enforce)
         """
         t = time.time()
+        slept = False
         if self._lastTime is not None:
             # raw delta-time
             delta = t - self._lastTime
@@ -41,10 +42,13 @@ class Clock():
             if maxfps is not None:
                 target_dt = 1.0 / maxfps
                 if delta < target_dt:
-                    time.sleep(target_dt - delta)
+                    slept = True
+                    time.sleep(target_dt - delta - 0.001)
                     t = time.time()
                     delta = t - self._lastTime
             self.dt = delta
+        if not slept:
+            time.sleep(0)
         self._lastTime = t
 
     def get_fps(self):
@@ -80,12 +84,18 @@ class AvgClock(Clock):
         while self._frameTimes and self._frameTimes[0] < cutoff:
             self._frameTimes.popleft()
 
-    def get_fps_avg(self):
+    def get_fps(self):
         """
         Returns the average FPS over the last secs seconds.
         """
         count = len(self._frameTimes)
         return count / self.secs if self.secs > 0 else 0
+
+    def get_fps_inst(self):
+        """
+        Returns the number of frames per second instantly
+        """
+        return super().get_fps()
 
 class Colour: # TODO: themes - repeated colours (and 'highlight 1', 'tone 3', etc.) put in a list so apps can easily theme switch
     """
