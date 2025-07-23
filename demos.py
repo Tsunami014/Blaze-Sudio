@@ -760,6 +760,7 @@ def CompileDemo():
     import random as rng
     speedup.setSpeedupType(1)
     sectsL = max(len(compile.sects), 3)
+    print('ctrl+c to go back/exit')
     print("\n"*(sectsL+2))
     last_res = ""
     while True:
@@ -767,7 +768,7 @@ def CompileDemo():
         print("\033[J\n"*(sectsL - len(compile.sects)), end="")
         print(last_res+"\033[J")
         try:
-            inp = input("Which section do you want to look at? (ctrl+c to exit) > \033[J")
+            inp = input("Select section > \033[J")
         except KeyboardInterrupt:
             print("Exiting.")
             return
@@ -776,7 +777,7 @@ def CompileDemo():
         try:
             inp = int(inp)
             if inp < 0 or inp >= len(compile.sects):
-                last_res = "Number must be a compile section present in the list"
+                last_res = "Number must be present in list"
             else:
                 nxt = True
         except ValueError:
@@ -796,7 +797,7 @@ def CompileDemo():
                 print(f"Compiled version does{nt} exist\033[J")
                 print("p = purge compiled, c = compile, r = time regular, t = time compiled\033[J")
                 try:
-                    inp = input("What do you want to do? (ctrl+c to return) > \033[J")
+                    inp = input("What do you want to do? > \033[J")
                 except KeyboardInterrupt:
                     last_res = ""
                     break
@@ -814,9 +815,6 @@ def CompileDemo():
                         del sys.modules[modulepth]
                     last_res = "Purged!"
                 elif inp == 'c':
-                    if compile.isCached(chosen[1]):
-                        last_res = "Already compiled, so cannot recompile!"
-                        continue
                     compile.compile([sect])
                     last_res = "Compiled!"
                 elif inp == 'r' or inp == 't':
@@ -824,7 +822,7 @@ def CompileDemo():
                         last_res = "Not compiled, so cannot time!"
                         continue
                     totT = 0
-                    eachRuns = 10
+                    eachRuns = 100
                     import_module('BlazeSudio.'+chosen[0])
                     for reg, _, comp, test in speedup.MODULES[chosen[1]]['funcs']:
                         if inp == 'r':
@@ -839,7 +837,7 @@ def CompileDemo():
                     totRs = eachRuns*len(speedup.MODULES[chosen[1]]['funcs'])
 
                     lbl = {'r': 'Regular', 't': 'Compiled'}[inp]
-                    last_res = f"{lbl} functions took a total of {round(totT/totRs, 8)} seconds per run on average (over {totRs} runs)"
+                    last_res = f"{lbl} functions took a total of {round(totT/totRs, 8):.10f} seconds per run on average (over {totRs} runs)"
                 else:
                     last_res = f'Input "{inp}" not recognised!'
 

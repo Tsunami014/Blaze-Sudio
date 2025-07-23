@@ -48,7 +48,8 @@ BlazeSudio = "BlazeSudio:main"
 
 [project.optional-dependencies]
 speed = [
-    "numba"
+    "numba",
+    "setuptools"
 ]
 
 graphics = [

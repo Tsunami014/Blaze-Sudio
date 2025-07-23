@@ -1,5 +1,5 @@
 from typing import Iterable
-from BlazeSudio.speedup import _compile_module
+from BlazeSudio.speedup import _compile_module, _get_module
 from importlib import import_module
 
 __all__ = ['sects', 'compile', 'isCached']
@@ -34,9 +34,5 @@ def isCached(module: str):
     Args:
         module: The module to check
     """
-    try:
-        import_module(f'BlazeSudio.speedup.cache.{module}')
-        return True
-    except ImportError:
-        return False
+    return _get_module(module) is not None
 
