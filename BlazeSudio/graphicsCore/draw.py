@@ -1,12 +1,11 @@
 import numpy as np
-from typing import overload, Iterable
+from typing import overload, Iterable, Tuple
 from BlazeSudio.graphicsCore.basebase import Op, ElmOp, Func, OpsList
 from BlazeSudio.speedup import jitrix
 
 @jitrix('draw', 
-        'void(uint32[:, :], UniTuple(intp, 2), UniTuple(intp, 2), uint32, float64)',
         '(np.full((100, 100), 0, np.uint32), (10, 10), (80, 80), np.uint32(10), np.float64(5.0))')
-def _drawThickLine(arr, p1, p2, colour, thickness):
+def _drawThickLine(arr: 'np.uint32[:, :]', p1: Tuple[np.int64, np.int64], p2: Tuple[np.int64, np.int64], colour: np.uint32, thickness: float):
     x, y = p1
     x1, y1 = p2
     radius = thickness / 2
