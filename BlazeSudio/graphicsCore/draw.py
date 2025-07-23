@@ -21,8 +21,8 @@ def _drawThickLine(arr, p1, p2, colour, thickness):
         err = dx / 2
         while x < x1:
             # Draw a filled circle at (x, y)
-            for yy in range(round(y - radius), round(y + radius) + 1):
-                for xx in range(round(x - radius), round(x + radius) + 1):
+            for yy in range(int(np.floor(y - radius)), int(np.ceil(y + radius) + 1)):
+                for xx in range(int(np.floor(x - radius)), int(np.ceil(x + radius) + 1)):
                     if (xx - x) ** 2 + (yy - y) ** 2 <= r2:
                         if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
                             arr[yy, xx] = colour
@@ -39,8 +39,8 @@ def _drawThickLine(arr, p1, p2, colour, thickness):
         err = dy / 2
         while y < y1:
             # Draw a filled circle at (x, y)
-            for yy in range(round(y - radius), round(y + radius) + 1):
-                for xx in range(round(x - radius), round(x + radius) + 1):
+            for yy in range(int(np.floor(y - radius)), int(np.ceil(y + radius) + 1)):
+                for xx in range(int(np.floor(x - radius)), int(np.ceil(x + radius) + 1)):
                     if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
                         if (xx - x) ** 2 + (yy - y) ** 2 <= r2:
                             arr[yy, xx] = colour
@@ -51,8 +51,8 @@ def _drawThickLine(arr, p1, p2, colour, thickness):
             y += 1
 
     # Draw one last filled circles at the end
-    for yy in range(round(y1 - radius), round(y1 + radius + 1)):
-        for xx in range(round(x1 - radius), round(x1 + radius + 1)):
+    for yy in range(int(np.floor(y1 - radius)), int(np.ceil(y1 + radius) + 1)):
+        for xx in range(int(np.floor(x1 - radius)), int(np.ceil(x1 + radius)) + 1):
             if (xx - x1) ** 2 + (yy - y1) ** 2 <= r2:
                 if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
                     arr[yy, xx] = colour
