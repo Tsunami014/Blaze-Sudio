@@ -4,8 +4,13 @@ try:
 except ImportError:
     numba = None
     CC = None
+try:
+    import numpy as np
+except ImportError:
+    np = None
 from importlib import import_module
-from inspect import getfile
+import typing
+import inspect
 import os
 import sys
 import json
@@ -56,12 +61,12 @@ def _compile_module(module_name):
     cc = CC(module_name, 'BlazeSudio.speedup.cache')
     INFO = {}
     for func, sig, _, __ in MODULES[module_name]['funcs']:
-        cc.export(func.__name__, sig)(func)
-        pth = getfile(func)
+        cc.export(func.__name__, sig)(func) # If this errors, your signature is wrong or something
+        pth = inspect.getfile(func)
         if pth not in INFO:
             stat = os.stat(pth)
             INFO[pth] = [stat.st_size, stat.st_mtime]
-    cc.compile()
+    cc.compile() # If this errors, your code failed to compile (could be signature?)
 
     with open(cpth+module_name+'.info', 'w+') as f:
         json.dump(INFO, f)
@@ -116,7 +121,65 @@ def _get_compiled_module(module_name):
     MODULES[module_name]['compiled'] = mod
     return mod
 
-def jitrix(module: str, sig: str, test: str):
+
+def _check_arg(arg):
+    if isinstance(arg, type):
+        try:
+            return numba.from_dtype(arg)
+        except Exception:
+            pass
+    return arg
+
+def _handle_param(p, func):
+    if p.kind not in (inspect._ParameterKind.POSITIONAL_ONLY, inspect._ParameterKind.POSITIONAL_OR_KEYWORD):
+        raise ValueError(
+            f'Param kind must be positional, found {p.kind._name_}! (file {inspect.getfile(func)}, function {func.__name__}, param {p.name})'
+        )
+    if p.annotation is inspect._empty:
+        raise ValueError(
+            f'Type hint must be present! (file {inspect.getfile(func)}, function {func.__name__}, param {p.name})'
+        )
+    ann = p.annotation
+    if isinstance(ann, str):
+        return eval(ann, {'typing': typing, 'numba': numba, 'np': numba, 'numpy': numba}, {})
+    if hasattr(ann, '__args__'):
+        ann.__args__ = tuple(_check_arg(i) for i in ann.__args__)
+    else:
+        ann = _check_arg(ann)
+    return numba.extending.as_numba_type(ann)
+
+def _convert_arg(typ, given):
+    if issubclass(type(given), np.generic):
+        return given # numpy arguments should be correct; if not, there's no saving them. Also helps ensure no copying occurs if it doesn't have to.
+    try:
+        dtyp = np.dtype(typ.name).type
+    except Exception:
+        dtyp = None
+    if dtyp is not None:
+        if isinstance(given, dtyp): # Don't convert if don't need to
+            return given
+        return dtyp(given) # Try converting
+    if isinstance(typ, numba.types.Array):
+        arr = np.array(given, dtype=np.dtype(typ.dtype.name), order=typ.layout)
+        if len(arr.shape) != arr.ndim:
+            raise ValueError(
+                f"Given array is incorrect! Expected {arr.ndim} dimensions, found {len(arr.shape)}!"
+            )
+        return arr
+    if isinstance(typ, numba.types.UniTuple):
+        if len(given) != 2:
+            raise ValueError(
+                f'Argument must be of length 2, found {len(given)}!'
+            )
+        return tuple(
+            np.dtype(t.name).type(g) for t, g in zip(typ.types, given)
+        )
+    raise ValueError(
+        f'Unable to convert numba type {type(typ)}!'
+    )
+
+
+def jitrix(module: str, test: str):
     """
     Runs the JIT compilation depending on the speedup type set.
 
@@ -124,10 +187,33 @@ def jitrix(module: str, sig: str, test: str):
 
     Args:
         module: The module (set of functions) this one belongs to. All module funcs will be compiled at the same time (not one individually), so keep separate modules separate.
-        sig: The function signature (see https://numba.pydata.org/numba-doc/dev/reference/types.html)
         test: The args to run when testing this func
+
+    You are required to have type annotations to use this wrapper. The type annotations can be:
+    - typing annotations (e.g. `typing.List`)
+    - basic python types (e.g. `int`)
+    - numpy types (e.g. `np.uint32`)
+    - strings which handle other scenarios, such as arrays (`"np.uint32[:]"`) (notice in strings, only typing and numba are avaliable to use; 'numpy' and 'np' both redirect to numba)
+    I'm sure you'll be fine. If not, well... good luck
     """
     def decorator(func):
+        # If numba is not present, either stick with python or error (depending on speedup type)
+        if numba is None:
+            if SPEEDUP_TYP == 0:
+                return func
+            requireNumba() # Should raise an error
+
+        # Get all the arguments and their type annotations
+        sig = inspect.signature(func)
+        retAnn = sig.return_annotation
+        if retAnn is inspect._empty:
+            retSig = 'void'
+        else:
+            retSig = numba.extending.as_numba_type(retAnn)
+        params = sig.parameters.values()
+        paramsSigs = [_handle_param(p, func) for p in params]
+        sig = f'{retSig}({", ".join(repr(i) for i in paramsSigs)})'
+
         # Register the function for this module
         if module not in MODULES:
             MODULES[module] = {'funcs': [], 'compiled': None}
@@ -136,23 +222,35 @@ def jitrix(module: str, sig: str, test: str):
             if mod is not None:
                 MODULES[module]['compiled'] = mod
 
-        wrapper = None
-        if SPEEDUP_TYP == 0:
+        def wrapper(*args, **kwargs):
             compiled_mod = MODULES[module]['compiled']
-            if compiled_mod is not None:
-                try:
-                    wrapper = getattr(compiled_mod[0], func.__name__)
-                except AttributeError:
-                    pass
-            if wrapper is None:
-                wrapper = func
-        else:
-            def wrapper(*args, **kwargs):
-                compiled_mod = MODULES[module]['compiled']
+            if SPEEDUP_TYP == 0:
+                run = None
+                if compiled_mod is not None:
+                    try:
+                        run = getattr(compiled_mod[0], func.__name__)
+                    except AttributeError:
+                        pass
+                if run is None:
+                    run = func
+            else:
                 if compiled_mod is None:
                     compiled_mod = _get_compiled_module(module)
                     MODULES[module]['compiled'] = compiled_mod
-                getattr(compiled_mod[0], func.__name__)(*args, **kwargs)
+                run = getattr(compiled_mod[0], func.__name__)
+
+            if kwargs != {}:
+                raise TypeError(
+                    'Compiled functions cannot have keyword arguments!'
+                )
+
+            if len(args) != len(paramsSigs):
+                raise TypeError(
+                    f'Expected {len(paramsSigs)} arguments, found {len(args)}!'
+                )
+            args = [_convert_arg(p, a) for p, a in zip(paramsSigs, args)]
+
+            return run(*args)
         MODULES[module]['funcs'].append((func, sig, wrapper, test))
         return wrapper
     return decorator
