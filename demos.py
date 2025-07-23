@@ -19,30 +19,36 @@ It will first read the file, then overwrite it when you save.')
 def NewGraphicsDemo():
     from BlazeSudio.graphicsCore import Quit, Clock, Window, Colour, Interaction
     sur = Window.create_win()
-    sur.fill(Colour(255, 255, 255))
-    # It can also handle decimals!
-    sur.drawLine((10.5, 10.5), (200.25, 100.75), 5, 0)
-    sur.drawPolygon([(100, 100.5), (200, 300), (0, 300)], 30, Colour(80, 100, 250))
-    sur.drawRect((30.5, 50), (100.25, 80.3333333), 10, Colour(125, 125, 125), roundness=30)
-    sur.drawRect(100, 150, 30, 50, 10, 0)
-    sur.drawCircle(300, 300, 10, 5, Colour(255, 100, 100))
-    sur.drawElipse((100, 100), 50, 30, 10, Colour(80, 255, 100))
-    sur.drawElipse(700, 100, 30, 70, 0, 0)
-    # Testing entirely fill
-    sur.drawCircle((500, 300.5), 30.5, 0, 0)
-    sur.drawRect(500, 350, 50, 30, 0, 0)
-    sur.drawRect((500, 400), (30, 50), 0, Colour(125, 125, 125), roundness=10)
-    # Testing stupid cases. These all appear one after the other in a column, and should look like;
-    sur.drawRect(500, 500, 0, 0, 5, 0) # Unspecified; in reality, not there..? Would be nice (but too expensive) to make it a dot
-    sur.drawRect(500, 510, 50, 50, 1, 0, roundness=100) # A circle; yay!
-    sur.drawLine((500, 570), (500, 570), 5, 0) # Unspecified; in reality, a circle (which is great!)
 
     c = Clock()
+    f = 0
     while Interaction.eventHandleBasic():
+        sur.fill(Colour(255, 255, 255))
+        # It can also handle decimals!
+        sur.drawLine((10.5, 10.5), (200.25, 100.75), 5, 0)
+        sur.drawPolygon([(100, 100.5), (200, 300), (0, 300)], 30, Colour(80, 100, 250))
+        sur.drawRect((30.5, 50), (100.25, 80.3333333), 10, Colour(125, 125, 125), roundness=30)
+        sur.drawRect(100, 150, 30, 50, 10, 0)
+        sur.drawCircle(300, 300, 10, 5, Colour(255, 100, 100))
+        sur.drawElipse((100, 100), 50, 30, 10, Colour(80, 255, 100))
+        sur.drawElipse(700, 100, 30, 70, 0, 0)
+        # Testing entirely fill
+        sur.drawCircle((500, 300.5), 30.5, 0, 0)
+        sur.drawRect(500, 350, 50, 30, 0, 0)
+        sur.drawRect((500, 400), (30, 50), 0, Colour(125, 125, 125), roundness=10)
+        # Testing stupid cases. These all appear one after the other in a column, and should look like;
+        sur.drawRect(500, 500, 0, 0, 5, 0) # Unspecified; in reality, not there..? Would be nice (but too expensive) to make it a dot
+        sur.drawRect(500, 510, 50, 50, 1, 0, roundness=100) # A circle; yay!
+        sur.drawLine((500, 570), (500, 570), 5, 0) # Unspecified; in reality, a circle (which is great!)
+
+        f = (f + 1) % 100
+        sur.drawCircle(f*20, 10, 50, 0, Colour(250, 90, 255))
+
         Window.flush()
         Window.flip()
         c.tick()
         Window.set_title(f'FPS: {c.get_fps()}')
+        print(c.get_fps())
     Quit()
 
 def GraphicsDemo():
