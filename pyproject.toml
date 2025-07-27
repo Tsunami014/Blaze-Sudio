@@ -48,6 +48,7 @@ BlazeSudio = "BlazeSudio:main"
 
 [project.optional-dependencies]
 speed = [
+    "numpy",
     "numba",
     "setuptools"
 ]
