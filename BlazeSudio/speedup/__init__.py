@@ -57,6 +57,8 @@ def _compile_module(module_name):
     cpth = os.path.abspath(__file__+'/../cache/')+'/'
     for m in glob.glob(cpth+module_name+'*'):
         os.remove(m)
+    if os.path.exists(cpth+'__pycache__'):
+        os.rmdir(cpth+'__pycache__')
     
     cc = CC(module_name, 'BlazeSudio.speedup.cache')
     INFO = {}
@@ -149,24 +151,34 @@ def _handle_param(p, func):
     return numba.extending.as_numba_type(ann)
 
 def _convert_arg(typ, given):
-    if issubclass(type(given), np.generic):
-        return given # numpy arguments should be correct; if not, there's no saving them. Also helps ensure no copying occurs if it doesn't have to.
-    try:
-        dtyp = np.dtype(typ.name).type
-    except Exception:
-        dtyp = None
-    if dtyp is not None:
-        if isinstance(given, dtyp): # Don't convert if don't need to
-            return given
-        return dtyp(given) # Try converting
-    if isinstance(typ, numba.types.Array):
-        arr = np.array(given, dtype=np.dtype(typ.dtype.name), order=typ.layout)
-        if len(arr.shape) != arr.ndim:
+    etyp = type(typ)
+    if type(given) is np.ndarray and etyp is numba.types.Array:
+        reqdtyp = np.dtype(typ.dtype.name)
+        if given.dtype != reqdtyp:
+            arr = given.astype(reqdtyp)
+        else:
+            arr = given
+        nord = typ.layout
+        if nord == 'C':
+            if not arr.flags['C_CONTIGUOUS']:
+                arr = np.ascontiguousarray(arr)
+        elif nord == 'F':
+            if not arr.flags['F_CONTIGUOUS']:
+                arr = np.asfortranarray(arr)
+        if len(arr.shape) != typ.ndim:
             raise ValueError(
                 f"Given array is incorrect! Expected {arr.ndim} dimensions, found {len(arr.shape)}!"
             )
         return arr
-    if isinstance(typ, numba.types.UniTuple):
+    # Check for other special types
+    if etyp is numba.types.Array:
+        arr = np.array(given, dtype=np.dtype(typ.dtype.name), order=typ.layout)
+        if len(arr.shape) != typ.ndim:
+            raise ValueError(
+                f"Given array is incorrect! Expected {arr.ndim} dimensions, found {len(arr.shape)}!"
+            )
+        return arr
+    if etyp is numba.types.UniTuple:
         if len(given) != 2:
             raise ValueError(
                 f'Argument must be of length 2, found {len(given)}!'
@@ -174,9 +186,16 @@ def _convert_arg(typ, given):
         return tuple(
             np.dtype(t.name).type(g) for t, g in zip(typ.types, given)
         )
-    raise ValueError(
-        f'Unable to convert numba type {type(typ)}!'
-    )
+    # Attempt to convert to a numpy type
+    try:
+        dtyp = np.dtype(typ.name).type
+    except TypeError: # Raise a more descriptive error
+        raise ValueError(
+            f'Unable to convert numba type {type(typ)}!'
+        )
+    if given is dtyp: # Don't convert if don't need to
+        return given
+    return dtyp(given) # Try converting to the required numpy type
 
 
 def jitrix(module: str, test: str):

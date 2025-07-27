@@ -3,12 +3,12 @@ from typing import overload, Iterable, Tuple
 from BlazeSudio.graphicsCore.basebase import Op, ElmOp, Func, OpsList
 from BlazeSudio.speedup import jitrix
 
-@jitrix('draw', 
-        '(np.full((100, 100), 0, np.uint32), (10, 10), (80, 80), np.uint32(10), np.float64(5.0))')
-def _drawThickLine(arr: 'np.uint32[:, :]', p1: Tuple[np.int64, np.int64], p2: Tuple[np.int64, np.int64], colour: np.uint32, thickness: float):
+
+@jitrix('draw', '(np.full((100, 100), 0, np.uint32), (10, 10), (80, 80), 10, 5.0)')
+def _drawThickLine(arr: 'np.uint32[:, :]', p1: Tuple[int, int], p2: Tuple[int, int], colour: np.uint32, thickness: int):
     x, y = p1
     x1, y1 = p2
-    radius = thickness / 2
+    radius = int(thickness / 2)
     r2 = radius*radius
     dx = abs(x1 - x)
     dy = abs(y1 - y)
@@ -20,8 +20,8 @@ def _drawThickLine(arr: 'np.uint32[:, :]', p1: Tuple[np.int64, np.int64], p2: Tu
         err = dx / 2
         while x < x1:
             # Draw a filled circle at (x, y)
-            for yy in range(int(np.floor(y - radius)), int(np.ceil(y + radius) + 1)):
-                for xx in range(int(np.floor(x - radius)), int(np.ceil(x + radius) + 1)):
+            for yy in range(y - radius, y + radius + 1):
+                for xx in range(x - radius, x + radius + 1):
                     if (xx - x) ** 2 + (yy - y) ** 2 <= r2:
                         if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
                             arr[yy, xx] = colour
@@ -38,8 +38,8 @@ def _drawThickLine(arr: 'np.uint32[:, :]', p1: Tuple[np.int64, np.int64], p2: Tu
         err = dy / 2
         while y < y1:
             # Draw a filled circle at (x, y)
-            for yy in range(int(np.floor(y - radius)), int(np.ceil(y + radius) + 1)):
-                for xx in range(int(np.floor(x - radius)), int(np.ceil(x + radius) + 1)):
+            for yy in range(y - radius, y + radius + 1):
+                for xx in range(x - radius, x + radius + 1):
                     if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
                         if (xx - x) ** 2 + (yy - y) ** 2 <= r2:
                             arr[yy, xx] = colour
@@ -50,8 +50,8 @@ def _drawThickLine(arr: 'np.uint32[:, :]', p1: Tuple[np.int64, np.int64], p2: Tu
             y += 1
 
     # Draw one last filled circles at the end
-    for yy in range(int(np.floor(y1 - radius)), int(np.ceil(y1 + radius) + 1)):
-        for xx in range(int(np.floor(x1 - radius)), int(np.ceil(x1 + radius)) + 1):
+    for yy in range(y1 - radius, y1 + radius + 1):
+        for xx in range(x1 - radius, x1 + radius + 1):
             if (xx - x1) ** 2 + (yy - y1) ** 2 <= r2:
                 if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
                     arr[yy, xx] = colour
@@ -92,6 +92,91 @@ class _LineOp(_PolygonOp):
     def ApplyOnArr(self, arr: np.ndarray):
         _drawThickLine(arr, self.ps[0], self.ps[1], self.col, self.thickness)
 
+@jitrix('draw', '(np.full((100, 100), 0, np.uint32), (10, 10), (80, 80), 10, 5, 500)')
+def _applyRect(arr: 'np.uint32[:, :]', pos: Tuple[int, int], sze: Tuple[int, int], thickness: int, round: int, col: np.uint32):
+    h, w = arr.shape
+
+    if sze[0] > 0:
+        x0, x1 = pos[0], pos[0] + sze[0]
+    else:
+        x0, x1 = pos[0] + sze[0], pos[0]
+    if sze[1] > 0:
+        y0, y1 = pos[1], pos[1] + sze[1]
+    else:
+        y0, y1 = pos[1] + sze[1], pos[1]
+
+    # Compute actual rounding radius (cannot exceed half-size, nor thickness)
+    r = min(round,
+            (x1 - x0) / 2,
+            (y1 - y0) / 2)
+    r = max(0, r)
+    t = thickness
+
+    if t <= 0:
+        # Fill entire area
+        if r == 0:
+            # bcos it's faster than otherwise
+            a, b = np.clip(np.array([y0, y1]), 0, h)
+            c, d = np.clip(np.array([x0, x1]), 0, w)
+            arr[a : b, c : d] = col
+        else:
+            a, b, e, f = np.clip(np.array([y0+r, y1-r, y0, y1]), 0, h)
+            c, d, g, h = np.clip(np.array([x0, x1, x0+r, x1-1]), 0, w)
+            arr[a : b, c : d] = col
+            arr[e : f, g : h] = col
+    else:
+        # Clip edges for straight sections (excluding corners)
+        xs = np.clip(np.array([
+            x0, x0+t,
+            x1-t, x1,
+            x0+r, x1-r,
+        ]), 0, w)
+        ys = np.clip(np.array([
+            y0, y0+t,
+            y1-t, y1,
+            y0+r, y1-r,
+        ]), 0, h)
+        # Top edge
+        arr[ys[0] : ys[1], xs[4] : xs[5]] = col
+        # Bottom edge
+        arr[ys[2] : ys[3], xs[4] : xs[5]] = col
+        # Left edge
+        arr[ys[4] : ys[5], xs[0] : xs[1]] = col
+        # Right edge
+        arr[ys[4] : ys[5], xs[2] : xs[3]] = col
+
+    if r > 0:
+        r2 = r*r
+        off = 0
+        if t == 0:
+            rthic2 = 0
+            off = 1
+        else:
+            rthic2 = (r - t) * (r - t)
+
+        xs = np.clip(np.array([
+            x0, x0 + r,
+            x1 - r, x1
+        ]), 0, w)
+        ys = np.clip(np.array([
+            y0, y0 + r,
+            y1 - r, y1
+        ]), 0, h)
+        # draw quarter-circles at the four corners
+        for cx, cy, xs, xe, ys, ye in [
+            (x0 + r - off, y0 + r - 1,       xs[0], xs[1], ys[0], ys[1]),  # TL
+            (x1 - r,       y0 + r - 1,       xs[2], xs[3], ys[0], ys[1]),  # TR
+            (x0 + r - off, y1 - r - 1 + off, xs[0], xs[1], ys[2], ys[3]),  # BL
+            (x1 - r,       y1 - r - 1 + off, xs[2], xs[3], ys[2], ys[3])   # BR
+        ]:
+            for yy in range(ys, ye):
+                dy2 = (yy - cy) ** 2
+                for xx in range(xs, xe):
+                    d2 = (xx - cx) ** 2 + dy2
+                    # only paint the annulus between r-t and r
+                    if rthic2 <= d2 < r2:
+                        arr[yy, xx] = col
+
 class _RectOp(ElmOp):
     __slots__ = ['pos', 'sze', 'thickness', 'col', 'round']
     def __init__(self, x, y, width, height, thickness, col, roundness):
@@ -107,82 +192,33 @@ class _RectOp(ElmOp):
         return True
 
     def ApplyOnArr(self, arr: np.ndarray):
-        h, w = arr.shape
+        _applyRect(arr, self.pos, self.sze, self.thickness, self.round, self.col)
 
-        clip = lambda pos, bound: int(max(min(pos, bound), 0)+0.5)
+@jitrix('draw', '(np.full((100, 100), 0, np.uint32), (50, 60), 40, 10, 345)')
+def _applyCirc(arr: 'np.uint32[:, :]', pos: Tuple[int, int], radius: int, thickness: int, col: np.uint32):
+    h, w = arr.shape
 
-        if self.sze[0] > 0:
-            x0, x1 = self.pos[0],  self.pos[0] + self.sze[0]
-        else:
-            x0, x1 = self.pos[0] + self.sze[0],  self.pos[0]
-        if self.sze[1] > 0:
-            y0, y1 = self.pos[1],  self.pos[1] + self.sze[1]
-        else:
-            y0, y1 = self.pos[1] + self.sze[1],  self.pos[1]
+    x, y = pos
 
-        # Compute actual rounding radius (cannot exceed half-size, nor thickness)
-        r = min(self.round,
-                (x1 - x0) / 2,
-                (y1 - y0) / 2)
-        r = max(0, r)
+    x_min = max(min(x - radius - 1, w), 0)
+    x_max = max(min(x + radius + 1, w), 0)
+    y_min = max(min(y - radius - 1, h), 0)
+    y_max = max(min(y + radius + 1, h), 0)
 
-        t = self.thickness
+    radius_outer_sq = radius ** 2
+    if thickness == 0:
+        radius_inner_sq = 0
+    else:
+        radius_inner_sq = max(radius - thickness, 0) ** 2
 
-        if t == 0:
-            # Fill entire area
-            if r == 0:
-                # bcos it's faster than otherwise
-                arr[clip(y0, h) : clip(y1, h),
-                    clip(x0, w) : clip(x1, w)] = self.col
-            else:
-                arr[clip(y0+r, h) : clip(y1-r, h),
-                    clip(x0, w)   : clip(x1, w)] = self.col
-                arr[clip(y0, h)   : clip(y1, h),
-                    clip(x0+r, w) : clip(x1-r, w)] = self.col
-        else:
-            # Clip edges for straight sections (excluding corners)
-            # Top edge
-            arr[clip(y0, h)   : clip(y0+t, h),
-                clip(x0+r, w) : clip(x1-r, w)
-            ] = self.col
-            # Bottom edge
-            arr[clip(y1-t, h) : clip(y1, h),
-                clip(x0+r, w) : clip(x1-r, w)
-            ] = self.col
-            # Left edge
-            arr[clip(y0+r, h) : clip(y1-r, h),
-                clip(x0,w)    : clip(x0+t, w)
-            ] = self.col
-            # Right edge
-            arr[clip(y0+r, h) : clip(y1-r, h),
-                clip(x1-t, w) : clip(x1, w)
-            ] = self.col
+    for yy in range(y_min, y_max):
+        dy = yy - y
+        for xx in range(x_min, x_max):
+            dx = xx - x
+            dist_sq = dx * dx + dy * dy
 
-        if r > 0:
-            r2 = r*r
-            off = 0
-            if t == 0:
-                rthic2 = 0
-                off = 1
-            else:
-                rthic2 = (r - t) * (r - t)
-
-            # draw quarter-circles at the four corners
-            for cx, cy, xs, xe, ys, ye in [
-                (x0 + r - off, y0 + r - 1,       x0,     x0 + r, y0,     y0 + r),  # TL
-                (x1 - r,       y0 + r - 1,       x1 - r, x1,     y0,     y0 + r),  # TR
-                (x0 + r - off, y1 - r - 1 + off, x0,     x0 + r, y1 - r, y1),      # BL
-                (x1 - r,       y1 - r - 1 + off, x1 - r, x1,     y1 - r, y1)       # BR
-            ]:
-                xs, xe = clip(xs, w), clip(xe, w)
-                ys, ye = clip(ys, h), clip(ye, h)
-                for yy in range(ys, ye):
-                    dy2 = (yy - cy) ** 2
-                    for xx in range(xs, xe):
-                        d2 = (xx - cx) ** 2 + dy2
-                        # only paint the annulus between r-t and r
-                        if rthic2 <= d2 < r2:
-                            arr[yy, xx] = self.col
+            if radius_inner_sq <= dist_sq <= radius_outer_sq:
+                arr[yy, xx] = col
 
 class _CircleOp(ElmOp):
     __slots__ = ['pos', 'radius', 'thickness', 'col']
@@ -198,31 +234,57 @@ class _CircleOp(ElmOp):
         return True
 
     def ApplyOnArr(self, arr: np.ndarray):
-        h, w = arr.shape
+        _applyCirc(arr, self.pos, self.radius, self.thickness, self.col)
 
-        x, y = self.pos
 
-        limit = lambda x, bound: int(max(min(x, bound), 0)+0.5)
-        x_min = limit(x - self.radius - 1, w)
-        x_max = limit(x + self.radius + 1, w)
-        y_min = limit(y - self.radius - 1, h)
-        y_max = limit(y + self.radius + 1, h)
+@jitrix('draw', '(np.full((100, 100), 0, np.uint32), (50, 50), 40, 30, 10, 5)')
+def _applyElipse(arr: 'np.uint32[:, :]', pos: Tuple[int, int], xradius: int, yradius: int, thickness: int, col: np.uint32):
+    h, w = arr.shape
 
-        radius_outer_sq = self.radius ** 2
-        if self.thickness == 0:
-            radius_inner_sq = 0
-        else:
-            radius_inner_sq = max(self.radius - self.thickness, 0) ** 2
+    x, y = pos
+
+    if thickness >= min(xradius, yradius):
+        t = 0
+    else:
+        t = thickness//2
+
+    x_min = max(min(x - xradius - 1 - t, w), 0)
+    x_max = max(min(x + xradius + 1 + t, w), 0)
+    y_min = max(min(y - yradius - 1 - t, h), 0)
+    y_max = max(min(y + yradius + 1 + t, h), 0)
+
+    if thickness == 0 or thickness >= min(xradius, yradius):
+        xd = xradius * xradius
+        yd = yradius * yradius
 
         for yy in range(y_min, y_max):
             dy = yy - y
+            dy = dy * dy
             for xx in range(x_min, x_max):
                 dx = xx - x
-                dist_sq = dx * dx + dy * dy
+                dx = dx * dx
 
-                if radius_inner_sq <= dist_sq <= radius_outer_sq:
-                    arr[yy, xx] = self.col
+                if dx/xd + dy/yd <= 1:
+                    arr[yy, xx] = col
+    else:
+        xd1 = xradius - t
+        xd1 = xd1 * xd1
+        yd1 = yradius - t
+        yd1 = yd1 * yd1
+        xd2 = xradius + t
+        xd2 = xd2 * xd2
+        yd2 = yradius + t
+        yd2 = yd2 * yd2
 
+        for yy in range(y_min, y_max):
+            dy = yy - y
+            dy = dy * dy
+            for xx in range(x_min, x_max):
+                dx = xx - x
+                dx = dx * dx
+
+                if dx/xd2 + dy/yd2 <= 1 <= dx/xd1 + dy/yd1:
+                    arr[yy, xx] = col
 
 class _ElipseOp(ElmOp):
     __slots__ = ['pos', 'xradius', 'yradius', 'thickness', 'col']
@@ -239,53 +301,7 @@ class _ElipseOp(ElmOp):
         return True
 
     def ApplyOnArr(self, arr: np.ndarray):
-        h, w = arr.shape
-
-        x, y = self.pos
-
-        if self.thickness >= min(self.xradius, self.yradius):
-            t = 0
-        else:
-            t = self.thickness/2
-
-        limit = lambda x, bound: int(max(min(x, bound), 0)+0.5)
-        x_min = limit(x - self.xradius - 1 - t, w)
-        x_max = limit(x + self.xradius + 1 + t, w)
-        y_min = limit(y - self.yradius - 1 - t, h)
-        y_max = limit(y + self.yradius + 1 + t, h)
-
-        if self.thickness == 0 or self.thickness >= min(self.xradius, self.yradius):
-            xd = self.xradius * self.xradius
-            yd = self.yradius * self.yradius
-
-            for yy in range(y_min, y_max):
-                dy = yy - y
-                dy = dy * dy
-                for xx in range(x_min, x_max):
-                    dx = xx - x
-                    dx = dx * dx
-
-                    if dx/xd + dy/yd <= 1:
-                        arr[yy, xx] = self.col
-        else:
-            xd1 = self.xradius - t
-            xd1 = xd1 * xd1
-            yd1 = self.yradius - t
-            yd1 = yd1 * yd1
-            xd2 = self.xradius + t
-            xd2 = xd2 * xd2
-            yd2 = self.yradius + t
-            yd2 = yd2 * yd2
-
-            for yy in range(y_min, y_max):
-                dy = yy - y
-                dy = dy * dy
-                for xx in range(x_min, x_max):
-                    dx = xx - x
-                    dx = dx * dx
-
-                    if dx/xd2 + dy/yd2 <= 1 <= dx/xd1 + dy/yd1:
-                        arr[yy, xx] = self.col
+        _applyElipse(arr, self.pos, self.xradius, self.yradius, self.thickness, self.col)
 
 class _DrawFuncs(Func):
     # TODO: Overload for lines
