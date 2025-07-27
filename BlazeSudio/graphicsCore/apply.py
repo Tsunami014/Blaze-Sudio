@@ -61,9 +61,9 @@ class Apply:
 
         # Turn the array into a pygame surface, first by converting to rgb
         h, w = arr.shape
-        rgb_arr = np.zeros((h, w, 3), dtype=np.uint8)
-        rgb_arr[:, :, 0] = (arr >> 16) & 0xFF  # Red
-        rgb_arr[:, :, 1] = (arr >> 8) & 0xFF   # Green
-        rgb_arr[:, :, 2] = arr & 0xFF          # Blue
+        # reinterpret the 32‐bit ints as four 8‐bit ints per pixel
+        rgba = arr.view(np.uint8).reshape(h, w, 4)
+        # byte 0 = least‐significant = Blue; byte1=Green; byte2=Red; byte3=Alpha/padding
+        rgb_arr = rgba[:, :, [2, 1, 0]]
 
         return pygame.surfarray.make_surface(rgb_arr.swapaxes(0, 1))
