@@ -17,10 +17,12 @@ It will first read the file, then overwrite it when you save.')
     NodeEditor(f)()
 
 def NewGraphicsDemo():
-    from BlazeSudio.graphicsCore import Quit, Clock, Window, Colour, Interaction
+    from BlazeSudio.graphicsCore import Quit, AvgClock, Window, Colour, Interaction
     sur = Window.create_win()
 
-    c = Clock()
+    print('Using new graphics engine:')
+
+    c = AvgClock(5)
     f = 0
     while Interaction.eventHandleBasic():
         sur.fill(Colour(255, 255, 255))
@@ -36,13 +38,13 @@ def NewGraphicsDemo():
         sur.drawCircle((500, 300.5), 30.5, 0, 0)
         sur.drawRect(500, 350, 50, 30, 0, 0)
         sur.drawRect((500, 400), (30, 50), 0, Colour(125, 125, 125), roundness=10)
-        # Testing stupid cases. These all appear one after the other in a column, and should look like;
-        sur.drawRect(500, 500, 0, 0, 5, 0) # Unspecified; in reality, not there..? Would be nice (but too expensive) to make it a dot
-        sur.drawRect(500, 510, 50, 50, 1, 0, roundness=100) # A circle; yay!
-        sur.drawLine((500, 570), (500, 570), 5, 0) # Unspecified; in reality, a circle (which is great!)
+        # Testing stupid cases. These *should* all appear one after the other in a column
+        sur.drawRect(500, 500, 0, 0, 5, 0)
+        sur.drawRect(500, 510, 50, 50, 1, 0, roundness=100)
+        sur.drawLine((500, 570), (500, 570), 5, 0)
 
-        f = (f + 1) % 100
-        sur.drawCircle(f*20, 10, 50, 0, Colour(250, 90, 255))
+        f = (f + 1) % 200
+        sur.drawCircle(f*10, 10, 50, 0, Colour(250, 90, 255))
 
         Window.flush()
         Window.flip()
@@ -50,6 +52,45 @@ def NewGraphicsDemo():
         Window.set_title(f'FPS: {c.get_fps()}')
         print(c.get_fps())
     Quit()
+
+    print('Using pygame:')
+
+    import pygame
+    pygame.init()
+    WIN = pygame.display.set_mode()
+    c = pygame.time.Clock()
+    f = 0
+    r = True
+    while r:
+        for ev in pygame.event.get():
+            if ev.type == pygame.QUIT or (ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE):
+                r = False
+        WIN.fill((255, 255, 255))
+        # It can also handle decimals!
+        pygame.draw.line(WIN, 0, (10.5, 10.5), (200.25, 100.75), 5)
+        pygame.draw.polygon(WIN, (80, 100, 250), [(100, 100), (200, 300), (0, 300)], 30)
+        pygame.draw.rect(WIN, (125, 125, 125), (30, 50, 100, 80), 10, 30)
+        pygame.draw.rect(WIN, 0, (100, 150, 30, 50), 10)
+        pygame.draw.circle(WIN, (255, 100, 100), (300, 300), 10, 5)
+        pygame.draw.ellipse(WIN, (80, 255, 100), (100-50, 100-30, 50*2, 30*2), 10)
+        # Testing entirely fill
+        pygame.draw.ellipse(WIN, 0, (700-30, 100-70, 30*2, 70*2), 0)
+        pygame.draw.circle(WIN, 0, (500, 300), 30.5, 0)
+        pygame.draw.rect(WIN, 0, (500, 350, 50, 30), 0)
+        pygame.draw.rect(WIN, (125, 125, 125), (500, 400, 30, 50), 0, 10)
+        # Testing stupid cases. These all appear one after the other in a column, and should look like;
+        pygame.draw.rect(WIN, 0, (500, 500, 0, 0), 5) # Unspecified; in reality, not there..? Would be nice (but too expensive) to make it a dot
+        pygame.draw.rect(WIN, 0, (500, 510, 50, 50), 1, 100) # A circle; yay!
+        pygame.draw.line(WIN, 0, (500, 570), (500, 570), 5) # Unspecified; in reality, a circle (which is great!)
+
+        f = (f + 1) % 200
+        pygame.draw.circle(WIN, (250, 90, 255), (f*10, 10), 50, 0)
+
+        pygame.display.flip()
+        c.tick()
+        pygame.display.set_caption(f'FPS: {c.get_fps()}')
+        print(c.get_fps())
+    pygame.quit()
 
 def GraphicsDemo():
     import BlazeSudio.graphics.options as GO
@@ -814,6 +855,8 @@ def CompileDemo():
                     for i in os.listdir(basepth):
                         if i.startswith(chosen[1]):
                             os.remove(basepth+i)
+                    if os.path.exists(basepth+'__pycache__'):
+                        os.rmdir(basepth+'__pycache__')
                     if chosen[1] in speedup.MODULES:
                         speedup.MODULES[chosen[1]]['compiled'] = None
                     modulepth = 'BlazeSudio.speedup.cache.'+chosen[1]
@@ -830,16 +873,15 @@ def CompileDemo():
                     totT = 0
                     eachRuns = 100
                     import_module('BlazeSudio.'+chosen[0])
+                    if inp == 'r':
+                        speedup.setSpeedupType(0)
                     for reg, _, comp, test in speedup.MODULES[chosen[1]]['funcs']:
-                        if inp == 'r':
-                            fun = reg
-                        else:
-                            fun = comp
                         for _ in range(eachRuns):
                             t = time.time()
-                            fun(*eval(test, {'np': np, 'rng': rng}))
+                            comp(*eval(test, {'np': np, 'rng': rng}))
                             t2 = time.time()
                             totT += t2-t
+                    speedup.setSpeedupType(1)
                     totRs = eachRuns*len(speedup.MODULES[chosen[1]]['funcs'])
 
                     lbl = {'r': 'Regular', 't': 'Compiled'}[inp]
