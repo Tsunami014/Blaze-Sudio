@@ -57,8 +57,6 @@ def _compile_module(module_name):
     cpth = os.path.abspath(__file__+'/../cache/')+'/'
     for m in glob.glob(cpth+module_name+'*'):
         os.remove(m)
-    if os.path.exists(cpth+'__pycache__'):
-        os.rmdir(cpth+'__pycache__')
     
     cc = CC(module_name, 'BlazeSudio.speedup.cache')
     INFO = {}
@@ -179,9 +177,9 @@ def _convert_arg(typ, given):
             )
         return arr
     if etyp is numba.types.UniTuple:
-        if len(given) != 2:
+        if len(given) != typ.count:
             raise ValueError(
-                f'Argument must be of length 2, found {len(given)}!'
+                f'Argument must be of length {typ.count}, found {len(given)}!'
             )
         return tuple(
             np.dtype(t.name).type(g) for t, g in zip(typ.types, given)

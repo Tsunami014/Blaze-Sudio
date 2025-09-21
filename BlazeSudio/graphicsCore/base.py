@@ -53,8 +53,7 @@ class SizeFunc(Func):
 class FillOp(ElmOp):
     __slots__ = ['col']
     typ = OpsList.Fill
-    def __init__(self, col: int):
-        assert isinstance(col, int)
+    def __init__(self, col):
         self.col = col
     
     def ApplyOp(self, op):
@@ -62,12 +61,13 @@ class FillOp(ElmOp):
     def ApplyOnArr(self, arr: np.ndarray):
         arr.fill(self.col)
 class FillFunc(Func):
-    def fill(self, col: int):
+    # TODO: Overloads for fill
+    def fill(self, col: Iterable[int]):
         """
         Fills a surface with a colour, removing all previous operations except for resizes (as the fill overlays over entire screen anyway)
 
         Args:
-            col (int): The colour to fill the surface with
+            col (Iterable[int]): The colour to fill the surface with
         """
         for op in reversed(self._ops):
             if op.typ == OpsList.Size:

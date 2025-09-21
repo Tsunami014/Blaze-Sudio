@@ -3,9 +3,11 @@ from typing import overload, Iterable, Tuple
 from BlazeSudio.graphicsCore.basebase import Op, ElmOp, Func, OpsList
 from BlazeSudio.speedup import jitrix
 
+colTyp = Tuple[np.uint8, np.uint8, np.uint8]
 
-@jitrix('draw', '(np.full((100, 100), 0, np.uint32), (10, 10), (80, 80), 10, 5.0)')
-def _drawThickLine(arr: 'np.uint32[:, :]', p1: Tuple[int, int], p2: Tuple[int, int], colour: np.uint32, thickness: int):
+
+@jitrix('draw', '(np.full((100, 100, 3), 0, np.uint8), (10, 10), (80, 80), 5, (10, 10, 10))')
+def _drawThickLine(arr: 'np.uint8[:, :, :]', p1: Tuple[int, int], p2: Tuple[int, int], thickness: int, colour: colTyp):
     x, y = p1
     x1, y1 = p2
     radius = int(thickness / 2)
@@ -24,7 +26,7 @@ def _drawThickLine(arr: 'np.uint32[:, :]', p1: Tuple[int, int], p2: Tuple[int, i
                 for xx in range(x - radius, x + radius + 1):
                     if (xx - x) ** 2 + (yy - y) ** 2 <= r2:
                         if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
-                            arr[yy, xx] = colour
+                            arr[yy, xx, :] = colour
             err -= dy
             if err < 0:
                 y += sy
@@ -42,7 +44,7 @@ def _drawThickLine(arr: 'np.uint32[:, :]', p1: Tuple[int, int], p2: Tuple[int, i
                 for xx in range(x - radius, x + radius + 1):
                     if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
                         if (xx - x) ** 2 + (yy - y) ** 2 <= r2:
-                            arr[yy, xx] = colour
+                            arr[yy, xx, :] = colour
             err -= dx
             if err < 0:
                 x += sx
@@ -54,13 +56,13 @@ def _drawThickLine(arr: 'np.uint32[:, :]', p1: Tuple[int, int], p2: Tuple[int, i
         for xx in range(x1 - radius, x1 + radius + 1):
             if (xx - x1) ** 2 + (yy - y1) ** 2 <= r2:
                 if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
-                    arr[yy, xx] = colour
+                    arr[yy, xx, :] = colour
 
 class _PolygonOp(ElmOp):
     __slots__ = ['ps', 'thickness', 'col']
     typ = OpsList.Poly
     def __init__(self, ps, thickness, col):
-        self.ps = np.array(ps, dtype=np.float64)
+        self.ps = np.array(ps, dtype=np.int64)
         assert len(self.ps.shape) == 2, "Points must be a 2 dimensional array; [(point 1 x, point 1 y), (point 2 x, point 2 y), etc.]"
         assert self.ps.shape[1] == 2, "Points must have only 2 dimensions; an x and a y; [(point 1 x, point 1 y), etc.]"
         assert thickness > 0, "Thickness must be >0"
@@ -76,25 +78,25 @@ class _PolygonOp(ElmOp):
         p1 = self.ps[0]
         for i in range(1, len(self.ps)):
             p2 = self.ps[i]
-            _drawThickLine(arr, p1, p2, self.col, self.thickness)
+            _drawThickLine(arr, p1, p2, self.thickness, self.col)
             p1 = p2
         p2 = self.ps[0]
-        _drawThickLine(arr, p1, p2, self.col, self.thickness)
+        _drawThickLine(arr, p1, p2, self.thickness, self.col)
 
 class _LineOp(_PolygonOp):
     def __init__(self, p1, p2, thickness, col):
-        self.ps = np.array([p1, p2], dtype=np.float64)
+        self.ps = np.array([p1, p2], dtype=np.int64)
         assert self.ps.shape == (2, 2), "Points must have only 2 dimensions; an x and a y; [(point 1 x, point 1 y), (point 2 x, point 2 y)]"
         assert thickness > 0, "Thickness must be >0"
         self.thickness = thickness
         self.col = col
     
     def ApplyOnArr(self, arr: np.ndarray):
-        _drawThickLine(arr, self.ps[0], self.ps[1], self.col, self.thickness)
+        _drawThickLine(arr, self.ps[0], self.ps[1], self.thickness, self.col)
 
-@jitrix('draw', '(np.full((100, 100), 0, np.uint32), (10, 10), (80, 80), 10, 5, 500)')
-def _applyRect(arr: 'np.uint32[:, :]', pos: Tuple[int, int], sze: Tuple[int, int], thickness: int, round: int, col: np.uint32):
-    h, w = arr.shape
+@jitrix('draw', '(np.full((100, 100, 3), 0, np.uint32), (10, 10), (80, 80), 10, 5, (100, 100, 100))')
+def _applyRect(arr: 'np.uint8[:, :, :]', pos: Tuple[int, int], sze: Tuple[int, int], thickness: int, round: int, col: colTyp):
+    h, w, _ = arr.shape
 
     if sze[0] > 0:
         x0, x1 = pos[0], pos[0] + sze[0]
@@ -107,23 +109,24 @@ def _applyRect(arr: 'np.uint32[:, :]', pos: Tuple[int, int], sze: Tuple[int, int
 
     # Compute actual rounding radius (cannot exceed half-size, nor thickness)
     r = min(round,
-            (x1 - x0) / 2,
-            (y1 - y0) / 2)
+            (x1 - x0) // 2,
+            (y1 - y0) // 2)
     r = max(0, r)
     t = thickness
 
     if t <= 0:
         # Fill entire area
-        if r == 0:
+        if r <= 0:
             # bcos it's faster than otherwise
             a, b = np.clip(np.array([y0, y1]), 0, h)
             c, d = np.clip(np.array([x0, x1]), 0, w)
-            arr[a : b, c : d] = col
+            arr[a : b, c : d, :] = col
+            return
         else:
             a, b, e, f = np.clip(np.array([y0+r, y1-r, y0, y1]), 0, h)
             c, d, g, h = np.clip(np.array([x0, x1, x0+r, x1-1]), 0, w)
-            arr[a : b, c : d] = col
-            arr[e : f, g : h] = col
+            arr[a : b, c : d, :] = col
+            arr[e : f, g : h, :] = col
     else:
         # Clip edges for straight sections (excluding corners)
         xs = np.clip(np.array([
@@ -136,14 +139,11 @@ def _applyRect(arr: 'np.uint32[:, :]', pos: Tuple[int, int], sze: Tuple[int, int
             y1-t, y1,
             y0+r, y1-r,
         ]), 0, h)
-        # Top edge
-        arr[ys[0] : ys[1], xs[4] : xs[5]] = col
-        # Bottom edge
-        arr[ys[2] : ys[3], xs[4] : xs[5]] = col
-        # Left edge
-        arr[ys[4] : ys[5], xs[0] : xs[1]] = col
-        # Right edge
-        arr[ys[4] : ys[5], xs[2] : xs[3]] = col
+        
+        arr[ys[0] : ys[1], xs[4] : xs[5], :] = col  # Top edge
+        arr[ys[2] : ys[3], xs[4] : xs[5], :] = col  # Bottom edge
+        arr[ys[4] : ys[5], xs[0] : xs[1], :] = col  # Left edge
+        arr[ys[4] : ys[5], xs[2] : xs[3], :] = col  # Right edge
 
     if r > 0:
         r2 = r*r
@@ -175,7 +175,7 @@ def _applyRect(arr: 'np.uint32[:, :]', pos: Tuple[int, int], sze: Tuple[int, int
                     d2 = (xx - cx) ** 2 + dy2
                     # only paint the annulus between r-t and r
                     if rthic2 <= d2 < r2:
-                        arr[yy, xx] = col
+                        arr[yy, xx, :] = col
 
 class _RectOp(ElmOp):
     __slots__ = ['pos', 'sze', 'thickness', 'col', 'round']
@@ -194,9 +194,9 @@ class _RectOp(ElmOp):
     def ApplyOnArr(self, arr: np.ndarray):
         _applyRect(arr, self.pos, self.sze, self.thickness, self.round, self.col)
 
-@jitrix('draw', '(np.full((100, 100), 0, np.uint32), (50, 60), 40, 10, 345)')
-def _applyCirc(arr: 'np.uint32[:, :]', pos: Tuple[int, int], radius: int, thickness: int, col: np.uint32):
-    h, w = arr.shape
+@jitrix('draw', '(np.full((100, 100, 3), 0, np.uint32), (50, 60), 40, 10, (255, 255, 255))')
+def _applyCirc(arr: 'np.uint8[:, :, :]', pos: Tuple[int, int], radius: int, thickness: int, col: colTyp):
+    h, w, _ = arr.shape
 
     x, y = pos
 
@@ -218,7 +218,7 @@ def _applyCirc(arr: 'np.uint32[:, :]', pos: Tuple[int, int], radius: int, thickn
             dist_sq = dx * dx + dy * dy
 
             if radius_inner_sq <= dist_sq <= radius_outer_sq:
-                arr[yy, xx] = col
+                arr[yy, xx, :] = col
 
 class _CircleOp(ElmOp):
     __slots__ = ['pos', 'radius', 'thickness', 'col']
@@ -237,9 +237,9 @@ class _CircleOp(ElmOp):
         _applyCirc(arr, self.pos, self.radius, self.thickness, self.col)
 
 
-@jitrix('draw', '(np.full((100, 100), 0, np.uint32), (50, 50), 40, 30, 10, 5)')
-def _applyElipse(arr: 'np.uint32[:, :]', pos: Tuple[int, int], xradius: int, yradius: int, thickness: int, col: np.uint32):
-    h, w = arr.shape
+@jitrix('draw', '(np.full((100, 100, 3), 0, np.uint32), (50, 50), 40, 30, 10, 5)')
+def _applyElipse(arr: 'np.uint32[:, :, :]', pos: Tuple[int, int], xradius: int, yradius: int, thickness: int, col: colTyp):
+    h, w, _ = arr.shape
 
     x, y = pos
 
@@ -265,7 +265,7 @@ def _applyElipse(arr: 'np.uint32[:, :]', pos: Tuple[int, int], xradius: int, yra
                 dx = dx * dx
 
                 if dx/xd + dy/yd <= 1:
-                    arr[yy, xx] = col
+                    arr[yy, xx, :] = col
     else:
         xd1 = xradius - t
         xd1 = xd1 * xd1
@@ -284,7 +284,7 @@ def _applyElipse(arr: 'np.uint32[:, :]', pos: Tuple[int, int], xradius: int, yra
                 dx = dx * dx
 
                 if dx/xd2 + dy/yd2 <= 1 <= dx/xd1 + dy/yd1:
-                    arr[yy, xx] = col
+                    arr[yy, xx, :] = col
 
 class _ElipseOp(ElmOp):
     __slots__ = ['pos', 'xradius', 'yradius', 'thickness', 'col']
@@ -307,7 +307,7 @@ class _DrawFuncs(Func):
     # TODO: Overload for lines
     def drawLine(self, p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: int):
         """
-        Draw a line
+        Draw a line!
 
         Args:
             p1 (Iterable[int | float]): The starting point of the line
@@ -323,7 +323,7 @@ class _DrawFuncs(Func):
     
     def drawPolygon(self, ps: Iterable[Iterable[int|float]], thickness: int|float, col: int):
         """
-        Draw a closed polygon
+        Draw a closed polygon!
 
         Args:
             ps (Iterable[Iterable[int | float]]): The points making up the polygon
@@ -339,7 +339,7 @@ class _DrawFuncs(Func):
     @overload
     def drawRect(self, pos: Iterable[int|float], sze: Iterable[int|float], thickness: int|float, col: int, /, roundness: int|float = 0):
         """
-        Draws a rectangle
+        Draws a rectangle!
 
         Args:
             pos: The position of the rect
@@ -353,7 +353,7 @@ class _DrawFuncs(Func):
     @overload
     def drawRect(self, x: int|float, y: int|float, width: int|float, height: int|float, thickness: int|float, col: int, /, roundness: int|float = 0):
         """
-        Draws a rectangle
+        Draws a rectangle! (recommended to use the other definition with `((x, y), (width, height), ...)` instead of `(x, y, width, height, ...)` for readability)
 
         Args:
             x: The x position of the rect
@@ -390,7 +390,7 @@ class _DrawFuncs(Func):
     @overload
     def drawCircle(self, x: int|float, y: int|float, radius: int|float, thickness: int|float, col: int):
         """
-        Draws a circle!
+        Draws a circle! (recommended to use the other definition with `((x, y), ...)` instead of `(x, y, ...)` for readability)
 
         Args:
             x: The X position of the circle
@@ -424,10 +424,10 @@ class _DrawFuncs(Func):
     @overload
     def drawElipse(self, x: int|float, y: int|float, xradius: int|float, yradius: int|float, thickness: int|float, col: int):
         """
-        Draws an elipse!
+        Draws an elipse! (recommended to use the other definition with `((x, y), ...)` instead of `(x, y, ...)` for readability)
 
         Args:
-            x: The X position of the elipse
+            x: The x position of the elipse
             y: The y position of the elipse
             xradius: The radius of the width of the elipse
             yradius: The radius of the height of the elipse

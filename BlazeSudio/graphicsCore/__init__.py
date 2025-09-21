@@ -101,37 +101,32 @@ class AvgClock(Clock):
         """
         return super().get_fps()
 
+colourType = Iterable[int]
 class Colour: # TODO: themes - repeated colours (and 'highlight 1', 'tone 3', etc.) put in a list so apps can easily theme switch
     """
-    A Colour is a hex value represented as an integer.
+    A Colour is an rgb tuple.
     
     This class gives some helper functions for creating these tuples based off of different colour types.
-
-    FYI: `Colour(r, g, b)` is a shorter way of writing `Colour.from_rgb(r, g, b)`
     """
-    _RGBHEXFMT = "{0:02x}{1:02x}{2:02x}"
-    def __new__(cls, *args):
-        """
-        A shorter form of `Colour.from_rgb(r, g, b)`
-        """
-        return cls.from_rgb(*args)
+    _RGBHEXFMT = "#{0:02x}{1:02x}{2:02x}"
     @classmethod
-    def from_rgb(cls, r: int, g: int, b: int) -> int:
+    def rgb(cls, r: int, g: int, b: int) -> colourType:
+        return (r, g, b)
+    @classmethod
+    def hex(cls, hex: str) -> colourType:
+        return int(hex.lstrip("#"), 16)
+    @classmethod
+    def to_rgb(cls, col: colourType) -> Iterable[int]:
+        return col
+    @classmethod
+    def to_hex(cls, col: colourType, upper=True) -> str:
         def clamp(x): 
             assert 0 <= x <= 255, "RGB value must be between 0-255!"
             return x
-        return int(cls._RGBHEXFMT.format(clamp(r), clamp(g), clamp(b)), 16)
-    @classmethod
-    def from_hex(cls, hex: str) -> int:
-        return int(hex.lstrip("#"), 16)
-    @classmethod
-    def to_rgb(cls, col: int) -> Iterable[int]:
-        return [(col >> 8*i) & 0xFF for i in (2, 1, 0)]
-    @classmethod
-    def to_hex(cls, col: int, upper=True) -> str:
+        o = cls._RGBHEXFMT.format(clamp(col[0]), clamp(col[1]), clamp(col[2]))
         if upper:
-            return "#"+hex(col)[2:].upper()
-        return "#"+hex(col)[2:]
+            return o.upper()
+        return o
     # TODO: to/from hsv
 
 class Interaction:
@@ -341,9 +336,7 @@ class Window:
         """
         cls._PGWIN.fill(col)
 
-# TODO: Cache - use cached surface OR
-# modify the cached surface (keeping existing operations) if there aren't that many and only additions and not resizing, rotating, etc. OR
-# completely redo it again
+# TODO Make surface once
 class Surface(base.AllFuncs, Apply):
     __slots__ = ['_ops', '_WinSur']
     @overload

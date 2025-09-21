@@ -43,9 +43,9 @@ class Apply:
         
         # Make the output screen and append all the elements
         if elms[0].typ == base.OpsList.Fill:
-            arr = np.full((sze[1], sze[0]), elms.pop(0).col, np.uint32)
+            arr = np.full((sze[1], sze[0], 3), elms.pop(0).col, np.uint8)
         else:
-            arr = np.zeros((sze[1], sze[0]), np.uint32)
+            arr = np.zeros((sze[1], sze[0], 3), np.uint8)
         
         for e in elms:
             e.ApplyOnArr(arr)
@@ -57,13 +57,4 @@ class Apply:
         """
         Get the pygame image for this surface
         """
-        arr = self()
-
-        # Turn the array into a pygame surface, first by converting to rgb
-        h, w = arr.shape
-        # reinterpret the 32‐bit ints as four 8‐bit ints per pixel
-        rgba = arr.view(np.uint8).reshape(h, w, 4)
-        # byte 0 = least‐significant = Blue; byte1=Green; byte2=Red; byte3=Alpha/padding
-        rgb_arr = rgba[:, :, [2, 1, 0]]
-
-        return pygame.surfarray.make_surface(rgb_arr.swapaxes(0, 1))
+        return pygame.surfarray.make_surface(self().swapaxes(0, 1))
