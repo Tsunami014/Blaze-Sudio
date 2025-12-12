@@ -138,7 +138,7 @@ def options(title, opts, default=0):
     opt = default
 
     def print_opts():
-        print(f'\033[K{bracketulate('\033[38;5;166m?')} \033[92;11m{title}: \033[90m(Use arrow keys) \033[94m{opts[opt]}\033[0m')
+        print('\033[K'+bracketulate('\033[38;5;166m?')+f' \033[92;11m{title}: \033[90m(Use arrow keys) \033[94m{opts[opt]}\033[0m')
         for i in range(len(opts)):
             t = opts[i]
             spaces = ' '*(BracketulateAmount+1)
@@ -185,7 +185,7 @@ def options(title, opts, default=0):
     return opt
 
 def ask(title, keyOpts, newline=False, printAtEnd=False):
-    print(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}{"\n" if newline else " "}\033[94m> ', end='', flush=True)
+    print(bracketulate('\033[38;5;166m?')+' \033[92m'+title+("\n" if newline else " ")+'\033[94m> ', end='', flush=True)
     while True:
         k = getch()
         if k in keyOpts:
@@ -196,7 +196,7 @@ def ask(title, keyOpts, newline=False, printAtEnd=False):
 
 def askInp(title, newline=False):
     disable_input_mode()
-    return input(f'{bracketulate('\033[38;5;166m?')} \033[92m{title}{"\n" if newline else " "}\033[94m> ')
+    return input(bracketulate('\033[38;5;166m?')+' \033[92m'+title+("\n" if newline else " ")+'\033[94m> ')
 
 l = ['Make a new project here 📁', 'Make a new project in a subdirectory 🗃️', 'Open docs 📚️', '\033[35mQuit 👋']
 chosen = options('What would you like to do?', l)
@@ -238,7 +238,7 @@ def makeNewProject(where):
     print(txts['info']+'Making project in '+where+'...')
     usingGit = False
     if subprocess.run(['git', '--version'], stdout=subprocess.DEVNULL).returncode == 0:
-        if ask(f'Do you want to initialise a git repo? \033[90m[y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
+        if ask('Do you want to initialise a git repo? \033[90m[y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
             print('Yes\033[0m')
             subprocess.run(['git', 'init', where], stdout=subprocess.DEVNULL)
             usingGit = True
@@ -258,7 +258,7 @@ def makeNewProject(where):
     if usingGit:
         subprocess.run(['git', 'add', '-A'], cwd=where, stdout=subprocess.DEVNULL)
     if subprocess.run(['code', '--version'], stdout=subprocess.DEVNULL).returncode == 0:
-        if ask(f'Do you want to launch VSCode? \033[90m[y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
+        if ask('Do you want to launch VSCode? \033[90m[y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
             print('Yes\033[0m')
             subprocess.run(['code', where], stdout=subprocess.DEVNULL)
         else:
@@ -300,7 +300,7 @@ elif chosen == 1:
             continue
         if os.path.exists(where):
             if os.listdir(where) != []:
-                resp = options(f'Path %s exists and has things in it! What do you want to do?'%where, [f'{bold("Override")} it & {highlight("delete everything in it")} 🔥', 'Choose again 🤔', '\033[35mQuit 👋'])
+                resp = options('Path %s exists and has things in it! What do you want to do?'%where, [f'{bold("Override")} it & {highlight("delete everything in it")} 🔥', 'Choose again 🤔', '\033[35mQuit 👋'])
                 if resp == 0:
                     if ask(highlight(f'Are you sure you want to {bold("override")} the folder {where} and delete everything in it"?')+' \033[90m[y/n]', ['y', 'Y', 'n', 'N']) in (0, 1):
                         print('Yes\033[0m')
