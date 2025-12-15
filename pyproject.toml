@@ -54,7 +54,8 @@ speed = [
 ]
 
 graphics = [
-    "pygame-ce",
+    "pysdl2",
+    "pysdl2-dll",
     "numpy"
 ]
 

@@ -17,6 +17,19 @@ It will first read the file, then overwrite it when you save.')
     NodeEditor(f)()
 
 def NewGraphicsDemo():
+    from BlazeSudio.graphicsCore import Window, Clock, Draw, Ix, Op
+    w = Window()
+    c = Clock()
+
+    ops = Op.Fill((255, 255, 255))# + \
+            #Draw.Line((10, 10), (100, 100), 5, (0, 0, 0))
+    w @= ops
+    while Ix.handleBasic():
+        w.rend()
+        c.tick()
+        w.set_title(f'FPS: {c.get_fps()}')
+        print(c.get_fps())
+    """
     from BlazeSudio.graphicsCore import Quit, AvgClock, Window, Colour, Interaction
     sur = Window.create_win()
 
@@ -29,6 +42,11 @@ def NewGraphicsDemo():
         # It can also handle decimals!
         sur.drawLine((10.5, 10.5), (200.25, 100.75), 5, (0, 0, 0))
         sur.drawPolygon([(100, 100.5), (200, 300), (0, 300)], 30, (80, 100, 250))
+        Window.flush()
+        Window.flip()
+        c.tick()
+        Window.set_title(f'FPS: {c.get_fps()}')
+        print(c.get_fps())
         sur.drawRect((30.5, 50), (100.25, 80.3333333), 10, (125, 125, 125), roundness=30)
         sur.drawRect(100, 150, 30, 50, 10, (0, 0, 0))
         sur.drawCircle(300, 300, 10, 5, (255, 100, 100))
@@ -91,6 +109,7 @@ def NewGraphicsDemo():
         pygame.display.set_caption(f'FPS: {c.get_fps()}')
         print(c.get_fps())
     pygame.quit()
+    """
 
 def GraphicsDemo():
     import BlazeSudio.graphics.options as GO

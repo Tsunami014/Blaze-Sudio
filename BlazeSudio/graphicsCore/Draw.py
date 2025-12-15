@@ -1,6 +1,6 @@
 import numpy as np
 from typing import overload, Iterable, Tuple
-from BlazeSudio.graphicsCore.basebase import Op, ElmOp, Func, OpsList
+from BlazeSudio.graphicsCore.base import Op, TransOp
 from BlazeSudio.speedup import jitrix
 
 colTyp = Tuple[np.uint8, np.uint8, np.uint8]
@@ -58,10 +58,21 @@ def _drawThickLine(arr: 'np.uint8[:, :, :]', p1: Tuple[int, int], p2: Tuple[int,
                 if 0 <= yy < arr.shape[0] and 0 <= xx < arr.shape[1]:
                     arr[yy, xx, :] = colour
 
-class _PolygonOp(ElmOp):
+class Polygon(TransOp):
     __slots__ = ['ps', 'thickness', 'col']
-    typ = OpsList.Poly
-    def __init__(self, ps, thickness, col):
+    def __init__(self, ps: Iterable[int|float], thickness: int|float, col: colTyp):
+        """
+        Draw a closed polygon!
+
+        Args:
+            ps (Iterable[Iterable[int | float]]): The points making up the polygon
+            thickness (int | float): The thickness of the line. Must be > 0.
+            col (colTyp): The colour of the line
+        """
+        if thickness <= 0:
+            raise ValueError(
+                'Line has to have a thickness of greater than 0!'
+            )
         self.ps = np.array(ps, dtype=np.int64)
         assert len(self.ps.shape) == 2, "Points must be a 2 dimensional array; [(point 1 x, point 1 y), (point 2 x, point 2 y), etc.]"
         assert self.ps.shape[1] == 2, "Points must have only 2 dimensions; an x and a y; [(point 1 x, point 1 y), etc.]"
@@ -69,31 +80,60 @@ class _PolygonOp(ElmOp):
         self.thickness = thickness
         self.col = col
     
-    def ApplyOp(self, op: Op):
-        # TODO: transforms
-        return True
-    def ApplyOnArr(self, arr: np.ndarray):
+    def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
         if len(self.ps) < 2:
             return
-        p1 = self.ps[0]
-        for i in range(1, len(self.ps)):
-            p2 = self.ps[i]
+        newps = self._warpPs(mat, self.ps)
+        it = iter(newps)
+        p1 = next(it)
+        while it:
+            p2 = next(it)
             _drawThickLine(arr, p1, p2, self.thickness, self.col)
             p1 = p2
-        p2 = self.ps[0]
+        p2 = newps[0]
         _drawThickLine(arr, p1, p2, self.thickness, self.col)
 
-class _LineOp(_PolygonOp):
-    def __init__(self, p1, p2, thickness, col):
-        self.ps = np.array([p1, p2], dtype=np.int64)
-        assert self.ps.shape == (2, 2), "Points must have only 2 dimensions; an x and a y; [(point 1 x, point 1 y), (point 2 x, point 2 y)]"
-        assert thickness > 0, "Thickness must be >0"
-        self.thickness = thickness
-        self.col = col
-    
-    def ApplyOnArr(self, arr: np.ndarray):
-        _drawThickLine(arr, self.ps[0], self.ps[1], self.thickness, self.col)
+class Line(Polygon):
+    @overload
+    def __init__(self, p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: colTyp):
+        """
+        Draw a line!
 
+        Args:
+            p1 (Iterable[int | float]): The starting point of the line (must be in format `[x, y]`)
+            p2 (Iterable[int | float]): The ending point of the line (must be in format `[x, y]`)
+            thickness (int | float): The thickness of the line. Must be > 0.
+            col (colTyp): The colour of the line
+        """
+    @overload
+    def __init__(self, ps: Iterable[Iterable[int|float]], thickness: int|float, col: colTyp):
+        """
+        Draw a line!
+
+        Args:
+            ps (Iterable[Iterable[int | float]]): The points of the line (must be in format `[[x1, y1], [x2, y2]]`)
+            thickness (int | float): The thickness of the line. Must be > 0.
+            col (colTyp): The colour of the line
+        """
+    def __init__(self, *args):
+        if len(args) == 4:
+            p1, p2, thickness, col = args
+            ps = (p1, p2)
+        elif len(args) == 3:
+            ps, thickness, col = args
+        else:
+            raise TypeError(
+                f'Incorrect number of arguments! Expected 3 or 4, found {len(args)}!'
+            )
+        super().__init__(ps, thickness, col)
+        assert self.ps.shape == (2, 2), "Points must be in this format: [(point 1 x, point 1 y), (point 2 x, point 2 y)]"
+
+    def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
+        newps = self._warpPs(mat, self.ps)
+        _drawThickLine(arr, newps[0], newps[1], self.thickness, self.col)
+        return arr
+
+"""
 @jitrix('draw', '(np.full((100, 100, 3), 0, np.uint32), (10, 10), (80, 80), 10, 5, (100, 100, 100))')
 def _applyRect(arr: 'np.uint8[:, :, :]', pos: Tuple[int, int], sze: Tuple[int, int], thickness: int, round: int, col: colTyp):
     h, w, _ = arr.shape
@@ -302,40 +342,9 @@ class _ElipseOp(ElmOp):
 
     def ApplyOnArr(self, arr: np.ndarray):
         _applyElipse(arr, self.pos, self.xradius, self.yradius, self.thickness, self.col)
+"""
 
-class _DrawFuncs(Func):
-    # TODO: Overload for lines
-    def drawLine(self, p1: Iterable[int|float], p2: Iterable[int|float], thickness: int|float, col: int):
-        """
-        Draw a line!
-
-        Args:
-            p1 (Iterable[int | float]): The starting point of the line
-            p2 (Iterable[int | float]): The ending point of the line
-            thickness (int | float): The thickness of the line. Must be > 0.
-            col (int): The colour of the line
-        """
-        if thickness <= 0:
-            raise ValueError(
-                'Line has to have a thickness of greater than 0!'
-            )
-        self._ops.append(_LineOp(p1, p2, thickness, col))
-    
-    def drawPolygon(self, ps: Iterable[Iterable[int|float]], thickness: int|float, col: int):
-        """
-        Draw a closed polygon!
-
-        Args:
-            ps (Iterable[Iterable[int | float]]): The points making up the polygon
-            thickness (int | float): The thickness of the line. Must be > 0.
-            col (int): The colour of the line
-        """
-        if thickness <= 0:
-            raise ValueError(
-                'Line has to have a thickness of greater than 0!'
-            )
-        self._ops.append(_PolygonOp(ps, thickness, col))
-
+class _DrawFuncs:
     @overload
     def drawRect(self, pos: Iterable[int|float], sze: Iterable[int|float], thickness: int|float, col: int, /, roundness: int|float = 0):
         """
