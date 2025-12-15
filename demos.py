@@ -908,6 +908,49 @@ def CompileDemo():
 
 
 if __name__ == '__main__':
+    cmds = {
+        'Node generator [image]:': None,
+        'Node Editor Demo': NodeEditorDemo,
+
+
+        'Graphics [graphics] / [game]:': None,
+        'New Graphics Demo':         NewGraphicsDemo,
+        'Graphics Demo':             GraphicsDemo,
+        'Lorem Ipsum Graphics Demo': LoremGraphicsDemo,
+        'Theme Playground Demo':     ThemePgDemo,
+
+        'Collisions [collisions]:': None,
+        'Collisions Demo':       CollisionsDemo,
+        'DEBUG Collisions Demo': lambda: CollisionsDemo(True),
+
+        'Wrapping [game]:': None,
+        'Wrap Demo':       WrapDemo,
+        'Wrap Basic Demo': WrapBasicDemo,
+
+        'Misc stuff:': None,
+        # TODO: Sound editor demo
+        'Tileset Collision Demo [game]': TsetCollDemo,
+        'Sound Demo [game]':             SoundDemo,
+        'Compile Demo [speed]':          CompileDemo,
+    }
+
+    import sys
+    if len(sys.argv) == 1:
+        pass
+    elif len(sys.argv) == 2:
+        idx = int(sys.argv[1])
+        li = [i for i in cmds.values() if i is not None]
+        if idx < 0 or idx > len(li):
+            raise ValueError(
+                'Invalid input number!'
+            )
+        li[idx]()
+        exit()
+    else:
+        raise ValueError(
+            'Too many arguments!'
+        )
+
     try:
         import tkinter as Tk
         has_tk = True
@@ -915,50 +958,26 @@ if __name__ == '__main__':
     except ImportError:
         print("You don't have tkinter installed. Using the command line instead.\n")
         has_tk = False
-    
-    cmds = []
 
-    def label(text):
-        if has_tk:
-            Tk.Label(root, text=text).pack()
-        else:
-            print('\n'+text)
-
-    def button(text, command, requires_tk=False):
-        def cmd(cmdd):
+    idx = 0
+    for text, command in cmds.items():
+        if command is None: # Label
             if has_tk:
-                root.destroy()
-            print('loading demo %s...'%text)
-            cmdd()
-        if has_tk:
-            Tk.Button(root, text=text, command=lambda: cmd(command)).pack()
+                Tk.Label(root, text=text).pack()
+            else:
+                print('\n'+text)
         else:
-            rtk = '*' if requires_tk else ''
-            print(f'{len(cmds)}: {rtk}{text}')
-            cmds.append(command)
-    
-    label('Node generator [image]:')
-    button('Node Editor Demo',              NodeEditorDemo,                   )
-
-    label('Graphics [graphics] / [game]:')
-    button('New Graphics Demo',             NewGraphicsDemo,                  )
-    button('Graphics Demo',                 GraphicsDemo,                     )
-    button('Lorem Ipsum Graphics Demo',     LoremGraphicsDemo,                )
-    button('Theme Playground Demo',         ThemePgDemo,                  True)
-
-    # TODO: Sound editor demo
-    label('Collisions [collisions]:')
-    button('Collisions Demo',               CollisionsDemo,                   )
-    button('DEBUG Collisions Demo',         lambda: CollisionsDemo(True),     )
-
-    label('Wrapping [game]:')
-    button('Wrap Demo',                     WrapDemo,                         )
-    button('Wrap Basic Demo',               WrapBasicDemo,                    )
-
-    label('Misc stuff:')
-    button('Tileset Collision Demo [game]', TsetCollDemo,                     )
-    button('Sound Demo [game]',             SoundDemo,                        )
-    button('Compile Demo [speed]',          CompileDemo,                      )
+            def cmd(cmdd):
+                if has_tk:
+                    root.destroy()
+                print('loading demo %s...'%text)
+                cmdd()
+            if has_tk:
+                Tk.Button(root, text=f"{idx}: "+text, command=lambda: cmd(command)).pack()
+            else:
+                print(f'{idx}: {text}')
+                cmds.append(command)
+            idx += 1
     
     if has_tk:
         root.after(1, lambda: root.attributes('-topmost', True))
@@ -967,7 +986,6 @@ if __name__ == '__main__':
         root.report_callback_exception = tk_abort
         root.mainloop()
     else:
-        print("*Requires TKinter for the demo")
         idx = None
         try:
             idx = int(input('Enter the number of the demo you want to run > '))
