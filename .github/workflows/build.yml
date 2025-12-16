@@ -8,16 +8,13 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12"]
     
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Python ${{ matrix.python-version }}
+      - name: Setup Python 3.11
         uses: actions/setup-python@v2.2.2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           architecture: x64
       
       - name: Setup Stubgen
@@ -30,7 +27,7 @@ jobs:
         
       - name: Compile collisions module
         working-directory: ./BlazeSudio/collisions
-        run: python setup.py build_ext --inplace
+        run: python setup.py
       - uses: EndBug/add-and-commit@v9 
         with:
           pull: '--rebase --autostash'
@@ -42,16 +39,13 @@ jobs:
     permissions:
       contents: write
     runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12"]
     
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Python ${{ matrix.python-version }}
+      - name: Setup Python 3.11
         uses: actions/setup-python@v2.2.2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           architecture: x64
       
       - name: Setup Stubgen
@@ -64,7 +58,7 @@ jobs:
         
       - name: Compile collisions module
         working-directory: ./BlazeSudio/collisions
-        run: python setup.py build_ext --inplace
+        run: python setup.py
       - uses: EndBug/add-and-commit@v9 
         with:
           pull: '--rebase --autostash'

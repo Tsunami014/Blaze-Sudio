@@ -1,28 +1,47 @@
+"""
+python -m pip install cython setuptools
+"""
 from setuptools import setup, Extension
 from Cython.Build import cythonize
-import os, sys, shutil, re
+import shutil
+import sys
+import os
+
+os.chdir(os.path.dirname(__file__))
 
 extensions = [
-    Extension("collisions", ["lib/collisions.py"]),
+    Extension(
+        "collisions",
+        ["lib/collisions.py"],
+        define_macros=[("Py_LIMITED_API", "0x030B0000")],
+        py_limited_api=True
+    ),
 ]
 
 # Build pyi stub file automatically
-os.system("stubgen lib/collisions.py --include-docstrings")
-shutil.copy('./out/BlazeSudio/collisions/lib/collisions.pyi', './generated/collisions.pyi')
+if os.system("stubgen lib/collisions.py --include-docstrings") == 0:
+    shutil.copy('./out/BlazeSudio/collisions/lib/collisions.pyi', './generated/collisions.pyi')
+else:
+    print("Failed to generate stub file!")
 
+if len(sys.argv) == 1:
+    sys.argv = [sys.argv[0], "build_ext", "--inplace"]
 if '--no-build' not in sys.argv:
-    if sys.platform == 'win32':
-        platform = 'win_amd64'
-        fname = f'collisions.cp{sys.version_info.major}{sys.version_info.minor}-{platform}.pyd'
-    else:
-        platform = 'x86_64-linux-gnu'
-        fname = f'collisions.cpython-{sys.version_info.major}{sys.version_info.minor}-{platform}.so'
     setup(
         name="collisions",
         ext_modules=cythonize(
             extensions,
             nthreads=6,
             language_level="3",
+            compiler_directives={'binding': False} # Often required for Limited API
         ),
+        options={
+            'bdist_wheel': {'py_limited_api': 'cp310'}
+        }
     )
-    shutil.move('./'+fname, './generated/'+fname)
+    if sys.platform == 'win32':
+        ext = '.pyd'
+    else:
+        ext = '.so'
+    shutil.move('./collisions.abi3'+ext, './generated/collisions.abi3'+ext)
+

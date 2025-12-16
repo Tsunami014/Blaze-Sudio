@@ -55,8 +55,8 @@ There are even more demos, and *even more* features that don't have a demo! I ha
 | Version stuff |
 |---------------|
 | [![PyPi version](https://badgen.net/pypi/v/Blaze-Sudio?label=PyPi%20version&icon=pypi)](https://pypi.org/project/Blaze-Sudio/) |
-| [![Python versions: 3.10, 3.11, 3.12](https://badgen.net/static/Python%20versions/3.10%203.11%203.12/purple)]() |
-| [![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]() (Or at least the ones I want to support) Linux distro tested: Ubuntu |
+| [![Python versions: 3.11+](https://badgen.net/static/Python%20versions/3.11%2B/purple)]() |
+| [![OSs: Linux & Windows](https://badgen.net/static/OSs/Linux%20&%20Windows/red)]() (Mac not intended, so at least try) |
 
 | Statuses |
 |-----------|
