@@ -42,6 +42,6 @@ if '--no-build' not in sys.argv:
     if sys.platform == 'win32':
         ext = '.pyd'
     else:
-        ext = '.so'
-    shutil.move('./collisions.abi3'+ext, './generated/collisions.abi3'+ext)
+        ext = '.abi3.so'
+    shutil.move('./collisions'+ext, './generated/collisions'+ext)
 

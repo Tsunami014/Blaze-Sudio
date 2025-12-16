@@ -11,7 +11,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Python 3.11
+      - name: Setup Python
         uses: actions/setup-python@v2.2.2
         with:
           python-version: "3.11"
@@ -33,7 +33,7 @@ jobs:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: 'ci(build): 🛠️ Build collisions for linux & python ${{ matrix.python-version }} :)'
+          message: 'ci(build): 🛠️ Build collisions for linux :)'
   
   build-windows:
     permissions:
@@ -42,7 +42,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Python 3.11
+      - name: Setup Python
         uses: actions/setup-python@v2.2.2
         with:
           python-version: "3.11"
@@ -64,4 +64,4 @@ jobs:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: 'ci(build): 🛠️ Build collisions for windows & python ${{ matrix.python-version }} :)'
+          message: 'ci(build): 🛠️ Build collisions for windows :)'
