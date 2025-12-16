@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Iterable
 from enum import IntEnum
 import numpy as np
 
@@ -44,6 +45,9 @@ class Op(ABC):
         if oth.flags & OpFlags.List:
             return OpList(self, *oth.ops)
         return OpList(self, oth)
+
+    def flatten(self):
+        return self
 
 class TransOp(Op):
     flags = OpFlags.Transformable
@@ -131,13 +135,15 @@ class MatOp(Op):
             return out
 
 class OpList(Op):
-    __slots__ = ['ops', 'fixed', 'flags']
+    __slots__ = ['ops', '_fixed', 'flags']
     def __init__(self, *ops):
         self.ops = ops
-        self.fixed = False
+        self._fixed = False
         self.flags = ops[-1].flags | OpFlags.List
 
     def fix(self):
+        if self._fixed:
+            return
         ops = self.ops
         self.ops = []
         it = iter(ops)
@@ -151,9 +157,10 @@ class OpList(Op):
                 o = nxt
             self.ops.append(o2)
             o = nxt
+        self._fixed = True
 
     def apply(self, arr: np.ndarray, defSmth):
-        if not self.fixed:
+        if not self._fixed:
             self.fix() # Lazily fix it so it won't every new addition
         nxtMat = None
         mat = None
@@ -185,4 +192,7 @@ class OpList(Op):
         if oth.flags & OpFlags.List:
             return OpList(*self.ops, *oth.ops)
         return OpList(*self.ops, oth)
+
+    def flatten(self):
+        return self.ops
 

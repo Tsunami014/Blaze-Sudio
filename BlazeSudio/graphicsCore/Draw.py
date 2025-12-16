@@ -1,12 +1,12 @@
-import numpy as np
 from typing import overload, Iterable, Tuple
-from BlazeSudio.graphicsCore.base import Op, TransOp
+from BlazeSudio.graphicsCore.base import TransOp
 from BlazeSudio.speedup import jitrix
+import numpy as np
+import math
 
-colTyp = Tuple[np.uint8, np.uint8, np.uint8]
+colTyp = Tuple[np.uint8, np.uint8, np.uint8, np.uint8]
 
-
-@jitrix('draw', '(np.full((100, 100, 3), 0, np.uint8), (10, 10), (80, 80), 5, (10, 10, 10))')
+@jitrix('draw', '(np.full((100, 100, 4), 0, np.uint8), (10, 10), (80, 80), 5, (10, 10, 10, 10))')
 def _drawThickLine(arr: 'np.uint8[:, :, :]', p1: Tuple[int, int], p2: Tuple[int, int], thickness: int, colour: colTyp):
     x, y = p1
     x1, y1 = p2
@@ -83,15 +83,16 @@ class Polygon(TransOp):
     def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
         if len(self.ps) < 2:
             return
+        s = np.linalg.svd(mat[:2, :2], compute_uv=False)
+        t = self.thickness * np.mean(s)
         newps = self._warpPs(mat, self.ps)
-        it = iter(newps)
-        p1 = next(it)
-        while it:
-            p2 = next(it)
-            _drawThickLine(arr, p1, p2, self.thickness, self.col)
+        p1 = newps[0]
+        for p2 in newps[1:]:
+            _drawThickLine(arr, p1, p2, t, self.col)
             p1 = p2
         p2 = newps[0]
-        _drawThickLine(arr, p1, p2, self.thickness, self.col)
+        _drawThickLine(arr, p1, p2, t, self.col)
+        return arr
 
 class Line(Polygon):
     @overload
@@ -130,12 +131,13 @@ class Line(Polygon):
 
     def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
         newps = self._warpPs(mat, self.ps)
-        _drawThickLine(arr, newps[0], newps[1], self.thickness, self.col)
+        s = np.linalg.svd(mat[:2, :2], compute_uv=False)
+        _drawThickLine(arr, newps[0], newps[1], self.thickness * np.mean(s), self.col)
         return arr
 
-"""
-@jitrix('draw', '(np.full((100, 100, 3), 0, np.uint32), (10, 10), (80, 80), 10, 5, (100, 100, 100))')
-def _applyRect(arr: 'np.uint8[:, :, :]', pos: Tuple[int, int], sze: Tuple[int, int], thickness: int, round: int, col: colTyp):
+
+@jitrix('draw', '(np.full((100, 100, 4), 0, np.uint32), (10, 10), (80, 80), 10, 5, (100, 100, 100, 100))')
+def _drawRect(arr: 'np.uint8[:, :, :]', pos: Tuple[int, int], sze: Tuple[int, int], thickness: int, round: int, col: colTyp):
     h, w, _ = arr.shape
 
     if sze[0] > 0:
@@ -217,136 +219,11 @@ def _applyRect(arr: 'np.uint8[:, :, :]', pos: Tuple[int, int], sze: Tuple[int, i
                     if rthic2 <= d2 < r2:
                         arr[yy, xx, :] = col
 
-class _RectOp(ElmOp):
+class Rect(Polygon):
     __slots__ = ['pos', 'sze', 'thickness', 'col', 'round']
-    def __init__(self, x, y, width, height, thickness, col, roundness):
-        self.pos = (x, y)
-        self.sze = (width, height)
-        assert thickness >= 0, "Thickness must be >=0"
-        self.thickness = thickness
-        self.col = col
-        self.round = roundness
 
-    def ApplyOp(self, op: Op):
-        # TODO: transforms
-        return True
-
-    def ApplyOnArr(self, arr: np.ndarray):
-        _applyRect(arr, self.pos, self.sze, self.thickness, self.round, self.col)
-
-@jitrix('draw', '(np.full((100, 100, 3), 0, np.uint32), (50, 60), 40, 10, (255, 255, 255))')
-def _applyCirc(arr: 'np.uint8[:, :, :]', pos: Tuple[int, int], radius: int, thickness: int, col: colTyp):
-    h, w, _ = arr.shape
-
-    x, y = pos
-
-    x_min = max(min(x - radius - 1, w), 0)
-    x_max = max(min(x + radius + 1, w), 0)
-    y_min = max(min(y - radius - 1, h), 0)
-    y_max = max(min(y + radius + 1, h), 0)
-
-    radius_outer_sq = radius ** 2
-    if thickness == 0:
-        radius_inner_sq = 0
-    else:
-        radius_inner_sq = max(radius - thickness, 0) ** 2
-
-    for yy in range(y_min, y_max):
-        dy = yy - y
-        for xx in range(x_min, x_max):
-            dx = xx - x
-            dist_sq = dx * dx + dy * dy
-
-            if radius_inner_sq <= dist_sq <= radius_outer_sq:
-                arr[yy, xx, :] = col
-
-class _CircleOp(ElmOp):
-    __slots__ = ['pos', 'radius', 'thickness', 'col']
-    def __init__(self, pos, radius, thickness, col):
-        self.pos = pos
-        self.radius = abs(radius)
-        assert thickness >= 0, "Thickness must be >=0"
-        self.thickness = thickness
-        self.col = col
- 
-    def ApplyOp(self, op: Op):
-        # TODO: transforms
-        return True
-
-    def ApplyOnArr(self, arr: np.ndarray):
-        _applyCirc(arr, self.pos, self.radius, self.thickness, self.col)
-
-
-@jitrix('draw', '(np.full((100, 100, 3), 0, np.uint32), (50, 50), 40, 30, 10, 5)')
-def _applyElipse(arr: 'np.uint32[:, :, :]', pos: Tuple[int, int], xradius: int, yradius: int, thickness: int, col: colTyp):
-    h, w, _ = arr.shape
-
-    x, y = pos
-
-    if thickness >= min(xradius, yradius):
-        t = 0
-    else:
-        t = thickness//2
-
-    x_min = max(min(x - xradius - 1 - t, w), 0)
-    x_max = max(min(x + xradius + 1 + t, w), 0)
-    y_min = max(min(y - yradius - 1 - t, h), 0)
-    y_max = max(min(y + yradius + 1 + t, h), 0)
-
-    if thickness == 0 or thickness >= min(xradius, yradius):
-        xd = xradius * xradius
-        yd = yradius * yradius
-
-        for yy in range(y_min, y_max):
-            dy = yy - y
-            dy = dy * dy
-            for xx in range(x_min, x_max):
-                dx = xx - x
-                dx = dx * dx
-
-                if dx/xd + dy/yd <= 1:
-                    arr[yy, xx, :] = col
-    else:
-        xd1 = xradius - t
-        xd1 = xd1 * xd1
-        yd1 = yradius - t
-        yd1 = yd1 * yd1
-        xd2 = xradius + t
-        xd2 = xd2 * xd2
-        yd2 = yradius + t
-        yd2 = yd2 * yd2
-
-        for yy in range(y_min, y_max):
-            dy = yy - y
-            dy = dy * dy
-            for xx in range(x_min, x_max):
-                dx = xx - x
-                dx = dx * dx
-
-                if dx/xd2 + dy/yd2 <= 1 <= dx/xd1 + dy/yd1:
-                    arr[yy, xx, :] = col
-
-class _ElipseOp(ElmOp):
-    __slots__ = ['pos', 'xradius', 'yradius', 'thickness', 'col']
-    def __init__(self, pos, xradius, yradius, thickness, col):
-        self.pos = pos
-        self.xradius = abs(xradius)
-        self.yradius = abs(yradius)
-        assert thickness >= 0, "Thickness must be >=0"
-        self.thickness = thickness
-        self.col = col
- 
-    def ApplyOp(self, op: Op):
-        # TODO: transforms
-        return True
-
-    def ApplyOnArr(self, arr: np.ndarray):
-        _applyElipse(arr, self.pos, self.xradius, self.yradius, self.thickness, self.col)
-"""
-
-class _DrawFuncs:
     @overload
-    def drawRect(self, pos: Iterable[int|float], sze: Iterable[int|float], thickness: int|float, col: int, /, roundness: int|float = 0):
+    def __init__(self, pos: Iterable[int|float], sze: Iterable[int|float], thickness: int|float, col: int, /, roundness: int|float = 0):
         """
         Draws a rectangle!
 
@@ -360,66 +237,122 @@ class _DrawFuncs:
             roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
         """
     @overload
-    def drawRect(self, x: int|float, y: int|float, width: int|float, height: int|float, thickness: int|float, col: int, /, roundness: int|float = 0):
+    def __init__(self, x: int|float, y: int|float, width: int|float, height: int|float, thickness: int|float, col: int, /, roundness: int|float = 0):
         """
-        Draws a rectangle! (recommended to use the other definition with `((x, y), (width, height), ...)` instead of `(x, y, width, height, ...)` for readability)
+        Draw a line!
 
         Args:
-            x: The x position of the rect
-            y: The y position of the rect
-            width: The width of the rect
-            height: The height of the rect
-            thickness: The thickness of the rect. If == 0, will fill the entire rect. Must be >= 0.
-            col: The colour of the rect
-
-        Keyword args:
-            roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
+            ps (Iterable[Iterable[int | float]]): The points of the line (must be in format `[[x1, y1], [x2, y2]]`)
+            thickness (int | float): The thickness of the line. Must be > 0.
+            col (colTyp): The colour of the line
         """
-    def drawRect(self, *args, roundness = 0):
+    def __init__(self, *args, roundness = 0):
         if len(args) == 4:
-            self._ops.append(_RectOp(args[0][0], args[0][1], args[1][0], args[1][1], args[2], args[3], roundness))
+            self.pos, self.sze, self.thickness, self.col = args
         elif len(args) == 6:
-            self._ops.append(_RectOp(*args, roundness=roundness))
+            x, y, w, h, self.thickness, self.col = args
+            self.pos = (x, y)
+            self.sze = (w, h)
         else:
-            raise ValueError(
-                f'Expected 4/6 args, found {len(args)}!'
+            raise TypeError(
+                f'Incorrect number of arguments! Expected 3 or 6, found {len(args)}!'
             )
+        assert self.thickness >= 0, "Thickness must be >=0"
+        self.round = roundness
 
-    @overload
-    def drawCircle(self, pos: Iterable[int|float], radius: int|float, thickness: int|float, col: int):
-        """
-        Draws a circle!
+    def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
+        s = np.linalg.svd(mat[:2, :2], compute_uv=False)
+        t = self.thickness * np.mean(s)
 
-        Args:
-            pos: The position of the circle
-            radius: The radius of the circle
-            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
-            col: The colour to fill the circle with.
-        """
-    @overload
-    def drawCircle(self, x: int|float, y: int|float, radius: int|float, thickness: int|float, col: int):
-        """
-        Draws a circle! (recommended to use the other definition with `((x, y), ...)` instead of `(x, y, ...)` for readability)
-
-        Args:
-            x: The X position of the circle
-            y: The y position of the circle
-            radius: The radius of the circle
-            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
-            col: The colour to fill the circle with.
-        """
-    def drawCircle(self, *args):
-        if len(args) == 5:
-            self._ops.append(_CircleOp((args[0], args[1]), args[2], args[3], args[4]))
-        elif len(args) == 4:
-            self._ops.append(_CircleOp(*args))
+        # Checks if the rectangle after matrix op is still a rectangle - i.e. no perspective warp or rotation
+        if (mat[2] == [0, 0, 1]).all() and \
+                ((mat[[0,1], [1,0]] == [0, 0]).all() or (mat[[0,1], [0,1]] == [0, 0]).all()):
+            newps = self._warpPs(mat, [self.pos, self.sze])
+            _drawRect(arr, newps[0], newps[1], t, self.round, self.col)
         else:
-            raise ValueError(
-                f'Expected 4-5 arguments, found {len(args)}!'
-            )
+            # If not, draw the lines
+            newps = self._warpPs(mat, [
+                self.pos,
+                [self.pos[0], self.pos[1]+self.sze[1]],
+                [self.pos[0]+self.sze[0], self.pos[1]+self.sze[1]],
+                [self.pos[0]+self.sze[0], self.pos[1]]
+            ])
+            p1 = newps[0]
+            for p2 in newps[1:]:
+                _drawThickLine(arr, p1, p2, t, self.col)
+                p1 = p2
+            p2 = newps[0]
+            _drawThickLine(arr, p1, p2, t, self.col)
+        return arr
+
+
+@jitrix('draw', '(np.full((100, 100, 4), 0, np.uint32), (50, 60), 40, 10, (255, 255, 255, 255))')
+def _drawCirc(arr: 'np.uint8[:, :, :]', pos: Tuple[int, int], radius: int, thickness: int, col: colTyp):
+    h, w, _ = arr.shape
+    x, y = pos
+
+    # Bounding box
+    rng = (
+        slice(max(y - radius - 1, 0),min(y + radius + 1, h)),
+        slice(max(x - radius - 1, 0),min(x + radius + 1, w))
+    )
+
+    # Radii squared
+    radius_outer_sq = radius ** 2
+    radius_inner_sq = 0 if thickness == 0 else max(radius - thickness, 0) ** 2
+
+    # Coordinate grid
+    yy, xx = np.mgrid[rng]
+    dx = xx - x
+    dy = yy - y
+    dist_sq = dx**2 + dy**2
+
+    mask = (radius_inner_sq <= dist_sq) & (dist_sq <= radius_outer_sq)
+    arr[rng][mask] = col
+
+@jitrix('draw', '(np.full((100, 100, 4), 0, np.uint32), (50, 50), 40, 30, 10.0, 10, (5, 5, 5, 5))')
+def _drawElipse(arr: 'np.uint32[:, :, :]', pos: Tuple[int, int], xradius: int, yradius: int, rotation: float, thickness: int, col: colTyp):
+    h, w, _ = arr.shape
+    x, y = pos
+
+    if thickness >= min(xradius, yradius):
+        t = 0
+    else:
+        t = thickness // 2
+
+    # Bounding box
+    x_min = max(x - xradius - 1 - t, 0)
+    x_max = min(x + xradius + 1 + t, w)
+    y_min = max(y - yradius - 1 - t, 0)
+    y_max = min(y + yradius + 1 + t, h)
+
+    # Coordinate grid
+    yy, xx = np.mgrid[y_min:y_max, x_min:x_max]
+    dx = xx - x
+    dy = yy - y
+
+    # Rotation
+    cos_t = np.cos(rotation)
+    sin_t = np.sin(rotation)
+    xr = dx * cos_t + dy * sin_t
+    yr = -dx * sin_t + dy * cos_t
+
+    # Ellipse equation
+    if thickness == 0 or thickness >= min(xradius, yradius):
+        mask = (xr**2 / xradius**2 + yr**2 / yradius**2) <= 1
+    else:
+        outer = (xr**2 / (xradius + t)**2 + yr**2 / (yradius + t)**2) <= 1
+        inner = (xr**2 / (xradius - t)**2 + yr**2 / (yradius - t)**2) <= 1
+        mask = outer & ~inner
+
+    # Apply color
+    arr[y_min:y_max, x_min:x_max][mask] = col
+
+class Elipse(TransOp):
+    __slots__ = ['pos', 'xradius', 'yradius', 'thickness', 'col']
 
     @overload
-    def drawElipse(self, pos: Iterable[int|float], xradius: int|float, yradius: int|float, thickness: int|float, col: int):
+    def __init__(self, pos: Iterable[int|float], xradius: int|float, yradius: int|float, thickness: int|float, col: int):
         """
         Draws an elipse!
 
@@ -431,7 +364,7 @@ class _DrawFuncs:
             col: The colour to fill the circle with.
         """
     @overload
-    def drawElipse(self, x: int|float, y: int|float, xradius: int|float, yradius: int|float, thickness: int|float, col: int):
+    def __init__(self, x: int|float, y: int|float, xradius: int|float, yradius: int|float, thickness: int|float, col: int):
         """
         Draws an elipse! (recommended to use the other definition with `((x, y), ...)` instead of `(x, y, ...)` for readability)
 
@@ -443,13 +376,80 @@ class _DrawFuncs:
             thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
             col: The colour to fill the circle with.
         """
-    def drawElipse(self, *args):
+    def __init__(self, *args):
         if len(args) == 6:
-            self._ops.append(_ElipseOp((args[0], args[1]), args[2], args[3], args[4], args[5]))
+            x, y, self.xradius, self.yradius, self.thickness, self.col = args
+            self.pos = (x, y)
         elif len(args) == 5:
-            self._ops.append(_ElipseOp(*args))
+            self.pos, self.xradius, self.yradius, self.thickness, self.col = args
         else:
             raise ValueError(
                 f'Expected 5-6 arguments, found {len(args)}!'
             )
+        assert self.thickness >= 0, "Thickness must be >=0"
+    
+    def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
+        if (mat[2] == [0, 0, 1]).all():
+            centre = (mat @ [self.pos[0], self.pos[1], 1.0])[:2]
+            A = mat[:2, :2]
+            u = A @ np.array([1.0, 0.0]) * self.xradius
+            v = A @ np.array([0.0, 1.0]) * self.yradius
+
+            r1 = np.hypot(u[0], u[1])
+            r2 = np.hypot(v[0], v[1])
+
+            # NOTE: I could have implemented different thickness for both sides of the elipse, but I didn't want to.
+            s = np.linalg.svd(A, compute_uv=False)
+            t = self.thickness * np.mean(s)
+            if r1 == r2:
+                _drawCirc(arr, centre, r1, t, self.col)
+            else:
+                angle = math.atan2(u[1], u[0])
+                _drawElipse(arr, centre, r1, r2, angle, t, self.col)
+        else:
+            if mat[2,2] != 1:
+                raise NotImplementedError(
+                    'Cannot have a non-normalized homogeneous coordinate with circles yet!'
+                )
+            raise NotImplementedError(
+                'Cannot have projective transform with circles yet!'
+            )
+        return arr
+
+class Circle(Elipse):
+    @overload
+    def __init__(self, pos: Iterable[int|float], radius: int|float, thickness: int|float, col: int):
+        """
+        Draws a circle!
+
+        Args:
+            pos: The position of the circle
+            radius: The radius of the circle
+            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
+            col: The colour to fill the circle with.
+        """
+    @overload
+    def __init__(self, x: int|float, y: int|float, radius: int|float, thickness: int|float, col: int):
+        """
+        Draws a circle! (recommended to use the other definition with `((x, y), ...)` instead of `(x, y, ...)` for readability)
+
+        Args:
+            x: The X position of the circle
+            y: The y position of the circle
+            radius: The radius of the circle
+            thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
+            col: The colour to fill the circle with.
+        """
+    def __init__(self, *args):
+        if len(args) == 5:
+            x, y, radius, self.thickness, self.col = args
+            self.pos = (x, y)
+        elif len(args) == 4:
+            self.pos, radius, self.thickness, self.col = args
+        else:
+            raise ValueError(
+                f'Expected 4-5 arguments, found {len(args)}!'
+            )
+        assert self.thickness >= 0, "Thickness must be >=0"
+        self.xradius, self.yradius = radius, radius
 

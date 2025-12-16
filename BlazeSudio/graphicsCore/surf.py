@@ -43,7 +43,7 @@ class Surface:
             raise TypeError(
                 f'Expected 1-2 args, found {len(args)}!'
             )
-        self._arr = np.ndarray((size[1], size[0], 3), np.uint8)
+        self._arr = np.ndarray((size[1], size[0], 4), np.uint8)
         self.isSmooth = True
 
     def rough(self) -> 'Surface':
@@ -93,6 +93,7 @@ class Surface:
 # NOTE: When doing blit or copy, ensure the respective func is created on the Window
 
 
+_PIXFMT = sdl2.SDL_PIXELFORMAT_ABGR8888 # NOTE: This may display funny on big-endian systems (hopefully none that run this)
 class Window(Surface):
     __slots__ = ['_cachedarr', '_op', '_sze', '_mainWin', '_renderer', '_texture']
 
@@ -121,13 +122,22 @@ class Window(Surface):
     def __init__(self, *args):
         self._mainWin = sdl2.SDL_CreateWindow(b"Blaze Sudio game", 
                         sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, 0, 0, sdl2.SDL_WINDOW_SHOWN)
-        self._renderer = sdl2.SDL_CreateRenderer(self._mainWin, -1, sdl2.SDL_RENDERER_ACCELERATED)
-        self._texture = sdl2.SDL_CreateTexture(self._renderer, sdl2.SDL_PIXELFORMAT_RGB24, sdl2.SDL_TEXTUREACCESS_STREAMING, 0, 0)
+        flags = sdl2.SDL_RENDERER_ACCELERATED
+        self._renderer = sdl2.SDL_CreateRenderer(self._mainWin, -1, flags)
+        self._texture = sdl2.SDL_CreateTexture(self._renderer, _PIXFMT, sdl2.SDL_TEXTUREACCESS_STREAMING, 0, 0)
 
         self.resize(*args)
         self._op = None
         self.isSmooth = True
         self._cachedarr = None
+
+    def Quit(self):
+        """
+        Quits the application, handling all quit code accordingly
+        """
+        sdl2.SDL_DestroyRenderer(self._renderer)
+        sdl2.SDL_DestroyWindow(self._mainWin)
+        sdl2.SDL_Quit()
 
     @property
     def size(self) -> Iterable[int]:
@@ -187,13 +197,13 @@ class Window(Surface):
             sdl2.SDL_SetWindowSize(self._mainWin, *sze)
 
         sdl2.SDL_DestroyTexture(self._texture)
-        self._texture = sdl2.SDL_CreateTexture(self._renderer, sdl2.SDL_PIXELFORMAT_RGB24, sdl2.SDL_TEXTUREACCESS_STREAMING, *sze)
+        self._texture = sdl2.SDL_CreateTexture(self._renderer, _PIXFMT, sdl2.SDL_TEXTUREACCESS_STREAMING, *sze)
         self._sze = sze
 
     @property
     def _arr(self) -> np.ndarray:
         if self._cachedarr is None:
-            arr = np.ndarray((self._sze[1], self._sze[0], 3), np.uint8)
+            arr = np.ndarray((self._sze[1], self._sze[0], 4), np.uint8)
             if self._op is not None:
                 arr = self._op.apply(arr, self.isSmooth)
             self._cachedarr = arr
@@ -220,7 +230,7 @@ class Window(Surface):
             self._texture,
             None,
             self._arr.ctypes.data,
-            self._sze[0]*3
+            self._sze[0]*4
         )
 
         sdl2.SDL_RenderCopy(self._renderer, self._texture, None, None)

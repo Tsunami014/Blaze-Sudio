@@ -17,60 +17,42 @@ It will first read the file, then overwrite it when you save.')
     NodeEditor(f)()
 
 def NewGraphicsDemo():
-    from BlazeSudio.graphicsCore import Window, Clock, Draw, Ix, Op
+    from BlazeSudio.graphicsCore import Window, AvgClock, Col, Draw, Ix, Op
     w = Window()
-    c = Clock()
+    c = AvgClock()
+    print('Using new graphics engine:')
 
-    ops = Op.Fill((255, 255, 255))# + \
-            #Draw.Line((10, 10), (100, 100), 5, (0, 0, 0))
-    w @= ops
+    ops = Op.Fill(Col.White)
+    # It can handle decimals!
+    ops += Draw.Line((10.5, 10.5), (200.25, 100.75), 5, Col.Black) + \
+           Draw.Polygon([(100, 100.5), (200, 300), (0, 300)], 30, Col(80, 100, 250)) + \
+           Draw.Rect((30.5, 50), (100.25, 80.3333333), 10, Col.Grey, roundness=30) + \
+           Draw.Rect(100, 150, 30, 50, 10, Col.Black) + \
+           Draw.Circle(300, 300, 10, 5, Col(255, 100, 100)) + \
+           Draw.Elipse((100, 100), 50, 30, 10, Col(80, 255, 100))
+    # Testing entirely fill
+    ops += Draw.Elipse(700, 100, 30, 70, 0, Col.Black) + \
+           Draw.Circle((500, 300.5), 30.5, 0, Col.Black) + \
+           Draw.Rect(500, 350, 50, 30, 0, Col.Black) + \
+           Draw.Rect((500, 400), (30, 50), 0, Col.Grey, roundness=10)
+    # Testing stupid cases. These *should* all appear one after the other in a column
+    ops += Draw.Rect(500, 500, 0, 0, 5, Col.Black) + \
+           Draw.Rect(500, 510, 50, 50, 1, Col.Black, roundness=100) + \
+           Draw.Line((500, 570), (500, 570), 5, Col.Black)
+
+    ops.fix()
+
+    f = 0
     while Ix.handleBasic():
+        w @= ops + Draw.Circle(f*10, 10, 50, 0, Col(250, 90, 255))
+        f = (f + 1) % 200
         w.rend()
         c.tick()
         w.set_title(f'FPS: {c.get_fps()}')
         print(c.get_fps())
-    """
-    from BlazeSudio.graphicsCore import Quit, AvgClock, Window, Colour, Interaction
-    sur = Window.create_win()
+    w.Quit()
 
-    print('Using new graphics engine:')
-
-    c = AvgClock(5)
-    f = 0
-    while Interaction.eventHandleBasic():
-        sur.fill((255, 255, 255))
-        # It can also handle decimals!
-        sur.drawLine((10.5, 10.5), (200.25, 100.75), 5, (0, 0, 0))
-        sur.drawPolygon([(100, 100.5), (200, 300), (0, 300)], 30, (80, 100, 250))
-        Window.flush()
-        Window.flip()
-        c.tick()
-        Window.set_title(f'FPS: {c.get_fps()}')
-        print(c.get_fps())
-        sur.drawRect((30.5, 50), (100.25, 80.3333333), 10, (125, 125, 125), roundness=30)
-        sur.drawRect(100, 150, 30, 50, 10, (0, 0, 0))
-        sur.drawCircle(300, 300, 10, 5, (255, 100, 100))
-        sur.drawElipse((100, 100), 50, 30, 10, (80, 255, 100))
-        sur.drawElipse(700, 100, 30, 70, 0, (0, 0, 0))
-        # Testing entirely fill
-        sur.drawCircle((500, 300.5), 30.5, 0, (0, 0, 0))
-        sur.drawRect(500, 350, 50, 30, 0, (0, 0, 0))
-        sur.drawRect((500, 400), (30, 50), 0, (125, 125, 125), roundness=10)
-        # Testing stupid cases. These *should* all appear one after the other in a column
-        sur.drawRect(500, 500, 0, 0, 5, (0, 0, 0))
-        sur.drawRect(500, 510, 50, 50, 1, (0, 0, 0), roundness=100)
-        sur.drawLine((500, 570), (500, 570), 5, (0, 0, 0))
-
-        f = (f + 1) % 200
-        sur.drawCircle(f*10, 10, 50, 0, (250, 90, 255))
-
-        Window.flush()
-        Window.flip()
-        c.tick()
-        Window.set_title(f'FPS: {c.get_fps()}')
-        print(c.get_fps())
-    Quit()
-
+    quit() # Uncomment to ignore pygame
     print('Using pygame:')
 
     import pygame
@@ -84,7 +66,7 @@ def NewGraphicsDemo():
             if ev.type == pygame.QUIT or (ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE):
                 r = False
         WIN.fill((255, 255, 255))
-        # It can also handle decimals!
+        # It cannot handle decimals well, if at all :(
         pygame.draw.line(WIN, 0, (10.5, 10.5), (200.25, 100.75), 5)
         pygame.draw.polygon(WIN, (80, 100, 250), [(100, 100), (200, 300), (0, 300)], 30)
         pygame.draw.rect(WIN, (125, 125, 125), (30, 50, 100, 80), 10, 30)
@@ -109,7 +91,6 @@ def NewGraphicsDemo():
         pygame.display.set_caption(f'FPS: {c.get_fps()}')
         print(c.get_fps())
     pygame.quit()
-    """
 
 def GraphicsDemo():
     import BlazeSudio.graphics.options as GO
@@ -934,17 +915,20 @@ if __name__ == '__main__':
         'Compile Demo [speed]':          CompileDemo,
     }
 
-    import sys
-    if len(sys.argv) == 1:
-        pass
-    elif len(sys.argv) == 2:
-        idx = int(sys.argv[1])
+    def runFn(idx):
         li = [i for i in cmds.values() if i is not None]
         if idx < 0 or idx > len(li):
             raise ValueError(
                 'Invalid input number!'
             )
         li[idx]()
+
+    import sys
+    if len(sys.argv) == 1:
+        pass
+    elif len(sys.argv) == 2:
+        idx = int(sys.argv[1])
+        runFn(idx)
         exit()
     else:
         raise ValueError(
@@ -960,6 +944,11 @@ if __name__ == '__main__':
         has_tk = False
 
     idx = 0
+    def cmd(cmdd, txt):
+        if has_tk:
+            root.destroy()
+        print('loading demo %s...'%txt)
+        cmdd()
     for text, command in cmds.items():
         if command is None: # Label
             if has_tk:
@@ -967,13 +956,8 @@ if __name__ == '__main__':
             else:
                 print('\n'+text)
         else:
-            def cmd(cmdd):
-                if has_tk:
-                    root.destroy()
-                print('loading demo %s...'%text)
-                cmdd()
             if has_tk:
-                Tk.Button(root, text=f"{idx}: "+text, command=lambda: cmd(command)).pack()
+                Tk.Button(root, text=f"{idx}: "+text, command=lambda cmdd=command, txt=text: cmd(cmdd, txt)).pack()
             else:
                 print(f'{idx}: {text}')
                 cmds.append(command)
@@ -996,5 +980,5 @@ if __name__ == '__main__':
             print('You entered a number that is not in the list. Exiting...')
             idx = None
         if idx is not None:
-            cmds[idx]()
+            runFn(idx)
 

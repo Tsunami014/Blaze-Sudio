@@ -1,5 +1,5 @@
 from BlazeSudio.graphicsCore.surf import Surface, Window
-from typing import Iterable
+from typing import Tuple, override
 from collections import deque
 import time
 import sdl2
@@ -8,8 +8,8 @@ if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) != 0:
 	raise RuntimeError(f"SDL2 Init Failed: {sdl2.SDL_GetError().decode()}")
 
 __all__ = [
-    'Quit',
     'Clock',
+    'AvgClock',
     'Window',
     'Surface',
 ]
@@ -27,7 +27,7 @@ class Clock():
         Args:
             maxfps: The maximum fps the application should run at. Defaults to None (don't enforce)
         """
-        t = time.time()
+        t = time.perf_counter()
         slept = False
         if self._lastTime is not None:
             # raw delta-time
@@ -38,7 +38,7 @@ class Clock():
                 if delta < target_dt:
                     slept = True
                     time.sleep(target_dt - delta - 0.001)
-                    t = time.time()
+                    t = time.perf_counter()
                     delta = t - self._lastTime
             self.dt = delta
         if not slept:
@@ -52,12 +52,12 @@ class Clock():
         return 0 if self.dt == 0 else 1.0 / self.dt
 
 class AvgClock(Clock):
-    def __init__(self, secs: int|float):
+    def __init__(self, secs: int|float = 5):
         """
         An average Clock, averaging the fps over a set time.
 
         Args:
-            secs: The number of seconds to average the fps over
+            secs: The number of seconds to average the fps over. Defaults to 5
         """
         self.secs = secs
         self.goodEnough = False
@@ -95,26 +95,43 @@ class AvgClock(Clock):
         """
         return super().get_fps()
 
-colourType = Iterable[int]
-class Colour: # TODO: themes - repeated colours (and 'highlight 1', 'tone 3', etc.) put in a list so apps can easily theme switch
+colourType = Tuple[int, int, int, int]
+class Col:
     """
     A Colour is an rgb tuple.
     
     This class gives some helper functions for creating these tuples based off of different colour types.
     """
     _RGBHEXFMT = "#{0:02x}{1:02x}{2:02x}"
+    
+    @override
+    def __new__(cls, hex: str): ...
+    @override
+    def __new__(cls, r: int, g: int, b: int, a: int = 255): ...
+    def __new__(cls, *args):
+        if len(args) == 1:
+            return cls.hex(args[0])
+        return cls.rgb(*args)
+
     @classmethod
-    def rgb(cls, r: int, g: int, b: int) -> colourType:
-        return (r, g, b)
+    def rgb(cls, r: int, g: int, b: int, a: int = 255) -> colourType:
+        return (r, g, b, a)
+    @classmethod
+    def rgba(cls, r: int, g: int, b: int, a: int) -> colourType:
+        return (r, g, b, a)
     @classmethod
     def hex(cls, hex: str) -> colourType:
         return int(hex.lstrip("#"), 16)
+
     @classmethod
-    def to_rgb(cls, col: colourType) -> Iterable[int]:
+    def to_rgb(cls, col: colourType) -> Tuple[int, int, int]:
+        return col[:3]
+    @classmethod
+    def to_rgba(cls, col: colourType) -> Tuple[int, int, int, int]:
         return col
     @classmethod
     def to_hex(cls, col: colourType, upper=True) -> str:
-        def clamp(x): 
+        def clamp(x):
             assert 0 <= x <= 255, "RGB value must be between 0-255!"
             return x
         o = cls._RGBHEXFMT.format(clamp(col[0]), clamp(col[1]), clamp(col[2]))
@@ -123,11 +140,9 @@ class Colour: # TODO: themes - repeated colours (and 'highlight 1', 'tone 3', et
         return o
     # TODO: to/from hsv
 
-def Quit():
-    """
-    Quits the application, handling all quit code accordingly
-    """
-    sdl2.SDL_DestroyRenderer(Window._renderer)
-    sdl2.SDL_DestroyWindow(Window._mainWin)
-    sdl2.SDL_Quit()
+    Black = (0, 0, 0, 255)
+    Grey = (125, 125, 125, 255)
+    White = (255, 255, 255, 255)
+    Transparent = (0, 0, 0, 0)
+    # TODO: themes - repeated colours (and 'highlight 1', 'tone 3', etc.) put in a list so apps can easily theme switch
 
