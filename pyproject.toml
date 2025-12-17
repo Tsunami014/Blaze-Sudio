@@ -8,7 +8,6 @@ version = "3.2.0"
 description = "This is a really cool game/physics/graphics/application engine written in pygame!"
 readme = "README.md"
 license = "MIT"
-license-files = ["LICENSE"]
 authors = [
     {name = "Tsunami014", email = "tsunami014@duck.com"}
 ]
