@@ -14,12 +14,13 @@ It will first read the file, then overwrite it when you save.')
     NodeEditor(f)()
 
 def NewGraphicsDemo():
-    from BlazeSudio.graphicsCore import Window, AvgClock, Col, Draw, Ix, Op
+    from BlazeSudio.graphicsCore import Window, AvgClock, Col, Draw, Ix
+    from BlazeSudio.graphicsCore.Op import Fill
     w = Window()
     c = AvgClock()
     print('Using new graphics engine:')
 
-    ops = Op.Fill(Col.White)
+    ops = Fill(Col.White)
     # It can handle decimals!
     ops += Draw.Line((10.5, 10.5), (200.25, 100.75), 5, Col.Black) + \
            Draw.Polygon([(100, 100.5), (200, 300), (0, 300)], 30, Col(80, 100, 250)) + \

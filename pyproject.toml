@@ -48,11 +48,6 @@ Issues = "https://github.com/Tsunami014/Blaze-Sudio/issues"
 BlazeSudio = "BlazeSudio:main"
 
 [project.optional-dependencies]
-speed = [
-    "setuptools",
-    "cython"
-]
-
 graphics = [
     "pysdl2",
     "pysdl2-dll",
@@ -83,10 +78,7 @@ all = [
 
 [tool.setuptools.packages.find]
 exclude = [
-    "BlazeSudio.debug",
-
-    "BlazeSudio.collisions.lib",
-    "BlazeSudio.graphicsCore.lib"
+    "BlazeSudio.orig",
 ]
 
 [tool.setuptools.package-data]

@@ -1,17 +1,21 @@
+from BlazeSudio.graphicsCore import Draw, Ix, Op, Events
 from BlazeSudio.graphicsCore.surf import Surface, Window
-from typing import Tuple, override
+from typing import Tuple, overload
 from collections import deque
 import time
-import sdl2
-
-if sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO) != 0:
-	raise RuntimeError(f"SDL2 Init Failed: {sdl2.SDL_GetError().decode()}")
 
 __all__ = [
-    'Clock',
-    'AvgClock',
+    'Draw',
+    'Ix',
+    'Op',
+    'Events',
+
     'Window',
     'Surface',
+
+    'Clock',
+    'AvgClock',
+    'Col',
 ]
 
 
@@ -103,10 +107,11 @@ class Col:
     This class gives some helper functions for creating these tuples based off of different colour types.
     """
     _RGBHEXFMT = "#{0:02x}{1:02x}{2:02x}"
+    # TODO: Different hex values (e.g. rgba hex or 3 char hex)
     
-    @override
+    @overload
     def __new__(cls, hex: str): ...
-    @override
+    @overload
     def __new__(cls, r: int, g: int, b: int, a: int = 255): ...
     def __new__(cls, *args):
         if len(args) == 1:
@@ -121,7 +126,11 @@ class Col:
         return (r, g, b, a)
     @classmethod
     def hex(cls, hex: str) -> colourType:
-        return int(hex.lstrip("#"), 16)
+        val = int(hex.lstrip("#"), 16)
+        r = (val >> 16) & 0xFF
+        g = (val >> 8) & 0xFF
+        b = val & 0xFF
+        return (r, g, b, 255)
 
     @classmethod
     def to_rgb(cls, col: colourType) -> Tuple[int, int, int]:
