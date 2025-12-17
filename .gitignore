@@ -1,14 +1,10 @@
-# Collision stuff
-BlazeSudio/collisions/out/**
-BlazeSudio/collisions/build/**
 # Cache files
 *.pyc
-BlazeSudio/speedup/cache/*
-!BlazeSudio/speedup/cache/__init__.py
+# Misc building stuff
+**/build/**
+**/out/**
 # Python building stuff
 Blaze_Sudio.egg-info/**
-build/**
 # Misc stuff
 *.elm
-out/**
 temp.dat

@@ -7,7 +7,8 @@ name = "Blaze-Sudio"
 version = "3.2.0"
 description = "This is a really cool game/physics/graphics/application engine written in pygame!"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     {name = "Tsunami014", email = "tsunami014@duck.com"}
 ]
@@ -34,7 +35,7 @@ classifiers = [
 
 dependencies = []
 
-requires-python = ">= 3.10,< 3.13"
+requires-python = ">= 3.11"
 
 [project.urls]
 Homepage = "https://github.com/Tsunami014/Blaze-Sudio"
@@ -48,9 +49,8 @@ BlazeSudio = "BlazeSudio:main"
 
 [project.optional-dependencies]
 speed = [
-    "numpy",
-    "numba",
-    "setuptools"
+    "setuptools",
+    "cython"
 ]
 
 graphics = [
@@ -82,13 +82,19 @@ all = [
 ]
 
 [tool.setuptools.packages.find]
-exclude = ["BlazeSudio.collisions.lib", "BlazeSudio.debug", "BlazeSudio.speedup.cache"]
+exclude = [
+    "BlazeSudio.debug",
+
+    "BlazeSudio.collisions.lib",
+    "BlazeSudio.graphicsCore.lib"
+]
 
 [tool.setuptools.package-data]
 "BlazeSudio" = [
     "elementGen/nodes/*.py",
     "ldtk/internal-icons.png",
     "graphics/defaultTheme/*",
-    "graphics/GUI/textboxify/data/**"
+    "graphics/GUI/textboxify/data/**",
+    "**/*.pyi",
+    "**/*.so", "**/*.pyd"
 ]
-"BlazeSudio.collisions" = ["**/*.so", "**/*.pyd"]

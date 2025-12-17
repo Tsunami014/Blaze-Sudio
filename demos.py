@@ -1,7 +1,4 @@
 # Main STUFF
-import warnings
-warnings.filterwarnings("ignore", category=UserWarning)
-
 def NodeEditorDemo():
     try:
         print('Press cancel to run the demo without saving to any file.\n\
