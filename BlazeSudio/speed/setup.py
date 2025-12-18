@@ -22,21 +22,24 @@ for root, dirs, files in os.walk(base):
         if f.endswith('.pyx'):
             MODULES.append(rel_path[:-4])
 
-print(f"Found modules: {MODULES}")
+print(f"Compiling modules: {MODULES}")
 
 
 if len(MODULES) > 0:
-    print("Compiling files...")
     forced = '-f' in sys.argv or '--force' in sys.argv
-    def up2date(src, dst):
+    ext = ".pyd" if sys.platform == 'win32' else ".abi3.so"
+    def up2date(src, dst, out):
         if not os.path.exists(dst):
+            return False
+        if not os.path.exists(out):
             return False
         return os.path.getmtime(src) < os.path.getmtime(dst)
 
     for name in MODULES:
         src = f"{base}/{name}.pyx"
         dst = f"{base}/{name}.pyi"
-        if (not forced) and up2date(src, dst):
+        out = f"{base}/{name}.{ext}"
+        if (not forced) and up2date(src, dst, out):
             print(f"File up-to-date: {name}")
             continue
 

@@ -1,4 +1,4 @@
-name: Build collisions
+name: Compile all
 
 on:
   workflow_dispatch:
@@ -18,19 +18,17 @@ jobs:
           architecture: x64
       
       - name: Install dependencies
-        run: python -m pip install cython setuptools mypy
+        run: python -m pip install stubgen-pyx
         
-      - name: Compile collisions
-        run: python BlazeSudio/orig/setup.py collisions
-      - name: Compile graphicsCore
-        run: python BlazeSudio/orig/setup.py graphicsCore
+      - name: Compile all
+        run: python BlazeSudio/speed/setup.py
 
       - uses: EndBug/add-and-commit@v9 
         with:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: 'ci(build): 🛠️ Build collisions for linux :)'
+          message: 'ci(build): 🛠️ Build for linux :)'
   
   build-windows:
     permissions:
@@ -46,16 +44,14 @@ jobs:
           architecture: x64
 
       - name: Install dependencies
-        run: python -m pip install cython setuptools mypy
+        run: python -m pip install stubgen-pyx
         
-      - name: Compile collisions
-        run: python BlazeSudio/orig/setup.py collisions
-      - name: Compile graphicsCore
-        run: python BlazeSudio/orig/setup.py graphicsCore
+      - name: Compile all
+        run: python BlazeSudio/speed/setup.py
 
       - uses: EndBug/add-and-commit@v9 
         with:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: 'ci(build): 🛠️ Build collisions for windows :)'
+          message: 'ci(build): 🛠️ Build for windows :)'
