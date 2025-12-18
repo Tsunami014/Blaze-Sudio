@@ -9,12 +9,12 @@
                 "0x030B0000"
             ]
         ],
-        "name": "BlazeSudio.graphicsCore._generated.Events",
+        "name": "BlazeSudio.graphicsCore.Events",
         "sources": [
-            "./BlazeSudio/graphicsCore/_lib/Events.py"
+            "BlazeSudio/orig/graphicsCore/Events.py"
         ]
     },
-    "module_name": "BlazeSudio.graphicsCore._generated.Events"
+    "module_name": "BlazeSudio.graphicsCore.Events"
 }
 END: Cython Metadata */
 
@@ -1132,8 +1132,8 @@ static int __Pyx_init_co_variables(void) {
   #endif
 #endif
 
-#define __PYX_HAVE__BlazeSudio__graphicsCore___generated__Events
-#define __PYX_HAVE_API__BlazeSudio__graphicsCore___generated__Events
+#define __PYX_HAVE__BlazeSudio__graphicsCore__Events
+#define __PYX_HAVE_API__BlazeSudio__graphicsCore__Events
 /* Early includes */
 #ifdef _OPENMP
 #include <omp.h>
@@ -1351,7 +1351,7 @@ static const char *__pyx_filename;
 /* #### Code section: filename_table ### */
 
 static const char* const __pyx_f[] = {
-  "BlazeSudio/graphicsCore/_lib/Events.py",
+  "BlazeSudio/orig/graphicsCore/Events.py",
 };
 /* #### Code section: utility_code_proto_before_types ### */
 /* Atomics.proto (used by UnpackUnboundCMethod) */
@@ -1528,20 +1528,20 @@ static const char* const __pyx_f[] = {
 /* #### Code section: type_declarations ### */
 
 /*--- Type declarations ---*/
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass;
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__;
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr;
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__;
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr;
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass;
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__;
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr;
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__;
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr;
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":98
+/* "BlazeSudio/orig/graphicsCore/Events.py":98
  * 
  * T = TypeVar("T")
  * def Dataclass(cls: T) -> T:             # <<<<<<<<<<<<<<
  *     annotations = getattr(cls, '__annotations__', {})
  *     fields = list(annotations.keys())
 */
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass {
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass {
   PyObject_HEAD
   PyObject *__pyx_v_cls;
   PyObject *__pyx_v_defaults;
@@ -1549,30 +1549,30 @@ struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_st
 };
 
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":142
+/* "BlazeSudio/orig/graphicsCore/Events.py":138
  *             setattr(self, name, values[name])
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
  *         field_strs = (f"{name}={getattr(self, name)!r}" for name in fields)
  *         return f"{cls.__name__}({', '.join(field_strs)})"
 */
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ {
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ {
   PyObject_HEAD
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *__pyx_outer_scope;
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *__pyx_outer_scope;
   PyObject *__pyx_v_self;
 };
 
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":143
+/* "BlazeSudio/orig/graphicsCore/Events.py":139
  * 
  *     def __repr__(self):
  *         field_strs = (f"{name}={getattr(self, name)!r}" for name in fields)             # <<<<<<<<<<<<<<
  *         return f"{cls.__name__}({', '.join(field_strs)})"
  * 
 */
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr {
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr {
   PyObject_HEAD
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *__pyx_outer_scope;
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *__pyx_outer_scope;
   PyObject *__pyx_genexpr_arg_0;
   PyObject *__pyx_v_name;
   PyObject *__pyx_t_0;
@@ -1580,29 +1580,29 @@ struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_st
 };
 
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":167
+/* "BlazeSudio/orig/graphicsCore/Events.py":163
  *     typ: int
  * 
  *     def __new__(cls, var: 'Event', typ: int = None) -> Self:             # <<<<<<<<<<<<<<
  *         """
  *         Check and type convert to an Event type
 */
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ {
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ {
   PyObject_HEAD
   PyObject *__pyx_v_typ;
 };
 
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":189
+/* "BlazeSudio/orig/graphicsCore/Events.py":185
  *                 return False
  *             return var
  *         if not any((k & typ)==typ for k in cls._types.values()):             # <<<<<<<<<<<<<<
  *             raise ValueError(
  *                 'Input type must be avaliable in this class, but is not!'
 */
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr {
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr {
   PyObject_HEAD
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ *__pyx_outer_scope;
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ *__pyx_outer_scope;
   PyObject *__pyx_genexpr_arg_0;
   PyObject *__pyx_v_k;
 };
@@ -1978,17 +1978,8 @@ static PyObject* __Pyx_PyUnicode_Join(PyObject** values, Py_ssize_t value_count,
 /* RaiseException.export */
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
 
-/* RaiseTooManyValuesToUnpack.proto */
-static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected);
-
-/* RaiseNeedMoreValuesToUnpack.proto */
-static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index);
-
-/* IterFinish.proto */
+/* IterFinish.proto (used by dict_iter) */
 static CYTHON_INLINE int __Pyx_IterFinish(void);
-
-/* UnpackItemEndCheck.proto */
-static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected);
 
 /* PyObjectCallNoArg.proto (used by PyObjectCallMethod0) */
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
@@ -2000,6 +1991,15 @@ static int __Pyx_PyObject_GetMethod(PyObject *obj, PyObject *name, PyObject **me
 
 /* PyObjectCallMethod0.proto (used by dict_iter) */
 static PyObject* __Pyx_PyObject_CallMethod0(PyObject* obj, PyObject* method_name);
+
+/* RaiseNeedMoreValuesToUnpack.proto (used by UnpackTuple2) */
+static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index);
+
+/* RaiseTooManyValuesToUnpack.proto (used by UnpackItemEndCheck) */
+static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected);
+
+/* UnpackItemEndCheck.proto (used by UnpackTuple2) */
+static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected);
 
 /* RaiseNoneIterError.proto (used by UnpackTupleError) */
 static CYTHON_INLINE void __Pyx_RaiseNoneNotIterableError(void);
@@ -2766,43 +2766,42 @@ static int __Pyx_State_RemoveModule(void*);
 #define __PYX_TYPE_MODULE_PREFIX __PYX_ABI_MODULE_NAME "."
 
 
-/* Module declarations from "BlazeSudio.graphicsCore._generated.Events" */
-static PyObject *__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_10_generated_6Events_ev;
+/* Module declarations from "BlazeSudio.graphicsCore.Events" */
+static PyObject *__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_6Events_ev;
 /* #### Code section: typeinfo ### */
 /* #### Code section: before_global_var ### */
-#define __Pyx_MODULE_NAME "BlazeSudio.graphicsCore._generated.Events"
-extern int __pyx_module_is_main_BlazeSudio__graphicsCore___generated__Events;
-int __pyx_module_is_main_BlazeSudio__graphicsCore___generated__Events = 0;
+#define __Pyx_MODULE_NAME "BlazeSudio.graphicsCore.Events"
+extern int __pyx_module_is_main_BlazeSudio__graphicsCore__Events;
+int __pyx_module_is_main_BlazeSudio__graphicsCore__Events = 0;
 
-/* Implementation of "BlazeSudio.graphicsCore._generated.Events" */
+/* Implementation of "BlazeSudio.graphicsCore.Events" */
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin_property;
-static PyObject *__pyx_builtin_zip;
 static PyObject *__pyx_builtin_object;
 /* #### Code section: string_decls ### */
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass__init(PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_args, PyObject *__pyx_v_kwargs); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_8__repr___genexpr(PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_2__repr__(PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Dataclass(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7__new___genexpr(PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event___new__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_var, PyObject *__pyx_v_typ); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_2__init__(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_args, CYTHON_UNUSED PyObject *__pyx_v_kwargs); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_4_from_sdl(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_this, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ, PyObject *__pyx_v_kwargs); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_6create(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_kwargs); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9QuitEvent__from_sdl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_initial(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_2scode(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_4key(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_6modifs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_shift, PyObject *__pyx_v_ctrl, PyObject *__pyx_v_alt, PyObject *__pyx_v_gui); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_8_from_sdl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_getEvMap(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_translateEv(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_ev); /* proto */
-static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
-static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_9Dataclass__dc_init(PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_args, PyObject *__pyx_v_kwargs); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_9Dataclass_8__repr___genexpr(PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_9Dataclass_2__repr__(PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_Dataclass(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_7__new___genexpr(PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event___new__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_var, PyObject *__pyx_v_typ); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_2__init__(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_args, CYTHON_UNUSED PyObject *__pyx_v_kwargs); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_4_from_sdl(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_this, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ, PyObject *__pyx_v_kwargs); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_6create(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_kwargs); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_9QuitEvent__from_sdl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_initial(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_2scode(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_4key(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_6modifs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_shift, PyObject *__pyx_v_ctrl, PyObject *__pyx_v_alt, PyObject *__pyx_v_gui); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_8_from_sdl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_2_getEvMap(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_4_translateEv(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_ev); /* proto */
+static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
+static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 /* SmallCodeConfig */
@@ -2823,48 +2822,48 @@ typedef struct {
   PyObject *__pyx_empty_tuple;
   PyObject *__pyx_empty_bytes;
   PyObject *__pyx_empty_unicode;
-  PyObject *__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass;
-  PyObject *__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__;
-  PyObject *__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr;
-  PyObject *__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__;
-  PyObject *__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr;
-  PyTypeObject *__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass;
-  PyTypeObject *__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__;
-  PyTypeObject *__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr;
-  PyTypeObject *__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__;
-  PyTypeObject *__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr;
+  PyObject *__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass;
+  PyObject *__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__;
+  PyObject *__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr;
+  PyObject *__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__;
+  PyObject *__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr;
+  PyTypeObject *__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass;
+  PyTypeObject *__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__;
+  PyTypeObject *__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr;
+  PyTypeObject *__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__;
+  PyTypeObject *__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_items;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_pop;
   __Pyx_CachedCFunction __pyx_umethod_PyDict_Type_values;
   PyObject *__pyx_tuple[1];
   PyObject *__pyx_codeobj_tab[12];
-  PyObject *__pyx_string_tab[195];
+  PyObject *__pyx_string_tab[193];
   PyObject *__pyx_number_tab[38];
 /* #### Code section: module_state_contents ### */
 
 #if CYTHON_USE_FREELISTS
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass[8];
-int __pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass;
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass[8];
+int __pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass;
 #endif
 
 #if CYTHON_USE_FREELISTS
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__[8];
-int __pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__;
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__[8];
+int __pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__;
 #endif
 
 #if CYTHON_USE_FREELISTS
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr[8];
-int __pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr;
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr[8];
+int __pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr;
 #endif
 
 #if CYTHON_USE_FREELISTS
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ *__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__[8];
-int __pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__;
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ *__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__[8];
+int __pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__;
 #endif
 
 #if CYTHON_USE_FREELISTS
-struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr[8];
-int __pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr;
+struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr[8];
+int __pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr;
 #endif
 /* CommonTypesMetaclass.module_state_decls */
 PyTypeObject *__pyx_CommonTypesMetaclassType;
@@ -2914,114 +2913,114 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #endif
 /* #### Code section: constant_name_defines ### */
 #define __pyx_kp_u_ __pyx_string_tab[0]
-#define __pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve __pyx_string_tab[1]
+#define __pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve __pyx_string_tab[1]
 #define __pyx_kp_u_Event_2 __pyx_string_tab[2]
 #define __pyx_kp_u_Expected_at_most __pyx_string_tab[3]
 #define __pyx_kp_u_Got_an_unexpected_keyword_argume __pyx_string_tab[4]
 #define __pyx_kp_u_Input_type_must_be_avaliable_in __pyx_string_tab[5]
 #define __pyx_kp_u_Missing_required_arguments __pyx_string_tab[6]
-#define __pyx_kp_u_Multiple_values_for_argument __pyx_string_tab[7]
-#define __pyx_kp_u_None __pyx_string_tab[8]
-#define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[9]
-#define __pyx_kp_u__2 __pyx_string_tab[10]
-#define __pyx_kp_u__3 __pyx_string_tab[11]
-#define __pyx_kp_u__4 __pyx_string_tab[12]
-#define __pyx_kp_u__5 __pyx_string_tab[13]
-#define __pyx_kp_u__6 __pyx_string_tab[14]
-#define __pyx_kp_u_add_note __pyx_string_tab[15]
-#define __pyx_kp_u_disable __pyx_string_tab[16]
-#define __pyx_kp_u_enable __pyx_string_tab[17]
-#define __pyx_kp_u_gc __pyx_string_tab[18]
-#define __pyx_kp_u_isenabled __pyx_string_tab[19]
-#define __pyx_kp_u_positional_arguments_got __pyx_string_tab[20]
-#define __pyx_n_u_Audio __pyx_string_tab[21]
-#define __pyx_n_u_AudioAdded __pyx_string_tab[22]
-#define __pyx_n_u_AudioRemoved __pyx_string_tab[23]
-#define __pyx_n_u_BlazeSudio_graphicsCore__generat __pyx_string_tab[24]
-#define __pyx_n_u_Clipboard __pyx_string_tab[25]
-#define __pyx_n_u_ContrAxis __pyx_string_tab[26]
-#define __pyx_n_u_ContrBtn __pyx_string_tab[27]
-#define __pyx_n_u_ContrBtnDown __pyx_string_tab[28]
-#define __pyx_n_u_ContrBtnUp __pyx_string_tab[29]
-#define __pyx_n_u_ContrDevConnect __pyx_string_tab[30]
-#define __pyx_n_u_ContrDevDiscon __pyx_string_tab[31]
-#define __pyx_n_u_ContrDevRemap __pyx_string_tab[32]
-#define __pyx_n_u_ContrDevice __pyx_string_tab[33]
-#define __pyx_n_u_ContrSensor __pyx_string_tab[34]
-#define __pyx_n_u_Controller __pyx_string_tab[35]
-#define __pyx_n_u_Dataclass __pyx_string_tab[36]
-#define __pyx_n_u_Dataclass_locals___repr___locals __pyx_string_tab[37]
-#define __pyx_n_u_EVENT_LIST __pyx_string_tab[38]
-#define __pyx_n_u_EVENT_MAP __pyx_string_tab[39]
-#define __pyx_n_u_EVENT_NAMES __pyx_string_tab[40]
-#define __pyx_n_u_EvTyp __pyx_string_tab[41]
-#define __pyx_n_u_Event __pyx_string_tab[42]
-#define __pyx_n_u_Event___init __pyx_string_tab[43]
-#define __pyx_n_u_Event___new __pyx_string_tab[44]
-#define __pyx_n_u_Event___new___locals_genexpr __pyx_string_tab[45]
-#define __pyx_n_u_Event__from_sdl __pyx_string_tab[46]
-#define __pyx_n_u_Event_create __pyx_string_tab[47]
-#define __pyx_n_u_FileDrop __pyx_string_tab[48]
-#define __pyx_n_u_FileDropEnd __pyx_string_tab[49]
-#define __pyx_n_u_FileDropFile __pyx_string_tab[50]
-#define __pyx_n_u_FileDropStart __pyx_string_tab[51]
-#define __pyx_n_u_FileDropText __pyx_string_tab[52]
-#define __pyx_n_u_IntEnum __pyx_string_tab[53]
-#define __pyx_n_u_KMOD_ALT __pyx_string_tab[54]
-#define __pyx_n_u_KMOD_CTRL __pyx_string_tab[55]
-#define __pyx_n_u_KMOD_GUI __pyx_string_tab[56]
-#define __pyx_n_u_KMOD_SHIFT __pyx_string_tab[57]
-#define __pyx_n_u_KeyDown __pyx_string_tab[58]
-#define __pyx_n_u_KeyEvent __pyx_string_tab[59]
-#define __pyx_n_u_KeyEvent__from_sdl __pyx_string_tab[60]
-#define __pyx_n_u_KeyEvent_initial __pyx_string_tab[61]
-#define __pyx_n_u_KeyEvent_key __pyx_string_tab[62]
-#define __pyx_n_u_KeyEvent_modifs __pyx_string_tab[63]
-#define __pyx_n_u_KeyEvent_scode __pyx_string_tab[64]
-#define __pyx_n_u_KeyType __pyx_string_tab[65]
-#define __pyx_n_u_KeyTyping __pyx_string_tab[66]
-#define __pyx_n_u_KeyUp __pyx_string_tab[67]
-#define __pyx_n_u_Keyboard __pyx_string_tab[68]
-#define __pyx_n_u_MappingProxyType __pyx_string_tab[69]
-#define __pyx_n_u_Mouse __pyx_string_tab[70]
-#define __pyx_n_u_MouseClick __pyx_string_tab[71]
-#define __pyx_n_u_MouseDown __pyx_string_tab[72]
-#define __pyx_n_u_MouseMove __pyx_string_tab[73]
-#define __pyx_n_u_MouseScroll __pyx_string_tab[74]
-#define __pyx_n_u_MouseUp __pyx_string_tab[75]
-#define __pyx_n_u_Pyx_PyDict_NextRef __pyx_string_tab[76]
-#define __pyx_n_u_Quit __pyx_string_tab[77]
-#define __pyx_n_u_QuitEvent __pyx_string_tab[78]
-#define __pyx_n_u_QuitEvent__from_sdl __pyx_string_tab[79]
-#define __pyx_n_u_SDL_GetKeyName __pyx_string_tab[80]
-#define __pyx_n_u_SDL_GetScancodeName __pyx_string_tab[81]
-#define __pyx_n_u_SDL_KEYDOWN __pyx_string_tab[82]
-#define __pyx_n_u_SDL_KEYUP __pyx_string_tab[83]
-#define __pyx_n_u_SDL_PRESSED __pyx_string_tab[84]
-#define __pyx_n_u_SDL_QUIT __pyx_string_tab[85]
-#define __pyx_n_u_Self __pyx_string_tab[86]
-#define __pyx_n_u_Sensor __pyx_string_tab[87]
-#define __pyx_n_u_T __pyx_string_tab[88]
-#define __pyx_n_u_Touch __pyx_string_tab[89]
-#define __pyx_n_u_TouchDollar __pyx_string_tab[90]
-#define __pyx_n_u_TouchMulti __pyx_string_tab[91]
-#define __pyx_n_u_TouchSingle __pyx_string_tab[92]
-#define __pyx_n_u_TypeVar __pyx_string_tab[93]
-#define __pyx_n_u_User __pyx_string_tab[94]
-#define __pyx_n_u_Window __pyx_string_tab[95]
-#define __pyx_n_u_all __pyx_string_tab[96]
-#define __pyx_n_u_alt __pyx_string_tab[97]
-#define __pyx_n_u_annotations __pyx_string_tab[98]
-#define __pyx_n_u_args __pyx_string_tab[99]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[100]
-#define __pyx_n_u_bases __pyx_string_tab[101]
-#define __pyx_n_u_bool __pyx_string_tab[102]
-#define __pyx_n_u_class_getitem __pyx_string_tab[103]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[104]
-#define __pyx_n_u_close __pyx_string_tab[105]
-#define __pyx_n_u_cls __pyx_string_tab[106]
-#define __pyx_n_u_create __pyx_string_tab[107]
-#define __pyx_n_u_ctrl __pyx_string_tab[108]
+#define __pyx_kp_u_None __pyx_string_tab[7]
+#define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[8]
+#define __pyx_kp_u__2 __pyx_string_tab[9]
+#define __pyx_kp_u__3 __pyx_string_tab[10]
+#define __pyx_kp_u__4 __pyx_string_tab[11]
+#define __pyx_kp_u__5 __pyx_string_tab[12]
+#define __pyx_kp_u__6 __pyx_string_tab[13]
+#define __pyx_kp_u_add_note __pyx_string_tab[14]
+#define __pyx_kp_u_disable __pyx_string_tab[15]
+#define __pyx_kp_u_enable __pyx_string_tab[16]
+#define __pyx_kp_u_gc __pyx_string_tab[17]
+#define __pyx_kp_u_isenabled __pyx_string_tab[18]
+#define __pyx_kp_u_positional_arguments_got __pyx_string_tab[19]
+#define __pyx_n_u_Audio __pyx_string_tab[20]
+#define __pyx_n_u_AudioAdded __pyx_string_tab[21]
+#define __pyx_n_u_AudioRemoved __pyx_string_tab[22]
+#define __pyx_n_u_BlazeSudio_graphicsCore_Events __pyx_string_tab[23]
+#define __pyx_n_u_Clipboard __pyx_string_tab[24]
+#define __pyx_n_u_ContrAxis __pyx_string_tab[25]
+#define __pyx_n_u_ContrBtn __pyx_string_tab[26]
+#define __pyx_n_u_ContrBtnDown __pyx_string_tab[27]
+#define __pyx_n_u_ContrBtnUp __pyx_string_tab[28]
+#define __pyx_n_u_ContrDevConnect __pyx_string_tab[29]
+#define __pyx_n_u_ContrDevDiscon __pyx_string_tab[30]
+#define __pyx_n_u_ContrDevRemap __pyx_string_tab[31]
+#define __pyx_n_u_ContrDevice __pyx_string_tab[32]
+#define __pyx_n_u_ContrSensor __pyx_string_tab[33]
+#define __pyx_n_u_Controller __pyx_string_tab[34]
+#define __pyx_n_u_Dataclass __pyx_string_tab[35]
+#define __pyx_n_u_Dataclass_locals___repr___locals __pyx_string_tab[36]
+#define __pyx_n_u_EVENT_LIST __pyx_string_tab[37]
+#define __pyx_n_u_EVENT_MAP __pyx_string_tab[38]
+#define __pyx_n_u_EVENT_NAMES __pyx_string_tab[39]
+#define __pyx_n_u_EvTyp __pyx_string_tab[40]
+#define __pyx_n_u_Event __pyx_string_tab[41]
+#define __pyx_n_u_Event___init __pyx_string_tab[42]
+#define __pyx_n_u_Event___new __pyx_string_tab[43]
+#define __pyx_n_u_Event___new___locals_genexpr __pyx_string_tab[44]
+#define __pyx_n_u_Event__from_sdl __pyx_string_tab[45]
+#define __pyx_n_u_Event_create __pyx_string_tab[46]
+#define __pyx_n_u_FileDrop __pyx_string_tab[47]
+#define __pyx_n_u_FileDropEnd __pyx_string_tab[48]
+#define __pyx_n_u_FileDropFile __pyx_string_tab[49]
+#define __pyx_n_u_FileDropStart __pyx_string_tab[50]
+#define __pyx_n_u_FileDropText __pyx_string_tab[51]
+#define __pyx_n_u_IntEnum __pyx_string_tab[52]
+#define __pyx_n_u_KMOD_ALT __pyx_string_tab[53]
+#define __pyx_n_u_KMOD_CTRL __pyx_string_tab[54]
+#define __pyx_n_u_KMOD_GUI __pyx_string_tab[55]
+#define __pyx_n_u_KMOD_SHIFT __pyx_string_tab[56]
+#define __pyx_n_u_KeyDown __pyx_string_tab[57]
+#define __pyx_n_u_KeyEvent __pyx_string_tab[58]
+#define __pyx_n_u_KeyEvent__from_sdl __pyx_string_tab[59]
+#define __pyx_n_u_KeyEvent_initial __pyx_string_tab[60]
+#define __pyx_n_u_KeyEvent_key __pyx_string_tab[61]
+#define __pyx_n_u_KeyEvent_modifs __pyx_string_tab[62]
+#define __pyx_n_u_KeyEvent_scode __pyx_string_tab[63]
+#define __pyx_n_u_KeyType __pyx_string_tab[64]
+#define __pyx_n_u_KeyTyping __pyx_string_tab[65]
+#define __pyx_n_u_KeyUp __pyx_string_tab[66]
+#define __pyx_n_u_Keyboard __pyx_string_tab[67]
+#define __pyx_n_u_MappingProxyType __pyx_string_tab[68]
+#define __pyx_n_u_Mouse __pyx_string_tab[69]
+#define __pyx_n_u_MouseClick __pyx_string_tab[70]
+#define __pyx_n_u_MouseDown __pyx_string_tab[71]
+#define __pyx_n_u_MouseMove __pyx_string_tab[72]
+#define __pyx_n_u_MouseScroll __pyx_string_tab[73]
+#define __pyx_n_u_MouseUp __pyx_string_tab[74]
+#define __pyx_n_u_Pyx_PyDict_NextRef __pyx_string_tab[75]
+#define __pyx_n_u_Quit __pyx_string_tab[76]
+#define __pyx_n_u_QuitEvent __pyx_string_tab[77]
+#define __pyx_n_u_QuitEvent__from_sdl __pyx_string_tab[78]
+#define __pyx_n_u_SDL_GetKeyName __pyx_string_tab[79]
+#define __pyx_n_u_SDL_GetScancodeName __pyx_string_tab[80]
+#define __pyx_n_u_SDL_KEYDOWN __pyx_string_tab[81]
+#define __pyx_n_u_SDL_KEYUP __pyx_string_tab[82]
+#define __pyx_n_u_SDL_PRESSED __pyx_string_tab[83]
+#define __pyx_n_u_SDL_QUIT __pyx_string_tab[84]
+#define __pyx_n_u_Self __pyx_string_tab[85]
+#define __pyx_n_u_Sensor __pyx_string_tab[86]
+#define __pyx_n_u_T __pyx_string_tab[87]
+#define __pyx_n_u_Touch __pyx_string_tab[88]
+#define __pyx_n_u_TouchDollar __pyx_string_tab[89]
+#define __pyx_n_u_TouchMulti __pyx_string_tab[90]
+#define __pyx_n_u_TouchSingle __pyx_string_tab[91]
+#define __pyx_n_u_TypeVar __pyx_string_tab[92]
+#define __pyx_n_u_User __pyx_string_tab[93]
+#define __pyx_n_u_Window __pyx_string_tab[94]
+#define __pyx_n_u_all __pyx_string_tab[95]
+#define __pyx_n_u_alt __pyx_string_tab[96]
+#define __pyx_n_u_annotations __pyx_string_tab[97]
+#define __pyx_n_u_args __pyx_string_tab[98]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[99]
+#define __pyx_n_u_bases __pyx_string_tab[100]
+#define __pyx_n_u_bool __pyx_string_tab[101]
+#define __pyx_n_u_class_getitem __pyx_string_tab[102]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[103]
+#define __pyx_n_u_close __pyx_string_tab[104]
+#define __pyx_n_u_cls __pyx_string_tab[105]
+#define __pyx_n_u_create __pyx_string_tab[106]
+#define __pyx_n_u_ctrl __pyx_string_tab[107]
+#define __pyx_n_u_dc_init __pyx_string_tab[108]
 #define __pyx_n_u_decode __pyx_string_tab[109]
 #define __pyx_n_u_dict __pyx_string_tab[110]
 #define __pyx_n_u_doc __pyx_string_tab[111]
@@ -3033,81 +3032,79 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_n_u_getEvMap __pyx_string_tab[117]
 #define __pyx_n_u_gui __pyx_string_tab[118]
 #define __pyx_n_u_init __pyx_string_tab[119]
-#define __pyx_n_u_init_2 __pyx_string_tab[120]
-#define __pyx_n_u_initial __pyx_string_tab[121]
-#define __pyx_n_u_int __pyx_string_tab[122]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[123]
-#define __pyx_n_u_items __pyx_string_tab[124]
-#define __pyx_n_u_k __pyx_string_tab[125]
-#define __pyx_n_u_key __pyx_string_tab[126]
-#define __pyx_n_u_keycode __pyx_string_tab[127]
-#define __pyx_n_u_keys __pyx_string_tab[128]
-#define __pyx_n_u_keysym __pyx_string_tab[129]
-#define __pyx_n_u_kwargs __pyx_string_tab[130]
-#define __pyx_n_u_main __pyx_string_tab[131]
-#define __pyx_n_u_mask __pyx_string_tab[132]
-#define __pyx_n_u_metaclass __pyx_string_tab[133]
-#define __pyx_n_u_mod __pyx_string_tab[134]
-#define __pyx_n_u_modifiers __pyx_string_tab[135]
-#define __pyx_n_u_modifs __pyx_string_tab[136]
-#define __pyx_n_u_module __pyx_string_tab[137]
-#define __pyx_n_u_mro_entries __pyx_string_tab[138]
-#define __pyx_n_u_name __pyx_string_tab[139]
-#define __pyx_n_u_name_2 __pyx_string_tab[140]
-#define __pyx_n_u_new __pyx_string_tab[141]
-#define __pyx_n_u_next __pyx_string_tab[142]
-#define __pyx_n_u_o __pyx_string_tab[143]
-#define __pyx_n_u_object __pyx_string_tab[144]
-#define __pyx_n_u_pop __pyx_string_tab[145]
-#define __pyx_n_u_prepare __pyx_string_tab[146]
-#define __pyx_n_u_property __pyx_string_tab[147]
-#define __pyx_n_u_qualname __pyx_string_tab[148]
-#define __pyx_n_u_quit __pyx_string_tab[149]
-#define __pyx_n_u_repeat __pyx_string_tab[150]
-#define __pyx_n_u_repr __pyx_string_tab[151]
-#define __pyx_n_u_return __pyx_string_tab[152]
-#define __pyx_n_u_scancode __pyx_string_tab[153]
-#define __pyx_n_u_scode __pyx_string_tab[154]
-#define __pyx_n_u_sdl2 __pyx_string_tab[155]
-#define __pyx_n_u_self __pyx_string_tab[156]
-#define __pyx_n_u_send __pyx_string_tab[157]
-#define __pyx_n_u_set_name __pyx_string_tab[158]
-#define __pyx_n_u_setdefault __pyx_string_tab[159]
-#define __pyx_n_u_shift __pyx_string_tab[160]
-#define __pyx_n_u_slots __pyx_string_tab[161]
-#define __pyx_n_u_state __pyx_string_tab[162]
-#define __pyx_n_u_str __pyx_string_tab[163]
-#define __pyx_n_u_sym __pyx_string_tab[164]
-#define __pyx_n_u_test __pyx_string_tab[165]
-#define __pyx_n_u_this __pyx_string_tab[166]
-#define __pyx_n_u_throw __pyx_string_tab[167]
-#define __pyx_n_u_timestamp __pyx_string_tab[168]
-#define __pyx_n_u_translateEv __pyx_string_tab[169]
-#define __pyx_n_u_typ __pyx_string_tab[170]
-#define __pyx_n_u_type __pyx_string_tab[171]
-#define __pyx_n_u_types __pyx_string_tab[172]
-#define __pyx_n_u_types_2 __pyx_string_tab[173]
-#define __pyx_n_u_typing __pyx_string_tab[174]
-#define __pyx_n_u_update __pyx_string_tab[175]
-#define __pyx_n_u_value __pyx_string_tab[176]
-#define __pyx_n_u_values __pyx_string_tab[177]
-#define __pyx_n_u_var __pyx_string_tab[178]
-#define __pyx_n_u_weakref __pyx_string_tab[179]
-#define __pyx_n_u_windowID __pyx_string_tab[180]
-#define __pyx_n_u_window_id __pyx_string_tab[181]
-#define __pyx_n_u_zip __pyx_string_tab[182]
-#define __pyx_kp_b_iso88591_5_q_4s_t7_WG1_q_1_A_A_CuBe3a_1 __pyx_string_tab[183]
-#define __pyx_kp_b_iso88591_A __pyx_string_tab[184]
-#define __pyx_kp_b_iso88591_A_2 __pyx_string_tab[185]
-#define __pyx_kp_b_iso88591_A_F_1_s_q __pyx_string_tab[186]
-#define __pyx_kp_b_iso88591_A_Rq_Ba_uJauD_BgS_A_T_A_q_aq __pyx_string_tab[187]
-#define __pyx_kp_b_iso88591_A_s __pyx_string_tab[188]
-#define __pyx_kp_b_iso88591_A_t7_d_a __pyx_string_tab[189]
-#define __pyx_kp_b_iso88591_A_t_4y_q __pyx_string_tab[190]
-#define __pyx_kp_b_iso88591_A_t_q_JgQ __pyx_string_tab[191]
-#define __pyx_kp_b_iso88591_A_uJauBgQ __pyx_string_tab[192]
-#define __pyx_kp_b_iso88591_N_t_r_QgQ_b_AV1_Rt1E_Rt1A_L_1 __pyx_string_tab[193]
-#define __pyx_kp_b_iso88591_a __pyx_string_tab[194]
+#define __pyx_n_u_initial __pyx_string_tab[120]
+#define __pyx_n_u_int __pyx_string_tab[121]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[122]
+#define __pyx_n_u_items __pyx_string_tab[123]
+#define __pyx_n_u_k __pyx_string_tab[124]
+#define __pyx_n_u_key __pyx_string_tab[125]
+#define __pyx_n_u_keycode __pyx_string_tab[126]
+#define __pyx_n_u_keys __pyx_string_tab[127]
+#define __pyx_n_u_keysym __pyx_string_tab[128]
+#define __pyx_n_u_kwargs __pyx_string_tab[129]
+#define __pyx_n_u_main __pyx_string_tab[130]
+#define __pyx_n_u_mask __pyx_string_tab[131]
+#define __pyx_n_u_metaclass __pyx_string_tab[132]
+#define __pyx_n_u_mod __pyx_string_tab[133]
+#define __pyx_n_u_modifiers __pyx_string_tab[134]
+#define __pyx_n_u_modifs __pyx_string_tab[135]
+#define __pyx_n_u_module __pyx_string_tab[136]
+#define __pyx_n_u_mro_entries __pyx_string_tab[137]
+#define __pyx_n_u_name __pyx_string_tab[138]
+#define __pyx_n_u_name_2 __pyx_string_tab[139]
+#define __pyx_n_u_new __pyx_string_tab[140]
+#define __pyx_n_u_next __pyx_string_tab[141]
+#define __pyx_n_u_o __pyx_string_tab[142]
+#define __pyx_n_u_object __pyx_string_tab[143]
+#define __pyx_n_u_pop __pyx_string_tab[144]
+#define __pyx_n_u_prepare __pyx_string_tab[145]
+#define __pyx_n_u_property __pyx_string_tab[146]
+#define __pyx_n_u_qualname __pyx_string_tab[147]
+#define __pyx_n_u_quit __pyx_string_tab[148]
+#define __pyx_n_u_repeat __pyx_string_tab[149]
+#define __pyx_n_u_repr __pyx_string_tab[150]
+#define __pyx_n_u_return __pyx_string_tab[151]
+#define __pyx_n_u_scancode __pyx_string_tab[152]
+#define __pyx_n_u_scode __pyx_string_tab[153]
+#define __pyx_n_u_sdl2 __pyx_string_tab[154]
+#define __pyx_n_u_self __pyx_string_tab[155]
+#define __pyx_n_u_send __pyx_string_tab[156]
+#define __pyx_n_u_set_name __pyx_string_tab[157]
+#define __pyx_n_u_setdefault __pyx_string_tab[158]
+#define __pyx_n_u_shift __pyx_string_tab[159]
+#define __pyx_n_u_slots __pyx_string_tab[160]
+#define __pyx_n_u_state __pyx_string_tab[161]
+#define __pyx_n_u_str __pyx_string_tab[162]
+#define __pyx_n_u_sym __pyx_string_tab[163]
+#define __pyx_n_u_test __pyx_string_tab[164]
+#define __pyx_n_u_this __pyx_string_tab[165]
+#define __pyx_n_u_throw __pyx_string_tab[166]
+#define __pyx_n_u_timestamp __pyx_string_tab[167]
+#define __pyx_n_u_translateEv __pyx_string_tab[168]
+#define __pyx_n_u_typ __pyx_string_tab[169]
+#define __pyx_n_u_type __pyx_string_tab[170]
+#define __pyx_n_u_types __pyx_string_tab[171]
+#define __pyx_n_u_types_2 __pyx_string_tab[172]
+#define __pyx_n_u_typing __pyx_string_tab[173]
+#define __pyx_n_u_update __pyx_string_tab[174]
+#define __pyx_n_u_value __pyx_string_tab[175]
+#define __pyx_n_u_values __pyx_string_tab[176]
+#define __pyx_n_u_var __pyx_string_tab[177]
+#define __pyx_n_u_weakref __pyx_string_tab[178]
+#define __pyx_n_u_windowID __pyx_string_tab[179]
+#define __pyx_n_u_window_id __pyx_string_tab[180]
+#define __pyx_kp_b_iso88591_5_q_4s_t7_WG1_q_1_A_A_CuBe3a_1 __pyx_string_tab[181]
+#define __pyx_kp_b_iso88591_A __pyx_string_tab[182]
+#define __pyx_kp_b_iso88591_A_2 __pyx_string_tab[183]
+#define __pyx_kp_b_iso88591_A_F_1_5_q __pyx_string_tab[184]
+#define __pyx_kp_b_iso88591_A_Rq_Ba_uJauD_BgS_A_T_A_q_aq __pyx_string_tab[185]
+#define __pyx_kp_b_iso88591_A_s __pyx_string_tab[186]
+#define __pyx_kp_b_iso88591_A_t7_d_a __pyx_string_tab[187]
+#define __pyx_kp_b_iso88591_A_t_4y_q __pyx_string_tab[188]
+#define __pyx_kp_b_iso88591_A_t_q_JgQ __pyx_string_tab[189]
+#define __pyx_kp_b_iso88591_A_uJauBgQ __pyx_string_tab[190]
+#define __pyx_kp_b_iso88591_N_t_r_QgQ_b_AV1_Rt1E_Rt1A_L_1 __pyx_string_tab[191]
+#define __pyx_kp_b_iso88591_a __pyx_string_tab[192]
 #define __pyx_int_0 __pyx_number_tab[0]
 #define __pyx_int_1 __pyx_number_tab[1]
 #define __pyx_int_2 __pyx_number_tab[2]
@@ -3160,19 +3157,19 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   #if CYTHON_PEP489_MULTI_PHASE_INIT
   __Pyx_State_RemoveModule(NULL);
   #endif
-  Py_CLEAR(clear_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass);
-  Py_CLEAR(clear_module_state->__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass);
-  Py_CLEAR(clear_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__);
-  Py_CLEAR(clear_module_state->__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__);
-  Py_CLEAR(clear_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr);
-  Py_CLEAR(clear_module_state->__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr);
-  Py_CLEAR(clear_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__);
-  Py_CLEAR(clear_module_state->__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__);
-  Py_CLEAR(clear_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr);
-  Py_CLEAR(clear_module_state->__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass);
+  Py_CLEAR(clear_module_state->__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass);
+  Py_CLEAR(clear_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__);
+  Py_CLEAR(clear_module_state->__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__);
+  Py_CLEAR(clear_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__);
+  Py_CLEAR(clear_module_state->__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__);
+  Py_CLEAR(clear_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr);
+  Py_CLEAR(clear_module_state->__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr);
   for (int i=0; i<1; ++i) { Py_CLEAR(clear_module_state->__pyx_tuple[i]); }
   for (int i=0; i<12; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<195; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<193; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   for (int i=0; i<38; ++i) { Py_CLEAR(clear_module_state->__pyx_number_tab[i]); }
 /* #### Code section: module_state_clear_contents ### */
 /* CommonTypesMetaclass.module_state_clear */
@@ -3199,19 +3196,19 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_empty_tuple);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_empty_bytes);
   __Pyx_VISIT_CONST(traverse_module_state->__pyx_empty_unicode);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass);
-  Py_VISIT(traverse_module_state->__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__);
-  Py_VISIT(traverse_module_state->__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr);
-  Py_VISIT(traverse_module_state->__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__);
-  Py_VISIT(traverse_module_state->__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__);
-  Py_VISIT(traverse_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr);
-  Py_VISIT(traverse_module_state->__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass);
+  Py_VISIT(traverse_module_state->__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass);
+  Py_VISIT(traverse_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__);
+  Py_VISIT(traverse_module_state->__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__);
+  Py_VISIT(traverse_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__);
+  Py_VISIT(traverse_module_state->__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__);
+  Py_VISIT(traverse_module_state->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr);
+  Py_VISIT(traverse_module_state->__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr);
   for (int i=0; i<1; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_tuple[i]); }
   for (int i=0; i<12; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<195; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<193; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   for (int i=0; i<38; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_number_tab[i]); }
 /* #### Code section: module_state_traverse_contents ### */
 /* CommonTypesMetaclass.module_state_traverse */
@@ -3229,7 +3226,7 @@ return 0;
 #endif
 /* #### Code section: module_code ### */
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":98
+/* "BlazeSudio/orig/graphicsCore/Events.py":98
  * 
  * T = TypeVar("T")
  * def Dataclass(cls: T) -> T:             # <<<<<<<<<<<<<<
@@ -3238,15 +3235,15 @@ return 0;
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_1Dataclass(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_1Dataclass(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_1Dataclass = {"Dataclass", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_1Dataclass, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_1Dataclass(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_1Dataclass = {"Dataclass", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_1Dataclass, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_1Dataclass(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3308,11 +3305,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Dataclass", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Dataclass", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Dataclass(__pyx_self, __pyx_v_cls);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_Dataclass(__pyx_self, __pyx_v_cls);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3322,24 +3319,24 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":110
+/* "BlazeSudio/orig/graphicsCore/Events.py":110
  *             defaults[name] = getattr(cls, name)
  * 
- *     def _init(self, *args, **kwargs):             # <<<<<<<<<<<<<<
+ *     def _dc_init(self, *args, **kwargs):             # <<<<<<<<<<<<<<
  *         if len(args) > len(fields):
  *             raise TypeError(
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_1_init(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_9Dataclass_1_dc_init(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_1_init = {"_init", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_1_init, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_1_init(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_9Dataclass_1_dc_init = {"_dc_init", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_9Dataclass_1_dc_init, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_9Dataclass_1_dc_init(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -3359,7 +3356,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   int __pyx_clineno = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("_init (wrapper)", 0);
+  __Pyx_RefNannySetupContext("_dc_init (wrapper)", 0);
   #if !CYTHON_METH_FASTCALL
   #if CYTHON_ASSUME_SAFE_SIZE
   __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
@@ -3392,9 +3389,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       const Py_ssize_t used_pos_args = (kwd_pos_args < 1) ? kwd_pos_args : 1;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, __pyx_v_kwargs, values, used_pos_args, __pyx_kwds_len, "_init", 1) < (0)) __PYX_ERR(0, 110, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, __pyx_v_kwargs, values, used_pos_args, __pyx_kwds_len, "_dc_init", 1) < (0)) __PYX_ERR(0, 110, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_init", 0, 1, 1, i); __PYX_ERR(0, 110, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_dc_init", 0, 1, 1, i); __PYX_ERR(0, 110, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs < 1)) {
       goto __pyx_L5_argtuple_error;
@@ -3406,7 +3403,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_init", 0, 1, 1, __pyx_nargs); __PYX_ERR(0, 110, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_dc_init", 0, 1, 1, __pyx_nargs); __PYX_ERR(0, 110, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -3415,11 +3412,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   __Pyx_DECREF(__pyx_v_args); __pyx_v_args = 0;
   __Pyx_DECREF(__pyx_v_kwargs); __pyx_v_kwargs = 0;
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Dataclass._init", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Dataclass._dc_init", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass__init(__pyx_self, __pyx_v_self, __pyx_v_args, __pyx_v_kwargs);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_9Dataclass__dc_init(__pyx_self, __pyx_v_self, __pyx_v_args, __pyx_v_kwargs);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -3431,9 +3428,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass__init(PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_args, PyObject *__pyx_v_kwargs) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *__pyx_cur_scope;
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *__pyx_outer_scope;
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_9Dataclass__dc_init(PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_args, PyObject *__pyx_v_kwargs) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *__pyx_cur_scope;
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *__pyx_outer_scope;
   PyObject *__pyx_v_values = NULL;
   PyObject *__pyx_v_name = NULL;
   PyObject *__pyx_v_value = NULL;
@@ -3451,21 +3448,19 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
   PyObject *__pyx_t_8[4];
   PyObject *__pyx_t_9 = NULL;
   size_t __pyx_t_10;
-  PyObject *(*__pyx_t_11)(PyObject *);
-  PyObject *(*__pyx_t_12)(PyObject *);
+  int __pyx_t_11;
+  int __pyx_t_12;
   int __pyx_t_13;
-  int __pyx_t_14;
-  int __pyx_t_15;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("_init", 0);
-  __pyx_outer_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *) __pyx_self;
+  __Pyx_RefNannySetupContext("_dc_init", 0);
+  __pyx_outer_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *) __pyx_self;
   __pyx_cur_scope = __pyx_outer_scope;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":111
+  /* "BlazeSudio/orig/graphicsCore/Events.py":111
  * 
- *     def _init(self, *args, **kwargs):
+ *     def _dc_init(self, *args, **kwargs):
  *         if len(args) > len(fields):             # <<<<<<<<<<<<<<
  *             raise TypeError(
  *                 f"Expected at most {len(fields)} positional arguments, got {len(args)}"
@@ -3483,8 +3478,8 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
   __pyx_t_4 = (__pyx_t_1 > __pyx_t_3);
   if (unlikely(__pyx_t_4)) {
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":112
- *     def _init(self, *args, **kwargs):
+    /* "BlazeSudio/orig/graphicsCore/Events.py":112
+ *     def _dc_init(self, *args, **kwargs):
  *         if len(args) > len(fields):
  *             raise TypeError(             # <<<<<<<<<<<<<<
  *                 f"Expected at most {len(fields)} positional arguments, got {len(args)}"
@@ -3492,7 +3487,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
 */
     __pyx_t_5 = NULL;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":113
+    /* "BlazeSudio/orig/graphicsCore/Events.py":113
  *         if len(args) > len(fields):
  *             raise TypeError(
  *                 f"Expected at most {len(fields)} positional arguments, got {len(args)}"             # <<<<<<<<<<<<<<
@@ -3535,388 +3530,202 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __PYX_ERR(0, 112, __pyx_L1_error)
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":111
+    /* "BlazeSudio/orig/graphicsCore/Events.py":111
  * 
- *     def _init(self, *args, **kwargs):
+ *     def _dc_init(self, *args, **kwargs):
  *         if len(args) > len(fields):             # <<<<<<<<<<<<<<
  *             raise TypeError(
  *                 f"Expected at most {len(fields)} positional arguments, got {len(args)}"
 */
   }
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":116
+  /* "BlazeSudio/orig/graphicsCore/Events.py":116
  *             )
  * 
  *         values = {}             # <<<<<<<<<<<<<<
  * 
- *         for name, value in zip(fields, args):
+ *         for name, value in kwargs.items():
 */
   __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 116, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_v_values = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":118
+  /* "BlazeSudio/orig/graphicsCore/Events.py":118
  *         values = {}
  * 
- *         for name, value in zip(fields, args):             # <<<<<<<<<<<<<<
- *             values[name] = value
- *         for name, value in kwargs.items():
-*/
-  __pyx_t_9 = NULL;
-  if (unlikely(!__pyx_cur_scope->__pyx_v_fields)) { __Pyx_RaiseClosureNameError("fields"); __PYX_ERR(0, 118, __pyx_L1_error) }
-  __pyx_t_10 = 1;
-  {
-    PyObject *__pyx_callargs[3] = {__pyx_t_9, __pyx_cur_scope->__pyx_v_fields, __pyx_v_args};
-    __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)__pyx_builtin_zip, __pyx_callargs+__pyx_t_10, (3-__pyx_t_10) | (__pyx_t_10*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 118, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-  }
-  if (likely(PyList_CheckExact(__pyx_t_2)) || PyTuple_CheckExact(__pyx_t_2)) {
-    __pyx_t_9 = __pyx_t_2; __Pyx_INCREF(__pyx_t_9);
-    __pyx_t_3 = 0;
-    __pyx_t_11 = NULL;
-  } else {
-    __pyx_t_3 = -1; __pyx_t_9 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 118, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_11 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_9); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 118, __pyx_L1_error)
-  }
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  for (;;) {
-    if (likely(!__pyx_t_11)) {
-      if (likely(PyList_CheckExact(__pyx_t_9))) {
-        {
-          Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_9);
-          #if !CYTHON_ASSUME_SAFE_SIZE
-          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 118, __pyx_L1_error)
-          #endif
-          if (__pyx_t_3 >= __pyx_temp) break;
-        }
-        __pyx_t_2 = __Pyx_PyList_GetItemRefFast(__pyx_t_9, __pyx_t_3, __Pyx_ReferenceSharing_OwnStrongReference);
-        ++__pyx_t_3;
-      } else {
-        {
-          Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_9);
-          #if !CYTHON_ASSUME_SAFE_SIZE
-          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 118, __pyx_L1_error)
-          #endif
-          if (__pyx_t_3 >= __pyx_temp) break;
-        }
-        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_2 = __Pyx_NewRef(PyTuple_GET_ITEM(__pyx_t_9, __pyx_t_3));
-        #else
-        __pyx_t_2 = __Pyx_PySequence_ITEM(__pyx_t_9, __pyx_t_3);
-        #endif
-        ++__pyx_t_3;
-      }
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 118, __pyx_L1_error)
-    } else {
-      __pyx_t_2 = __pyx_t_11(__pyx_t_9);
-      if (unlikely(!__pyx_t_2)) {
-        PyObject* exc_type = PyErr_Occurred();
-        if (exc_type) {
-          if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) __PYX_ERR(0, 118, __pyx_L1_error)
-          PyErr_Clear();
-        }
-        break;
-      }
-    }
-    __Pyx_GOTREF(__pyx_t_2);
-    if ((likely(PyTuple_CheckExact(__pyx_t_2))) || (PyList_CheckExact(__pyx_t_2))) {
-      PyObject* sequence = __pyx_t_2;
-      Py_ssize_t size = __Pyx_PySequence_SIZE(sequence);
-      if (unlikely(size != 2)) {
-        if (size > 2) __Pyx_RaiseTooManyValuesError(2);
-        else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        __PYX_ERR(0, 118, __pyx_L1_error)
-      }
-      #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-      if (likely(PyTuple_CheckExact(sequence))) {
-        __pyx_t_5 = PyTuple_GET_ITEM(sequence, 0);
-        __Pyx_INCREF(__pyx_t_5);
-        __pyx_t_7 = PyTuple_GET_ITEM(sequence, 1);
-        __Pyx_INCREF(__pyx_t_7);
-      } else {
-        __pyx_t_5 = __Pyx_PyList_GetItemRefFast(sequence, 0, __Pyx_ReferenceSharing_SharedReference);
-        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 118, __pyx_L1_error)
-        __Pyx_XGOTREF(__pyx_t_5);
-        __pyx_t_7 = __Pyx_PyList_GetItemRefFast(sequence, 1, __Pyx_ReferenceSharing_SharedReference);
-        if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 118, __pyx_L1_error)
-        __Pyx_XGOTREF(__pyx_t_7);
-      }
-      #else
-      __pyx_t_5 = __Pyx_PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 118, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_7 = __Pyx_PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 118, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_7);
-      #endif
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    } else {
-      Py_ssize_t index = -1;
-      __pyx_t_6 = PyObject_GetIter(__pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 118, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_12 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_6);
-      index = 0; __pyx_t_5 = __pyx_t_12(__pyx_t_6); if (unlikely(!__pyx_t_5)) goto __pyx_L6_unpacking_failed;
-      __Pyx_GOTREF(__pyx_t_5);
-      index = 1; __pyx_t_7 = __pyx_t_12(__pyx_t_6); if (unlikely(!__pyx_t_7)) goto __pyx_L6_unpacking_failed;
-      __Pyx_GOTREF(__pyx_t_7);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_12(__pyx_t_6), 2) < (0)) __PYX_ERR(0, 118, __pyx_L1_error)
-      __pyx_t_12 = NULL;
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      goto __pyx_L7_unpacking_done;
-      __pyx_L6_unpacking_failed:;
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __pyx_t_12 = NULL;
-      if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      __PYX_ERR(0, 118, __pyx_L1_error)
-      __pyx_L7_unpacking_done:;
-    }
-    __Pyx_XDECREF_SET(__pyx_v_name, __pyx_t_5);
-    __pyx_t_5 = 0;
-    __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_7);
-    __pyx_t_7 = 0;
-
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":119
- * 
- *         for name, value in zip(fields, args):
- *             values[name] = value             # <<<<<<<<<<<<<<
- *         for name, value in kwargs.items():
- *             if name not in fields:
-*/
-    if (unlikely((PyDict_SetItem(__pyx_v_values, __pyx_v_name, __pyx_v_value) < 0))) __PYX_ERR(0, 119, __pyx_L1_error)
-
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":118
- *         values = {}
- * 
- *         for name, value in zip(fields, args):             # <<<<<<<<<<<<<<
- *             values[name] = value
- *         for name, value in kwargs.items():
-*/
-  }
-  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":120
- *         for name, value in zip(fields, args):
- *             values[name] = value
  *         for name, value in kwargs.items():             # <<<<<<<<<<<<<<
  *             if name not in fields:
  *                 raise TypeError(f"Got an unexpected keyword argument {name!r}")
 */
   __pyx_t_3 = 0;
-  __pyx_t_2 = __Pyx_dict_iterator(__pyx_v_kwargs, 1, __pyx_mstate_global->__pyx_n_u_items, (&__pyx_t_1), (&__pyx_t_13)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 120, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_9);
-  __pyx_t_9 = __pyx_t_2;
-  __pyx_t_2 = 0;
+  __pyx_t_9 = __Pyx_dict_iterator(__pyx_v_kwargs, 1, __pyx_mstate_global->__pyx_n_u_items, (&__pyx_t_1), (&__pyx_t_11)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 118, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_9);
+  __Pyx_XDECREF(__pyx_t_2);
+  __pyx_t_2 = __pyx_t_9;
+  __pyx_t_9 = 0;
   while (1) {
-    __pyx_t_14 = __Pyx_dict_iter_next(__pyx_t_9, __pyx_t_1, &__pyx_t_3, &__pyx_t_2, &__pyx_t_7, NULL, __pyx_t_13);
-    if (unlikely(__pyx_t_14 == 0)) break;
-    if (unlikely(__pyx_t_14 == -1)) __PYX_ERR(0, 120, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_XDECREF_SET(__pyx_v_name, __pyx_t_2);
-    __pyx_t_2 = 0;
-    __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_7);
-    __pyx_t_7 = 0;
+    __pyx_t_12 = __Pyx_dict_iter_next(__pyx_t_2, __pyx_t_1, &__pyx_t_3, &__pyx_t_9, &__pyx_t_5, NULL, __pyx_t_11);
+    if (unlikely(__pyx_t_12 == 0)) break;
+    if (unlikely(__pyx_t_12 == -1)) __PYX_ERR(0, 118, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_XDECREF_SET(__pyx_v_name, __pyx_t_9);
+    __pyx_t_9 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_5);
+    __pyx_t_5 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":121
- *             values[name] = value
+    /* "BlazeSudio/orig/graphicsCore/Events.py":119
+ * 
  *         for name, value in kwargs.items():
  *             if name not in fields:             # <<<<<<<<<<<<<<
  *                 raise TypeError(f"Got an unexpected keyword argument {name!r}")
- *             if name in values:
+ *             values[name] = value
 */
-    if (unlikely(!__pyx_cur_scope->__pyx_v_fields)) { __Pyx_RaiseClosureNameError("fields"); __PYX_ERR(0, 121, __pyx_L1_error) }
-    __pyx_t_4 = (__Pyx_PySequence_ContainsTF(__pyx_v_name, __pyx_cur_scope->__pyx_v_fields, Py_NE)); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 121, __pyx_L1_error)
+    if (unlikely(!__pyx_cur_scope->__pyx_v_fields)) { __Pyx_RaiseClosureNameError("fields"); __PYX_ERR(0, 119, __pyx_L1_error) }
+    __pyx_t_4 = (__Pyx_PySequence_ContainsTF(__pyx_v_name, __pyx_cur_scope->__pyx_v_fields, Py_NE)); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 119, __pyx_L1_error)
     if (unlikely(__pyx_t_4)) {
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":122
+      /* "BlazeSudio/orig/graphicsCore/Events.py":120
  *         for name, value in kwargs.items():
  *             if name not in fields:
  *                 raise TypeError(f"Got an unexpected keyword argument {name!r}")             # <<<<<<<<<<<<<<
- *             if name in values:
- *                 raise TypeError(f"Multiple values for argument {name!r}")
-*/
-      __pyx_t_2 = NULL;
-      __pyx_t_5 = __Pyx_PyObject_FormatSimpleAndDecref(PyObject_Repr(__pyx_v_name), __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 122, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_6 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Got_an_unexpected_keyword_argume, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 122, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __pyx_t_10 = 1;
-      {
-        PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_t_6};
-        __pyx_t_7 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_10, (2-__pyx_t_10) | (__pyx_t_10*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-        __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 122, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_7);
-      }
-      __Pyx_Raise(__pyx_t_7, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __PYX_ERR(0, 122, __pyx_L1_error)
-
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":121
- *             values[name] = value
- *         for name, value in kwargs.items():
- *             if name not in fields:             # <<<<<<<<<<<<<<
- *                 raise TypeError(f"Got an unexpected keyword argument {name!r}")
- *             if name in values:
-*/
-    }
-
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":123
- *             if name not in fields:
- *                 raise TypeError(f"Got an unexpected keyword argument {name!r}")
- *             if name in values:             # <<<<<<<<<<<<<<
- *                 raise TypeError(f"Multiple values for argument {name!r}")
- *             values[name] = value
-*/
-    __pyx_t_4 = (__Pyx_PyDict_ContainsTF(__pyx_v_name, __pyx_v_values, Py_EQ)); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 123, __pyx_L1_error)
-    if (unlikely(__pyx_t_4)) {
-
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":124
- *                 raise TypeError(f"Got an unexpected keyword argument {name!r}")
- *             if name in values:
- *                 raise TypeError(f"Multiple values for argument {name!r}")             # <<<<<<<<<<<<<<
  *             values[name] = value
  * 
 */
-      __pyx_t_6 = NULL;
-      __pyx_t_2 = __Pyx_PyObject_FormatSimpleAndDecref(PyObject_Repr(__pyx_v_name), __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 124, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_5 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Multiple_values_for_argument, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 124, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_9 = NULL;
+      __pyx_t_7 = __Pyx_PyObject_FormatSimpleAndDecref(PyObject_Repr(__pyx_v_name), __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 120, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      __pyx_t_6 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Got_an_unexpected_keyword_argume, __pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 120, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_6);
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       __pyx_t_10 = 1;
       {
-        PyObject *__pyx_callargs[2] = {__pyx_t_6, __pyx_t_5};
-        __pyx_t_7 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_10, (2-__pyx_t_10) | (__pyx_t_10*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-        __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-        if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 124, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_7);
+        PyObject *__pyx_callargs[2] = {__pyx_t_9, __pyx_t_6};
+        __pyx_t_5 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_10, (2-__pyx_t_10) | (__pyx_t_10*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+        __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 120, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
       }
-      __Pyx_Raise(__pyx_t_7, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __PYX_ERR(0, 124, __pyx_L1_error)
+      __Pyx_Raise(__pyx_t_5, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __PYX_ERR(0, 120, __pyx_L1_error)
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":123
- *             if name not in fields:
+      /* "BlazeSudio/orig/graphicsCore/Events.py":119
+ * 
+ *         for name, value in kwargs.items():
+ *             if name not in fields:             # <<<<<<<<<<<<<<
  *                 raise TypeError(f"Got an unexpected keyword argument {name!r}")
- *             if name in values:             # <<<<<<<<<<<<<<
- *                 raise TypeError(f"Multiple values for argument {name!r}")
  *             values[name] = value
 */
     }
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":125
- *             if name in values:
- *                 raise TypeError(f"Multiple values for argument {name!r}")
+    /* "BlazeSudio/orig/graphicsCore/Events.py":121
+ *             if name not in fields:
+ *                 raise TypeError(f"Got an unexpected keyword argument {name!r}")
  *             values[name] = value             # <<<<<<<<<<<<<<
  * 
  *         missing = []
 */
-    if (unlikely((PyDict_SetItem(__pyx_v_values, __pyx_v_name, __pyx_v_value) < 0))) __PYX_ERR(0, 125, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__pyx_v_values, __pyx_v_name, __pyx_v_value) < 0))) __PYX_ERR(0, 121, __pyx_L1_error)
   }
-  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":127
+  /* "BlazeSudio/orig/graphicsCore/Events.py":123
  *             values[name] = value
  * 
  *         missing = []             # <<<<<<<<<<<<<<
  *         for name in fields:
  *             if name not in values:
 */
-  __pyx_t_9 = PyList_New(0); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 127, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_9);
-  __pyx_v_missing = ((PyObject*)__pyx_t_9);
-  __pyx_t_9 = 0;
+  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_v_missing = ((PyObject*)__pyx_t_2);
+  __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":128
+  /* "BlazeSudio/orig/graphicsCore/Events.py":124
  * 
  *         missing = []
  *         for name in fields:             # <<<<<<<<<<<<<<
  *             if name not in values:
  *                 if name in defaults:
 */
-  if (unlikely(!__pyx_cur_scope->__pyx_v_fields)) { __Pyx_RaiseClosureNameError("fields"); __PYX_ERR(0, 128, __pyx_L1_error) }
+  if (unlikely(!__pyx_cur_scope->__pyx_v_fields)) { __Pyx_RaiseClosureNameError("fields"); __PYX_ERR(0, 124, __pyx_L1_error) }
   if (unlikely(__pyx_cur_scope->__pyx_v_fields == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 128, __pyx_L1_error)
+    __PYX_ERR(0, 124, __pyx_L1_error)
   }
-  __pyx_t_9 = __pyx_cur_scope->__pyx_v_fields; __Pyx_INCREF(__pyx_t_9);
+  __pyx_t_2 = __pyx_cur_scope->__pyx_v_fields; __Pyx_INCREF(__pyx_t_2);
   __pyx_t_1 = 0;
   for (;;) {
     {
-      Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_9);
+      Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_2);
       #if !CYTHON_ASSUME_SAFE_SIZE
-      if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 128, __pyx_L1_error)
+      if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 124, __pyx_L1_error)
       #endif
       if (__pyx_t_1 >= __pyx_temp) break;
     }
-    __pyx_t_7 = __Pyx_PyList_GetItemRefFast(__pyx_t_9, __pyx_t_1, __Pyx_ReferenceSharing_OwnStrongReference);
+    __pyx_t_5 = __Pyx_PyList_GetItemRefFast(__pyx_t_2, __pyx_t_1, __Pyx_ReferenceSharing_OwnStrongReference);
     ++__pyx_t_1;
-    if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 128, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __Pyx_XDECREF_SET(__pyx_v_name, __pyx_t_7);
-    __pyx_t_7 = 0;
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 124, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_XDECREF_SET(__pyx_v_name, __pyx_t_5);
+    __pyx_t_5 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":129
+    /* "BlazeSudio/orig/graphicsCore/Events.py":125
  *         missing = []
  *         for name in fields:
  *             if name not in values:             # <<<<<<<<<<<<<<
  *                 if name in defaults:
  *                     values[name] = defaults[name]
 */
-    __pyx_t_4 = (__Pyx_PyDict_ContainsTF(__pyx_v_name, __pyx_v_values, Py_NE)); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 129, __pyx_L1_error)
+    __pyx_t_4 = (__Pyx_PyDict_ContainsTF(__pyx_v_name, __pyx_v_values, Py_NE)); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 125, __pyx_L1_error)
     if (__pyx_t_4) {
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":130
+      /* "BlazeSudio/orig/graphicsCore/Events.py":126
  *         for name in fields:
  *             if name not in values:
  *                 if name in defaults:             # <<<<<<<<<<<<<<
  *                     values[name] = defaults[name]
  *                 else:
 */
-      if (unlikely(!__pyx_cur_scope->__pyx_v_defaults)) { __Pyx_RaiseClosureNameError("defaults"); __PYX_ERR(0, 130, __pyx_L1_error) }
+      if (unlikely(!__pyx_cur_scope->__pyx_v_defaults)) { __Pyx_RaiseClosureNameError("defaults"); __PYX_ERR(0, 126, __pyx_L1_error) }
       if (unlikely(__pyx_cur_scope->__pyx_v_defaults == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-        __PYX_ERR(0, 130, __pyx_L1_error)
+        __PYX_ERR(0, 126, __pyx_L1_error)
       }
-      __pyx_t_4 = (__Pyx_PyDict_ContainsTF(__pyx_v_name, __pyx_cur_scope->__pyx_v_defaults, Py_EQ)); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 130, __pyx_L1_error)
+      __pyx_t_4 = (__Pyx_PyDict_ContainsTF(__pyx_v_name, __pyx_cur_scope->__pyx_v_defaults, Py_EQ)); if (unlikely((__pyx_t_4 < 0))) __PYX_ERR(0, 126, __pyx_L1_error)
       if (__pyx_t_4) {
 
-        /* "BlazeSudio/graphicsCore/_lib/Events.py":131
+        /* "BlazeSudio/orig/graphicsCore/Events.py":127
  *             if name not in values:
  *                 if name in defaults:
  *                     values[name] = defaults[name]             # <<<<<<<<<<<<<<
  *                 else:
  *                     missing.append(name)
 */
-        if (unlikely(!__pyx_cur_scope->__pyx_v_defaults)) { __Pyx_RaiseClosureNameError("defaults"); __PYX_ERR(0, 131, __pyx_L1_error) }
+        if (unlikely(!__pyx_cur_scope->__pyx_v_defaults)) { __Pyx_RaiseClosureNameError("defaults"); __PYX_ERR(0, 127, __pyx_L1_error) }
         if (unlikely(__pyx_cur_scope->__pyx_v_defaults == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-          __PYX_ERR(0, 131, __pyx_L1_error)
+          __PYX_ERR(0, 127, __pyx_L1_error)
         }
-        __pyx_t_7 = __Pyx_PyDict_GetItem(__pyx_cur_scope->__pyx_v_defaults, __pyx_v_name); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 131, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_7);
-        if (unlikely((PyDict_SetItem(__pyx_v_values, __pyx_v_name, __pyx_t_7) < 0))) __PYX_ERR(0, 131, __pyx_L1_error)
-        __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+        __pyx_t_5 = __Pyx_PyDict_GetItem(__pyx_cur_scope->__pyx_v_defaults, __pyx_v_name); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 127, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        if (unlikely((PyDict_SetItem(__pyx_v_values, __pyx_v_name, __pyx_t_5) < 0))) __PYX_ERR(0, 127, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-        /* "BlazeSudio/graphicsCore/_lib/Events.py":130
+        /* "BlazeSudio/orig/graphicsCore/Events.py":126
  *         for name in fields:
  *             if name not in values:
  *                 if name in defaults:             # <<<<<<<<<<<<<<
  *                     values[name] = defaults[name]
  *                 else:
 */
-        goto __pyx_L16;
+        goto __pyx_L10;
       }
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":133
+      /* "BlazeSudio/orig/graphicsCore/Events.py":129
  *                     values[name] = defaults[name]
  *                 else:
  *                     missing.append(name)             # <<<<<<<<<<<<<<
@@ -3924,11 +3733,11 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
  *         if missing:
 */
       /*else*/ {
-        __pyx_t_15 = __Pyx_PyList_Append(__pyx_v_missing, __pyx_v_name); if (unlikely(__pyx_t_15 == ((int)-1))) __PYX_ERR(0, 133, __pyx_L1_error)
+        __pyx_t_13 = __Pyx_PyList_Append(__pyx_v_missing, __pyx_v_name); if (unlikely(__pyx_t_13 == ((int)-1))) __PYX_ERR(0, 129, __pyx_L1_error)
       }
-      __pyx_L16:;
+      __pyx_L10:;
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":129
+      /* "BlazeSudio/orig/graphicsCore/Events.py":125
  *         missing = []
  *         for name in fields:
  *             if name not in values:             # <<<<<<<<<<<<<<
@@ -3937,7 +3746,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
 */
     }
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":128
+    /* "BlazeSudio/orig/graphicsCore/Events.py":124
  * 
  *         missing = []
  *         for name in fields:             # <<<<<<<<<<<<<<
@@ -3945,9 +3754,9 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
  *                 if name in defaults:
 */
   }
-  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":135
+  /* "BlazeSudio/orig/graphicsCore/Events.py":131
  *                     missing.append(name)
  * 
  *         if missing:             # <<<<<<<<<<<<<<
@@ -3956,51 +3765,51 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
 */
   {
     Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_v_missing);
-    if (unlikely(((!CYTHON_ASSUME_SAFE_SIZE) && __pyx_temp < 0))) __PYX_ERR(0, 135, __pyx_L1_error)
+    if (unlikely(((!CYTHON_ASSUME_SAFE_SIZE) && __pyx_temp < 0))) __PYX_ERR(0, 131, __pyx_L1_error)
     __pyx_t_4 = (__pyx_temp != 0);
   }
 
   if (unlikely(__pyx_t_4)) {
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":136
+    /* "BlazeSudio/orig/graphicsCore/Events.py":132
  * 
  *         if missing:
  *             missing_str = ", ".join(missing)             # <<<<<<<<<<<<<<
  *             raise TypeError(f"Missing required arguments: {missing_str}")
  * 
 */
-    __pyx_t_9 = PyUnicode_Join(__pyx_mstate_global->__pyx_kp_u_, __pyx_v_missing); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 136, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_9);
-    __pyx_v_missing_str = ((PyObject*)__pyx_t_9);
-    __pyx_t_9 = 0;
+    __pyx_t_2 = PyUnicode_Join(__pyx_mstate_global->__pyx_kp_u_, __pyx_v_missing); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 132, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_v_missing_str = ((PyObject*)__pyx_t_2);
+    __pyx_t_2 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":137
+    /* "BlazeSudio/orig/graphicsCore/Events.py":133
  *         if missing:
  *             missing_str = ", ".join(missing)
  *             raise TypeError(f"Missing required arguments: {missing_str}")             # <<<<<<<<<<<<<<
  * 
  *         for name in fields:
 */
-    __pyx_t_7 = NULL;
-    __pyx_t_5 = __Pyx_PyUnicode_Unicode(__pyx_v_missing_str); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 137, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Missing_required_arguments, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 137, __pyx_L1_error)
+    __pyx_t_5 = NULL;
+    __pyx_t_6 = __Pyx_PyUnicode_Unicode(__pyx_v_missing_str); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 133, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __pyx_t_9 = __Pyx_PyUnicode_Concat(__pyx_mstate_global->__pyx_kp_u_Missing_required_arguments, __pyx_t_6); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 133, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __pyx_t_10 = 1;
     {
-      PyObject *__pyx_callargs[2] = {__pyx_t_7, __pyx_t_6};
-      __pyx_t_9 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_10, (2-__pyx_t_10) | (__pyx_t_10*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 137, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_9);
+      PyObject *__pyx_callargs[2] = {__pyx_t_5, __pyx_t_9};
+      __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_TypeError)), __pyx_callargs+__pyx_t_10, (2-__pyx_t_10) | (__pyx_t_10*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 133, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
     }
-    __Pyx_Raise(__pyx_t_9, 0, 0, 0);
-    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __PYX_ERR(0, 137, __pyx_L1_error)
+    __Pyx_Raise(__pyx_t_2, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __PYX_ERR(0, 133, __pyx_L1_error)
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":135
+    /* "BlazeSudio/orig/graphicsCore/Events.py":131
  *                     missing.append(name)
  * 
  *         if missing:             # <<<<<<<<<<<<<<
@@ -4009,48 +3818,48 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
 */
   }
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":139
+  /* "BlazeSudio/orig/graphicsCore/Events.py":135
  *             raise TypeError(f"Missing required arguments: {missing_str}")
  * 
  *         for name in fields:             # <<<<<<<<<<<<<<
  *             setattr(self, name, values[name])
  * 
 */
-  if (unlikely(!__pyx_cur_scope->__pyx_v_fields)) { __Pyx_RaiseClosureNameError("fields"); __PYX_ERR(0, 139, __pyx_L1_error) }
+  if (unlikely(!__pyx_cur_scope->__pyx_v_fields)) { __Pyx_RaiseClosureNameError("fields"); __PYX_ERR(0, 135, __pyx_L1_error) }
   if (unlikely(__pyx_cur_scope->__pyx_v_fields == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 139, __pyx_L1_error)
+    __PYX_ERR(0, 135, __pyx_L1_error)
   }
-  __pyx_t_9 = __pyx_cur_scope->__pyx_v_fields; __Pyx_INCREF(__pyx_t_9);
+  __pyx_t_2 = __pyx_cur_scope->__pyx_v_fields; __Pyx_INCREF(__pyx_t_2);
   __pyx_t_1 = 0;
   for (;;) {
     {
-      Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_9);
+      Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_2);
       #if !CYTHON_ASSUME_SAFE_SIZE
-      if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 139, __pyx_L1_error)
+      if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 135, __pyx_L1_error)
       #endif
       if (__pyx_t_1 >= __pyx_temp) break;
     }
-    __pyx_t_6 = __Pyx_PyList_GetItemRefFast(__pyx_t_9, __pyx_t_1, __Pyx_ReferenceSharing_OwnStrongReference);
+    __pyx_t_9 = __Pyx_PyList_GetItemRefFast(__pyx_t_2, __pyx_t_1, __Pyx_ReferenceSharing_OwnStrongReference);
     ++__pyx_t_1;
-    if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 139, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_XDECREF_SET(__pyx_v_name, __pyx_t_6);
-    __pyx_t_6 = 0;
+    if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 135, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+    __Pyx_XDECREF_SET(__pyx_v_name, __pyx_t_9);
+    __pyx_t_9 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":140
+    /* "BlazeSudio/orig/graphicsCore/Events.py":136
  * 
  *         for name in fields:
  *             setattr(self, name, values[name])             # <<<<<<<<<<<<<<
  * 
  *     def __repr__(self):
 */
-    __pyx_t_6 = __Pyx_PyDict_GetItem(__pyx_v_values, __pyx_v_name); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 140, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_15 = PyObject_SetAttr(__pyx_v_self, __pyx_v_name, __pyx_t_6); if (unlikely(__pyx_t_15 == ((int)-1))) __PYX_ERR(0, 140, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __pyx_t_9 = __Pyx_PyDict_GetItem(__pyx_v_values, __pyx_v_name); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 136, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+    __pyx_t_13 = PyObject_SetAttr(__pyx_v_self, __pyx_v_name, __pyx_t_9); if (unlikely(__pyx_t_13 == ((int)-1))) __PYX_ERR(0, 136, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":139
+    /* "BlazeSudio/orig/graphicsCore/Events.py":135
  *             raise TypeError(f"Missing required arguments: {missing_str}")
  * 
  *         for name in fields:             # <<<<<<<<<<<<<<
@@ -4058,12 +3867,12 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
  * 
 */
   }
-  __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":110
+  /* "BlazeSudio/orig/graphicsCore/Events.py":110
  *             defaults[name] = getattr(cls, name)
  * 
- *     def _init(self, *args, **kwargs):             # <<<<<<<<<<<<<<
+ *     def _dc_init(self, *args, **kwargs):             # <<<<<<<<<<<<<<
  *         if len(args) > len(fields):
  *             raise TypeError(
 */
@@ -4077,7 +3886,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
   __Pyx_XDECREF(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_9);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Dataclass._init", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Dataclass._dc_init", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_values);
@@ -4090,7 +3899,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":142
+/* "BlazeSudio/orig/graphicsCore/Events.py":138
  *             setattr(self, name, values[name])
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -4099,15 +3908,15 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_3__repr__(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_9Dataclass_3__repr__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_3__repr__ = {"__repr__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_3__repr__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_3__repr__(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_9Dataclass_3__repr__ = {"__repr__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_9Dataclass_3__repr__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_9Dataclass_3__repr__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -4137,43 +3946,43 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_self,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 142, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 138, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 142, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 138, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "__repr__", 0) < (0)) __PYX_ERR(0, 142, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "__repr__", 0) < (0)) __PYX_ERR(0, 138, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__repr__", 1, 1, 1, i); __PYX_ERR(0, 142, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__repr__", 1, 1, 1, i); __PYX_ERR(0, 138, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 142, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 138, __pyx_L3_error)
     }
     __pyx_v_self = values[0];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__repr__", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 142, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__repr__", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 138, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Dataclass.__repr__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Dataclass.__repr__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_2__repr__(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_9Dataclass_2__repr__(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -4182,9 +3991,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
-static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_8__repr___2generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
+static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_6Events_9Dataclass_8__repr___2generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":143
+/* "BlazeSudio/orig/graphicsCore/Events.py":139
  * 
  *     def __repr__(self):
  *         field_strs = (f"{name}={getattr(self, name)!r}" for name in fields)             # <<<<<<<<<<<<<<
@@ -4192,30 +4001,30 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
  * 
 */
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_8__repr___genexpr(PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *__pyx_cur_scope;
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_9Dataclass_8__repr___genexpr(PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *__pyx_cur_scope;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("genexpr", 0);
-  __pyx_cur_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *)__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr(__pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
+  __pyx_cur_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *)__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr(__pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
   if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *)Py_None);
+    __pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *)Py_None);
     __Pyx_INCREF(Py_None);
-    __PYX_ERR(0, 143, __pyx_L1_error)
+    __PYX_ERR(0, 139, __pyx_L1_error)
   } else {
     __Pyx_GOTREF((PyObject *)__pyx_cur_scope);
   }
-  __pyx_cur_scope->__pyx_outer_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *) __pyx_self;
+  __pyx_cur_scope->__pyx_outer_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *) __pyx_self;
   __Pyx_INCREF((PyObject *)__pyx_cur_scope->__pyx_outer_scope);
   __Pyx_GIVEREF((PyObject *)__pyx_cur_scope->__pyx_outer_scope);
   __pyx_cur_scope->__pyx_genexpr_arg_0 = __pyx_genexpr_arg_0;
   __Pyx_INCREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_8__repr___2generator, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_Dataclass_locals___repr___locals, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat); if (unlikely(!gen)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_10BlazeSudio_12graphicsCore_6Events_9Dataclass_8__repr___2generator, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[0]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_Dataclass_locals___repr___locals, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events); if (unlikely(!gen)) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -4223,7 +4032,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Dataclass.__repr__.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Dataclass.__repr__.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_DECREF((PyObject *)__pyx_cur_scope);
   __Pyx_XGIVEREF(__pyx_r);
@@ -4231,9 +4040,9 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
   return __pyx_r;
 }
 
-static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_8__repr___2generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
+static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_6Events_9Dataclass_8__repr___2generator(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
 {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *__pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *)__pyx_generator->closure);
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *__pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *)__pyx_generator->closure);
   PyObject *__pyx_r = NULL;
   PyObject *__pyx_t_1 = NULL;
   Py_ssize_t __pyx_t_2;
@@ -4256,12 +4065,12 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
   __pyx_L3_first_run:;
   if (unlikely(__pyx_sent_value != Py_None)) {
     if (unlikely(__pyx_sent_value)) PyErr_SetString(PyExc_TypeError, "can't send non-None value to a just-started generator");
-    __PYX_ERR(0, 143, __pyx_L1_error)
+    __PYX_ERR(0, 139, __pyx_L1_error)
   }
-  if (unlikely(!__pyx_cur_scope->__pyx_genexpr_arg_0)) { __Pyx_RaiseUnboundLocalError(".0"); __PYX_ERR(0, 143, __pyx_L1_error) }
+  if (unlikely(!__pyx_cur_scope->__pyx_genexpr_arg_0)) { __Pyx_RaiseUnboundLocalError(".0"); __PYX_ERR(0, 139, __pyx_L1_error) }
   if (unlikely(__pyx_cur_scope->__pyx_genexpr_arg_0 == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 143, __pyx_L1_error)
+    __PYX_ERR(0, 139, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_cur_scope->__pyx_genexpr_arg_0; __Pyx_INCREF(__pyx_t_1);
   __pyx_t_2 = 0;
@@ -4269,34 +4078,34 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
     {
       Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_1);
       #if !CYTHON_ASSUME_SAFE_SIZE
-      if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 143, __pyx_L1_error)
+      if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 139, __pyx_L1_error)
       #endif
       if (__pyx_t_2 >= __pyx_temp) break;
     }
     __pyx_t_3 = __Pyx_PyList_GetItemRefFast(__pyx_t_1, __pyx_t_2, __Pyx_ReferenceSharing_OwnStrongReference);
     ++__pyx_t_2;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 143, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_XGOTREF(__pyx_cur_scope->__pyx_v_name);
     __Pyx_XDECREF_SET(__pyx_cur_scope->__pyx_v_name, __pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_FormatSimple(__pyx_cur_scope->__pyx_v_name, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_FormatSimple(__pyx_cur_scope->__pyx_v_name, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_self)) { __Pyx_RaiseClosureNameError("self"); __PYX_ERR(0, 143, __pyx_L1_error) }
+    if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_self)) { __Pyx_RaiseClosureNameError("self"); __PYX_ERR(0, 139, __pyx_L1_error) }
     __pyx_t_4 = __pyx_cur_scope->__pyx_outer_scope->__pyx_v_self;
     __Pyx_INCREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_GetAttr(__pyx_t_4, __pyx_cur_scope->__pyx_v_name); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_GetAttr(__pyx_t_4, __pyx_cur_scope->__pyx_v_name); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyObject_FormatSimpleAndDecref(PyObject_Repr(__pyx_t_5), __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_FormatSimpleAndDecref(PyObject_Repr(__pyx_t_5), __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __pyx_t_6[0] = __pyx_t_3;
     __pyx_t_6[1] = __pyx_mstate_global->__pyx_kp_u__2;
     __pyx_t_6[2] = __pyx_t_4;
     __pyx_t_5 = __Pyx_PyUnicode_Join(__pyx_t_6, 3, __Pyx_PyUnicode_GET_LENGTH(__pyx_t_3) + 1 + __Pyx_PyUnicode_GET_LENGTH(__pyx_t_4), 127 | __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) | __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_4));
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 143, __pyx_L1_error)
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 139, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -4316,7 +4125,7 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
     __pyx_cur_scope->__pyx_t_0 = 0;
     __Pyx_XGOTREF(__pyx_t_1);
     __pyx_t_2 = __pyx_cur_scope->__pyx_t_1;
-    if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 143, __pyx_L1_error)
+    if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 139, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   CYTHON_MAYBE_UNUSED_VAR(__pyx_cur_scope);
@@ -4344,7 +4153,7 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":142
+/* "BlazeSudio/orig/graphicsCore/Events.py":138
  *             setattr(self, name, values[name])
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -4352,10 +4161,10 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
  *         return f"{cls.__name__}({', '.join(field_strs)})"
 */
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_2__repr__(PyObject *__pyx_self, PyObject *__pyx_v_self) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *__pyx_cur_scope;
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_9Dataclass_2__repr__(PyObject *__pyx_self, PyObject *__pyx_v_self) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *__pyx_cur_scope;
   PyObject *__pyx_v_field_strs = NULL;
-  PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_8__repr___2generator = 0;
+  PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_6Events_9Dataclass_8__repr___2generator = 0;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -4366,35 +4175,35 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__repr__", 0);
-  __pyx_cur_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *)__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__(__pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__, __pyx_mstate_global->__pyx_empty_tuple, NULL);
+  __pyx_cur_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *)__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__(__pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__, __pyx_mstate_global->__pyx_empty_tuple, NULL);
   if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *)Py_None);
+    __pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *)Py_None);
     __Pyx_INCREF(Py_None);
-    __PYX_ERR(0, 142, __pyx_L1_error)
+    __PYX_ERR(0, 138, __pyx_L1_error)
   } else {
     __Pyx_GOTREF((PyObject *)__pyx_cur_scope);
   }
-  __pyx_cur_scope->__pyx_outer_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *) __pyx_self;
+  __pyx_cur_scope->__pyx_outer_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *) __pyx_self;
   __Pyx_INCREF((PyObject *)__pyx_cur_scope->__pyx_outer_scope);
   __Pyx_GIVEREF((PyObject *)__pyx_cur_scope->__pyx_outer_scope);
   __pyx_cur_scope->__pyx_v_self = __pyx_v_self;
   __Pyx_INCREF(__pyx_cur_scope->__pyx_v_self);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_v_self);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":143
+  /* "BlazeSudio/orig/graphicsCore/Events.py":139
  * 
  *     def __repr__(self):
  *         field_strs = (f"{name}={getattr(self, name)!r}" for name in fields)             # <<<<<<<<<<<<<<
  *         return f"{cls.__name__}({', '.join(field_strs)})"
  * 
 */
-  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_fields)) { __Pyx_RaiseClosureNameError("fields"); __PYX_ERR(0, 143, __pyx_L1_error) }
-  __pyx_t_1 = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_8__repr___genexpr(((PyObject*)__pyx_cur_scope), __pyx_cur_scope->__pyx_outer_scope->__pyx_v_fields); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 143, __pyx_L1_error)
+  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_fields)) { __Pyx_RaiseClosureNameError("fields"); __PYX_ERR(0, 139, __pyx_L1_error) }
+  __pyx_t_1 = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_9Dataclass_8__repr___genexpr(((PyObject*)__pyx_cur_scope), __pyx_cur_scope->__pyx_outer_scope->__pyx_v_fields); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 139, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_field_strs = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":144
+  /* "BlazeSudio/orig/graphicsCore/Events.py":140
  *     def __repr__(self):
  *         field_strs = (f"{name}={getattr(self, name)!r}" for name in fields)
  *         return f"{cls.__name__}({', '.join(field_strs)})"             # <<<<<<<<<<<<<<
@@ -4402,20 +4211,20 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
  *     new_namespace = {}
 */
   __Pyx_XDECREF(__pyx_r);
-  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_cls)) { __Pyx_RaiseClosureNameError("cls"); __PYX_ERR(0, 144, __pyx_L1_error) }
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_outer_scope->__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_name); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 144, __pyx_L1_error)
+  if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_cls)) { __Pyx_RaiseClosureNameError("cls"); __PYX_ERR(0, 140, __pyx_L1_error) }
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_outer_scope->__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_name); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 140, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_FormatSimple(__pyx_t_1, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 144, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_FormatSimple(__pyx_t_1, __pyx_mstate_global->__pyx_empty_unicode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 140, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyUnicode_Join(__pyx_mstate_global->__pyx_kp_u_, __pyx_v_field_strs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 144, __pyx_L1_error)
+  __pyx_t_1 = PyUnicode_Join(__pyx_mstate_global->__pyx_kp_u_, __pyx_v_field_strs); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 140, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_3[0] = __pyx_t_2;
   __pyx_t_3[1] = __pyx_mstate_global->__pyx_kp_u__3;
   __pyx_t_3[2] = __pyx_t_1;
   __pyx_t_3[3] = __pyx_mstate_global->__pyx_kp_u__4;
   __pyx_t_4 = __Pyx_PyUnicode_Join(__pyx_t_3, 4, __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2) + 1 * 2 + __Pyx_PyUnicode_GET_LENGTH(__pyx_t_1), 127 | __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) | __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_1));
-  if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 144, __pyx_L1_error)
+  if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 140, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -4423,7 +4232,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":142
+  /* "BlazeSudio/orig/graphicsCore/Events.py":138
  *             setattr(self, name, values[name])
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
@@ -4436,18 +4245,18 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Dataclass.__repr__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Dataclass.__repr__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_field_strs);
-  __Pyx_XDECREF(__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_8__repr___2generator);
+  __Pyx_XDECREF(__pyx_gb_10BlazeSudio_12graphicsCore_6Events_9Dataclass_8__repr___2generator);
   __Pyx_DECREF((PyObject *)__pyx_cur_scope);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":98
+/* "BlazeSudio/orig/graphicsCore/Events.py":98
  * 
  * T = TypeVar("T")
  * def Dataclass(cls: T) -> T:             # <<<<<<<<<<<<<<
@@ -4455,13 +4264,13 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Data
  *     fields = list(annotations.keys())
 */
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Dataclass(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *__pyx_cur_scope;
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_Dataclass(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *__pyx_cur_scope;
   PyObject *__pyx_v_annotations = NULL;
   PyObject *__pyx_v_c = NULL;
   PyObject *__pyx_v_slots = NULL;
   PyObject *__pyx_v_name = NULL;
-  PyObject *__pyx_v__init = 0;
+  PyObject *__pyx_v__dc_init = 0;
   PyObject *__pyx_v___repr__ = 0;
   PyObject *__pyx_v_new_namespace = NULL;
   PyObject *__pyx_v_value = NULL;
@@ -4486,9 +4295,9 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("Dataclass", 0);
-  __pyx_cur_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *)__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass(__pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass, __pyx_mstate_global->__pyx_empty_tuple, NULL);
+  __pyx_cur_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *)__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass(__pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass, __pyx_mstate_global->__pyx_empty_tuple, NULL);
   if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *)Py_None);
+    __pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *)Py_None);
     __Pyx_INCREF(Py_None);
     __PYX_ERR(0, 98, __pyx_L1_error)
   } else {
@@ -4498,7 +4307,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   __Pyx_INCREF(__pyx_cur_scope->__pyx_v_cls);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_v_cls);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":99
+  /* "BlazeSudio/orig/graphicsCore/Events.py":99
  * T = TypeVar("T")
  * def Dataclass(cls: T) -> T:
  *     annotations = getattr(cls, '__annotations__', {})             # <<<<<<<<<<<<<<
@@ -4516,7 +4325,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   __pyx_v_annotations = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":100
+  /* "BlazeSudio/orig/graphicsCore/Events.py":100
  * def Dataclass(cls: T) -> T:
  *     annotations = getattr(cls, '__annotations__', {})
  *     fields = list(annotations.keys())             # <<<<<<<<<<<<<<
@@ -4540,7 +4349,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   __pyx_cur_scope->__pyx_v_fields = ((PyObject*)__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":101
+  /* "BlazeSudio/orig/graphicsCore/Events.py":101
  *     annotations = getattr(cls, '__annotations__', {})
  *     fields = list(annotations.keys())
  *     for c in cls.__bases__:             # <<<<<<<<<<<<<<
@@ -4602,7 +4411,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
     __Pyx_XDECREF_SET(__pyx_v_c, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":102
+    /* "BlazeSudio/orig/graphicsCore/Events.py":102
  *     fields = list(annotations.keys())
  *     for c in cls.__bases__:
  *         fields.extend(list(getattr(c, '__annotations__', {}).keys()))             # <<<<<<<<<<<<<<
@@ -4631,7 +4440,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
     __pyx_t_9 = __Pyx_PyList_Extend(__pyx_cur_scope->__pyx_v_fields, __pyx_t_8); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(0, 102, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":101
+    /* "BlazeSudio/orig/graphicsCore/Events.py":101
  *     annotations = getattr(cls, '__annotations__', {})
  *     fields = list(annotations.keys())
  *     for c in cls.__bases__:             # <<<<<<<<<<<<<<
@@ -4641,7 +4450,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":103
+  /* "BlazeSudio/orig/graphicsCore/Events.py":103
  *     for c in cls.__bases__:
  *         fields.extend(list(getattr(c, '__annotations__', {}).keys()))
  *     slots = tuple(fields)             # <<<<<<<<<<<<<<
@@ -4653,7 +4462,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   __pyx_v_slots = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":105
+  /* "BlazeSudio/orig/graphicsCore/Events.py":105
  *     slots = tuple(fields)
  * 
  *     defaults = {}             # <<<<<<<<<<<<<<
@@ -4666,7 +4475,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   __pyx_cur_scope->__pyx_v_defaults = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":106
+  /* "BlazeSudio/orig/graphicsCore/Events.py":106
  * 
  *     defaults = {}
  *     for name in fields:             # <<<<<<<<<<<<<<
@@ -4690,7 +4499,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
     __Pyx_XDECREF_SET(__pyx_v_name, __pyx_t_8);
     __pyx_t_8 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":107
+    /* "BlazeSudio/orig/graphicsCore/Events.py":107
  *     defaults = {}
  *     for name in fields:
  *         if hasattr(cls, name):             # <<<<<<<<<<<<<<
@@ -4703,12 +4512,12 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     if (__pyx_t_10) {
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":108
+      /* "BlazeSudio/orig/graphicsCore/Events.py":108
  *     for name in fields:
  *         if hasattr(cls, name):
  *             defaults[name] = getattr(cls, name)             # <<<<<<<<<<<<<<
  * 
- *     def _init(self, *args, **kwargs):
+ *     def _dc_init(self, *args, **kwargs):
 */
       __pyx_t_8 = __pyx_cur_scope->__pyx_v_cls;
       __Pyx_INCREF(__pyx_t_8);
@@ -4718,7 +4527,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
       if (unlikely((PyDict_SetItem(__pyx_cur_scope->__pyx_v_defaults, __pyx_v_name, __pyx_t_2) < 0))) __PYX_ERR(0, 108, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":107
+      /* "BlazeSudio/orig/graphicsCore/Events.py":107
  *     defaults = {}
  *     for name in fields:
  *         if hasattr(cls, name):             # <<<<<<<<<<<<<<
@@ -4727,7 +4536,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
 */
     }
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":106
+    /* "BlazeSudio/orig/graphicsCore/Events.py":106
  * 
  *     defaults = {}
  *     for name in fields:             # <<<<<<<<<<<<<<
@@ -4737,43 +4546,43 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":110
+  /* "BlazeSudio/orig/graphicsCore/Events.py":110
  *             defaults[name] = getattr(cls, name)
  * 
- *     def _init(self, *args, **kwargs):             # <<<<<<<<<<<<<<
+ *     def _dc_init(self, *args, **kwargs):             # <<<<<<<<<<<<<<
  *         if len(args) > len(fields):
  *             raise TypeError(
 */
-  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_1_init, ((PyObject*)__pyx_cur_scope), __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 110, __pyx_L1_error)
+  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_9Dataclass_1_dc_init, ((PyObject*)__pyx_cur_scope), __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 110, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_v__init = __pyx_t_3;
+  __pyx_v__dc_init = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":142
+  /* "BlazeSudio/orig/graphicsCore/Events.py":138
  *             setattr(self, name, values[name])
  * 
  *     def __repr__(self):             # <<<<<<<<<<<<<<
  *         field_strs = (f"{name}={getattr(self, name)!r}" for name in fields)
  *         return f"{cls.__name__}({', '.join(field_strs)})"
 */
-  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_9Dataclass_3__repr__, ((PyObject*)__pyx_cur_scope), __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 142, __pyx_L1_error)
+  __pyx_t_3 = PyCFunction_NewEx(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_9Dataclass_3__repr__, ((PyObject*)__pyx_cur_scope), __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 138, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_v___repr__ = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":146
+  /* "BlazeSudio/orig/graphicsCore/Events.py":142
  *         return f"{cls.__name__}({', '.join(field_strs)})"
  * 
  *     new_namespace = {}             # <<<<<<<<<<<<<<
  *     for name, value in cls.__dict__.items():
  *         if name in ('__dict__', '__weakref__', '__slots__'):
 */
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 146, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 142, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_v_new_namespace = ((PyObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":147
+  /* "BlazeSudio/orig/graphicsCore/Events.py":143
  * 
  *     new_namespace = {}
  *     for name, value in cls.__dict__.items():             # <<<<<<<<<<<<<<
@@ -4781,13 +4590,13 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
  *             continue
 */
   __pyx_t_5 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_dict); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_dict); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 143, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (unlikely(__pyx_t_2 == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "items");
-    __PYX_ERR(0, 147, __pyx_L1_error)
+    __PYX_ERR(0, 143, __pyx_L1_error)
   }
-  __pyx_t_8 = __Pyx_dict_iterator(__pyx_t_2, 0, __pyx_mstate_global->__pyx_n_u_items, (&__pyx_t_11), (&__pyx_t_12)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 147, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_dict_iterator(__pyx_t_2, 0, __pyx_mstate_global->__pyx_n_u_items, (&__pyx_t_11), (&__pyx_t_12)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 143, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_XDECREF(__pyx_t_3);
@@ -4796,7 +4605,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   while (1) {
     __pyx_t_13 = __Pyx_dict_iter_next(__pyx_t_3, __pyx_t_11, &__pyx_t_5, &__pyx_t_8, &__pyx_t_2, NULL, __pyx_t_12);
     if (unlikely(__pyx_t_13 == 0)) break;
-    if (unlikely(__pyx_t_13 == -1)) __PYX_ERR(0, 147, __pyx_L1_error)
+    if (unlikely(__pyx_t_13 == -1)) __PYX_ERR(0, 143, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_XDECREF_SET(__pyx_v_name, __pyx_t_8);
@@ -4804,7 +4613,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
     __Pyx_XDECREF_SET(__pyx_v_value, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":148
+    /* "BlazeSudio/orig/graphicsCore/Events.py":144
  *     new_namespace = {}
  *     for name, value in cls.__dict__.items():
  *         if name in ('__dict__', '__weakref__', '__slots__'):             # <<<<<<<<<<<<<<
@@ -4813,26 +4622,26 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
 */
     __Pyx_INCREF(__pyx_v_name);
     __pyx_t_2 = __pyx_v_name;
-    __pyx_t_14 = (__Pyx_PyUnicode_Equals(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_dict, Py_EQ)); if (unlikely((__pyx_t_14 < 0))) __PYX_ERR(0, 148, __pyx_L1_error)
+    __pyx_t_14 = (__Pyx_PyUnicode_Equals(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_dict, Py_EQ)); if (unlikely((__pyx_t_14 < 0))) __PYX_ERR(0, 144, __pyx_L1_error)
     if (!__pyx_t_14) {
     } else {
       __pyx_t_10 = __pyx_t_14;
       goto __pyx_L13_bool_binop_done;
     }
-    __pyx_t_14 = (__Pyx_PyUnicode_Equals(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_weakref, Py_EQ)); if (unlikely((__pyx_t_14 < 0))) __PYX_ERR(0, 148, __pyx_L1_error)
+    __pyx_t_14 = (__Pyx_PyUnicode_Equals(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_weakref, Py_EQ)); if (unlikely((__pyx_t_14 < 0))) __PYX_ERR(0, 144, __pyx_L1_error)
     if (!__pyx_t_14) {
     } else {
       __pyx_t_10 = __pyx_t_14;
       goto __pyx_L13_bool_binop_done;
     }
-    __pyx_t_14 = (__Pyx_PyUnicode_Equals(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_slots, Py_EQ)); if (unlikely((__pyx_t_14 < 0))) __PYX_ERR(0, 148, __pyx_L1_error)
+    __pyx_t_14 = (__Pyx_PyUnicode_Equals(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_slots, Py_EQ)); if (unlikely((__pyx_t_14 < 0))) __PYX_ERR(0, 144, __pyx_L1_error)
     __pyx_t_10 = __pyx_t_14;
     __pyx_L13_bool_binop_done:;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_14 = __pyx_t_10;
     if (__pyx_t_14) {
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":149
+      /* "BlazeSudio/orig/graphicsCore/Events.py":145
  *     for name, value in cls.__dict__.items():
  *         if name in ('__dict__', '__weakref__', '__slots__'):
  *             continue             # <<<<<<<<<<<<<<
@@ -4841,7 +4650,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
 */
       goto __pyx_L10_continue;
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":148
+      /* "BlazeSudio/orig/graphicsCore/Events.py":144
  *     new_namespace = {}
  *     for name, value in cls.__dict__.items():
  *         if name in ('__dict__', '__weakref__', '__slots__'):             # <<<<<<<<<<<<<<
@@ -4850,17 +4659,17 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
 */
     }
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":150
+    /* "BlazeSudio/orig/graphicsCore/Events.py":146
  *         if name in ('__dict__', '__weakref__', '__slots__'):
  *             continue
  *         if name in fields:             # <<<<<<<<<<<<<<
  *             continue
  *         new_namespace[name] = value
 */
-    __pyx_t_14 = (__Pyx_PySequence_ContainsTF(__pyx_v_name, __pyx_cur_scope->__pyx_v_fields, Py_EQ)); if (unlikely((__pyx_t_14 < 0))) __PYX_ERR(0, 150, __pyx_L1_error)
+    __pyx_t_14 = (__Pyx_PySequence_ContainsTF(__pyx_v_name, __pyx_cur_scope->__pyx_v_fields, Py_EQ)); if (unlikely((__pyx_t_14 < 0))) __PYX_ERR(0, 146, __pyx_L1_error)
     if (__pyx_t_14) {
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":151
+      /* "BlazeSudio/orig/graphicsCore/Events.py":147
  *             continue
  *         if name in fields:
  *             continue             # <<<<<<<<<<<<<<
@@ -4869,7 +4678,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
 */
       goto __pyx_L10_continue;
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":150
+      /* "BlazeSudio/orig/graphicsCore/Events.py":146
  *         if name in ('__dict__', '__weakref__', '__slots__'):
  *             continue
  *         if name in fields:             # <<<<<<<<<<<<<<
@@ -4878,45 +4687,45 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
 */
     }
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":152
+    /* "BlazeSudio/orig/graphicsCore/Events.py":148
  *         if name in fields:
  *             continue
  *         new_namespace[name] = value             # <<<<<<<<<<<<<<
  * 
  *     new_namespace['__slots__'] = slots
 */
-    if (unlikely((PyDict_SetItem(__pyx_v_new_namespace, __pyx_v_name, __pyx_v_value) < 0))) __PYX_ERR(0, 152, __pyx_L1_error)
+    if (unlikely((PyDict_SetItem(__pyx_v_new_namespace, __pyx_v_name, __pyx_v_value) < 0))) __PYX_ERR(0, 148, __pyx_L1_error)
     __pyx_L10_continue:;
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":154
+  /* "BlazeSudio/orig/graphicsCore/Events.py":150
  *         new_namespace[name] = value
  * 
  *     new_namespace['__slots__'] = slots             # <<<<<<<<<<<<<<
- *     new_namespace['_init'] = _init
+ *     new_namespace['_dc_init'] = _dc_init
  *     new_namespace['__annotations__'] = MappingProxyType(annotations)
 */
-  if (unlikely((PyDict_SetItem(__pyx_v_new_namespace, __pyx_mstate_global->__pyx_n_u_slots, __pyx_v_slots) < 0))) __PYX_ERR(0, 154, __pyx_L1_error)
+  if (unlikely((PyDict_SetItem(__pyx_v_new_namespace, __pyx_mstate_global->__pyx_n_u_slots, __pyx_v_slots) < 0))) __PYX_ERR(0, 150, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":155
+  /* "BlazeSudio/orig/graphicsCore/Events.py":151
  * 
  *     new_namespace['__slots__'] = slots
- *     new_namespace['_init'] = _init             # <<<<<<<<<<<<<<
+ *     new_namespace['_dc_init'] = _dc_init             # <<<<<<<<<<<<<<
  *     new_namespace['__annotations__'] = MappingProxyType(annotations)
  *     new_namespace['__repr__'] = __repr__
 */
-  if (unlikely((PyDict_SetItem(__pyx_v_new_namespace, __pyx_mstate_global->__pyx_n_u_init, __pyx_v__init) < 0))) __PYX_ERR(0, 155, __pyx_L1_error)
+  if (unlikely((PyDict_SetItem(__pyx_v_new_namespace, __pyx_mstate_global->__pyx_n_u_dc_init, __pyx_v__dc_init) < 0))) __PYX_ERR(0, 151, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":156
+  /* "BlazeSudio/orig/graphicsCore/Events.py":152
  *     new_namespace['__slots__'] = slots
- *     new_namespace['_init'] = _init
+ *     new_namespace['_dc_init'] = _dc_init
  *     new_namespace['__annotations__'] = MappingProxyType(annotations)             # <<<<<<<<<<<<<<
  *     new_namespace['__repr__'] = __repr__
  * 
 */
   __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_MappingProxyType); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 156, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_MappingProxyType); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 152, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __pyx_t_4 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -4935,22 +4744,22 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
     __pyx_t_3 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_8, __pyx_callargs+__pyx_t_4, (2-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 156, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 152, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
   }
-  if (unlikely((PyDict_SetItem(__pyx_v_new_namespace, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_3) < 0))) __PYX_ERR(0, 156, __pyx_L1_error)
+  if (unlikely((PyDict_SetItem(__pyx_v_new_namespace, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_3) < 0))) __PYX_ERR(0, 152, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":157
- *     new_namespace['_init'] = _init
+  /* "BlazeSudio/orig/graphicsCore/Events.py":153
+ *     new_namespace['_dc_init'] = _dc_init
  *     new_namespace['__annotations__'] = MappingProxyType(annotations)
  *     new_namespace['__repr__'] = __repr__             # <<<<<<<<<<<<<<
  * 
  *     NewCls = type(cls.__name__, cls.__bases__, new_namespace)
 */
-  if (unlikely((PyDict_SetItem(__pyx_v_new_namespace, __pyx_mstate_global->__pyx_n_u_repr, __pyx_v___repr__) < 0))) __PYX_ERR(0, 157, __pyx_L1_error)
+  if (unlikely((PyDict_SetItem(__pyx_v_new_namespace, __pyx_mstate_global->__pyx_n_u_repr, __pyx_v___repr__) < 0))) __PYX_ERR(0, 153, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":159
+  /* "BlazeSudio/orig/graphicsCore/Events.py":155
  *     new_namespace['__repr__'] = __repr__
  * 
  *     NewCls = type(cls.__name__, cls.__bases__, new_namespace)             # <<<<<<<<<<<<<<
@@ -4958,9 +4767,9 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
  * 
 */
   __pyx_t_8 = NULL;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_name); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 159, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_name); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_bases); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 159, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_cur_scope->__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_bases); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_4 = 1;
   {
@@ -4969,13 +4778,13 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 159, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 155, __pyx_L1_error)
     __Pyx_GOTREF((PyObject *)__pyx_t_3);
   }
   __pyx_v_NewCls = ((PyTypeObject*)__pyx_t_3);
   __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":160
+  /* "BlazeSudio/orig/graphicsCore/Events.py":156
  * 
  *     NewCls = type(cls.__name__, cls.__bases__, new_namespace)
  *     return NewCls             # <<<<<<<<<<<<<<
@@ -4987,7 +4796,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   __pyx_r = ((PyObject *)__pyx_v_NewCls);
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":98
+  /* "BlazeSudio/orig/graphicsCore/Events.py":98
  * 
  * T = TypeVar("T")
  * def Dataclass(cls: T) -> T:             # <<<<<<<<<<<<<<
@@ -5002,14 +4811,14 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_7);
   __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Dataclass", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Dataclass", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_annotations);
   __Pyx_XDECREF(__pyx_v_c);
   __Pyx_XDECREF(__pyx_v_slots);
   __Pyx_XDECREF(__pyx_v_name);
-  __Pyx_XDECREF(__pyx_v__init);
+  __Pyx_XDECREF(__pyx_v__dc_init);
   __Pyx_XDECREF(__pyx_v___repr__);
   __Pyx_XDECREF(__pyx_v_new_namespace);
   __Pyx_XDECREF(__pyx_v_value);
@@ -5020,7 +4829,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":167
+/* "BlazeSudio/orig/graphicsCore/Events.py":163
  *     typ: int
  * 
  *     def __new__(cls, var: 'Event', typ: int = None) -> Self:             # <<<<<<<<<<<<<<
@@ -5029,16 +4838,16 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_Datac
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_1__new__(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_1__new__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event___new__, "\n        Check and type convert to an Event type\n\n        This checks if the input `var` is of a type and returns the var if it is or False if it is not.\n\n        If `typ` is set it checks if the type of the object is like the type specified,\n        and if unset it checks against all the types this class can contain.\n        `typ` must be a type that can be found in this class.\n\n        A type that is 'like' this is e.g. if this class handled `ContrDevConnect` events, you could specify type `ContrDevice`.\n\n        Example usage: for checking if the event `event` is an escape key with type hinting:\n        ```py\n        if (keyev := KeyEvent(event, EvTyp.KeyDown)) and keyev.key == 'Escape':\n            ... # Can use keyev here for type hinting\n        ```\n        ");
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_1__new__ = {"__new__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_1__new__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event___new__};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_1__new__(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_6Events_5Event___new__, "\n        Check and type convert to an Event type\n\n        This checks if the input `var` is of a type and returns the var if it is or False if it is not.\n\n        If `typ` is set it checks if the type of the object is like the type specified,\n        and if unset it checks against all the types this class can contain.\n        `typ` must be a type that can be found in this class.\n\n        A type that is 'like' this is e.g. if this class handled `ContrDevConnect` events, you could specify type `ContrDevice`.\n\n        Example usage: for checking if the event `event` is an escape key with type hinting:\n        ```py\n        if (keyev := KeyEvent(event, EvTyp.KeyDown)) and keyev.key == 'Escape':\n            ... # Can use keyev here for type hinting\n        ```\n        ");
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_5Event_1__new__ = {"__new__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_1__new__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_6Events_5Event___new__};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_1__new__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5070,41 +4879,41 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_cls,&__pyx_mstate_global->__pyx_n_u_var,&__pyx_mstate_global->__pyx_n_u_typ,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 167, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 163, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 167, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 163, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 167, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 163, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 167, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 163, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "__new__", 0) < (0)) __PYX_ERR(0, 167, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "__new__", 0) < (0)) __PYX_ERR(0, 163, __pyx_L3_error)
       if (!values[2]) values[2] = __Pyx_NewRef(((PyObject*)Py_None));
       for (Py_ssize_t i = __pyx_nargs; i < 2; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__new__", 0, 2, 3, i); __PYX_ERR(0, 167, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__new__", 0, 2, 3, i); __PYX_ERR(0, 163, __pyx_L3_error) }
       }
     } else {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 167, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 163, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 167, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 163, __pyx_L3_error)
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 167, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 163, __pyx_L3_error)
         break;
         default: goto __pyx_L5_argtuple_error;
       }
@@ -5112,24 +4921,24 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     }
     __pyx_v_cls = values[0];
     __pyx_v_var = values[1];
-    if (__Pyx_PyInt_FromNumber(&values[2], "typ", 1) < (0)) __PYX_ERR(0, 167, __pyx_L3_error)
+    if (__Pyx_PyInt_FromNumber(&values[2], "typ", 1) < (0)) __PYX_ERR(0, 163, __pyx_L3_error)
     __pyx_v_typ = ((PyObject*)values[2]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__new__", 0, 2, 3, __pyx_nargs); __PYX_ERR(0, 167, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__new__", 0, 2, 3, __pyx_nargs); __PYX_ERR(0, 163, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Event.__new__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Event.__new__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_typ), (&PyLong_Type), 1, "typ", 2))) __PYX_ERR(0, 167, __pyx_L1_error)
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event___new__(__pyx_self, __pyx_v_cls, __pyx_v_var, __pyx_v_typ);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_typ), (&PyLong_Type), 1, "typ", 2))) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event___new__(__pyx_self, __pyx_v_cls, __pyx_v_var, __pyx_v_typ);
 
   /* function exit code */
   goto __pyx_L0;
@@ -5147,9 +4956,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
-static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7__new___2generator1(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
+static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_6Events_5Event_7__new___2generator1(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":189
+/* "BlazeSudio/orig/graphicsCore/Events.py":185
  *                 return False
  *             return var
  *         if not any((k & typ)==typ for k in cls._types.values()):             # <<<<<<<<<<<<<<
@@ -5157,30 +4966,30 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
  *                 'Input type must be avaliable in this class, but is not!'
 */
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7__new___genexpr(PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *__pyx_cur_scope;
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_7__new___genexpr(PyObject *__pyx_self, PyObject *__pyx_genexpr_arg_0) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *__pyx_cur_scope;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("genexpr", 0);
-  __pyx_cur_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *)__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr(__pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
+  __pyx_cur_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *)__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr(__pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr, __pyx_mstate_global->__pyx_empty_tuple, NULL);
   if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *)Py_None);
+    __pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *)Py_None);
     __Pyx_INCREF(Py_None);
-    __PYX_ERR(0, 189, __pyx_L1_error)
+    __PYX_ERR(0, 185, __pyx_L1_error)
   } else {
     __Pyx_GOTREF((PyObject *)__pyx_cur_scope);
   }
-  __pyx_cur_scope->__pyx_outer_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ *) __pyx_self;
+  __pyx_cur_scope->__pyx_outer_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ *) __pyx_self;
   __Pyx_INCREF((PyObject *)__pyx_cur_scope->__pyx_outer_scope);
   __Pyx_GIVEREF((PyObject *)__pyx_cur_scope->__pyx_outer_scope);
   __pyx_cur_scope->__pyx_genexpr_arg_0 = __pyx_genexpr_arg_0;
   __Pyx_INCREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_genexpr_arg_0);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7__new___2generator1, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_Event___new___locals_genexpr, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat); if (unlikely(!gen)) __PYX_ERR(0, 189, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_10BlazeSudio_12graphicsCore_6Events_5Event_7__new___2generator1, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[1]), (PyObject *) __pyx_cur_scope, __pyx_mstate_global->__pyx_n_u_genexpr, __pyx_mstate_global->__pyx_n_u_Event___new___locals_genexpr, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events); if (unlikely(!gen)) __PYX_ERR(0, 185, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -5188,7 +4997,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Event.__new__.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Event.__new__.genexpr", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __Pyx_DECREF((PyObject *)__pyx_cur_scope);
   __Pyx_XGIVEREF(__pyx_r);
@@ -5196,9 +5005,9 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   return __pyx_r;
 }
 
-static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7__new___2generator1(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
+static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_6Events_5Event_7__new___2generator1(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value) /* generator body */
 {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *__pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *)__pyx_generator->closure);
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *__pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *)__pyx_generator->closure);
   PyObject *__pyx_r = NULL;
   PyObject *__pyx_t_1 = NULL;
   Py_ssize_t __pyx_t_2;
@@ -5220,14 +5029,14 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
     return NULL;
   }
   __pyx_L3_first_run:;
-  if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 189, __pyx_L1_error)
+  if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 185, __pyx_L1_error)
   __pyx_t_2 = 0;
-  if (unlikely(!__pyx_cur_scope->__pyx_genexpr_arg_0)) { __Pyx_RaiseUnboundLocalError(".0"); __PYX_ERR(0, 189, __pyx_L1_error) }
+  if (unlikely(!__pyx_cur_scope->__pyx_genexpr_arg_0)) { __Pyx_RaiseUnboundLocalError(".0"); __PYX_ERR(0, 185, __pyx_L1_error) }
   if (unlikely(__pyx_cur_scope->__pyx_genexpr_arg_0 == Py_None)) {
     PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "values");
-    __PYX_ERR(0, 189, __pyx_L1_error)
+    __PYX_ERR(0, 185, __pyx_L1_error)
   }
-  __pyx_t_5 = __Pyx_dict_iterator(__pyx_cur_scope->__pyx_genexpr_arg_0, 0, __pyx_mstate_global->__pyx_n_u_values, (&__pyx_t_3), (&__pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_dict_iterator(__pyx_cur_scope->__pyx_genexpr_arg_0, 0, __pyx_mstate_global->__pyx_n_u_values, (&__pyx_t_3), (&__pyx_t_4)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_1);
   __pyx_t_1 = __pyx_t_5;
@@ -5235,19 +5044,19 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   while (1) {
     __pyx_t_6 = __Pyx_dict_iter_next(__pyx_t_1, __pyx_t_3, &__pyx_t_2, NULL, &__pyx_t_5, NULL, __pyx_t_4);
     if (unlikely(__pyx_t_6 == 0)) break;
-    if (unlikely(__pyx_t_6 == -1)) __PYX_ERR(0, 189, __pyx_L1_error)
+    if (unlikely(__pyx_t_6 == -1)) __PYX_ERR(0, 185, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_XGOTREF(__pyx_cur_scope->__pyx_v_k);
     __Pyx_XDECREF_SET(__pyx_cur_scope->__pyx_v_k, __pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_5);
     __pyx_t_5 = 0;
-    if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_typ)) { __Pyx_RaiseClosureNameError("typ"); __PYX_ERR(0, 189, __pyx_L1_error) }
-    __pyx_t_5 = PyNumber_And(__pyx_cur_scope->__pyx_v_k, __pyx_cur_scope->__pyx_outer_scope->__pyx_v_typ); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 189, __pyx_L1_error)
+    if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_typ)) { __Pyx_RaiseClosureNameError("typ"); __PYX_ERR(0, 185, __pyx_L1_error) }
+    __pyx_t_5 = PyNumber_And(__pyx_cur_scope->__pyx_v_k, __pyx_cur_scope->__pyx_outer_scope->__pyx_v_typ); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 185, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_typ)) { __Pyx_RaiseClosureNameError("typ"); __PYX_ERR(0, 189, __pyx_L1_error) }
-    __pyx_t_7 = PyObject_RichCompare(__pyx_t_5, __pyx_cur_scope->__pyx_outer_scope->__pyx_v_typ, Py_EQ); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 189, __pyx_L1_error)
+    if (unlikely(!__pyx_cur_scope->__pyx_outer_scope->__pyx_v_typ)) { __Pyx_RaiseClosureNameError("typ"); __PYX_ERR(0, 185, __pyx_L1_error) }
+    __pyx_t_7 = PyObject_RichCompare(__pyx_t_5, __pyx_cur_scope->__pyx_outer_scope->__pyx_v_typ, Py_EQ); __Pyx_XGOTREF(__pyx_t_7); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 185, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 189, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 185, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     if (__pyx_t_8) {
       __Pyx_XDECREF(__pyx_r);
@@ -5288,7 +5097,7 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":167
+/* "BlazeSudio/orig/graphicsCore/Events.py":163
  *     typ: int
  * 
  *     def __new__(cls, var: 'Event', typ: int = None) -> Self:             # <<<<<<<<<<<<<<
@@ -5296,9 +5105,9 @@ static PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
  *         Check and type convert to an Event type
 */
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event___new__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_var, PyObject *__pyx_v_typ) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ *__pyx_cur_scope;
-  PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7__new___2generator1 = 0;
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event___new__(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_var, PyObject *__pyx_v_typ) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ *__pyx_cur_scope;
+  PyObject *__pyx_gb_10BlazeSudio_12graphicsCore_6Events_5Event_7__new___2generator1 = 0;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   int __pyx_t_1;
@@ -5311,11 +5120,11 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__new__", 0);
-  __pyx_cur_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ *)__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__(__pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__, __pyx_mstate_global->__pyx_empty_tuple, NULL);
+  __pyx_cur_scope = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ *)__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__(__pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__, __pyx_mstate_global->__pyx_empty_tuple, NULL);
   if (unlikely(!__pyx_cur_scope)) {
-    __pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ *)Py_None);
+    __pyx_cur_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ *)Py_None);
     __Pyx_INCREF(Py_None);
-    __PYX_ERR(0, 167, __pyx_L1_error)
+    __PYX_ERR(0, 163, __pyx_L1_error)
   } else {
     __Pyx_GOTREF((PyObject *)__pyx_cur_scope);
   }
@@ -5323,7 +5132,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   __Pyx_INCREF(__pyx_cur_scope->__pyx_v_typ);
   __Pyx_GIVEREF(__pyx_cur_scope->__pyx_v_typ);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":185
+  /* "BlazeSudio/orig/graphicsCore/Events.py":181
  *         ```
  *         """
  *         if typ is None:             # <<<<<<<<<<<<<<
@@ -5333,14 +5142,14 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   __pyx_t_1 = (__pyx_cur_scope->__pyx_v_typ == ((PyObject*)Py_None));
   if (__pyx_t_1) {
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":186
+    /* "BlazeSudio/orig/graphicsCore/Events.py":182
  *         """
  *         if typ is None:
  *             if var not in cls._types.values():             # <<<<<<<<<<<<<<
  *                 return False
  *             return var
 */
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_types); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 186, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_types); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 182, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = __pyx_t_4;
     __Pyx_INCREF(__pyx_t_3);
@@ -5350,14 +5159,14 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
       __pyx_t_2 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_values, __pyx_callargs+__pyx_t_5, (1-__pyx_t_5) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 186, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 182, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
     }
-    __pyx_t_1 = (__Pyx_PySequence_ContainsTF(__pyx_v_var, __pyx_t_2, Py_NE)); if (unlikely((__pyx_t_1 < 0))) __PYX_ERR(0, 186, __pyx_L1_error)
+    __pyx_t_1 = (__Pyx_PySequence_ContainsTF(__pyx_v_var, __pyx_t_2, Py_NE)); if (unlikely((__pyx_t_1 < 0))) __PYX_ERR(0, 182, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_1) {
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":187
+      /* "BlazeSudio/orig/graphicsCore/Events.py":183
  *         if typ is None:
  *             if var not in cls._types.values():
  *                 return False             # <<<<<<<<<<<<<<
@@ -5369,7 +5178,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
       __pyx_r = Py_False;
       goto __pyx_L0;
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":186
+      /* "BlazeSudio/orig/graphicsCore/Events.py":182
  *         """
  *         if typ is None:
  *             if var not in cls._types.values():             # <<<<<<<<<<<<<<
@@ -5378,7 +5187,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
 */
     }
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":188
+    /* "BlazeSudio/orig/graphicsCore/Events.py":184
  *             if var not in cls._types.values():
  *                 return False
  *             return var             # <<<<<<<<<<<<<<
@@ -5390,7 +5199,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
     __pyx_r = __pyx_v_var;
     goto __pyx_L0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":185
+    /* "BlazeSudio/orig/graphicsCore/Events.py":181
  *         ```
  *         """
  *         if typ is None:             # <<<<<<<<<<<<<<
@@ -5399,27 +5208,27 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
 */
   }
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":189
+  /* "BlazeSudio/orig/graphicsCore/Events.py":185
  *                 return False
  *             return var
  *         if not any((k & typ)==typ for k in cls._types.values()):             # <<<<<<<<<<<<<<
  *             raise ValueError(
  *                 'Input type must be avaliable in this class, but is not!'
 */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_types); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_types); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7__new___genexpr(((PyObject*)__pyx_cur_scope), __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_4 = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_7__new___genexpr(((PyObject*)__pyx_cur_scope), __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_Generator_GetInlinedResult(__pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Generator_GetInlinedResult(__pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_1 < 0))) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_1 < 0))) __PYX_ERR(0, 185, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_6 = (!__pyx_t_1);
   if (unlikely(__pyx_t_6)) {
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":190
+    /* "BlazeSudio/orig/graphicsCore/Events.py":186
  *             return var
  *         if not any((k & typ)==typ for k in cls._types.values()):
  *             raise ValueError(             # <<<<<<<<<<<<<<
@@ -5432,14 +5241,14 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
       PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_mstate_global->__pyx_kp_u_Input_type_must_be_avaliable_in};
       __pyx_t_2 = __Pyx_PyObject_FastCall((PyObject*)(((PyTypeObject*)PyExc_ValueError)), __pyx_callargs+__pyx_t_5, (2-__pyx_t_5) | (__pyx_t_5*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 190, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 186, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
     }
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 190, __pyx_L1_error)
+    __PYX_ERR(0, 186, __pyx_L1_error)
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":189
+    /* "BlazeSudio/orig/graphicsCore/Events.py":185
  *                 return False
  *             return var
  *         if not any((k & typ)==typ for k in cls._types.values()):             # <<<<<<<<<<<<<<
@@ -5448,25 +5257,25 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
 */
   }
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":193
+  /* "BlazeSudio/orig/graphicsCore/Events.py":189
  *                 'Input type must be avaliable in this class, but is not!'
  *             )
  *         if (var.typ & typ) != typ:             # <<<<<<<<<<<<<<
  *             return False
  *         return var
 */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_var, __pyx_mstate_global->__pyx_n_u_typ); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 193, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_var, __pyx_mstate_global->__pyx_n_u_typ); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 189, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PyNumber_And(__pyx_t_2, __pyx_cur_scope->__pyx_v_typ); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 193, __pyx_L1_error)
+  __pyx_t_4 = PyNumber_And(__pyx_t_2, __pyx_cur_scope->__pyx_v_typ); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 189, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_RichCompare(__pyx_t_4, __pyx_cur_scope->__pyx_v_typ, Py_NE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 193, __pyx_L1_error)
+  __pyx_t_2 = PyObject_RichCompare(__pyx_t_4, __pyx_cur_scope->__pyx_v_typ, Py_NE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 189, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 193, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 189, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_6) {
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":194
+    /* "BlazeSudio/orig/graphicsCore/Events.py":190
  *             )
  *         if (var.typ & typ) != typ:
  *             return False             # <<<<<<<<<<<<<<
@@ -5478,7 +5287,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
     __pyx_r = Py_False;
     goto __pyx_L0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":193
+    /* "BlazeSudio/orig/graphicsCore/Events.py":189
  *                 'Input type must be avaliable in this class, but is not!'
  *             )
  *         if (var.typ & typ) != typ:             # <<<<<<<<<<<<<<
@@ -5487,19 +5296,19 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
 */
   }
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":195
+  /* "BlazeSudio/orig/graphicsCore/Events.py":191
  *         if (var.typ & typ) != typ:
  *             return False
  *         return var             # <<<<<<<<<<<<<<
  * 
- *     def __init__(self, *args, **kwargs): ...
+ *     def __init__(self, *args, **kwargs): pass
 */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_var);
   __pyx_r = __pyx_v_var;
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":167
+  /* "BlazeSudio/orig/graphicsCore/Events.py":163
  *     typ: int
  * 
  *     def __new__(cls, var: 'Event', typ: int = None) -> Self:             # <<<<<<<<<<<<<<
@@ -5512,34 +5321,34 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Event.__new__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Event.__new__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
-  __Pyx_XDECREF(__pyx_gb_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7__new___2generator1);
+  __Pyx_XDECREF(__pyx_gb_10BlazeSudio_12graphicsCore_6Events_5Event_7__new___2generator1);
   __Pyx_DECREF((PyObject *)__pyx_cur_scope);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":197
+/* "BlazeSudio/orig/graphicsCore/Events.py":193
  *         return var
  * 
- *     def __init__(self, *args, **kwargs): ...             # <<<<<<<<<<<<<<
+ *     def __init__(self, *args, **kwargs): pass             # <<<<<<<<<<<<<<
  * 
  *     _types = {}
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_3__init__(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_3__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_3__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_3__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_3__init__(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_5Event_3__init__ = {"__init__", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_3__init__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_3__init__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5578,33 +5387,33 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_self,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 197, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 193, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         default:
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 197, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 193, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
       const Py_ssize_t used_pos_args = (kwd_pos_args < 1) ? kwd_pos_args : 1;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, __pyx_v_kwargs, values, used_pos_args, __pyx_kwds_len, "__init__", 1) < (0)) __PYX_ERR(0, 197, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, __pyx_v_kwargs, values, used_pos_args, __pyx_kwds_len, "__init__", 1) < (0)) __PYX_ERR(0, 193, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 1, i); __PYX_ERR(0, 197, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 1, i); __PYX_ERR(0, 193, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs < 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 197, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 193, __pyx_L3_error)
     }
     __pyx_v_self = values[0];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 1, __pyx_nargs); __PYX_ERR(0, 197, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 1, 1, __pyx_nargs); __PYX_ERR(0, 193, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -5613,11 +5422,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   __Pyx_DECREF(__pyx_v_args); __pyx_v_args = 0;
   __Pyx_XDECREF(__pyx_v_kwargs); __pyx_v_kwargs = 0;
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Event.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Event.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_2__init__(__pyx_self, __pyx_v_self, __pyx_v_args, __pyx_v_kwargs);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_2__init__(__pyx_self, __pyx_v_self, __pyx_v_args, __pyx_v_kwargs);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -5629,7 +5438,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_2__init__(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_args, CYTHON_UNUSED PyObject *__pyx_v_kwargs) {
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_2__init__(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_args, CYTHON_UNUSED PyObject *__pyx_v_kwargs) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__init__", 0);
@@ -5641,7 +5450,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":200
+/* "BlazeSudio/orig/graphicsCore/Events.py":196
  * 
  *     _types = {}
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -5650,15 +5459,15 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_5_from_sdl(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_5_from_sdl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_5_from_sdl = {"_from_sdl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_5_from_sdl, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_5_from_sdl(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_5Event_5_from_sdl = {"_from_sdl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_5_from_sdl, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_5_from_sdl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5694,44 +5503,44 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_this,&__pyx_mstate_global->__pyx_n_u_cls,&__pyx_mstate_global->__pyx_n_u_ev,&__pyx_mstate_global->__pyx_n_u_typ,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 200, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 196, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  4:
         values[3] = __Pyx_ArgRef_FASTCALL(__pyx_args, 3);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 200, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 196, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 200, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 196, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 200, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 196, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 200, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 196, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, __pyx_v_kwargs, values, kwd_pos_args, __pyx_kwds_len, "_from_sdl", 1) < (0)) __PYX_ERR(0, 200, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, __pyx_v_kwargs, values, kwd_pos_args, __pyx_kwds_len, "_from_sdl", 1) < (0)) __PYX_ERR(0, 196, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 4; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 4, 4, i); __PYX_ERR(0, 200, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 4, 4, i); __PYX_ERR(0, 196, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 4)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 200, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 196, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 200, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 196, __pyx_L3_error)
       values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 200, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 196, __pyx_L3_error)
       values[3] = __Pyx_ArgRef_FASTCALL(__pyx_args, 3);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 200, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[3])) __PYX_ERR(0, 196, __pyx_L3_error)
     }
     __pyx_v_this = values[0];
     __pyx_v_cls = values[1];
@@ -5740,7 +5549,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 4, 4, __pyx_nargs); __PYX_ERR(0, 200, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 4, 4, __pyx_nargs); __PYX_ERR(0, 196, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -5748,11 +5557,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     Py_XDECREF(values[__pyx_temp]);
   }
   __Pyx_DECREF(__pyx_v_kwargs); __pyx_v_kwargs = 0;
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Event._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Event._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_4_from_sdl(__pyx_self, __pyx_v_this, __pyx_v_cls, __pyx_v_ev, __pyx_v_typ, __pyx_v_kwargs);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_4_from_sdl(__pyx_self, __pyx_v_this, __pyx_v_cls, __pyx_v_ev, __pyx_v_typ, __pyx_v_kwargs);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -5763,7 +5572,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_4_from_sdl(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_this, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ, PyObject *__pyx_v_kwargs) {
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_4_from_sdl(CYTHON_UNUSED PyObject *__pyx_self, CYTHON_UNUSED PyObject *__pyx_v_this, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ, PyObject *__pyx_v_kwargs) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -5775,7 +5584,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_from_sdl", 0);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":202
+  /* "BlazeSudio/orig/graphicsCore/Events.py":198
  *     @classmethod
  *     def _from_sdl(this, cls, ev, typ, **kwargs):
  *         return cls.create(             # <<<<<<<<<<<<<<
@@ -5783,51 +5592,51 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
  *             typ = typ,
 */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_create); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 202, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_cls, __pyx_mstate_global->__pyx_n_u_create); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 198, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":203
+  /* "BlazeSudio/orig/graphicsCore/Events.py":199
  *     def _from_sdl(this, cls, ev, typ, **kwargs):
  *         return cls.create(
  *             timestamp = ev.timestamp,             # <<<<<<<<<<<<<<
  *             typ = typ,
  *             **kwargs
 */
-  __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 203, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 199, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_timestamp); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 203, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_timestamp); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 199, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_timestamp, __pyx_t_4) < (0)) __PYX_ERR(0, 203, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_timestamp, __pyx_t_4) < (0)) __PYX_ERR(0, 199, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":204
+  /* "BlazeSudio/orig/graphicsCore/Events.py":200
  *         return cls.create(
  *             timestamp = ev.timestamp,
  *             typ = typ,             # <<<<<<<<<<<<<<
  *             **kwargs
  *         )
 */
-  if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_typ, __pyx_v_typ) < (0)) __PYX_ERR(0, 203, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_typ, __pyx_v_typ) < (0)) __PYX_ERR(0, 199, __pyx_L1_error)
   __pyx_t_2 = __pyx_t_3;
   __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":205
+  /* "BlazeSudio/orig/graphicsCore/Events.py":201
  *             timestamp = ev.timestamp,
  *             typ = typ,
  *             **kwargs             # <<<<<<<<<<<<<<
  *         )
  *     @classmethod
 */
-  if (__Pyx_MergeKeywords(__pyx_t_2, __pyx_v_kwargs) < (0)) __PYX_ERR(0, 205, __pyx_L1_error)
+  if (__Pyx_MergeKeywords(__pyx_t_2, __pyx_v_kwargs) < (0)) __PYX_ERR(0, 201, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":202
+  /* "BlazeSudio/orig/graphicsCore/Events.py":198
  *     @classmethod
  *     def _from_sdl(this, cls, ev, typ, **kwargs):
  *         return cls.create(             # <<<<<<<<<<<<<<
  *             timestamp = ev.timestamp,
  *             typ = typ,
 */
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_mstate_global->__pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 202, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_mstate_global->__pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 198, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -5835,7 +5644,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":200
+  /* "BlazeSudio/orig/graphicsCore/Events.py":196
  * 
  *     _types = {}
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -5849,7 +5658,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Event._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Event._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -5857,7 +5666,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":207
+/* "BlazeSudio/orig/graphicsCore/Events.py":203
  *             **kwargs
  *         )
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -5866,16 +5675,16 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7create(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_7create(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_6create, "\n        Create a new event object. Not for the light-hearted.\n        ");
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7create = {"create", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7create, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_6create};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7create(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_6Events_5Event_6create, "\n        Create a new event object. Not for the light-hearted.\n        ");
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_5Event_7create = {"create", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_7create, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_6Events_5Event_6create};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5Event_7create(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -5908,32 +5717,32 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_cls,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 207, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 203, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 207, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 203, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, __pyx_v_kwargs, values, kwd_pos_args, __pyx_kwds_len, "create", 1) < (0)) __PYX_ERR(0, 207, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, __pyx_v_kwargs, values, kwd_pos_args, __pyx_kwds_len, "create", 1) < (0)) __PYX_ERR(0, 203, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("create", 1, 1, 1, i); __PYX_ERR(0, 207, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("create", 1, 1, 1, i); __PYX_ERR(0, 203, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 207, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 203, __pyx_L3_error)
     }
     __pyx_v_cls = values[0];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("create", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 207, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("create", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 203, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -5941,11 +5750,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     Py_XDECREF(values[__pyx_temp]);
   }
   __Pyx_DECREF(__pyx_v_kwargs); __pyx_v_kwargs = 0;
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Event.create", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Event.create", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_6create(__pyx_self, __pyx_v_cls, __pyx_v_kwargs);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_6create(__pyx_self, __pyx_v_cls, __pyx_v_kwargs);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -5956,7 +5765,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_6create(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_kwargs) {
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_5Event_6create(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_kwargs) {
   PyObject *__pyx_v_o = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -5964,16 +5773,17 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   PyObject *__pyx_t_2 = NULL;
   size_t __pyx_t_3;
   PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("create", 0);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":212
+  /* "BlazeSudio/orig/graphicsCore/Events.py":208
  *         Create a new event object. Not for the light-hearted.
  *         """
  *         o = object.__new__(cls)             # <<<<<<<<<<<<<<
- *         o._init(**kwargs)
+ *         o._dc_init(o, **kwargs)
  *         return o
 */
   __pyx_t_2 = __pyx_builtin_object;
@@ -5983,32 +5793,50 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
     PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_v_cls};
     __pyx_t_1 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_new, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 212, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 208, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_v_o = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":213
+  /* "BlazeSudio/orig/graphicsCore/Events.py":209
  *         """
  *         o = object.__new__(cls)
- *         o._init(**kwargs)             # <<<<<<<<<<<<<<
+ *         o._dc_init(o, **kwargs)             # <<<<<<<<<<<<<<
  *         return o
  * 
 */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_o, __pyx_mstate_global->__pyx_n_u_init); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyDict_Copy(__pyx_v_kwargs); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 213, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_mstate_global->__pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_2 = NULL;
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_o, __pyx_mstate_global->__pyx_n_u_dc_init); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 209, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = PyDict_Copy(__pyx_v_kwargs); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 209, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_3 = 1;
+  #if CYTHON_UNPACK_METHODS
+  if (likely(PyMethod_Check(__pyx_t_4))) {
+    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_4);
+    assert(__pyx_t_2);
+    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_4);
+    __Pyx_INCREF(__pyx_t_2);
+    __Pyx_INCREF(__pyx__function);
+    __Pyx_DECREF_SET(__pyx_t_4, __pyx__function);
+    __pyx_t_3 = 0;
+  }
+  #endif
+  {
+    PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_v_o};
+    __pyx_t_1 = __Pyx_PyObject_FastCallDict((PyObject*)__pyx_t_4, __pyx_callargs+__pyx_t_3, (2-__pyx_t_3) | (__pyx_t_3*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET), __pyx_t_5);
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 209, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+  }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":214
+  /* "BlazeSudio/orig/graphicsCore/Events.py":210
  *         o = object.__new__(cls)
- *         o._init(**kwargs)
+ *         o._dc_init(o, **kwargs)
  *         return o             # <<<<<<<<<<<<<<
  * 
  * 
@@ -6018,7 +5846,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   __pyx_r = __pyx_v_o;
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":207
+  /* "BlazeSudio/orig/graphicsCore/Events.py":203
  *             **kwargs
  *         )
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -6031,7 +5859,8 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.Event.create", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.Event.create", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_o);
@@ -6040,7 +5869,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":221
+/* "BlazeSudio/orig/graphicsCore/Events.py":217
  *     _types = { sdl2.SDL_QUIT: EvTyp.Quit }
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -6049,15 +5878,15 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_5Even
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_9QuitEvent_1_from_sdl(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_9QuitEvent_1_from_sdl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_9QuitEvent_1_from_sdl = {"_from_sdl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_9QuitEvent_1_from_sdl, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_9QuitEvent_1_from_sdl(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_9QuitEvent_1_from_sdl = {"_from_sdl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_9QuitEvent_1_from_sdl, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_9QuitEvent_1_from_sdl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6089,38 +5918,38 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_cls,&__pyx_mstate_global->__pyx_n_u_ev,&__pyx_mstate_global->__pyx_n_u_typ,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 221, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 217, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 221, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 217, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 221, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 217, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 221, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 217, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "_from_sdl", 0) < (0)) __PYX_ERR(0, 221, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "_from_sdl", 0) < (0)) __PYX_ERR(0, 217, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 3; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 3, 3, i); __PYX_ERR(0, 221, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 3, 3, i); __PYX_ERR(0, 217, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 3)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 221, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 217, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 221, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 217, __pyx_L3_error)
       values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 221, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 217, __pyx_L3_error)
     }
     __pyx_v_cls = values[0];
     __pyx_v_ev = values[1];
@@ -6128,18 +5957,18 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 221, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 217, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.QuitEvent._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.QuitEvent._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9QuitEvent__from_sdl(__pyx_self, __pyx_v_cls, __pyx_v_ev, __pyx_v_typ);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_9QuitEvent__from_sdl(__pyx_self, __pyx_v_cls, __pyx_v_ev, __pyx_v_typ);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -6149,7 +5978,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9QuitEvent__from_sdl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ) {
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_9QuitEvent__from_sdl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -6162,7 +5991,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Quit
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_from_sdl", 0);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":223
+  /* "BlazeSudio/orig/graphicsCore/Events.py":219
  *     @classmethod
  *     def _from_sdl(cls, ev, typ):
  *         return Event._from_sdl(cls, ev.quit, typ)             # <<<<<<<<<<<<<<
@@ -6171,12 +6000,12 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Quit
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_Event); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 223, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_Event); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 219, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_from_sdl); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 223, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_from_sdl); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 219, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_quit); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 223, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_quit); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 219, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_5 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -6196,14 +6025,14 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Quit
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 223, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 219, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":221
+  /* "BlazeSudio/orig/graphicsCore/Events.py":217
  *     _types = { sdl2.SDL_QUIT: EvTyp.Quit }
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -6217,7 +6046,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Quit
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.QuitEvent._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.QuitEvent._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -6225,7 +6054,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Quit
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":234
+/* "BlazeSudio/orig/graphicsCore/Events.py":230
  *     repeat: bool
  *     """True if this event is a repeated key press"""
  *     @property             # <<<<<<<<<<<<<<
@@ -6234,16 +6063,16 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_9Quit
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_1initial(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_1initial(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_initial, "True if this event is the first press of the key, False if it's repeating or releasing");
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_1initial = {"initial", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_1initial, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_initial};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_1initial(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_initial, "True if this event is the first press of the key, False if it's repeating or releasing");
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_1initial = {"initial", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_1initial, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_initial};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_1initial(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6273,43 +6102,43 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_self,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 234, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 230, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 234, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 230, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "initial", 0) < (0)) __PYX_ERR(0, 234, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "initial", 0) < (0)) __PYX_ERR(0, 230, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("initial", 1, 1, 1, i); __PYX_ERR(0, 234, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("initial", 1, 1, 1, i); __PYX_ERR(0, 230, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 234, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 230, __pyx_L3_error)
     }
     __pyx_v_self = values[0];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("initial", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 234, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("initial", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 230, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.KeyEvent.initial", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.KeyEvent.initial", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_initial(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_initial(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -6319,7 +6148,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_initial(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_initial(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -6331,7 +6160,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("initial", 0);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":237
+  /* "BlazeSudio/orig/graphicsCore/Events.py":233
  *     def initial(self) -> bool:
  *         """True if this event is the first press of the key, False if it's repeating or releasing"""
  *         return self.state and not self.repeat             # <<<<<<<<<<<<<<
@@ -6339,9 +6168,9 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
  *     scancode: int
 */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_state); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 237, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_state); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 237, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 233, __pyx_L1_error)
   if (__pyx_t_3) {
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   } else {
@@ -6350,12 +6179,12 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     goto __pyx_L3_bool_binop_done;
   }
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_repeat); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 237, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_repeat); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 237, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_4 = (!__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 237, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong(__pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_1 = __pyx_t_2;
   __pyx_t_2 = 0;
@@ -6364,7 +6193,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":234
+  /* "BlazeSudio/orig/graphicsCore/Events.py":230
  *     repeat: bool
  *     """True if this event is a repeated key press"""
  *     @property             # <<<<<<<<<<<<<<
@@ -6376,7 +6205,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.KeyEvent.initial", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.KeyEvent.initial", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -6384,7 +6213,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":243
+/* "BlazeSudio/orig/graphicsCore/Events.py":239
  *     keycode: int
  *     """Keycode of the key (abstracted from scancode)"""
  *     @property             # <<<<<<<<<<<<<<
@@ -6393,16 +6222,16 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_3scode(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_3scode(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_2scode, "The string name of the scancode");
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_3scode = {"scode", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_3scode, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_2scode};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_3scode(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_2scode, "The string name of the scancode");
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_3scode = {"scode", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_3scode, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_2scode};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_3scode(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6432,43 +6261,43 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_self,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 243, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 239, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 243, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 239, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "scode", 0) < (0)) __PYX_ERR(0, 243, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "scode", 0) < (0)) __PYX_ERR(0, 239, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("scode", 1, 1, 1, i); __PYX_ERR(0, 243, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("scode", 1, 1, 1, i); __PYX_ERR(0, 239, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 243, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 239, __pyx_L3_error)
     }
     __pyx_v_self = values[0];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("scode", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 243, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("scode", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 239, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.KeyEvent.scode", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.KeyEvent.scode", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_2scode(__pyx_self, __pyx_v_self);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_2scode(__pyx_self, __pyx_v_self);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -6478,7 +6307,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_2scode(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_2scode(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -6493,7 +6322,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("scode", 0);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":246
+  /* "BlazeSudio/orig/graphicsCore/Events.py":242
  *     def scode(self) -> str:
  *         """The string name of the scancode"""
  *         return sdl2.SDL_GetScancodeName(self.scancode).decode()             # <<<<<<<<<<<<<<
@@ -6502,12 +6331,198 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_4 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 242, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_SDL_GetScancodeName); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_SDL_GetScancodeName); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 242, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_scancode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_scancode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 242, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_7 = 1;
+  #if CYTHON_UNPACK_METHODS
+  if (unlikely(PyMethod_Check(__pyx_t_6))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_6);
+    assert(__pyx_t_4);
+    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_6);
+    __Pyx_INCREF(__pyx_t_4);
+    __Pyx_INCREF(__pyx__function);
+    __Pyx_DECREF_SET(__pyx_t_6, __pyx__function);
+    __pyx_t_7 = 0;
+  }
+  #endif
+  {
+    PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_t_5};
+    __pyx_t_3 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_6, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 242, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+  }
+  __pyx_t_2 = __pyx_t_3;
+  __Pyx_INCREF(__pyx_t_2);
+  __pyx_t_7 = 0;
+  {
+    PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
+    __pyx_t_1 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_decode, __pyx_callargs+__pyx_t_7, (1-__pyx_t_7) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
+    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 242, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+  }
+  if (!(likely(PyUnicode_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_1))) __PYX_ERR(0, 242, __pyx_L1_error)
+  __pyx_r = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "BlazeSudio/orig/graphicsCore/Events.py":239
+ *     keycode: int
+ *     """Keycode of the key (abstracted from scancode)"""
+ *     @property             # <<<<<<<<<<<<<<
+ *     def scode(self) -> str:
+ *         """The string name of the scancode"""
+*/
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.KeyEvent.scode", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "BlazeSudio/orig/graphicsCore/Events.py":243
+ *         """The string name of the scancode"""
+ *         return sdl2.SDL_GetScancodeName(self.scancode).decode()
+ *     @property             # <<<<<<<<<<<<<<
+ *     def key(self) -> str:
+ *         """The string name of the key"""
+*/
+
+/* Python wrapper */
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_5key(PyObject *__pyx_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+); /*proto*/
+PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_4key, "The string name of the key");
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_5key = {"key", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_5key, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_4key};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_5key(PyObject *__pyx_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+) {
+  PyObject *__pyx_v_self = 0;
+  #if !CYTHON_METH_FASTCALL
+  CYTHON_UNUSED Py_ssize_t __pyx_nargs;
+  #endif
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject* values[1] = {0};
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("key (wrapper)", 0);
+  #if !CYTHON_METH_FASTCALL
+  #if CYTHON_ASSUME_SAFE_SIZE
+  __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
+  #else
+  __pyx_nargs = PyTuple_Size(__pyx_args); if (unlikely(__pyx_nargs < 0)) return NULL;
+  #endif
+  #endif
+  __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
+  {
+    PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_self,0};
+    const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 243, __pyx_L3_error)
+    if (__pyx_kwds_len > 0) {
+      switch (__pyx_nargs) {
+        case  1:
+        values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 243, __pyx_L3_error)
+        CYTHON_FALLTHROUGH;
+        case  0: break;
+        default: goto __pyx_L5_argtuple_error;
+      }
+      const Py_ssize_t kwd_pos_args = __pyx_nargs;
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "key", 0) < (0)) __PYX_ERR(0, 243, __pyx_L3_error)
+      for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("key", 1, 1, 1, i); __PYX_ERR(0, 243, __pyx_L3_error) }
+      }
+    } else if (unlikely(__pyx_nargs != 1)) {
+      goto __pyx_L5_argtuple_error;
+    } else {
+      values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 243, __pyx_L3_error)
+    }
+    __pyx_v_self = values[0];
+  }
+  goto __pyx_L6_skip;
+  __pyx_L5_argtuple_error:;
+  __Pyx_RaiseArgtupleInvalid("key", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 243, __pyx_L3_error)
+  __pyx_L6_skip:;
+  goto __pyx_L4_argument_unpacking_done;
+  __pyx_L3_error:;
+  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
+    Py_XDECREF(values[__pyx_temp]);
+  }
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.KeyEvent.key", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_RefNannyFinishContext();
+  return NULL;
+  __pyx_L4_argument_unpacking_done:;
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_4key(__pyx_self, __pyx_v_self);
+
+  /* function exit code */
+  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
+    Py_XDECREF(values[__pyx_temp]);
+  }
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_4key(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
+  size_t __pyx_t_7;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("key", 0);
+
+  /* "BlazeSudio/orig/graphicsCore/Events.py":246
+ *     def key(self) -> str:
+ *         """The string name of the key"""
+ *         return sdl2.SDL_GetKeyName(self.keycode).decode()             # <<<<<<<<<<<<<<
+ * 
+ *     _modifiers: int
+*/
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_4 = NULL;
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_SDL_GetKeyName); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 246, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_keycode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 246, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_7 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -6546,193 +6561,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":243
- *     keycode: int
- *     """Keycode of the key (abstracted from scancode)"""
- *     @property             # <<<<<<<<<<<<<<
- *     def scode(self) -> str:
- *         """The string name of the scancode"""
-*/
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.KeyEvent.scode", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "BlazeSudio/graphicsCore/_lib/Events.py":247
- *         """The string name of the scancode"""
- *         return sdl2.SDL_GetScancodeName(self.scancode).decode()
- *     @property             # <<<<<<<<<<<<<<
- *     def key(self) -> str:
- *         """The string name of the key"""
-*/
-
-/* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_5key(PyObject *__pyx_self, 
-#if CYTHON_METH_FASTCALL
-PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
-#else
-PyObject *__pyx_args, PyObject *__pyx_kwds
-#endif
-); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_4key, "The string name of the key");
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_5key = {"key", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_5key, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_4key};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_5key(PyObject *__pyx_self, 
-#if CYTHON_METH_FASTCALL
-PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
-#else
-PyObject *__pyx_args, PyObject *__pyx_kwds
-#endif
-) {
-  PyObject *__pyx_v_self = 0;
-  #if !CYTHON_METH_FASTCALL
-  CYTHON_UNUSED Py_ssize_t __pyx_nargs;
-  #endif
-  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
-  PyObject* values[1] = {0};
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("key (wrapper)", 0);
-  #if !CYTHON_METH_FASTCALL
-  #if CYTHON_ASSUME_SAFE_SIZE
-  __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
-  #else
-  __pyx_nargs = PyTuple_Size(__pyx_args); if (unlikely(__pyx_nargs < 0)) return NULL;
-  #endif
-  #endif
-  __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
-  {
-    PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_self,0};
-    const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 247, __pyx_L3_error)
-    if (__pyx_kwds_len > 0) {
-      switch (__pyx_nargs) {
-        case  1:
-        values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 247, __pyx_L3_error)
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "key", 0) < (0)) __PYX_ERR(0, 247, __pyx_L3_error)
-      for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("key", 1, 1, 1, i); __PYX_ERR(0, 247, __pyx_L3_error) }
-      }
-    } else if (unlikely(__pyx_nargs != 1)) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 247, __pyx_L3_error)
-    }
-    __pyx_v_self = values[0];
-  }
-  goto __pyx_L6_skip;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("key", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 247, __pyx_L3_error)
-  __pyx_L6_skip:;
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L3_error:;
-  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
-    Py_XDECREF(values[__pyx_temp]);
-  }
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.KeyEvent.key", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_4key(__pyx_self, __pyx_v_self);
-
-  /* function exit code */
-  for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
-    Py_XDECREF(values[__pyx_temp]);
-  }
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_4key(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  PyObject *__pyx_t_5 = NULL;
-  PyObject *__pyx_t_6 = NULL;
-  size_t __pyx_t_7;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("key", 0);
-
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":250
- *     def key(self) -> str:
- *         """The string name of the key"""
- *         return sdl2.SDL_GetKeyName(self.keycode).decode()             # <<<<<<<<<<<<<<
- * 
- *     _modifiers: int
-*/
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_4 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 250, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_SDL_GetKeyName); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 250, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_keycode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 250, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_7 = 1;
-  #if CYTHON_UNPACK_METHODS
-  if (unlikely(PyMethod_Check(__pyx_t_6))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_6);
-    assert(__pyx_t_4);
-    PyObject* __pyx__function = PyMethod_GET_FUNCTION(__pyx_t_6);
-    __Pyx_INCREF(__pyx_t_4);
-    __Pyx_INCREF(__pyx__function);
-    __Pyx_DECREF_SET(__pyx_t_6, __pyx__function);
-    __pyx_t_7 = 0;
-  }
-  #endif
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_t_5};
-    __pyx_t_3 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_6, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 250, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-  }
-  __pyx_t_2 = __pyx_t_3;
-  __Pyx_INCREF(__pyx_t_2);
-  __pyx_t_7 = 0;
-  {
-    PyObject *__pyx_callargs[2] = {__pyx_t_2, NULL};
-    __pyx_t_1 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_decode, __pyx_callargs+__pyx_t_7, (1-__pyx_t_7) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
-    __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-  }
-  if (!(likely(PyUnicode_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_1))) __PYX_ERR(0, 250, __pyx_L1_error)
-  __pyx_r = ((PyObject*)__pyx_t_1);
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":247
+  /* "BlazeSudio/orig/graphicsCore/Events.py":243
  *         """The string name of the scancode"""
  *         return sdl2.SDL_GetScancodeName(self.scancode).decode()
  *     @property             # <<<<<<<<<<<<<<
@@ -6748,7 +6577,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.KeyEvent.key", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.KeyEvent.key", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -6756,7 +6585,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":253
+/* "BlazeSudio/orig/graphicsCore/Events.py":249
  * 
  *     _modifiers: int
  *     def modifs(self, *, shift=False, ctrl=False, alt=False, gui=False) -> bool:             # <<<<<<<<<<<<<<
@@ -6765,16 +6594,16 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_7modifs(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_7modifs(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_6modifs, "\n        Find out if the specified modifiers are pressed when this key is\n\n        Used like this: `ev.modifs(shift=1, ctrl=1)` returns if the shift and ctrl modifiers are pressed (can use True instead of 1 if desired)\n\n        Modifiers present: `shift`, `ctrl`, `alt`, `gui` (windows/super/command key)\n        ");
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_7modifs = {"modifs", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_7modifs, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_6modifs};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_7modifs(PyObject *__pyx_self, 
+PyDoc_STRVAR(__pyx_doc_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_6modifs, "\n        Find out if the specified modifiers are pressed when this key is\n\n        Used like this: `ev.modifs(shift=1, ctrl=1)` returns if the shift and ctrl modifiers are pressed (can use True instead of 1 if desired)\n\n        Modifiers present: `shift`, `ctrl`, `alt`, `gui` (windows/super/command key)\n        ");
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_7modifs = {"modifs", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_7modifs, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_6modifs};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_7modifs(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6808,30 +6637,30 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_self,&__pyx_mstate_global->__pyx_n_u_shift,&__pyx_mstate_global->__pyx_n_u_ctrl,&__pyx_mstate_global->__pyx_n_u_alt,&__pyx_mstate_global->__pyx_n_u_gui,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 253, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 249, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 253, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 249, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "modifs", 0) < (0)) __PYX_ERR(0, 253, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "modifs", 0) < (0)) __PYX_ERR(0, 249, __pyx_L3_error)
       if (!values[1]) values[1] = __Pyx_NewRef(((PyObject *)((PyObject*)Py_False)));
       if (!values[2]) values[2] = __Pyx_NewRef(((PyObject *)((PyObject*)Py_False)));
       if (!values[3]) values[3] = __Pyx_NewRef(((PyObject *)((PyObject*)Py_False)));
       if (!values[4]) values[4] = __Pyx_NewRef(((PyObject *)((PyObject*)Py_False)));
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("modifs", 1, 1, 1, i); __PYX_ERR(0, 253, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("modifs", 1, 1, 1, i); __PYX_ERR(0, 249, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 253, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 249, __pyx_L3_error)
       if (!values[1]) values[1] = __Pyx_NewRef(((PyObject *)((PyObject*)Py_False)));
       if (!values[2]) values[2] = __Pyx_NewRef(((PyObject *)((PyObject*)Py_False)));
       if (!values[3]) values[3] = __Pyx_NewRef(((PyObject *)((PyObject*)Py_False)));
@@ -6845,18 +6674,18 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("modifs", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 253, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("modifs", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 249, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.KeyEvent.modifs", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.KeyEvent.modifs", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_6modifs(__pyx_self, __pyx_v_self, __pyx_v_shift, __pyx_v_ctrl, __pyx_v_alt, __pyx_v_gui);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_6modifs(__pyx_self, __pyx_v_self, __pyx_v_shift, __pyx_v_ctrl, __pyx_v_alt, __pyx_v_gui);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -6866,7 +6695,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_6modifs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_shift, PyObject *__pyx_v_ctrl, PyObject *__pyx_v_alt, PyObject *__pyx_v_gui) {
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_6modifs(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_self, PyObject *__pyx_v_shift, PyObject *__pyx_v_ctrl, PyObject *__pyx_v_alt, PyObject *__pyx_v_gui) {
   PyObject *__pyx_v_mask = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -6880,125 +6709,125 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("modifs", 0);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":261
+  /* "BlazeSudio/orig/graphicsCore/Events.py":257
  *         Modifiers present: `shift`, `ctrl`, `alt`, `gui` (windows/super/command key)
  *         """
  *         mask = sdl2.KMOD_SHIFT * bool(shift) + \             # <<<<<<<<<<<<<<
  *                sdl2.KMOD_CTRL * bool(ctrl) + \
  *                sdl2.KMOD_ALT * bool(alt) + \
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 257, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_KMOD_SHIFT); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 261, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_KMOD_SHIFT); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 257, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_v_shift); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 261, __pyx_L1_error)
-  __pyx_t_1 = __Pyx_PyBool_FromLong((!(!__pyx_t_3))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_v_shift); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 257, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong((!(!__pyx_t_3))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 257, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = PyNumber_Multiply(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 261, __pyx_L1_error)
+  __pyx_t_4 = PyNumber_Multiply(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 257, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":262
+  /* "BlazeSudio/orig/graphicsCore/Events.py":258
  *         """
  *         mask = sdl2.KMOD_SHIFT * bool(shift) + \
  *                sdl2.KMOD_CTRL * bool(ctrl) + \             # <<<<<<<<<<<<<<
  *                sdl2.KMOD_ALT * bool(alt) + \
  *                sdl2.KMOD_GUI * bool(gui)
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 262, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_KMOD_CTRL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 262, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_KMOD_CTRL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_v_ctrl); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 262, __pyx_L1_error)
-  __pyx_t_1 = __Pyx_PyBool_FromLong((!(!__pyx_t_3))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 262, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_v_ctrl); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 258, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong((!(!__pyx_t_3))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = PyNumber_Multiply(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 262, __pyx_L1_error)
+  __pyx_t_5 = PyNumber_Multiply(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":261
+  /* "BlazeSudio/orig/graphicsCore/Events.py":257
  *         Modifiers present: `shift`, `ctrl`, `alt`, `gui` (windows/super/command key)
  *         """
  *         mask = sdl2.KMOD_SHIFT * bool(shift) + \             # <<<<<<<<<<<<<<
  *                sdl2.KMOD_CTRL * bool(ctrl) + \
  *                sdl2.KMOD_ALT * bool(alt) + \
 */
-  __pyx_t_1 = PyNumber_Add(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_Add(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 257, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":263
+  /* "BlazeSudio/orig/graphicsCore/Events.py":259
  *         mask = sdl2.KMOD_SHIFT * bool(shift) + \
  *                sdl2.KMOD_CTRL * bool(ctrl) + \
  *                sdl2.KMOD_ALT * bool(alt) + \             # <<<<<<<<<<<<<<
  *                sdl2.KMOD_GUI * bool(gui)
  *         return (self._modifiers & mask) == mask
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 259, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_KMOD_ALT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_KMOD_ALT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 259, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_v_alt); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 263, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_PyBool_FromLong((!(!__pyx_t_3))); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_v_alt); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 259, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyBool_FromLong((!(!__pyx_t_3))); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 259, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_2 = PyNumber_Multiply(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_Multiply(__pyx_t_4, __pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 259, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":262
+  /* "BlazeSudio/orig/graphicsCore/Events.py":258
  *         """
  *         mask = sdl2.KMOD_SHIFT * bool(shift) + \
  *                sdl2.KMOD_CTRL * bool(ctrl) + \             # <<<<<<<<<<<<<<
  *                sdl2.KMOD_ALT * bool(alt) + \
  *                sdl2.KMOD_GUI * bool(gui)
 */
-  __pyx_t_5 = PyNumber_Add(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 262, __pyx_L1_error)
+  __pyx_t_5 = PyNumber_Add(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 258, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":264
+  /* "BlazeSudio/orig/graphicsCore/Events.py":260
  *                sdl2.KMOD_CTRL * bool(ctrl) + \
  *                sdl2.KMOD_ALT * bool(alt) + \
  *                sdl2.KMOD_GUI * bool(gui)             # <<<<<<<<<<<<<<
  *         return (self._modifiers & mask) == mask
  * 
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 264, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 260, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_KMOD_GUI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 264, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_KMOD_GUI); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_v_gui); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 264, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyBool_FromLong((!(!__pyx_t_3))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 264, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_IsTrue(__pyx_v_gui); if (unlikely((__pyx_t_3 < 0))) __PYX_ERR(0, 260, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyBool_FromLong((!(!__pyx_t_3))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 260, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PyNumber_Multiply(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 264, __pyx_L1_error)
+  __pyx_t_4 = PyNumber_Multiply(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 260, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":263
+  /* "BlazeSudio/orig/graphicsCore/Events.py":259
  *         mask = sdl2.KMOD_SHIFT * bool(shift) + \
  *                sdl2.KMOD_CTRL * bool(ctrl) + \
  *                sdl2.KMOD_ALT * bool(alt) + \             # <<<<<<<<<<<<<<
  *                sdl2.KMOD_GUI * bool(gui)
  *         return (self._modifiers & mask) == mask
 */
-  __pyx_t_2 = PyNumber_Add(__pyx_t_5, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 263, __pyx_L1_error)
+  __pyx_t_2 = PyNumber_Add(__pyx_t_5, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 259, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_v_mask = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":265
+  /* "BlazeSudio/orig/graphicsCore/Events.py":261
  *                sdl2.KMOD_ALT * bool(alt) + \
  *                sdl2.KMOD_GUI * bool(gui)
  *         return (self._modifiers & mask) == mask             # <<<<<<<<<<<<<<
@@ -7006,18 +6835,18 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
  *     _types = {
 */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_modifiers); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 265, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_mstate_global->__pyx_n_u_modifiers); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 261, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PyNumber_And(__pyx_t_2, __pyx_v_mask); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 265, __pyx_L1_error)
+  __pyx_t_4 = PyNumber_And(__pyx_t_2, __pyx_v_mask); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 261, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_RichCompare(__pyx_t_4, __pyx_v_mask, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 265, __pyx_L1_error)
+  __pyx_t_2 = PyObject_RichCompare(__pyx_t_4, __pyx_v_mask, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 261, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":253
+  /* "BlazeSudio/orig/graphicsCore/Events.py":249
  * 
  *     _modifiers: int
  *     def modifs(self, *, shift=False, ctrl=False, alt=False, gui=False) -> bool:             # <<<<<<<<<<<<<<
@@ -7031,7 +6860,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.KeyEvent.modifs", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.KeyEvent.modifs", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_mask);
@@ -7040,7 +6869,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":271
+/* "BlazeSudio/orig/graphicsCore/Events.py":267
  *         sdl2.SDL_KEYUP: EvTyp.KeyUp
  *     }
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -7049,15 +6878,15 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_9_from_sdl(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_9_from_sdl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_9_from_sdl = {"_from_sdl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_9_from_sdl, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_9_from_sdl(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_9_from_sdl = {"_from_sdl", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_9_from_sdl, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_9_from_sdl(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7089,38 +6918,38 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_cls,&__pyx_mstate_global->__pyx_n_u_ev,&__pyx_mstate_global->__pyx_n_u_typ,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 271, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 267, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  3:
         values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 271, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 267, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  2:
         values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 271, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 267, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 271, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 267, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "_from_sdl", 0) < (0)) __PYX_ERR(0, 271, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "_from_sdl", 0) < (0)) __PYX_ERR(0, 267, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 3; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 3, 3, i); __PYX_ERR(0, 271, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 3, 3, i); __PYX_ERR(0, 267, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 3)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 271, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 267, __pyx_L3_error)
       values[1] = __Pyx_ArgRef_FASTCALL(__pyx_args, 1);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 271, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[1])) __PYX_ERR(0, 267, __pyx_L3_error)
       values[2] = __Pyx_ArgRef_FASTCALL(__pyx_args, 2);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 271, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[2])) __PYX_ERR(0, 267, __pyx_L3_error)
     }
     __pyx_v_cls = values[0];
     __pyx_v_ev = values[1];
@@ -7128,18 +6957,18 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 271, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_from_sdl", 1, 3, 3, __pyx_nargs); __PYX_ERR(0, 267, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.KeyEvent._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.KeyEvent._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_8_from_sdl(__pyx_self, __pyx_v_cls, __pyx_v_ev, __pyx_v_typ);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_8_from_sdl(__pyx_self, __pyx_v_cls, __pyx_v_ev, __pyx_v_typ);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -7149,7 +6978,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_8_from_sdl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ) {
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_8_from_sdl(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_cls, PyObject *__pyx_v_ev, PyObject *__pyx_v_typ) {
   PyObject *__pyx_v_k = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -7171,31 +7000,31 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   __Pyx_RefNannySetupContext("_from_sdl", 0);
   __Pyx_INCREF(__pyx_v_ev);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":273
+  /* "BlazeSudio/orig/graphicsCore/Events.py":269
  *     @classmethod
  *     def _from_sdl(cls, ev, typ):
  *         ev = ev.key             # <<<<<<<<<<<<<<
  *         k = ev.keysym
  *         return Event._from_sdl(cls, ev, typ,
 */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_key); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_key); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 269, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF_SET(__pyx_v_ev, __pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":274
+  /* "BlazeSudio/orig/graphicsCore/Events.py":270
  *     def _from_sdl(cls, ev, typ):
  *         ev = ev.key
  *         k = ev.keysym             # <<<<<<<<<<<<<<
  *         return Event._from_sdl(cls, ev, typ,
  *             window_id = ev.windowID,
 */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_keysym); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 274, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_keysym); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 270, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_k = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":275
+  /* "BlazeSudio/orig/graphicsCore/Events.py":271
  *         ev = ev.key
  *         k = ev.keysym
  *         return Event._from_sdl(cls, ev, typ,             # <<<<<<<<<<<<<<
@@ -7204,82 +7033,82 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
 */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_Event); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 275, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_Event); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 271, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_from_sdl); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 275, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_from_sdl); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 271, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":276
+  /* "BlazeSudio/orig/graphicsCore/Events.py":272
  *         k = ev.keysym
  *         return Event._from_sdl(cls, ev, typ,
  *             window_id = ev.windowID,             # <<<<<<<<<<<<<<
  *             state = ev.state == sdl2.SDL_PRESSED,
  *             repeat = bool(ev.repeat),
 */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_windowID); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 276, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_windowID); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 272, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":277
+  /* "BlazeSudio/orig/graphicsCore/Events.py":273
  *         return Event._from_sdl(cls, ev, typ,
  *             window_id = ev.windowID,
  *             state = ev.state == sdl2.SDL_PRESSED,             # <<<<<<<<<<<<<<
  *             repeat = bool(ev.repeat),
  *             scancode = k.scancode,
 */
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_state); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 277, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_state); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 273, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 277, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 273, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_SDL_PRESSED); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 277, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_SDL_PRESSED); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 273, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = PyObject_RichCompare(__pyx_t_5, __pyx_t_7, Py_EQ); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 277, __pyx_L1_error)
+  __pyx_t_6 = PyObject_RichCompare(__pyx_t_5, __pyx_t_7, Py_EQ); __Pyx_XGOTREF(__pyx_t_6); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 273, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":278
+  /* "BlazeSudio/orig/graphicsCore/Events.py":274
  *             window_id = ev.windowID,
  *             state = ev.state == sdl2.SDL_PRESSED,
  *             repeat = bool(ev.repeat),             # <<<<<<<<<<<<<<
  *             scancode = k.scancode,
  *             keycode = k.sym,
 */
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_repeat); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 278, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_repeat); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 274, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 278, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_7); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 274, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyBool_FromLong((!(!__pyx_t_8))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 278, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyBool_FromLong((!(!__pyx_t_8))); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 274, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":279
+  /* "BlazeSudio/orig/graphicsCore/Events.py":275
  *             state = ev.state == sdl2.SDL_PRESSED,
  *             repeat = bool(ev.repeat),
  *             scancode = k.scancode,             # <<<<<<<<<<<<<<
  *             keycode = k.sym,
  *             _modifiers = k.mod
 */
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_k, __pyx_mstate_global->__pyx_n_u_scancode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 279, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_k, __pyx_mstate_global->__pyx_n_u_scancode); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 275, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":280
+  /* "BlazeSudio/orig/graphicsCore/Events.py":276
  *             repeat = bool(ev.repeat),
  *             scancode = k.scancode,
  *             keycode = k.sym,             # <<<<<<<<<<<<<<
  *             _modifiers = k.mod
  *         )
 */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_k, __pyx_mstate_global->__pyx_n_u_sym); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 280, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_k, __pyx_mstate_global->__pyx_n_u_sym); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":281
+  /* "BlazeSudio/orig/graphicsCore/Events.py":277
  *             scancode = k.scancode,
  *             keycode = k.sym,
  *             _modifiers = k.mod             # <<<<<<<<<<<<<<
  *         )
  * 
 */
-  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_k, __pyx_mstate_global->__pyx_n_u_mod); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 281, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_v_k, __pyx_mstate_global->__pyx_n_u_mod); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 277, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __pyx_t_11 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -7295,14 +7124,14 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   #endif
   {
     PyObject *__pyx_callargs[4 + ((CYTHON_VECTORCALL) ? 6 : 0)] = {__pyx_t_2, __pyx_v_cls, __pyx_v_ev, __pyx_v_typ};
-    __pyx_t_12 = __Pyx_MakeVectorcallBuilderKwds(6); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_12 = __Pyx_MakeVectorcallBuilderKwds(6); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 271, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_12);
-    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_window_id, __pyx_t_3, __pyx_t_12, __pyx_callargs+4, 0) < (0)) __PYX_ERR(0, 275, __pyx_L1_error)
-    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_state, __pyx_t_6, __pyx_t_12, __pyx_callargs+4, 1) < (0)) __PYX_ERR(0, 275, __pyx_L1_error)
-    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_repeat, __pyx_t_7, __pyx_t_12, __pyx_callargs+4, 2) < (0)) __PYX_ERR(0, 275, __pyx_L1_error)
-    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_scancode, __pyx_t_5, __pyx_t_12, __pyx_callargs+4, 3) < (0)) __PYX_ERR(0, 275, __pyx_L1_error)
-    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_keycode, __pyx_t_9, __pyx_t_12, __pyx_callargs+4, 4) < (0)) __PYX_ERR(0, 275, __pyx_L1_error)
-    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_modifiers, __pyx_t_10, __pyx_t_12, __pyx_callargs+4, 5) < (0)) __PYX_ERR(0, 275, __pyx_L1_error)
+    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_window_id, __pyx_t_3, __pyx_t_12, __pyx_callargs+4, 0) < (0)) __PYX_ERR(0, 271, __pyx_L1_error)
+    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_state, __pyx_t_6, __pyx_t_12, __pyx_callargs+4, 1) < (0)) __PYX_ERR(0, 271, __pyx_L1_error)
+    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_repeat, __pyx_t_7, __pyx_t_12, __pyx_callargs+4, 2) < (0)) __PYX_ERR(0, 271, __pyx_L1_error)
+    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_scancode, __pyx_t_5, __pyx_t_12, __pyx_callargs+4, 3) < (0)) __PYX_ERR(0, 271, __pyx_L1_error)
+    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_keycode, __pyx_t_9, __pyx_t_12, __pyx_callargs+4, 4) < (0)) __PYX_ERR(0, 271, __pyx_L1_error)
+    if (__Pyx_VectorcallBuilder_AddArg(__pyx_mstate_global->__pyx_n_u_modifiers, __pyx_t_10, __pyx_t_12, __pyx_callargs+4, 5) < (0)) __PYX_ERR(0, 271, __pyx_L1_error)
     __pyx_t_1 = __Pyx_Object_Vectorcall_CallFromBuilder((PyObject*)__pyx_t_4, __pyx_callargs+__pyx_t_11, (4-__pyx_t_11) | (__pyx_t_11*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET), __pyx_t_12);
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -7313,14 +7142,14 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
     __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
     __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 275, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 271, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":271
+  /* "BlazeSudio/orig/graphicsCore/Events.py":267
  *         sdl2.SDL_KEYUP: EvTyp.KeyUp
  *     }
  *     @classmethod             # <<<<<<<<<<<<<<
@@ -7340,7 +7169,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
   __Pyx_XDECREF(__pyx_t_12);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events.KeyEvent._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events.KeyEvent._from_sdl", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_k);
@@ -7350,7 +7179,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":294
+/* "BlazeSudio/orig/graphicsCore/Events.py":290
  * 
  * _EVENT_MAP = None
  * def _getEvMap():             # <<<<<<<<<<<<<<
@@ -7359,22 +7188,22 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyE
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_3_getEvMap(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_3_getEvMap = {"_getEvMap", (PyCFunction)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_3_getEvMap, METH_NOARGS, 0};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_3_getEvMap(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_3_getEvMap(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_3_getEvMap = {"_getEvMap", (PyCFunction)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_3_getEvMap, METH_NOARGS, 0};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_3_getEvMap(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
   CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("_getEvMap (wrapper)", 0);
   __pyx_kwvalues = __Pyx_KwValues_VARARGS(__pyx_args, __pyx_nargs);
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_getEvMap(__pyx_self);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_2_getEvMap(__pyx_self);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_getEvMap(CYTHON_UNUSED PyObject *__pyx_self) {
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_2_getEvMap(CYTHON_UNUSED PyObject *__pyx_self) {
   PyObject *__pyx_v_evtyp = NULL;
   PyObject *__pyx_8genexpr3__pyx_v_t = NULL;
   PyObject *__pyx_r = NULL;
@@ -7398,48 +7227,48 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_getEvMap", 0);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":296
+  /* "BlazeSudio/orig/graphicsCore/Events.py":292
  * def _getEvMap():
  *     global _EVENT_MAP
  *     if _EVENT_MAP is None:             # <<<<<<<<<<<<<<
  *         _EVENT_MAP = {}
  *         for evtyp in EVENT_LIST:
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_EVENT_MAP); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_EVENT_MAP); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = (__pyx_t_1 == Py_None);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_2) {
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":297
+    /* "BlazeSudio/orig/graphicsCore/Events.py":293
  *     global _EVENT_MAP
  *     if _EVENT_MAP is None:
  *         _EVENT_MAP = {}             # <<<<<<<<<<<<<<
  *         for evtyp in EVENT_LIST:
  *             _EVENT_MAP.update({
 */
-    __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 297, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 293, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_EVENT_MAP, __pyx_t_1) < (0)) __PYX_ERR(0, 297, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_EVENT_MAP, __pyx_t_1) < (0)) __PYX_ERR(0, 293, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":298
+    /* "BlazeSudio/orig/graphicsCore/Events.py":294
  *     if _EVENT_MAP is None:
  *         _EVENT_MAP = {}
  *         for evtyp in EVENT_LIST:             # <<<<<<<<<<<<<<
  *             _EVENT_MAP.update({
  *                 t: (evtyp, evtyp._types[t])
 */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_EVENT_LIST); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_mstate_global->__pyx_n_u_EVENT_LIST); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 294, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
       __pyx_t_3 = __pyx_t_1; __Pyx_INCREF(__pyx_t_3);
       __pyx_t_4 = 0;
       __pyx_t_5 = NULL;
     } else {
-      __pyx_t_4 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 298, __pyx_L1_error)
+      __pyx_t_4 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 294, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_5 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 298, __pyx_L1_error)
+      __pyx_t_5 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 294, __pyx_L1_error)
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     for (;;) {
@@ -7448,7 +7277,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
           {
             Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_3);
             #if !CYTHON_ASSUME_SAFE_SIZE
-            if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 298, __pyx_L1_error)
+            if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 294, __pyx_L1_error)
             #endif
             if (__pyx_t_4 >= __pyx_temp) break;
           }
@@ -7458,7 +7287,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
           {
             Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_3);
             #if !CYTHON_ASSUME_SAFE_SIZE
-            if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 298, __pyx_L1_error)
+            if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 294, __pyx_L1_error)
             #endif
             if (__pyx_t_4 >= __pyx_temp) break;
           }
@@ -7469,13 +7298,13 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
           #endif
           ++__pyx_t_4;
         }
-        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L1_error)
+        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 294, __pyx_L1_error)
       } else {
         __pyx_t_1 = __pyx_t_5(__pyx_t_3);
         if (unlikely(!__pyx_t_1)) {
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
-            if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) __PYX_ERR(0, 298, __pyx_L1_error)
+            if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) __PYX_ERR(0, 294, __pyx_L1_error)
             PyErr_Clear();
           }
           break;
@@ -7485,7 +7314,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
       __Pyx_XDECREF_SET(__pyx_v_evtyp, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":299
+      /* "BlazeSudio/orig/graphicsCore/Events.py":295
  *         _EVENT_MAP = {}
  *         for evtyp in EVENT_LIST:
  *             _EVENT_MAP.update({             # <<<<<<<<<<<<<<
@@ -7493,32 +7322,32 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
  *                 for t in evtyp._types
 */
       __pyx_t_6 = NULL;
-      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_EVENT_MAP); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_EVENT_MAP); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 295, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_update); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 299, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_mstate_global->__pyx_n_u_update); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 295, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
       { /* enter inner scope */
-        __pyx_t_7 = PyDict_New(); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 299, __pyx_L8_error)
+        __pyx_t_7 = PyDict_New(); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 295, __pyx_L8_error)
         __Pyx_GOTREF(__pyx_t_7);
 
-        /* "BlazeSudio/graphicsCore/_lib/Events.py":301
+        /* "BlazeSudio/orig/graphicsCore/Events.py":297
  *             _EVENT_MAP.update({
  *                 t: (evtyp, evtyp._types[t])
  *                 for t in evtyp._types             # <<<<<<<<<<<<<<
  *             })
  *     return _EVENT_MAP
 */
-        __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_evtyp, __pyx_mstate_global->__pyx_n_u_types); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 301, __pyx_L8_error)
+        __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_evtyp, __pyx_mstate_global->__pyx_n_u_types); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 297, __pyx_L8_error)
         __Pyx_GOTREF(__pyx_t_9);
         if (likely(PyList_CheckExact(__pyx_t_9)) || PyTuple_CheckExact(__pyx_t_9)) {
           __pyx_t_10 = __pyx_t_9; __Pyx_INCREF(__pyx_t_10);
           __pyx_t_11 = 0;
           __pyx_t_12 = NULL;
         } else {
-          __pyx_t_11 = -1; __pyx_t_10 = PyObject_GetIter(__pyx_t_9); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 301, __pyx_L8_error)
+          __pyx_t_11 = -1; __pyx_t_10 = PyObject_GetIter(__pyx_t_9); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 297, __pyx_L8_error)
           __Pyx_GOTREF(__pyx_t_10);
-          __pyx_t_12 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_10); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 301, __pyx_L8_error)
+          __pyx_t_12 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_10); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 297, __pyx_L8_error)
         }
         __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
         for (;;) {
@@ -7527,7 +7356,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
               {
                 Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_10);
                 #if !CYTHON_ASSUME_SAFE_SIZE
-                if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 301, __pyx_L8_error)
+                if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 297, __pyx_L8_error)
                 #endif
                 if (__pyx_t_11 >= __pyx_temp) break;
               }
@@ -7537,7 +7366,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
               {
                 Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_10);
                 #if !CYTHON_ASSUME_SAFE_SIZE
-                if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 301, __pyx_L8_error)
+                if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 297, __pyx_L8_error)
                 #endif
                 if (__pyx_t_11 >= __pyx_temp) break;
               }
@@ -7548,13 +7377,13 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
               #endif
               ++__pyx_t_11;
             }
-            if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 301, __pyx_L8_error)
+            if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 297, __pyx_L8_error)
           } else {
             __pyx_t_9 = __pyx_t_12(__pyx_t_10);
             if (unlikely(!__pyx_t_9)) {
               PyObject* exc_type = PyErr_Occurred();
               if (exc_type) {
-                if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) __PYX_ERR(0, 301, __pyx_L8_error)
+                if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) __PYX_ERR(0, 297, __pyx_L8_error)
                 PyErr_Clear();
               }
               break;
@@ -7564,30 +7393,30 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
           __Pyx_XDECREF_SET(__pyx_8genexpr3__pyx_v_t, __pyx_t_9);
           __pyx_t_9 = 0;
 
-          /* "BlazeSudio/graphicsCore/_lib/Events.py":300
+          /* "BlazeSudio/orig/graphicsCore/Events.py":296
  *         for evtyp in EVENT_LIST:
  *             _EVENT_MAP.update({
  *                 t: (evtyp, evtyp._types[t])             # <<<<<<<<<<<<<<
  *                 for t in evtyp._types
  *             })
 */
-          __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_evtyp, __pyx_mstate_global->__pyx_n_u_types); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 300, __pyx_L8_error)
+          __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_evtyp, __pyx_mstate_global->__pyx_n_u_types); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 296, __pyx_L8_error)
           __Pyx_GOTREF(__pyx_t_9);
-          __pyx_t_13 = __Pyx_PyObject_GetItem(__pyx_t_9, __pyx_8genexpr3__pyx_v_t); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 300, __pyx_L8_error)
+          __pyx_t_13 = __Pyx_PyObject_GetItem(__pyx_t_9, __pyx_8genexpr3__pyx_v_t); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 296, __pyx_L8_error)
           __Pyx_GOTREF(__pyx_t_13);
           __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-          __pyx_t_9 = PyTuple_New(2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 300, __pyx_L8_error)
+          __pyx_t_9 = PyTuple_New(2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 296, __pyx_L8_error)
           __Pyx_GOTREF(__pyx_t_9);
           __Pyx_INCREF(__pyx_v_evtyp);
           __Pyx_GIVEREF(__pyx_v_evtyp);
-          if (__Pyx_PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_v_evtyp) != (0)) __PYX_ERR(0, 300, __pyx_L8_error);
+          if (__Pyx_PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_v_evtyp) != (0)) __PYX_ERR(0, 296, __pyx_L8_error);
           __Pyx_GIVEREF(__pyx_t_13);
-          if (__Pyx_PyTuple_SET_ITEM(__pyx_t_9, 1, __pyx_t_13) != (0)) __PYX_ERR(0, 300, __pyx_L8_error);
+          if (__Pyx_PyTuple_SET_ITEM(__pyx_t_9, 1, __pyx_t_13) != (0)) __PYX_ERR(0, 296, __pyx_L8_error);
           __pyx_t_13 = 0;
-          if (unlikely(PyDict_SetItem(__pyx_t_7, (PyObject*)__pyx_8genexpr3__pyx_v_t, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 300, __pyx_L8_error)
+          if (unlikely(PyDict_SetItem(__pyx_t_7, (PyObject*)__pyx_8genexpr3__pyx_v_t, (PyObject*)__pyx_t_9))) __PYX_ERR(0, 296, __pyx_L8_error)
           __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-          /* "BlazeSudio/graphicsCore/_lib/Events.py":301
+          /* "BlazeSudio/orig/graphicsCore/Events.py":297
  *             _EVENT_MAP.update({
  *                 t: (evtyp, evtyp._types[t])
  *                 for t in evtyp._types             # <<<<<<<<<<<<<<
@@ -7621,12 +7450,12 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
         __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
         __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 299, __pyx_L1_error)
+        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 295, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
       }
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "BlazeSudio/graphicsCore/_lib/Events.py":298
+      /* "BlazeSudio/orig/graphicsCore/Events.py":294
  *     if _EVENT_MAP is None:
  *         _EVENT_MAP = {}
  *         for evtyp in EVENT_LIST:             # <<<<<<<<<<<<<<
@@ -7636,7 +7465,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
     }
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":296
+    /* "BlazeSudio/orig/graphicsCore/Events.py":292
  * def _getEvMap():
  *     global _EVENT_MAP
  *     if _EVENT_MAP is None:             # <<<<<<<<<<<<<<
@@ -7645,7 +7474,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
 */
   }
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":303
+  /* "BlazeSudio/orig/graphicsCore/Events.py":299
  *                 for t in evtyp._types
  *             })
  *     return _EVENT_MAP             # <<<<<<<<<<<<<<
@@ -7653,13 +7482,13 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
  * 
 */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_EVENT_MAP); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 303, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_EVENT_MAP); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 299, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":294
+  /* "BlazeSudio/orig/graphicsCore/Events.py":290
  * 
  * _EVENT_MAP = None
  * def _getEvMap():             # <<<<<<<<<<<<<<
@@ -7677,7 +7506,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
   __Pyx_XDECREF(__pyx_t_9);
   __Pyx_XDECREF(__pyx_t_10);
   __Pyx_XDECREF(__pyx_t_13);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events._getEvMap", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events._getEvMap", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_evtyp);
@@ -7687,7 +7516,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
   return __pyx_r;
 }
 
-/* "BlazeSudio/graphicsCore/_lib/Events.py":306
+/* "BlazeSudio/orig/graphicsCore/Events.py":302
  * 
  * 
  * def _translateEv(ev):             # <<<<<<<<<<<<<<
@@ -7696,15 +7525,15 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_2_get
 */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5_translateEv(PyObject *__pyx_self, 
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5_translateEv(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_5_translateEv = {"_translateEv", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5_translateEv, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_10_generated_6Events_5_translateEv(PyObject *__pyx_self, 
+static PyMethodDef __pyx_mdef_10BlazeSudio_12graphicsCore_6Events_5_translateEv = {"_translateEv", (PyCFunction)(void(*)(void))(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5_translateEv, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_10BlazeSudio_12graphicsCore_6Events_5_translateEv(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7734,43 +7563,43 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   {
     PyObject ** const __pyx_pyargnames[] = {&__pyx_mstate_global->__pyx_n_u_ev,0};
     const Py_ssize_t __pyx_kwds_len = (__pyx_kwds) ? __Pyx_NumKwargs_FASTCALL(__pyx_kwds) : 0;
-    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 306, __pyx_L3_error)
+    if (unlikely(__pyx_kwds_len) < 0) __PYX_ERR(0, 302, __pyx_L3_error)
     if (__pyx_kwds_len > 0) {
       switch (__pyx_nargs) {
         case  1:
         values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 306, __pyx_L3_error)
+        if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 302, __pyx_L3_error)
         CYTHON_FALLTHROUGH;
         case  0: break;
         default: goto __pyx_L5_argtuple_error;
       }
       const Py_ssize_t kwd_pos_args = __pyx_nargs;
-      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "_translateEv", 0) < (0)) __PYX_ERR(0, 306, __pyx_L3_error)
+      if (__Pyx_ParseKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values, kwd_pos_args, __pyx_kwds_len, "_translateEv", 0) < (0)) __PYX_ERR(0, 302, __pyx_L3_error)
       for (Py_ssize_t i = __pyx_nargs; i < 1; i++) {
-        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_translateEv", 1, 1, 1, i); __PYX_ERR(0, 306, __pyx_L3_error) }
+        if (unlikely(!values[i])) { __Pyx_RaiseArgtupleInvalid("_translateEv", 1, 1, 1, i); __PYX_ERR(0, 302, __pyx_L3_error) }
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_ArgRef_FASTCALL(__pyx_args, 0);
-      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 306, __pyx_L3_error)
+      if (!CYTHON_ASSUME_SAFE_MACROS && unlikely(!values[0])) __PYX_ERR(0, 302, __pyx_L3_error)
     }
     __pyx_v_ev = values[0];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("_translateEv", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 306, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("_translateEv", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 302, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
     Py_XDECREF(values[__pyx_temp]);
   }
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events._translateEv", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events._translateEv", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_translateEv(__pyx_self, __pyx_v_ev);
+  __pyx_r = __pyx_pf_10BlazeSudio_12graphicsCore_6Events_4_translateEv(__pyx_self, __pyx_v_ev);
 
   /* function exit code */
   for (Py_ssize_t __pyx_temp=0; __pyx_temp < (Py_ssize_t)(sizeof(values)/sizeof(values[0])); ++__pyx_temp) {
@@ -7780,7 +7609,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_translateEv(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_ev) {
+static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6Events_4_translateEv(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_ev) {
   PyObject *__pyx_v_map = NULL;
   PyObject *__pyx_v_evtyp = NULL;
   PyObject *__pyx_v_typ = NULL;
@@ -7798,7 +7627,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_translateEv", 0);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":307
+  /* "BlazeSudio/orig/graphicsCore/Events.py":303
  * 
  * def _translateEv(ev):
  *     map = _getEvMap()             # <<<<<<<<<<<<<<
@@ -7806,7 +7635,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
  *         evtyp, typ = map[ev.type]
 */
   __pyx_t_2 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_getEvMap); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 307, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_mstate_global->__pyx_n_u_getEvMap); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 303, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = 1;
   #if CYTHON_UNPACK_METHODS
@@ -7825,35 +7654,35 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
     __pyx_t_1 = __Pyx_PyObject_FastCall((PyObject*)__pyx_t_3, __pyx_callargs+__pyx_t_4, (1-__pyx_t_4) | (__pyx_t_4*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 307, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 303, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   }
   __pyx_v_map = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":308
+  /* "BlazeSudio/orig/graphicsCore/Events.py":304
  * def _translateEv(ev):
  *     map = _getEvMap()
  *     if ev.type in map:             # <<<<<<<<<<<<<<
  *         evtyp, typ = map[ev.type]
  *         return evtyp._from_sdl(ev, typ)
 */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 308, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_map, Py_EQ)); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 308, __pyx_L1_error)
+  __pyx_t_5 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_v_map, Py_EQ)); if (unlikely((__pyx_t_5 < 0))) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_5) {
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":309
+    /* "BlazeSudio/orig/graphicsCore/Events.py":305
  *     map = _getEvMap()
  *     if ev.type in map:
  *         evtyp, typ = map[ev.type]             # <<<<<<<<<<<<<<
  *         return evtyp._from_sdl(ev, typ)
  *     return None
 */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 309, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ev, __pyx_mstate_global->__pyx_n_u_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 305, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyObject_GetItem(__pyx_v_map, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 309, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetItem(__pyx_v_map, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 305, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if ((likely(PyTuple_CheckExact(__pyx_t_3))) || (PyList_CheckExact(__pyx_t_3))) {
@@ -7862,7 +7691,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
       if (unlikely(size != 2)) {
         if (size > 2) __Pyx_RaiseTooManyValuesError(2);
         else if (size >= 0) __Pyx_RaiseNeedMoreValuesError(size);
-        __PYX_ERR(0, 309, __pyx_L1_error)
+        __PYX_ERR(0, 305, __pyx_L1_error)
       }
       #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
       if (likely(PyTuple_CheckExact(sequence))) {
@@ -7872,22 +7701,22 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
         __Pyx_INCREF(__pyx_t_2);
       } else {
         __pyx_t_1 = __Pyx_PyList_GetItemRefFast(sequence, 0, __Pyx_ReferenceSharing_SharedReference);
-        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 309, __pyx_L1_error)
+        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 305, __pyx_L1_error)
         __Pyx_XGOTREF(__pyx_t_1);
         __pyx_t_2 = __Pyx_PyList_GetItemRefFast(sequence, 1, __Pyx_ReferenceSharing_SharedReference);
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 309, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 305, __pyx_L1_error)
         __Pyx_XGOTREF(__pyx_t_2);
       }
       #else
-      __pyx_t_1 = __Pyx_PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 309, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PySequence_ITEM(sequence, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 305, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 309, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PySequence_ITEM(sequence, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 305, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       #endif
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     } else {
       Py_ssize_t index = -1;
-      __pyx_t_6 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 309, __pyx_L1_error)
+      __pyx_t_6 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 305, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __pyx_t_7 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_6);
@@ -7895,7 +7724,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
       __Pyx_GOTREF(__pyx_t_1);
       index = 1; __pyx_t_2 = __pyx_t_7(__pyx_t_6); if (unlikely(!__pyx_t_2)) goto __pyx_L4_unpacking_failed;
       __Pyx_GOTREF(__pyx_t_2);
-      if (__Pyx_IternextUnpackEndCheck(__pyx_t_7(__pyx_t_6), 2) < (0)) __PYX_ERR(0, 309, __pyx_L1_error)
+      if (__Pyx_IternextUnpackEndCheck(__pyx_t_7(__pyx_t_6), 2) < (0)) __PYX_ERR(0, 305, __pyx_L1_error)
       __pyx_t_7 = NULL;
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       goto __pyx_L5_unpacking_done;
@@ -7903,7 +7732,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __pyx_t_7 = NULL;
       if (__Pyx_IterFinish() == 0) __Pyx_RaiseNeedMoreValuesError(index);
-      __PYX_ERR(0, 309, __pyx_L1_error)
+      __PYX_ERR(0, 305, __pyx_L1_error)
       __pyx_L5_unpacking_done:;
     }
     __pyx_v_evtyp = __pyx_t_1;
@@ -7911,7 +7740,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
     __pyx_v_typ = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":310
+    /* "BlazeSudio/orig/graphicsCore/Events.py":306
  *     if ev.type in map:
  *         evtyp, typ = map[ev.type]
  *         return evtyp._from_sdl(ev, typ)             # <<<<<<<<<<<<<<
@@ -7926,14 +7755,14 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
       PyObject *__pyx_callargs[3] = {__pyx_t_2, __pyx_v_ev, __pyx_v_typ};
       __pyx_t_3 = __Pyx_PyObject_FastCallMethod((PyObject*)__pyx_mstate_global->__pyx_n_u_from_sdl, __pyx_callargs+__pyx_t_4, (3-__pyx_t_4) | (1*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
       __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 310, __pyx_L1_error)
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 306, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
     }
     __pyx_r = __pyx_t_3;
     __pyx_t_3 = 0;
     goto __pyx_L0;
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":308
+    /* "BlazeSudio/orig/graphicsCore/Events.py":304
  * def _translateEv(ev):
  *     map = _getEvMap()
  *     if ev.type in map:             # <<<<<<<<<<<<<<
@@ -7942,7 +7771,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
 */
   }
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":311
+  /* "BlazeSudio/orig/graphicsCore/Events.py":307
  *         evtyp, typ = map[ev.type]
  *         return evtyp._from_sdl(ev, typ)
  *     return None             # <<<<<<<<<<<<<<
@@ -7953,7 +7782,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":306
+  /* "BlazeSudio/orig/graphicsCore/Events.py":302
  * 
  * 
  * def _translateEv(ev):             # <<<<<<<<<<<<<<
@@ -7967,7 +7796,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_AddTraceback("BlazeSudio.graphicsCore._generated.Events._translateEv", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("BlazeSudio.graphicsCore.Events._translateEv", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_map);
@@ -7979,16 +7808,16 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_10_generated_6Events_4_tra
 }
 /* #### Code section: module_exttypes ### */
 
-static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass))))
   {
-    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass[--__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass];
+    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass[--__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass];
     #if CYTHON_USE_TYPE_SPECS
     Py_DECREF(Py_TYPE(o));
     #endif
-    memset(o, 0, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass));
+    memset(o, 0, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass));
     #if CYTHON_COMPILING_IN_LIMITED_API
     (void) PyObject_Init(o, t);
     #else
@@ -8004,11 +7833,11 @@ static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events__
   return o;
 }
 
-static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass(PyObject *o) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *)o;
+static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass(PyObject *o) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
@@ -8018,9 +7847,9 @@ static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___
   Py_CLEAR(p->__pyx_v_defaults);
   Py_CLEAR(p->__pyx_v_fields);
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass))))
   {
-    __pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass[__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass++] = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *)o);
+    __pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass[__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass++] = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *)o);
   } else
   #endif
   {
@@ -8039,9 +7868,9 @@ static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___
   }
 }
 
-static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *)o;
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *)o;
   {
     e = __Pyx_call_type_traverse(o, 1, v, a);
     if (e) return e;
@@ -8058,9 +7887,9 @@ static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___
   return 0;
 }
 
-static int __pyx_tp_clear_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass(PyObject *o) {
+static int __pyx_tp_clear_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass(PyObject *o) {
   PyObject* tmp;
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *)o;
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *)o;
   tmp = ((PyObject*)p->__pyx_v_cls);
   p->__pyx_v_cls = Py_None; Py_INCREF(Py_None);
   Py_XDECREF(tmp);
@@ -8073,28 +7902,28 @@ static int __pyx_tp_clear_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx
   return 0;
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass_slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass},
-  {Py_tp_clear, (void *)__pyx_tp_clear_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass},
-  {Py_tp_new, (void *)__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass},
+static PyType_Slot __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass},
+  {Py_tp_traverse, (void *)__pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass},
+  {Py_tp_clear, (void *)__pyx_tp_clear_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass},
+  {Py_tp_new, (void *)__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass_spec = {
-  "BlazeSudio.graphicsCore._generated.Events.__pyx_scope_struct__Dataclass",
-  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass),
+static PyType_Spec __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass_spec = {
+  "BlazeSudio.graphicsCore.Events.__pyx_scope_struct__Dataclass",
+  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC,
-  __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass_slots,
+  __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass_slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass = {
+static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass = {
   PyVarObject_HEAD_INIT(0, 0)
-  "BlazeSudio.graphicsCore._generated.Events.""__pyx_scope_struct__Dataclass", /*tp_name*/
-  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass), /*tp_basicsize*/
+  "BlazeSudio.graphicsCore.Events.""__pyx_scope_struct__Dataclass", /*tp_name*/
+  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass, /*tp_dealloc*/
+  __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -8111,8 +7940,8 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass, /*tp_traverse*/
-  __pyx_tp_clear_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass, /*tp_clear*/
+  __pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass, /*tp_traverse*/
+  __pyx_tp_clear_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
@@ -8129,7 +7958,7 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass, /*tp_new*/
+  __pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -8162,16 +7991,16 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
 };
 #endif
 
-static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__))))
   {
-    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__[--__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__];
+    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__[--__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__];
     #if CYTHON_USE_TYPE_SPECS
     Py_DECREF(Py_TYPE(o));
     #endif
-    memset(o, 0, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__));
+    memset(o, 0, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__));
     #if CYTHON_COMPILING_IN_LIMITED_API
     (void) PyObject_Init(o, t);
     #else
@@ -8187,11 +8016,11 @@ static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events__
   return o;
 }
 
-static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__(PyObject *o) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *)o;
+static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__(PyObject *o) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
@@ -8200,9 +8029,9 @@ static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___
   Py_CLEAR(p->__pyx_outer_scope);
   Py_CLEAR(p->__pyx_v_self);
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__))))
   {
-    __pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__[__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__++] = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *)o);
+    __pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__[__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__++] = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *)o);
   } else
   #endif
   {
@@ -8221,9 +8050,9 @@ static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___
   }
 }
 
-static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *)o;
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *)o;
   {
     e = __Pyx_call_type_traverse(o, 1, v, a);
     if (e) return e;
@@ -8237,11 +8066,11 @@ static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___
   return 0;
 }
 
-static int __pyx_tp_clear_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__(PyObject *o) {
+static int __pyx_tp_clear_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__(PyObject *o) {
   PyObject* tmp;
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ *)o;
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ *)o;
   tmp = ((PyObject*)p->__pyx_outer_scope);
-  p->__pyx_outer_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass *)Py_None); Py_INCREF(Py_None);
+  p->__pyx_outer_scope = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass *)Py_None); Py_INCREF(Py_None);
   Py_XDECREF(tmp);
   tmp = ((PyObject*)p->__pyx_v_self);
   p->__pyx_v_self = Py_None; Py_INCREF(Py_None);
@@ -8249,28 +8078,28 @@ static int __pyx_tp_clear_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx
   return 0;
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr___slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__},
-  {Py_tp_clear, (void *)__pyx_tp_clear_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__},
-  {Py_tp_new, (void *)__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__},
+static PyType_Slot __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr___slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__},
+  {Py_tp_traverse, (void *)__pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__},
+  {Py_tp_clear, (void *)__pyx_tp_clear_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__},
+  {Py_tp_new, (void *)__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr___spec = {
-  "BlazeSudio.graphicsCore._generated.Events.__pyx_scope_struct_1___repr__",
-  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__),
+static PyType_Spec __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr___spec = {
+  "BlazeSudio.graphicsCore.Events.__pyx_scope_struct_1___repr__",
+  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC,
-  __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr___slots,
+  __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr___slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ = {
+static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ = {
   PyVarObject_HEAD_INIT(0, 0)
-  "BlazeSudio.graphicsCore._generated.Events.""__pyx_scope_struct_1___repr__", /*tp_name*/
-  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__), /*tp_basicsize*/
+  "BlazeSudio.graphicsCore.Events.""__pyx_scope_struct_1___repr__", /*tp_name*/
+  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__, /*tp_dealloc*/
+  __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -8287,8 +8116,8 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__, /*tp_traverse*/
-  __pyx_tp_clear_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__, /*tp_clear*/
+  __pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__, /*tp_traverse*/
+  __pyx_tp_clear_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
@@ -8305,7 +8134,7 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__, /*tp_new*/
+  __pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -8338,16 +8167,16 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
 };
 #endif
 
-static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr))))
   {
-    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr[--__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr];
+    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr[--__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr];
     #if CYTHON_USE_TYPE_SPECS
     Py_DECREF(Py_TYPE(o));
     #endif
-    memset(o, 0, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr));
+    memset(o, 0, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr));
     #if CYTHON_COMPILING_IN_LIMITED_API
     (void) PyObject_Init(o, t);
     #else
@@ -8363,11 +8192,11 @@ static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events__
   return o;
 }
 
-static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr(PyObject *o) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *)o;
+static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr(PyObject *o) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
@@ -8378,9 +8207,9 @@ static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___
   Py_CLEAR(p->__pyx_v_name);
   Py_CLEAR(p->__pyx_t_0);
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr))))
   {
-    __pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr[__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr++] = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *)o);
+    __pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr[__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr++] = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *)o);
   } else
   #endif
   {
@@ -8399,9 +8228,9 @@ static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___
   }
 }
 
-static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr *)o;
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr *)o;
   {
     e = __Pyx_call_type_traverse(o, 1, v, a);
     if (e) return e;
@@ -8421,27 +8250,27 @@ static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___
   return 0;
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr_slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr},
-  {Py_tp_new, (void *)__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr},
+static PyType_Slot __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr},
+  {Py_tp_traverse, (void *)__pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr},
+  {Py_tp_new, (void *)__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr_spec = {
-  "BlazeSudio.graphicsCore._generated.Events.__pyx_scope_struct_2_genexpr",
-  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr),
+static PyType_Spec __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr_spec = {
+  "BlazeSudio.graphicsCore.Events.__pyx_scope_struct_2_genexpr",
+  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC,
-  __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr_slots,
+  __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr_slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr = {
+static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr = {
   PyVarObject_HEAD_INIT(0, 0)
-  "BlazeSudio.graphicsCore._generated.Events.""__pyx_scope_struct_2_genexpr", /*tp_name*/
-  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr), /*tp_basicsize*/
+  "BlazeSudio.graphicsCore.Events.""__pyx_scope_struct_2_genexpr", /*tp_name*/
+  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr, /*tp_dealloc*/
+  __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -8458,7 +8287,7 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr, /*tp_traverse*/
+  __pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr, /*tp_traverse*/
   0, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
@@ -8476,7 +8305,7 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr, /*tp_new*/
+  __pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -8509,16 +8338,16 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
 };
 #endif
 
-static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__))))
   {
-    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__[--__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__];
+    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__[--__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__];
     #if CYTHON_USE_TYPE_SPECS
     Py_DECREF(Py_TYPE(o));
     #endif
-    memset(o, 0, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__));
+    memset(o, 0, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__));
     #if CYTHON_COMPILING_IN_LIMITED_API
     (void) PyObject_Init(o, t);
     #else
@@ -8533,20 +8362,20 @@ static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events__
   return o;
 }
 
-static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__(PyObject *o) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ *)o;
+static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__(PyObject *o) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && (!PyType_IS_GC(Py_TYPE(o)) || !__Pyx_PyObject_GC_IsFinalized(o))) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
   #endif
   Py_CLEAR(p->__pyx_v_typ);
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__))))
   {
-    __pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__[__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__++] = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ *)o);
+    __pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__[__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__++] = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ *)o);
   } else
   #endif
   {
@@ -8565,26 +8394,26 @@ static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___
   }
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new___slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__},
-  {Py_tp_new, (void *)__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__},
+static PyType_Slot __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new___slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__},
+  {Py_tp_new, (void *)__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new___spec = {
-  "BlazeSudio.graphicsCore._generated.Events.__pyx_scope_struct_3___new__",
-  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__),
+static PyType_Spec __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new___spec = {
+  "BlazeSudio.graphicsCore.Events.__pyx_scope_struct_3___new__",
+  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER,
-  __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new___slots,
+  __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new___slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ = {
+static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ = {
   PyVarObject_HEAD_INIT(0, 0)
-  "BlazeSudio.graphicsCore._generated.Events.""__pyx_scope_struct_3___new__", /*tp_name*/
-  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__), /*tp_basicsize*/
+  "BlazeSudio.graphicsCore.Events.""__pyx_scope_struct_3___new__", /*tp_name*/
+  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__, /*tp_dealloc*/
+  __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -8619,7 +8448,7 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__, /*tp_new*/
+  __pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -8652,16 +8481,16 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
 };
 #endif
 
-static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
   PyObject *o;
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr > 0) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(t, __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr))))
   {
-    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr[--__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr];
+    o = (PyObject*)__pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr[--__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr];
     #if CYTHON_USE_TYPE_SPECS
     Py_DECREF(Py_TYPE(o));
     #endif
-    memset(o, 0, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr));
+    memset(o, 0, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr));
     #if CYTHON_COMPILING_IN_LIMITED_API
     (void) PyObject_Init(o, t);
     #else
@@ -8677,11 +8506,11 @@ static PyObject *__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events__
   return o;
 }
 
-static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr(PyObject *o) {
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *)o;
+static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr(PyObject *o) {
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *)o;
   #if CYTHON_USE_TP_FINALIZE
   if (unlikely(__Pyx_PyObject_GetSlot(o, tp_finalize, destructor)) && !__Pyx_PyObject_GC_IsFinalized(o)) {
-    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr) {
+    if (__Pyx_PyObject_GetSlot(o, tp_dealloc, destructor) == __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr) {
       if (PyObject_CallFinalizerFromDealloc(o)) return;
     }
   }
@@ -8691,9 +8520,9 @@ static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___
   Py_CLEAR(p->__pyx_genexpr_arg_0);
   Py_CLEAR(p->__pyx_v_k);
   #if CYTHON_USE_FREELISTS
-  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr))))
+  if (likely((int)(__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr < 8) & __PYX_CHECK_FINAL_TYPE_FOR_FREELISTS(Py_TYPE(o), __pyx_mstate_global->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr, sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr))))
   {
-    __pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr[__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr++] = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *)o);
+    __pyx_mstate_global->__pyx_freelist_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr[__pyx_mstate_global->__pyx_freecount_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr++] = ((struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *)o);
   } else
   #endif
   {
@@ -8712,9 +8541,9 @@ static void __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___
   }
 }
 
-static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr *)o;
+  struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *p = (struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr *)o;
   {
     e = __Pyx_call_type_traverse(o, 1, v, a);
     if (e) return e;
@@ -8731,27 +8560,27 @@ static int __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___
   return 0;
 }
 #if CYTHON_USE_TYPE_SPECS
-static PyType_Slot __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr_slots[] = {
-  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr},
-  {Py_tp_traverse, (void *)__pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr},
-  {Py_tp_new, (void *)__pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr},
+static PyType_Slot __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr_slots[] = {
+  {Py_tp_dealloc, (void *)__pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr},
+  {Py_tp_traverse, (void *)__pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr},
+  {Py_tp_new, (void *)__pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr},
   {0, 0},
 };
-static PyType_Spec __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr_spec = {
-  "BlazeSudio.graphicsCore._generated.Events.__pyx_scope_struct_4_genexpr",
-  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr),
+static PyType_Spec __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr_spec = {
+  "BlazeSudio.graphicsCore.Events.__pyx_scope_struct_4_genexpr",
+  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr),
   0,
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC,
-  __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr_slots,
+  __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr_slots,
 };
 #else
 
-static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr = {
+static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr = {
   PyVarObject_HEAD_INIT(0, 0)
-  "BlazeSudio.graphicsCore._generated.Events.""__pyx_scope_struct_4_genexpr", /*tp_name*/
-  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr), /*tp_basicsize*/
+  "BlazeSudio.graphicsCore.Events.""__pyx_scope_struct_4_genexpr", /*tp_name*/
+  sizeof(struct __pyx_obj_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr, /*tp_dealloc*/
+  __pyx_tp_dealloc_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr, /*tp_dealloc*/
   0, /*tp_vectorcall_offset*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -8768,7 +8597,7 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
   0, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
   0, /*tp_doc*/
-  __pyx_tp_traverse_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr, /*tp_traverse*/
+  __pyx_tp_traverse_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr, /*tp_traverse*/
   0, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
@@ -8786,7 +8615,7 @@ static PyTypeObject __pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events_
   #endif
   0, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr, /*tp_new*/
+  __pyx_tp_new_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -8842,7 +8671,7 @@ static int __Pyx_modinit_global_init_code(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   __Pyx_RefNannySetupContext("__Pyx_modinit_global_init_code", 0);
   /*--- Global init code ---*/
-  __pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_10_generated_6Events_ev = Py_None; Py_INCREF(Py_None);
+  __pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_6Events_ev = Py_None; Py_INCREF(Py_None);
   __Pyx_RefNannyFinishContext();
   return 0;
 }
@@ -8874,98 +8703,98 @@ static int __Pyx_modinit_type_init_code(__pyx_mstatetype *__pyx_mstate) {
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass)) __PYX_ERR(0, 98, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass_spec, __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass) < (0)) __PYX_ERR(0, 98, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass)) __PYX_ERR(0, 98, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass_spec, __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass) < (0)) __PYX_ERR(0, 98, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass = &__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass;
+  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass = &__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass) < (0)) __PYX_ERR(0, 98, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass) < (0)) __PYX_ERR(0, 98, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass->tp_dictoffset && __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct__Dataclass->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass->tp_dictoffset && __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct__Dataclass->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr___spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__)) __PYX_ERR(0, 142, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr___spec, __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__) < (0)) __PYX_ERR(0, 142, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr___spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__)) __PYX_ERR(0, 138, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr___spec, __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__) < (0)) __PYX_ERR(0, 138, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__ = &__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__;
+  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__ = &__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__) < (0)) __PYX_ERR(0, 142, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__) < (0)) __PYX_ERR(0, 138, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__->tp_dictoffset && __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_1___repr__->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__->tp_dictoffset && __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_1___repr__->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr)) __PYX_ERR(0, 143, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr_spec, __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr) < (0)) __PYX_ERR(0, 143, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr)) __PYX_ERR(0, 139, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr_spec, __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr) < (0)) __PYX_ERR(0, 139, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr = &__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr;
+  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr = &__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr) < (0)) __PYX_ERR(0, 143, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr) < (0)) __PYX_ERR(0, 139, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_2_genexpr->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_2_genexpr->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new___spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__)) __PYX_ERR(0, 167, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new___spec, __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__) < (0)) __PYX_ERR(0, 167, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new___spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__)) __PYX_ERR(0, 163, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new___spec, __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__) < (0)) __PYX_ERR(0, 163, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__ = &__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__;
+  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__ = &__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__) < (0)) __PYX_ERR(0, 167, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__) < (0)) __PYX_ERR(0, 163, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__->tp_dictoffset && __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_3___new__->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__->tp_dictoffset && __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_3___new__->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   #if CYTHON_USE_TYPE_SPECS
-  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr)) __PYX_ERR(0, 189, __pyx_L1_error)
-  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr_spec, __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr) < (0)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr = (PyTypeObject *) __Pyx_PyType_FromModuleAndSpec(__pyx_m, &__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr_spec, NULL); if (unlikely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr)) __PYX_ERR(0, 185, __pyx_L1_error)
+  if (__Pyx_fix_up_extension_type_from_spec(&__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr_spec, __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr) < (0)) __PYX_ERR(0, 185, __pyx_L1_error)
   #else
-  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr = &__pyx_type_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr;
+  __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr = &__pyx_type_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr;
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
   #endif
   #if !CYTHON_USE_TYPE_SPECS
-  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr) < (0)) __PYX_ERR(0, 189, __pyx_L1_error)
+  if (__Pyx_PyType_Ready(__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr) < (0)) __PYX_ERR(0, 185, __pyx_L1_error)
   #endif
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
-  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr);
+  PyUnstable_Object_EnableDeferredRefcount((PyObject*)__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr);
   #endif
   #if !CYTHON_COMPILING_IN_LIMITED_API
-  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
-    __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_10_generated_6Events___pyx_scope_struct_4_genexpr->tp_getattro = PyObject_GenericGetAttr;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr->tp_dictoffset && __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr->tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_mstate->__pyx_ptype_10BlazeSudio_12graphicsCore_6Events___pyx_scope_struct_4_genexpr->tp_getattro = PyObject_GenericGetAttr;
   }
   #endif
   __Pyx_RefNannyFinishContext();
@@ -9253,13 +9082,13 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   if (__Pyx_InitConstants(__pyx_mstate) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   stringtab_initialized = 1;
   if (__Pyx_InitGlobals() < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  if (__pyx_module_is_main_BlazeSudio__graphicsCore___generated__Events) {
+  if (__pyx_module_is_main_BlazeSudio__graphicsCore__Events) {
     if (PyObject_SetAttr(__pyx_m, __pyx_mstate_global->__pyx_n_u_name, __pyx_mstate_global->__pyx_n_u_main) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
-    if (!PyDict_GetItemString(modules, "BlazeSudio.graphicsCore._generated.Events")) {
-      if (unlikely((PyDict_SetItemString(modules, "BlazeSudio.graphicsCore._generated.Events", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (!PyDict_GetItemString(modules, "BlazeSudio.graphicsCore.Events")) {
+      if (unlikely((PyDict_SetItemString(modules, "BlazeSudio.graphicsCore.Events", __pyx_m) < 0))) __PYX_ERR(0, 1, __pyx_L1_error)
     }
   }
   /*--- Builtin init code ---*/
@@ -9277,7 +9106,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   (void)__Pyx_modinit_function_import_code(__pyx_mstate);
   /*--- Execution code ---*/
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":1
+  /* "BlazeSudio/orig/graphicsCore/Events.py":1
  * from types import MappingProxyType             # <<<<<<<<<<<<<<
  * from typing import TypeVar, Self
  * from enum import IntEnum
@@ -9299,7 +9128,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":2
+  /* "BlazeSudio/orig/graphicsCore/Events.py":2
  * from types import MappingProxyType
  * from typing import TypeVar, Self             # <<<<<<<<<<<<<<
  * from enum import IntEnum
@@ -9322,7 +9151,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":3
+  /* "BlazeSudio/orig/graphicsCore/Events.py":3
  * from types import MappingProxyType
  * from typing import TypeVar, Self
  * from enum import IntEnum             # <<<<<<<<<<<<<<
@@ -9346,7 +9175,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":4
+  /* "BlazeSudio/orig/graphicsCore/Events.py":4
  * from typing import TypeVar, Self
  * from enum import IntEnum
  * import sdl2             # <<<<<<<<<<<<<<
@@ -9359,7 +9188,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_sdl2, __pyx_t_2) < (0)) __PYX_ERR(0, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":6
+  /* "BlazeSudio/orig/graphicsCore/Events.py":6
  * import sdl2
  * 
  * class EvTyp(IntEnum):             # <<<<<<<<<<<<<<
@@ -9375,14 +9204,14 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_5 = __Pyx_CalculateMetaclass(NULL, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 6, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_Py3MetaclassPrepare(__pyx_t_5, __pyx_t_2, __pyx_mstate_global->__pyx_n_u_EvTyp, __pyx_mstate_global->__pyx_n_u_EvTyp, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, (PyObject *) NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 6, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_Py3MetaclassPrepare(__pyx_t_5, __pyx_t_2, __pyx_mstate_global->__pyx_n_u_EvTyp, __pyx_mstate_global->__pyx_n_u_EvTyp, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, (PyObject *) NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 6, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   if (__pyx_t_2 != __pyx_t_4) {
     if (unlikely((PyDict_SetItemString(__pyx_t_6, "__orig_bases__", __pyx_t_4) < 0))) __PYX_ERR(0, 6, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":7
+  /* "BlazeSudio/orig/graphicsCore/Events.py":7
  * 
  * class EvTyp(IntEnum):
  *     Quit = 0x0             # <<<<<<<<<<<<<<
@@ -9391,7 +9220,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Quit, __pyx_mstate_global->__pyx_int_0) < (0)) __PYX_ERR(0, 7, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":10
+  /* "BlazeSudio/orig/graphicsCore/Events.py":10
  *     """When the user exits the program"""
  * 
  *     Keyboard = 0x1             # <<<<<<<<<<<<<<
@@ -9400,7 +9229,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Keyboard, __pyx_mstate_global->__pyx_int_1) < (0)) __PYX_ERR(0, 10, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":12
+  /* "BlazeSudio/orig/graphicsCore/Events.py":12
  *     Keyboard = 0x1
  *     """A general keyboard event"""
  *     KeyDown = 0x11             # <<<<<<<<<<<<<<
@@ -9409,7 +9238,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_KeyDown, __pyx_mstate_global->__pyx_int_17) < (0)) __PYX_ERR(0, 12, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":14
+  /* "BlazeSudio/orig/graphicsCore/Events.py":14
  *     KeyDown = 0x11
  *     """The user just pressed a physical key (for text inputs please use KeyType)"""
  *     KeyUp = 0x21             # <<<<<<<<<<<<<<
@@ -9418,7 +9247,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_KeyUp, __pyx_mstate_global->__pyx_int_33) < (0)) __PYX_ERR(0, 14, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":16
+  /* "BlazeSudio/orig/graphicsCore/Events.py":16
  *     KeyUp = 0x21
  *     """The user just released a physical key"""
  *     KeyType = 0x31             # <<<<<<<<<<<<<<
@@ -9427,7 +9256,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_KeyType, __pyx_mstate_global->__pyx_int_49) < (0)) __PYX_ERR(0, 16, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":18
+  /* "BlazeSudio/orig/graphicsCore/Events.py":18
  *     KeyType = 0x31
  *     """The user just typed some text (this is preferred over keydown for text inputting as it allows IMEs to work)"""
  *     KeyTyping = 0x41             # <<<<<<<<<<<<<<
@@ -9436,7 +9265,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_KeyTyping, __pyx_mstate_global->__pyx_int_65) < (0)) __PYX_ERR(0, 18, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":21
+  /* "BlazeSudio/orig/graphicsCore/Events.py":21
  *     """The user is currently typing text with their IME"""
  * 
  *     Mouse = 0x2             # <<<<<<<<<<<<<<
@@ -9445,7 +9274,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Mouse, __pyx_mstate_global->__pyx_int_2) < (0)) __PYX_ERR(0, 21, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":23
+  /* "BlazeSudio/orig/graphicsCore/Events.py":23
  *     Mouse = 0x2
  *     """A general mouse event"""
  *     MouseClick = 0x12             # <<<<<<<<<<<<<<
@@ -9454,7 +9283,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_MouseClick, __pyx_mstate_global->__pyx_int_18) < (0)) __PYX_ERR(0, 23, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":25
+  /* "BlazeSudio/orig/graphicsCore/Events.py":25
  *     MouseClick = 0x12
  *     """A mouse button's press state just changed (use MouseDown or MouseUp for finer controll as needed)"""
  *     MouseDown = 0x112             # <<<<<<<<<<<<<<
@@ -9463,7 +9292,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_MouseDown, __pyx_mstate_global->__pyx_int_274) < (0)) __PYX_ERR(0, 25, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":27
+  /* "BlazeSudio/orig/graphicsCore/Events.py":27
  *     MouseDown = 0x112
  *     """A mouse button was just pressed"""
  *     MouseUp = 0x212             # <<<<<<<<<<<<<<
@@ -9472,7 +9301,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_MouseUp, __pyx_mstate_global->__pyx_int_530) < (0)) __PYX_ERR(0, 27, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":29
+  /* "BlazeSudio/orig/graphicsCore/Events.py":29
  *     MouseUp = 0x212
  *     """A mouse button was just released"""
  *     MouseMove = 0x22             # <<<<<<<<<<<<<<
@@ -9481,7 +9310,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_MouseMove, __pyx_mstate_global->__pyx_int_34) < (0)) __PYX_ERR(0, 29, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":31
+  /* "BlazeSudio/orig/graphicsCore/Events.py":31
  *     MouseMove = 0x22
  *     """The mouse was just moved"""
  *     MouseScroll = 0x32             # <<<<<<<<<<<<<<
@@ -9490,7 +9319,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_MouseScroll, __pyx_mstate_global->__pyx_int_50) < (0)) __PYX_ERR(0, 31, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":34
+  /* "BlazeSudio/orig/graphicsCore/Events.py":34
  *     """The mouse was just scrolled"""
  * 
  *     FileDrop = 0x3             # <<<<<<<<<<<<<<
@@ -9499,7 +9328,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_FileDrop, __pyx_mstate_global->__pyx_int_3) < (0)) __PYX_ERR(0, 34, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":36
+  /* "BlazeSudio/orig/graphicsCore/Events.py":36
  *     FileDrop = 0x3
  *     """A generic file drop event"""
  *     FileDropStart = 0x13             # <<<<<<<<<<<<<<
@@ -9508,7 +9337,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_FileDropStart, __pyx_mstate_global->__pyx_int_19) < (0)) __PYX_ERR(0, 36, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":38
+  /* "BlazeSudio/orig/graphicsCore/Events.py":38
  *     FileDropStart = 0x13
  *     """Something is beginning to get dropped onto the window"""
  *     FileDropEnd   = 0x23             # <<<<<<<<<<<<<<
@@ -9517,7 +9346,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_FileDropEnd, __pyx_mstate_global->__pyx_int_35) < (0)) __PYX_ERR(0, 38, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":40
+  /* "BlazeSudio/orig/graphicsCore/Events.py":40
  *     FileDropEnd   = 0x23
  *     """Something finished getting dropped onto the window (to handle what, use FileDropText or FileDropFile)"""
  *     FileDropText  = 0x33             # <<<<<<<<<<<<<<
@@ -9526,7 +9355,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_FileDropText, __pyx_mstate_global->__pyx_int_51) < (0)) __PYX_ERR(0, 40, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":42
+  /* "BlazeSudio/orig/graphicsCore/Events.py":42
  *     FileDropText  = 0x33
  *     """Text was dropped onto the window (may have multiple events if the OS drops it in chunks)"""
  *     FileDropFile  = 0x43             # <<<<<<<<<<<<<<
@@ -9535,7 +9364,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_FileDropFile, __pyx_mstate_global->__pyx_int_67) < (0)) __PYX_ERR(0, 42, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":45
+  /* "BlazeSudio/orig/graphicsCore/Events.py":45
  *     """A file was dropped onto the window (only one file - multiple events happen for multiple files)"""
  * 
  *     Controller = 0x4             # <<<<<<<<<<<<<<
@@ -9544,7 +9373,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Controller, __pyx_mstate_global->__pyx_int_4) < (0)) __PYX_ERR(0, 45, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":47
+  /* "BlazeSudio/orig/graphicsCore/Events.py":47
  *     Controller = 0x4
  *     """A controller event has occurred"""
  *     ContrDevice = 0x14             # <<<<<<<<<<<<<<
@@ -9553,7 +9382,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_ContrDevice, __pyx_mstate_global->__pyx_int_20) < (0)) __PYX_ERR(0, 47, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":49
+  /* "BlazeSudio/orig/graphicsCore/Events.py":49
  *     ContrDevice = 0x14
  *     """A controller has been connected, disconnected or updated"""
  *     ContrDevConnect = 0x114             # <<<<<<<<<<<<<<
@@ -9562,7 +9391,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_ContrDevConnect, __pyx_mstate_global->__pyx_int_276) < (0)) __PYX_ERR(0, 49, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":51
+  /* "BlazeSudio/orig/graphicsCore/Events.py":51
  *     ContrDevConnect = 0x114
  *     """A controller was connected"""
  *     ContrDevDiscon = 0x214             # <<<<<<<<<<<<<<
@@ -9571,7 +9400,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_ContrDevDiscon, __pyx_mstate_global->__pyx_int_532) < (0)) __PYX_ERR(0, 51, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":53
+  /* "BlazeSudio/orig/graphicsCore/Events.py":53
  *     ContrDevDiscon = 0x214
  *     """A controller was disconnected"""
  *     ContrDevRemap = 0x314             # <<<<<<<<<<<<<<
@@ -9580,7 +9409,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_ContrDevRemap, __pyx_mstate_global->__pyx_int_788) < (0)) __PYX_ERR(0, 53, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":55
+  /* "BlazeSudio/orig/graphicsCore/Events.py":55
  *     ContrDevRemap = 0x314
  *     """A controller was remapped"""
  *     ContrAxis = 0x24             # <<<<<<<<<<<<<<
@@ -9589,7 +9418,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_ContrAxis, __pyx_mstate_global->__pyx_int_36) < (0)) __PYX_ERR(0, 55, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":57
+  /* "BlazeSudio/orig/graphicsCore/Events.py":57
  *     ContrAxis = 0x24
  *     """A controller had an axis event (e.g. from a joystick)"""
  *     ContrBtn = 0x34             # <<<<<<<<<<<<<<
@@ -9598,7 +9427,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_ContrBtn, __pyx_mstate_global->__pyx_int_52) < (0)) __PYX_ERR(0, 57, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":59
+  /* "BlazeSudio/orig/graphicsCore/Events.py":59
  *     ContrBtn = 0x34
  *     """A controller had a button event"""
  *     ContrBtnDown = 0x134             # <<<<<<<<<<<<<<
@@ -9607,7 +9436,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_ContrBtnDown, __pyx_mstate_global->__pyx_int_308) < (0)) __PYX_ERR(0, 59, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":61
+  /* "BlazeSudio/orig/graphicsCore/Events.py":61
  *     ContrBtnDown = 0x134
  *     """A controller button was pressed"""
  *     ContrBtnUp = 0x234             # <<<<<<<<<<<<<<
@@ -9616,7 +9445,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_ContrBtnUp, __pyx_mstate_global->__pyx_int_564) < (0)) __PYX_ERR(0, 61, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":63
+  /* "BlazeSudio/orig/graphicsCore/Events.py":63
  *     ContrBtnUp = 0x234
  *     """A controller button was released"""
  *     ContrSensor = 0x44             # <<<<<<<<<<<<<<
@@ -9625,7 +9454,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_ContrSensor, __pyx_mstate_global->__pyx_int_68) < (0)) __PYX_ERR(0, 63, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":67
+  /* "BlazeSudio/orig/graphicsCore/Events.py":67
  *     # If someone wants controller touchpad events one day it's under SDL_CONTROLLERTOUCHPADDOWN, SDL_CONTROLLERTOUCHPADUP and SDL_CONTROLLERTOUCHPADMOTION
  * 
  *     Touch = 0x5             # <<<<<<<<<<<<<<
@@ -9634,7 +9463,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Touch, __pyx_mstate_global->__pyx_int_5) < (0)) __PYX_ERR(0, 67, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":69
+  /* "BlazeSudio/orig/graphicsCore/Events.py":69
  *     Touch = 0x5
  *     """A general touch event"""
  *     TouchSingle = 0x15             # <<<<<<<<<<<<<<
@@ -9643,7 +9472,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_TouchSingle, __pyx_mstate_global->__pyx_int_21) < (0)) __PYX_ERR(0, 69, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":71
+  /* "BlazeSudio/orig/graphicsCore/Events.py":71
  *     TouchSingle = 0x15
  *     """A touch event with a single finger has occurred"""
  *     TouchMulti  = 0x25             # <<<<<<<<<<<<<<
@@ -9652,7 +9481,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_TouchMulti, __pyx_mstate_global->__pyx_int_37) < (0)) __PYX_ERR(0, 71, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":73
+  /* "BlazeSudio/orig/graphicsCore/Events.py":73
  *     TouchMulti  = 0x25
  *     """A touch event with multiple fingers has occurred"""
  *     TouchDollar = 0x35             # <<<<<<<<<<<<<<
@@ -9661,7 +9490,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_TouchDollar, __pyx_mstate_global->__pyx_int_53) < (0)) __PYX_ERR(0, 73, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":76
+  /* "BlazeSudio/orig/graphicsCore/Events.py":76
  *     """A touch event that follows a preset dollar pattern that was defined earlier has occurred"""
  * 
  *     Clipboard = 0x6             # <<<<<<<<<<<<<<
@@ -9670,7 +9499,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Clipboard, __pyx_mstate_global->__pyx_int_6) < (0)) __PYX_ERR(0, 76, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":79
+  /* "BlazeSudio/orig/graphicsCore/Events.py":79
  *     """The clipboard has been changed"""
  * 
  *     Audio = 0x7             # <<<<<<<<<<<<<<
@@ -9679,7 +9508,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Audio, __pyx_mstate_global->__pyx_int_7) < (0)) __PYX_ERR(0, 79, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":81
+  /* "BlazeSudio/orig/graphicsCore/Events.py":81
  *     Audio = 0x7
  *     """An audio device has been added or removed"""
  *     AudioAdded = 0x17             # <<<<<<<<<<<<<<
@@ -9688,7 +9517,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_AudioAdded, __pyx_mstate_global->__pyx_int_23) < (0)) __PYX_ERR(0, 81, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":83
+  /* "BlazeSudio/orig/graphicsCore/Events.py":83
  *     AudioAdded = 0x17
  *     """An audio device has been added"""
  *     AudioRemoved = 0x27             # <<<<<<<<<<<<<<
@@ -9697,7 +9526,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_AudioRemoved, __pyx_mstate_global->__pyx_int_39) < (0)) __PYX_ERR(0, 83, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":86
+  /* "BlazeSudio/orig/graphicsCore/Events.py":86
  *     """An audio device has been removed"""
  * 
  *     Sensor = 0x8             # <<<<<<<<<<<<<<
@@ -9706,7 +9535,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Sensor, __pyx_mstate_global->__pyx_int_8) < (0)) __PYX_ERR(0, 86, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":89
+  /* "BlazeSudio/orig/graphicsCore/Events.py":89
  *     """A sensor has had an update"""
  * 
  *     Window = 0x9             # <<<<<<<<<<<<<<
@@ -9715,7 +9544,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Window, __pyx_mstate_global->__pyx_int_9) < (0)) __PYX_ERR(0, 89, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":93
+  /* "BlazeSudio/orig/graphicsCore/Events.py":93
  * 
  * 
  *     User = 0xF             # <<<<<<<<<<<<<<
@@ -9724,7 +9553,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 */
   if (__Pyx_SetNameInClass(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_User, __pyx_mstate_global->__pyx_int_15) < (0)) __PYX_ERR(0, 93, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":6
+  /* "BlazeSudio/orig/graphicsCore/Events.py":6
  * import sdl2
  * 
  * class EvTyp(IntEnum):             # <<<<<<<<<<<<<<
@@ -9742,7 +9571,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":97
+  /* "BlazeSudio/orig/graphicsCore/Events.py":97
  * 
  * 
  * T = TypeVar("T")             # <<<<<<<<<<<<<<
@@ -9764,47 +9593,47 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_T, __pyx_t_2) < (0)) __PYX_ERR(0, 97, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":98
+  /* "BlazeSudio/orig/graphicsCore/Events.py":98
  * 
  * T = TypeVar("T")
  * def Dataclass(cls: T) -> T:             # <<<<<<<<<<<<<<
  *     annotations = getattr(cls, '__annotations__', {})
  *     fields = list(annotations.keys())
 */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_1Dataclass, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 98, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_1Dataclass, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 98, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_Dataclass, __pyx_t_2) < (0)) __PYX_ERR(0, 98, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":163
+  /* "BlazeSudio/orig/graphicsCore/Events.py":159
  * 
  * @Dataclass
  * class Event:             # <<<<<<<<<<<<<<
  *     timestamp: int
  *     typ: int
 */
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Event, __pyx_mstate_global->__pyx_n_u_Event, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_mstate_global->__pyx_empty_tuple, __pyx_mstate_global->__pyx_n_u_Event, __pyx_mstate_global->__pyx_n_u_Event, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, (PyObject *) NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 159, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_6 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 159, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_timestamp, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 163, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_typ, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 163, __pyx_L1_error)
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_6) < (0)) __PYX_ERR(0, 163, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_timestamp, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 159, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_typ, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 159, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_6) < (0)) __PYX_ERR(0, 159, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":167
+  /* "BlazeSudio/orig/graphicsCore/Events.py":163
  *     typ: int
  * 
  *     def __new__(cls, var: 'Event', typ: int = None) -> Self:             # <<<<<<<<<<<<<<
  *         """
  *         Check and type convert to an Event type
 */
-  __pyx_t_6 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 167, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyDict_NewPresized(3); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 163, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_var, __pyx_mstate_global->__pyx_kp_u_Event_2) < (0)) __PYX_ERR(0, 167, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_typ, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 167, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_Self) < (0)) __PYX_ERR(0, 167, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_1__new__, __Pyx_CYFUNCTION_STATICMETHOD, __pyx_mstate_global->__pyx_n_u_Event___new, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 167, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_var, __pyx_mstate_global->__pyx_kp_u_Event_2) < (0)) __PYX_ERR(0, 163, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_typ, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 163, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_Self) < (0)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_5Event_1__new__, __Pyx_CYFUNCTION_STATICMETHOD, __pyx_mstate_global->__pyx_n_u_Event___new, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[2])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 163, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -9812,73 +9641,73 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_5, __pyx_mstate_global->__pyx_tuple[0]);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_5, __pyx_t_6);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (__Pyx_SetNewInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_new, __pyx_t_5) < (0)) __PYX_ERR(0, 167, __pyx_L1_error)
+  if (__Pyx_SetNewInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_new, __pyx_t_5) < (0)) __PYX_ERR(0, 163, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":197
+  /* "BlazeSudio/orig/graphicsCore/Events.py":193
  *         return var
  * 
- *     def __init__(self, *args, **kwargs): ...             # <<<<<<<<<<<<<<
+ *     def __init__(self, *args, **kwargs): pass             # <<<<<<<<<<<<<<
  * 
  *     _types = {}
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_3__init__, 0, __pyx_mstate_global->__pyx_n_u_Event___init, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 197, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_5Event_3__init__, 0, __pyx_mstate_global->__pyx_n_u_Event___init, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[3])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 193, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
   #endif
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_init_2, __pyx_t_5) < (0)) __PYX_ERR(0, 197, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_init, __pyx_t_5) < (0)) __PYX_ERR(0, 193, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":199
- *     def __init__(self, *args, **kwargs): ...
+  /* "BlazeSudio/orig/graphicsCore/Events.py":195
+ *     def __init__(self, *args, **kwargs): pass
  * 
  *     _types = {}             # <<<<<<<<<<<<<<
  *     @classmethod
  *     def _from_sdl(this, cls, ev, typ, **kwargs):
 */
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 199, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 195, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_types, __pyx_t_5) < (0)) __PYX_ERR(0, 199, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_types, __pyx_t_5) < (0)) __PYX_ERR(0, 195, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":200
+  /* "BlazeSudio/orig/graphicsCore/Events.py":196
  * 
  *     _types = {}
  *     @classmethod             # <<<<<<<<<<<<<<
  *     def _from_sdl(this, cls, ev, typ, **kwargs):
  *         return cls.create(
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_5_from_sdl, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_mstate_global->__pyx_n_u_Event__from_sdl, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 200, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_5Event_5_from_sdl, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_mstate_global->__pyx_n_u_Event__from_sdl, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[4])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 196, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
   #endif
-  __pyx_t_6 = __Pyx_Method_ClassMethod(__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 200, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_Method_ClassMethod(__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 196, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_from_sdl, __pyx_t_6) < (0)) __PYX_ERR(0, 200, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_from_sdl, __pyx_t_6) < (0)) __PYX_ERR(0, 196, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":207
+  /* "BlazeSudio/orig/graphicsCore/Events.py":203
  *             **kwargs
  *         )
  *     @classmethod             # <<<<<<<<<<<<<<
  *     def create(cls, **kwargs):
  *         """
 */
-  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_5Event_7create, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_mstate_global->__pyx_n_u_Event_create, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 207, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_5Event_7create, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_mstate_global->__pyx_n_u_Event_create, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[5])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 203, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_6);
   #endif
-  __pyx_t_5 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 207, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 203, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_create, __pyx_t_5) < (0)) __PYX_ERR(0, 207, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_create, __pyx_t_5) < (0)) __PYX_ERR(0, 203, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":162
+  /* "BlazeSudio/orig/graphicsCore/Events.py":158
  *     return NewCls
  * 
  * @Dataclass             # <<<<<<<<<<<<<<
@@ -9886,17 +9715,17 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
  *     timestamp: int
 */
   __pyx_t_6 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_Dataclass); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 162, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_Dataclass); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 158, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":163
+  /* "BlazeSudio/orig/graphicsCore/Events.py":159
  * 
  * @Dataclass
  * class Event:             # <<<<<<<<<<<<<<
  *     timestamp: int
  *     typ: int
 */
-  __pyx_t_8 = __Pyx_Py3ClassCreate(((PyObject*)&PyType_Type), __pyx_mstate_global->__pyx_n_u_Event, __pyx_mstate_global->__pyx_empty_tuple, __pyx_t_2, NULL, 0, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_Py3ClassCreate(((PyObject*)&PyType_Type), __pyx_mstate_global->__pyx_n_u_Event, __pyx_mstate_global->__pyx_empty_tuple, __pyx_t_2, NULL, 0, 0); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 159, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_8);
@@ -9908,80 +9737,80 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 162, __pyx_L1_error)
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 158, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
   }
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_Event, __pyx_t_5) < (0)) __PYX_ERR(0, 163, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_Event, __pyx_t_5) < (0)) __PYX_ERR(0, 159, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":218
+  /* "BlazeSudio/orig/graphicsCore/Events.py":214
  * 
  * @Dataclass
  * class QuitEvent(Event):             # <<<<<<<<<<<<<<
  *     _types = { sdl2.SDL_QUIT: EvTyp.Quit }
  * 
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_Event); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_Event); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = PyTuple_Pack(1, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_Pack(1, __pyx_t_2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PEP560_update_bases(__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PEP560_update_bases(__pyx_t_5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_CalculateMetaclass(NULL, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_CalculateMetaclass(NULL, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_8 = __Pyx_Py3MetaclassPrepare(__pyx_t_4, __pyx_t_2, __pyx_mstate_global->__pyx_n_u_QuitEvent, __pyx_mstate_global->__pyx_n_u_QuitEvent, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, (PyObject *) NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_Py3MetaclassPrepare(__pyx_t_4, __pyx_t_2, __pyx_mstate_global->__pyx_n_u_QuitEvent, __pyx_mstate_global->__pyx_n_u_QuitEvent, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, (PyObject *) NULL); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   if (__pyx_t_2 != __pyx_t_5) {
-    if (unlikely((PyDict_SetItemString(__pyx_t_8, "__orig_bases__", __pyx_t_5) < 0))) __PYX_ERR(0, 218, __pyx_L1_error)
+    if (unlikely((PyDict_SetItemString(__pyx_t_8, "__orig_bases__", __pyx_t_5) < 0))) __PYX_ERR(0, 214, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":219
+  /* "BlazeSudio/orig/graphicsCore/Events.py":215
  * @Dataclass
  * class QuitEvent(Event):
  *     _types = { sdl2.SDL_QUIT: EvTyp.Quit }             # <<<<<<<<<<<<<<
  * 
  *     @classmethod
 */
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 219, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 219, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_SDL_QUIT); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 219, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_SDL_QUIT); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_EvTyp); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 219, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_EvTyp); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Quit); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 219, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_Quit); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyDict_SetItem(__pyx_t_5, __pyx_t_9, __pyx_t_10) < (0)) __PYX_ERR(0, 219, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_t_9, __pyx_t_10) < (0)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_types, __pyx_t_5) < (0)) __PYX_ERR(0, 219, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_types, __pyx_t_5) < (0)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":221
+  /* "BlazeSudio/orig/graphicsCore/Events.py":217
  *     _types = { sdl2.SDL_QUIT: EvTyp.Quit }
  * 
  *     @classmethod             # <<<<<<<<<<<<<<
  *     def _from_sdl(cls, ev, typ):
  *         return Event._from_sdl(cls, ev.quit, typ)
 */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_9QuitEvent_1_from_sdl, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_mstate_global->__pyx_n_u_QuitEvent__from_sdl, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 221, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_9QuitEvent_1_from_sdl, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_mstate_global->__pyx_n_u_QuitEvent__from_sdl, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[6])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 217, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
   #endif
-  __pyx_t_10 = __Pyx_Method_ClassMethod(__pyx_t_5); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 221, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_Method_ClassMethod(__pyx_t_5); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 217, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_from_sdl, __pyx_t_10) < (0)) __PYX_ERR(0, 221, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_from_sdl, __pyx_t_10) < (0)) __PYX_ERR(0, 217, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":217
+  /* "BlazeSudio/orig/graphicsCore/Events.py":213
  * 
  * 
  * @Dataclass             # <<<<<<<<<<<<<<
@@ -9989,17 +9818,17 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
  *     _types = { sdl2.SDL_QUIT: EvTyp.Quit }
 */
   __pyx_t_5 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_Dataclass); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 217, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_Dataclass); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":218
+  /* "BlazeSudio/orig/graphicsCore/Events.py":214
  * 
  * @Dataclass
  * class QuitEvent(Event):             # <<<<<<<<<<<<<<
  *     _types = { sdl2.SDL_QUIT: EvTyp.Quit }
  * 
 */
-  __pyx_t_6 = __Pyx_Py3ClassCreate(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_QuitEvent, __pyx_t_2, __pyx_t_8, NULL, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_Py3ClassCreate(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_QuitEvent, __pyx_t_2, __pyx_t_8, NULL, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_6);
@@ -10011,49 +9840,49 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 217, __pyx_L1_error)
+    if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 213, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
   }
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_QuitEvent, __pyx_t_10) < (0)) __PYX_ERR(0, 218, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_QuitEvent, __pyx_t_10) < (0)) __PYX_ERR(0, 214, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":226
+  /* "BlazeSudio/orig/graphicsCore/Events.py":222
  * 
  * @Dataclass
  * class KeyEvent(Event):             # <<<<<<<<<<<<<<
  *     window_id: int
  *     """ID of the window that received the event"""
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_Event); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 226, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_Event); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PyTuple_Pack(1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 226, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_Pack(1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PEP560_update_bases(__pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 226, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PEP560_update_bases(__pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_8 = __Pyx_CalculateMetaclass(NULL, __pyx_t_2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 226, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_CalculateMetaclass(NULL, __pyx_t_2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
-  __pyx_t_10 = __Pyx_Py3MetaclassPrepare(__pyx_t_8, __pyx_t_2, __pyx_mstate_global->__pyx_n_u_KeyEvent, __pyx_mstate_global->__pyx_n_u_KeyEvent, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, (PyObject *) NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 226, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_Py3MetaclassPrepare(__pyx_t_8, __pyx_t_2, __pyx_mstate_global->__pyx_n_u_KeyEvent, __pyx_mstate_global->__pyx_n_u_KeyEvent, (PyObject *) NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, (PyObject *) NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   if (__pyx_t_2 != __pyx_t_4) {
-    if (unlikely((PyDict_SetItemString(__pyx_t_10, "__orig_bases__", __pyx_t_4) < 0))) __PYX_ERR(0, 226, __pyx_L1_error)
+    if (unlikely((PyDict_SetItemString(__pyx_t_10, "__orig_bases__", __pyx_t_4) < 0))) __PYX_ERR(0, 222, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 226, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_window_id, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 226, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_state, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 226, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_repeat, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 226, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_scancode, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 226, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_keycode, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 226, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_modifiers, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 226, __pyx_L1_error)
-  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_4) < (0)) __PYX_ERR(0, 226, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_window_id, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 222, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_state, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 222, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_repeat, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 222, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_scancode, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 222, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_keycode, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 222, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_modifiers, __pyx_mstate_global->__pyx_n_u_int) < (0)) __PYX_ERR(0, 222, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_annotations, __pyx_t_4) < (0)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":234
+  /* "BlazeSudio/orig/graphicsCore/Events.py":230
  *     repeat: bool
  *     """True if this event is a repeated key press"""
  *     @property             # <<<<<<<<<<<<<<
@@ -10061,10 +9890,10 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
  *         """True if this event is the first press of the key, False if it's repeating or releasing"""
 */
   __pyx_t_9 = NULL;
-  __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 234, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 230, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 234, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_1initial, 0, __pyx_mstate_global->__pyx_n_u_KeyEvent_initial, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 234, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 230, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_1initial, 0, __pyx_mstate_global->__pyx_n_u_KeyEvent_initial, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[7])); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 230, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -10077,13 +9906,13 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
     __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)__pyx_builtin_property, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 234, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 230, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
   }
-  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_initial, __pyx_t_4) < (0)) __PYX_ERR(0, 234, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_initial, __pyx_t_4) < (0)) __PYX_ERR(0, 230, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":243
+  /* "BlazeSudio/orig/graphicsCore/Events.py":239
  *     keycode: int
  *     """Keycode of the key (abstracted from scancode)"""
  *     @property             # <<<<<<<<<<<<<<
@@ -10091,10 +9920,10 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
  *         """The string name of the scancode"""
 */
   __pyx_t_5 = NULL;
-  __pyx_t_9 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 243, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  if (PyDict_SetItem(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_str) < (0)) __PYX_ERR(0, 243, __pyx_L1_error)
-  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_3scode, 0, __pyx_mstate_global->__pyx_n_u_KeyEvent_scode, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 243, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_str) < (0)) __PYX_ERR(0, 239, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_3scode, 0, __pyx_mstate_global->__pyx_n_u_KeyEvent_scode, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[8])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_6);
@@ -10107,13 +9936,13 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
     __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)__pyx_builtin_property, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 243, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 239, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
   }
-  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_scode, __pyx_t_4) < (0)) __PYX_ERR(0, 243, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_scode, __pyx_t_4) < (0)) __PYX_ERR(0, 239, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":247
+  /* "BlazeSudio/orig/graphicsCore/Events.py":243
  *         """The string name of the scancode"""
  *         return sdl2.SDL_GetScancodeName(self.scancode).decode()
  *     @property             # <<<<<<<<<<<<<<
@@ -10121,10 +9950,10 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
  *         """The string name of the key"""
 */
   __pyx_t_6 = NULL;
-  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 247, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 243, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_str) < (0)) __PYX_ERR(0, 247, __pyx_L1_error)
-  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_5key, 0, __pyx_mstate_global->__pyx_n_u_KeyEvent_key, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 247, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_str) < (0)) __PYX_ERR(0, 243, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_5key, 0, __pyx_mstate_global->__pyx_n_u_KeyEvent_key, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[9])); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 243, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_9);
@@ -10137,29 +9966,29 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
     __pyx_t_4 = __Pyx_PyObject_FastCall((PyObject*)__pyx_builtin_property, __pyx_callargs+__pyx_t_7, (2-__pyx_t_7) | (__pyx_t_7*__Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET));
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 247, __pyx_L1_error)
+    if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 243, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
   }
-  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_key, __pyx_t_4) < (0)) __PYX_ERR(0, 247, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_key, __pyx_t_4) < (0)) __PYX_ERR(0, 243, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":253
+  /* "BlazeSudio/orig/graphicsCore/Events.py":249
  * 
  *     _modifiers: int
  *     def modifs(self, *, shift=False, ctrl=False, alt=False, gui=False) -> bool:             # <<<<<<<<<<<<<<
  *         """
  *         Find out if the specified modifiers are pressed when this key is
 */
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 253, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 249, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_shift, ((PyObject*)Py_False)) < (0)) __PYX_ERR(0, 253, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_ctrl, ((PyObject*)Py_False)) < (0)) __PYX_ERR(0, 253, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_alt, ((PyObject*)Py_False)) < (0)) __PYX_ERR(0, 253, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_gui, ((PyObject*)Py_False)) < (0)) __PYX_ERR(0, 253, __pyx_L1_error)
-  __pyx_t_9 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 253, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_shift, ((PyObject*)Py_False)) < (0)) __PYX_ERR(0, 249, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_ctrl, ((PyObject*)Py_False)) < (0)) __PYX_ERR(0, 249, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_alt, ((PyObject*)Py_False)) < (0)) __PYX_ERR(0, 249, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_gui, ((PyObject*)Py_False)) < (0)) __PYX_ERR(0, 249, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 249, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  if (PyDict_SetItem(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 253, __pyx_L1_error)
-  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_7modifs, 0, __pyx_mstate_global->__pyx_n_u_KeyEvent_modifs, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 253, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_return, __pyx_mstate_global->__pyx_n_u_bool) < (0)) __PYX_ERR(0, 249, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_7modifs, 0, __pyx_mstate_global->__pyx_n_u_KeyEvent_modifs, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[10])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 249, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_6);
@@ -10168,74 +9997,74 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   __Pyx_CyFunction_SetAnnotationsDict(__pyx_t_6, __pyx_t_9);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_modifs, __pyx_t_6) < (0)) __PYX_ERR(0, 253, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_modifs, __pyx_t_6) < (0)) __PYX_ERR(0, 249, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":268
+  /* "BlazeSudio/orig/graphicsCore/Events.py":264
  * 
  *     _types = {
  *         sdl2.SDL_KEYDOWN: EvTyp.KeyDown,             # <<<<<<<<<<<<<<
  *         sdl2.SDL_KEYUP: EvTyp.KeyUp
  *     }
 */
-  __pyx_t_6 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 268, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 264, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 268, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 264, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_SDL_KEYDOWN); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 268, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_SDL_KEYDOWN); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 264, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_EvTyp); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 268, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_EvTyp); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 264, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_KeyDown); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 268, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_mstate_global->__pyx_n_u_KeyDown); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 264, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  if (PyDict_SetItem(__pyx_t_6, __pyx_t_4, __pyx_t_5) < (0)) __PYX_ERR(0, 268, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_t_4, __pyx_t_5) < (0)) __PYX_ERR(0, 264, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":269
+  /* "BlazeSudio/orig/graphicsCore/Events.py":265
  *     _types = {
  *         sdl2.SDL_KEYDOWN: EvTyp.KeyDown,
  *         sdl2.SDL_KEYUP: EvTyp.KeyUp             # <<<<<<<<<<<<<<
  *     }
  *     @classmethod
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 269, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_sdl2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_SDL_KEYUP); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 269, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_SDL_KEYUP); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_EvTyp); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 269, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_EvTyp); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_KeyUp); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 269, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_mstate_global->__pyx_n_u_KeyUp); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (PyDict_SetItem(__pyx_t_6, __pyx_t_4, __pyx_t_9) < (0)) __PYX_ERR(0, 268, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_6, __pyx_t_4, __pyx_t_9) < (0)) __PYX_ERR(0, 264, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_types, __pyx_t_6) < (0)) __PYX_ERR(0, 267, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_types, __pyx_t_6) < (0)) __PYX_ERR(0, 263, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":271
+  /* "BlazeSudio/orig/graphicsCore/Events.py":267
  *         sdl2.SDL_KEYUP: EvTyp.KeyUp
  *     }
  *     @classmethod             # <<<<<<<<<<<<<<
  *     def _from_sdl(cls, ev, typ):
  *         ev = ev.key
 */
-  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_8KeyEvent_9_from_sdl, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_mstate_global->__pyx_n_u_KeyEvent__from_sdl, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 271, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_New(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_8KeyEvent_9_from_sdl, __Pyx_CYFUNCTION_CLASSMETHOD, __pyx_mstate_global->__pyx_n_u_KeyEvent__from_sdl, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events, __pyx_mstate_global->__pyx_d, ((PyObject *)__pyx_mstate_global->__pyx_codeobj_tab[11])); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 267, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_6);
   #endif
-  __pyx_t_9 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 271, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_Method_ClassMethod(__pyx_t_6); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 267, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_from_sdl, __pyx_t_9) < (0)) __PYX_ERR(0, 271, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_from_sdl, __pyx_t_9) < (0)) __PYX_ERR(0, 267, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":225
+  /* "BlazeSudio/orig/graphicsCore/Events.py":221
  *         return Event._from_sdl(cls, ev.quit, typ)
  * 
  * @Dataclass             # <<<<<<<<<<<<<<
@@ -10243,17 +10072,17 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
  *     window_id: int
 */
   __pyx_t_6 = NULL;
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_Dataclass); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 225, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_mstate_global->__pyx_n_u_Dataclass); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 221, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":226
+  /* "BlazeSudio/orig/graphicsCore/Events.py":222
  * 
  * @Dataclass
  * class KeyEvent(Event):             # <<<<<<<<<<<<<<
  *     window_id: int
  *     """ID of the window that received the event"""
 */
-  __pyx_t_5 = __Pyx_Py3ClassCreate(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_KeyEvent, __pyx_t_2, __pyx_t_10, NULL, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 226, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_Py3ClassCreate(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_KeyEvent, __pyx_t_2, __pyx_t_10, NULL, 0, 0); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   #if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030E0000
   PyUnstable_Object_EnableDeferredRefcount(__pyx_t_5);
@@ -10265,50 +10094,50 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 225, __pyx_L1_error)
+    if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 221, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
   }
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_KeyEvent, __pyx_t_9) < (0)) __PYX_ERR(0, 226, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_KeyEvent, __pyx_t_9) < (0)) __PYX_ERR(0, 222, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":286
+  /* "BlazeSudio/orig/graphicsCore/Events.py":282
  * 
  * EVENT_LIST = (
  *     QuitEvent,             # <<<<<<<<<<<<<<
  *     KeyEvent
  * )
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_QuitEvent); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 286, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_QuitEvent); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 282, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":287
+  /* "BlazeSudio/orig/graphicsCore/Events.py":283
  * EVENT_LIST = (
  *     QuitEvent,
  *     KeyEvent             # <<<<<<<<<<<<<<
  * )
  * EVENT_NAMES = [
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_KeyEvent); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 287, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_KeyEvent); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 283, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":286
+  /* "BlazeSudio/orig/graphicsCore/Events.py":282
  * 
  * EVENT_LIST = (
  *     QuitEvent,             # <<<<<<<<<<<<<<
  *     KeyEvent
  * )
 */
-  __pyx_t_10 = PyTuple_Pack(2, __pyx_t_2, __pyx_t_8); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 286, __pyx_L1_error)
+  __pyx_t_10 = PyTuple_Pack(2, __pyx_t_2, __pyx_t_8); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 282, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_EVENT_LIST, __pyx_t_10) < (0)) __PYX_ERR(0, 285, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_EVENT_LIST, __pyx_t_10) < (0)) __PYX_ERR(0, 281, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":289
+  /* "BlazeSudio/orig/graphicsCore/Events.py":285
  *     KeyEvent
  * )
  * EVENT_NAMES = [             # <<<<<<<<<<<<<<
@@ -10316,26 +10145,26 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
  * ]
 */
   { /* enter inner scope */
-    __pyx_t_10 = PyList_New(0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 289, __pyx_L4_error)
+    __pyx_t_10 = PyList_New(0); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 285, __pyx_L4_error)
     __Pyx_GOTREF(__pyx_t_10);
 
-    /* "BlazeSudio/graphicsCore/_lib/Events.py":290
+    /* "BlazeSudio/orig/graphicsCore/Events.py":286
  * )
  * EVENT_NAMES = [
  *     ev.__name__ for ev in EVENT_LIST             # <<<<<<<<<<<<<<
  * ]
  * 
 */
-    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_EVENT_LIST); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 290, __pyx_L4_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_8, __pyx_mstate_global->__pyx_n_u_EVENT_LIST); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 286, __pyx_L4_error)
     __Pyx_GOTREF(__pyx_t_8);
     if (likely(PyList_CheckExact(__pyx_t_8)) || PyTuple_CheckExact(__pyx_t_8)) {
       __pyx_t_2 = __pyx_t_8; __Pyx_INCREF(__pyx_t_2);
       __pyx_t_3 = 0;
       __pyx_t_11 = NULL;
     } else {
-      __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 290, __pyx_L4_error)
+      __pyx_t_3 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_8); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 286, __pyx_L4_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_11 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_2); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 290, __pyx_L4_error)
+      __pyx_t_11 = (CYTHON_COMPILING_IN_LIMITED_API) ? PyIter_Next : __Pyx_PyObject_GetIterNextFunc(__pyx_t_2); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 286, __pyx_L4_error)
     }
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     for (;;) {
@@ -10344,7 +10173,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
           {
             Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_2);
             #if !CYTHON_ASSUME_SAFE_SIZE
-            if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 290, __pyx_L4_error)
+            if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 286, __pyx_L4_error)
             #endif
             if (__pyx_t_3 >= __pyx_temp) break;
           }
@@ -10354,7 +10183,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
           {
             Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_2);
             #if !CYTHON_ASSUME_SAFE_SIZE
-            if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 290, __pyx_L4_error)
+            if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 286, __pyx_L4_error)
             #endif
             if (__pyx_t_3 >= __pyx_temp) break;
           }
@@ -10365,111 +10194,111 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
           #endif
           ++__pyx_t_3;
         }
-        if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 290, __pyx_L4_error)
+        if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 286, __pyx_L4_error)
       } else {
         __pyx_t_8 = __pyx_t_11(__pyx_t_2);
         if (unlikely(!__pyx_t_8)) {
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
-            if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) __PYX_ERR(0, 290, __pyx_L4_error)
+            if (unlikely(!__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) __PYX_ERR(0, 286, __pyx_L4_error)
             PyErr_Clear();
           }
           break;
         }
       }
       __Pyx_GOTREF(__pyx_t_8);
-      __Pyx_XGOTREF(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_10_generated_6Events_ev);
-      __Pyx_DECREF_SET(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_10_generated_6Events_ev, __pyx_t_8);
+      __Pyx_XGOTREF(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_6Events_ev);
+      __Pyx_DECREF_SET(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_6Events_ev, __pyx_t_8);
       __Pyx_GIVEREF(__pyx_t_8);
       __pyx_t_8 = 0;
-      __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_10_generated_6Events_ev, __pyx_mstate_global->__pyx_n_u_name); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 290, __pyx_L4_error)
+      __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_6Events_ev, __pyx_mstate_global->__pyx_n_u_name); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 286, __pyx_L4_error)
       __Pyx_GOTREF(__pyx_t_8);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_10, (PyObject*)__pyx_t_8))) __PYX_ERR(0, 289, __pyx_L4_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_10, (PyObject*)__pyx_t_8))) __PYX_ERR(0, 285, __pyx_L4_error)
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_GOTREF(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_10_generated_6Events_ev);
-    __Pyx_DECREF_SET(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_10_generated_6Events_ev, Py_None);
+    __Pyx_GOTREF(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_6Events_ev);
+    __Pyx_DECREF_SET(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_6Events_ev, Py_None);
     goto __pyx_L8_exit_scope;
     __pyx_L4_error:;
-    __Pyx_GOTREF(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_10_generated_6Events_ev);
-    __Pyx_DECREF_SET(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_10_generated_6Events_ev, Py_None);
+    __Pyx_GOTREF(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_6Events_ev);
+    __Pyx_DECREF_SET(__pyx_8genexpr2__pyx_v_10BlazeSudio_12graphicsCore_6Events_ev, Py_None);
     goto __pyx_L1_error;
     __pyx_L8_exit_scope:;
   } /* exit inner scope */
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_EVENT_NAMES, __pyx_t_10) < (0)) __PYX_ERR(0, 289, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_EVENT_NAMES, __pyx_t_10) < (0)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":293
+  /* "BlazeSudio/orig/graphicsCore/Events.py":289
  * ]
  * 
  * _EVENT_MAP = None             # <<<<<<<<<<<<<<
  * def _getEvMap():
  *     global _EVENT_MAP
 */
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_EVENT_MAP, Py_None) < (0)) __PYX_ERR(0, 293, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_EVENT_MAP, Py_None) < (0)) __PYX_ERR(0, 289, __pyx_L1_error)
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":294
+  /* "BlazeSudio/orig/graphicsCore/Events.py":290
  * 
  * _EVENT_MAP = None
  * def _getEvMap():             # <<<<<<<<<<<<<<
  *     global _EVENT_MAP
  *     if _EVENT_MAP is None:
 */
-  __pyx_t_10 = PyCFunction_NewEx(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_3_getEvMap, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 294, __pyx_L1_error)
+  __pyx_t_10 = PyCFunction_NewEx(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_3_getEvMap, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 290, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_getEvMap, __pyx_t_10) < (0)) __PYX_ERR(0, 294, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_getEvMap, __pyx_t_10) < (0)) __PYX_ERR(0, 290, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":306
+  /* "BlazeSudio/orig/graphicsCore/Events.py":302
  * 
  * 
  * def _translateEv(ev):             # <<<<<<<<<<<<<<
  *     map = _getEvMap()
  *     if ev.type in map:
 */
-  __pyx_t_10 = PyCFunction_NewEx(&__pyx_mdef_10BlazeSudio_12graphicsCore_10_generated_6Events_5_translateEv, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore__generat); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 306, __pyx_L1_error)
+  __pyx_t_10 = PyCFunction_NewEx(&__pyx_mdef_10BlazeSudio_12graphicsCore_6Events_5_translateEv, NULL, __pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_Events); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 302, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_10);
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_translateEv, __pyx_t_10) < (0)) __PYX_ERR(0, 306, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_translateEv, __pyx_t_10) < (0)) __PYX_ERR(0, 302, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":314
+  /* "BlazeSudio/orig/graphicsCore/Events.py":310
  * 
  * __all__ = [
  *     'EvTyp',             # <<<<<<<<<<<<<<
  *     'Event',
  *     'EVENT_LIST',
 */
-  __pyx_t_2 = PyList_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 314, __pyx_L1_error)
+  __pyx_t_2 = PyList_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 310, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_mstate_global->__pyx_n_u_EvTyp);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_n_u_EvTyp);
-  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 0, __pyx_mstate_global->__pyx_n_u_EvTyp) != (0)) __PYX_ERR(0, 314, __pyx_L1_error);
+  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 0, __pyx_mstate_global->__pyx_n_u_EvTyp) != (0)) __PYX_ERR(0, 310, __pyx_L1_error);
   __Pyx_INCREF(__pyx_mstate_global->__pyx_n_u_Event);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_n_u_Event);
-  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 1, __pyx_mstate_global->__pyx_n_u_Event) != (0)) __PYX_ERR(0, 314, __pyx_L1_error);
+  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 1, __pyx_mstate_global->__pyx_n_u_Event) != (0)) __PYX_ERR(0, 310, __pyx_L1_error);
   __Pyx_INCREF(__pyx_mstate_global->__pyx_n_u_EVENT_LIST);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_n_u_EVENT_LIST);
-  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 2, __pyx_mstate_global->__pyx_n_u_EVENT_LIST) != (0)) __PYX_ERR(0, 314, __pyx_L1_error);
+  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 2, __pyx_mstate_global->__pyx_n_u_EVENT_LIST) != (0)) __PYX_ERR(0, 310, __pyx_L1_error);
   __pyx_t_10 = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":317
+  /* "BlazeSudio/orig/graphicsCore/Events.py":313
  *     'Event',
  *     'EVENT_LIST',
  *     *EVENT_NAMES,             # <<<<<<<<<<<<<<
  *     '_translateEv'
  * ]
 */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_EVENT_NAMES); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 317, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_mstate_global->__pyx_n_u_EVENT_NAMES); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 313, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (__Pyx_PyList_Extend(__pyx_t_10, __pyx_t_2) < (0)) __PYX_ERR(0, 317, __pyx_L1_error)
+  if (__Pyx_PyList_Extend(__pyx_t_10, __pyx_t_2) < (0)) __PYX_ERR(0, 313, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (__Pyx_ListComp_Append(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_translateEv) < (0)) __PYX_ERR(0, 318, __pyx_L1_error)
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_all, __pyx_t_10) < (0)) __PYX_ERR(0, 313, __pyx_L1_error)
+  if (__Pyx_ListComp_Append(__pyx_t_10, __pyx_mstate_global->__pyx_n_u_translateEv) < (0)) __PYX_ERR(0, 314, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_all, __pyx_t_10) < (0)) __PYX_ERR(0, 309, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":1
+  /* "BlazeSudio/orig/graphicsCore/Events.py":1
  * from types import MappingProxyType             # <<<<<<<<<<<<<<
  * from typing import TypeVar, Self
  * from enum import IntEnum
@@ -10492,7 +10321,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
   __Pyx_XDECREF(__pyx_t_10);
   if (__pyx_m) {
     if (__pyx_mstate->__pyx_d && stringtab_initialized) {
-      __Pyx_AddTraceback("init BlazeSudio.graphicsCore._generated.Events", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init BlazeSudio.graphicsCore.Events", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     #if !CYTHON_USE_MODULE_STATE
     Py_CLEAR(__pyx_m);
@@ -10506,7 +10335,7 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
     }
     #endif
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init BlazeSudio.graphicsCore._generated.Events");
+    PyErr_SetString(PyExc_ImportError, "init BlazeSudio.graphicsCore.Events");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -10521,9 +10350,8 @@ __Pyx_RefNannySetupContext("PyInit_Events", 0);
 
 static int __Pyx_InitCachedBuiltins(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
-  __pyx_builtin_property = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_property); if (!__pyx_builtin_property) __PYX_ERR(0, 234, __pyx_L1_error)
-  __pyx_builtin_zip = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_zip); if (!__pyx_builtin_zip) __PYX_ERR(0, 118, __pyx_L1_error)
-  __pyx_builtin_object = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_object); if (!__pyx_builtin_object) __PYX_ERR(0, 212, __pyx_L1_error)
+  __pyx_builtin_property = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_property); if (!__pyx_builtin_property) __PYX_ERR(0, 230, __pyx_L1_error)
+  __pyx_builtin_object = __Pyx_GetBuiltinName(__pyx_mstate->__pyx_n_u_object); if (!__pyx_builtin_object) __PYX_ERR(0, 208, __pyx_L1_error)
 
   /* Cached unbound methods */
   __pyx_mstate->__pyx_umethod_PyDict_Type_items.type = (PyObject*)&PyDict_Type;
@@ -10543,14 +10371,14 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "BlazeSudio/graphicsCore/_lib/Events.py":167
+  /* "BlazeSudio/orig/graphicsCore/Events.py":163
  *     typ: int
  * 
  *     def __new__(cls, var: 'Event', typ: int = None) -> Self:             # <<<<<<<<<<<<<<
  *         """
  *         Check and type convert to an Event type
 */
-  __pyx_mstate_global->__pyx_tuple[0] = PyTuple_Pack(1, Py_None); if (unlikely(!__pyx_mstate_global->__pyx_tuple[0])) __PYX_ERR(0, 167, __pyx_L1_error)
+  __pyx_mstate_global->__pyx_tuple[0] = PyTuple_Pack(1, Py_None); if (unlikely(!__pyx_mstate_global->__pyx_tuple[0])) __PYX_ERR(0, 163, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_mstate_global->__pyx_tuple[0]);
   __Pyx_GIVEREF(__pyx_mstate_global->__pyx_tuple[0]);
   #if CYTHON_IMMORTAL_CONSTANTS
@@ -10576,34 +10404,34 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 8; } index[] = {{2},{38},{7},{17},{35},{55},{28},{29},{4},{179},{1},{1},{1},{1},{1},{8},{7},{6},{2},{9},{27},{5},{10},{12},{41},{9},{9},{8},{12},{10},{15},{14},{13},{11},{11},{10},{9},{44},{10},{10},{11},{5},{5},{14},{13},{30},{15},{12},{8},{11},{12},{13},{12},{7},{8},{9},{8},{10},{7},{8},{18},{16},{12},{15},{14},{7},{9},{5},{8},{16},{5},{10},{9},{9},{11},{7},{20},{4},{9},{19},{14},{19},{11},{9},{11},{8},{4},{6},{1},{5},{11},{10},{11},{7},{4},{6},{7},{3},{15},{4},{18},{9},{4},{17},{18},{5},{3},{6},{4},{6},{8},{7},{4},{2},{9},{8},{7},{9},{3},{5},{8},{7},{3},{13},{5},{1},{3},{7},{4},{6},{6},{8},{4},{13},{3},{10},{6},{10},{15},{8},{4},{7},{4},{1},{6},{3},{11},{8},{12},{4},{6},{8},{6},{8},{5},{4},{4},{4},{12},{10},{5},{9},{5},{3},{3},{8},{4},{5},{9},{12},{3},{4},{6},{5},{6},{6},{5},{6},{3},{11},{8},{9},{3},{90},{2},{2},{29},{83},{26},{20},{22},{23},{19},{90},{2}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (1507 bytes) */
-const char* const cstring = "BZh91AY&SY\316\037\307z\000\000a\177\377\374\377\377\374}\367\276\337\277\377\377\244\277\377\377\360@@@@@@@@\000@@@@\000@\000P\005\036\346n\3071\326\262fKe\234\006\246D\023J~J~\2314!\351=F\236M)\223\324\036\204\036\246\214\206\236\240\000\030\324mA\241\351\251\265=5<\247\265A\241\002b\r)\223\322`\247\244\332hCCOP4\032\000\000\000\000\000\320\000h\006\232\022b\010Q\344\230\323S\312i\240\007\251\241\240\006\200\000\000\000\000\007\250h\032h8\000\r\000\000\310\000\000\003!\243@\000\000\000\000\000\000\004\241!\251\204\311O\321\252{%6I\352f\223&\231\003@i\240\000\000\000\000\000\032i\240\323.:;i\257\260\246\303\177\017\323\207l\377S\374(\250)2S\265\033@\ty\205Y\\\025\2712\312\n\245\001\027\212B\334D\310\315Cjk\3758\231bFf{\263h]\301\352\324\340\034\207\204yG!\344\373~\371\024S\017\205Z\203\214V\024\321\022\337\212\005\250\017\234\177\220\026Jm\006\213\260j\333\020\322\220\030)\214k\022\203m\261\332f\337\230\373\323\217\003\242\371\013A\336\373\355\243\322HU3H3C\005\312\262\266\037\0168\022!O\242\356\303\001\201\250\331\242\272\010\215\004to\337ph?\251C;`\310\201\242A\014)<\243\345\273?\3566\3146kf\212XI\246\370\211\366\364|\002'\241\233>\275\267L'\272\231\376e\216\357\306{\027\2623l\017\326F\207R\255\004\001\306\257\006}o\225w\236\313\346\365_\244\2335[[<\330Ip\324BV\206\\L\272l@ \212\262\237\035z]\010\177<\241\016\2515\200\257\243z~Rp\235(\352O\307*).\245\216k\000QagX\206\003E1q\255]1,+\324\265\035\241M\361\324\234\375\212N\225v\331s]\355\032\353\n\021\342\305>s\216\242sJ\312\334\032a\302\223\036Kq\254\273P \353[T\013\005U@\320\026\324.`\014\227\327Z\013\005I\357\205\033\007E\263{\014N\310\2720\325c\245@\242\3665\021\2003\251r\213\312\315\027iX\260\320\266\000\201\333\031\246\305T\321\013)|$S\301P,!\210\010dT\000`\253\224\310\241\211\352\211\317\305\211~c\006\315#\217:\302\324S\013 p\021\311\2550>\034\322\247*\003\303\257E\361r\363\342\0056N\330\021\\\223\254\304\030\202B\027\214asF<\031\006\360\360\3073\010z\363y Z\320sC\333\204\313V\310B 7*\326\363(]\007\222\250=)E""\010r\rnQ\352(\252\025\250=A\231V\212\351\237R\004\277\r\216\245J\025/ \351\252!\337\240\233U\230,\246\272q*6\201\3435\020`<\307,\334\212\243\020W\3709\034\215`\201\210\303<\270\252Q\242\002\032\325\225QM\325\215\213(r#C;5\372\226\" \353\236\223\204\007\t\t\310\212\352!\232D\203\350\232\213Y\265\335`E1U\211\2476\2072\234\241\032j\237D\240\212\323\244D\323\320mTL\305AP\311\213R\272\224\275\216\3701\002\264\201\013f\212\216\211\332wK\352\020\315\236u\361\205@\362\306B\375\306\024\302\271e\230g\247x\316Ht\304\222K\313\240\374\234c\241\202\251\026\211\270\263\215\266\252!1(\364\325L\252\031^\313p\336\272b\274Q\300\202\265\257M\2230\345\273\320c$w4\216Dv\320\361\242D\211\273C\0059\330\301jZY>\241Frk\320\264\251H:\250\366\331\024\212k!RJoH\nX\300$\000\241\226\205\031S[\322\226\212\263R\324\206\313\305\005P\\4\001\214\256\033,\2458r\232L\337\261\\\315&\310\254\210(\221\023\310t!\277\025\240\010\025-B\200\312\241\"\316@#\352\"\262\204\301P\212\024B\374J\206\030\2444p2\210[\266\3642\227&\003\003\311\013\217\271\207J\304\241b\334i\006\350J\003<\264\312G\032x3&C\020Lo\337\315\303\024\017\264\021d\232\021x\307:p\210\2208\204n\347\315\350;\255,g\031P\326\350\264\002\252\201l\026\264\035\302\227\031\301\304 \0108\t\214\372c\216q\312\361\034\227oF\354aZ\021\314fj\320\371[\205peX3YY\231\214\3625\320\027Cn\230\266\265\271\3125\266\353\226\364\264\002Z\005/\303g\3038\225\220\025-\354\301r\344p\250\200\002\270\332\270\"\365\262\020eL\260$\326\272\203-O%x\000\227\213\232\2058Y\313\263A\215\325\023\327\325(\270-\214\324\030\272L\0252\rq\205\304\013rU\304i$\204\3135F\032\245\021%T@P\037:\226h\210\0050\205p\300py\236\265\260/\203\223j\021\202\243\210\226\323\016\213\365\221wy\345w\236\013\225K\261N&)\252qJ]/\232J\253nV*\301h\211\000\201Y\205U\316\260\316rcU\261\357D\202\3122@!\226\245\345I\321C\244\242A \021\005\016\2311\256\360\322\240p\360\026\364K^\367\243\220J\310\271\203\306\224q\020\242@\340\037\242\334?`\246\t\004:\270\010q|\3629\321\034b\255\\(\343\213\313\207\207\000<\303\233VI""\377\314\177\336A\333\311\234f\317\317\355\262*\013\333\273\367ol\325\260)\376$\214\254\003\340\263\265m\373;rl\356\377\265\263\357f\277\302\364c~i3\356L\277\311\353\274\361B\036\210\345\205 \224\224\246b\3335\224\225\332\\\311\t!\265\334\270\220\303?\361w$S\205\t\014\341\374w\240";
-    PyObject *data = __Pyx_DecompressString(cstring, 1507, 2);
+    const struct { const unsigned int length: 8; } index[] = {{2},{38},{7},{17},{35},{55},{28},{4},{179},{1},{1},{1},{1},{1},{8},{7},{6},{2},{9},{27},{5},{10},{12},{30},{9},{9},{8},{12},{10},{15},{14},{13},{11},{11},{10},{9},{44},{10},{10},{11},{5},{5},{14},{13},{30},{15},{12},{8},{11},{12},{13},{12},{7},{8},{9},{8},{10},{7},{8},{18},{16},{12},{15},{14},{7},{9},{5},{8},{16},{5},{10},{9},{9},{11},{7},{20},{4},{9},{19},{14},{19},{11},{9},{11},{8},{4},{6},{1},{5},{11},{10},{11},{7},{4},{6},{7},{3},{15},{4},{18},{9},{4},{17},{18},{5},{3},{6},{4},{8},{6},{8},{7},{4},{2},{9},{8},{7},{9},{3},{8},{7},{3},{13},{5},{1},{3},{7},{4},{6},{6},{8},{4},{13},{3},{10},{6},{10},{15},{8},{4},{7},{4},{1},{6},{3},{11},{8},{12},{4},{6},{8},{6},{8},{5},{4},{4},{4},{12},{10},{5},{9},{5},{3},{3},{8},{4},{5},{9},{12},{3},{4},{6},{5},{6},{6},{5},{6},{3},{11},{8},{9},{90},{2},{2},{31},{83},{26},{20},{22},{23},{19},{90},{2}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (1491 bytes) */
+const char* const cstring = "BZh91AY&SY\202\223\000\256\000\000_\377\377\374\377\377\374}\367\276\337\277\377\377\244\277\377\377\360@@@@@@@@\000@@@@\000@\000P\005\036\343t3\035\211RU\2468\303S(\023$\3624i\352S\364\325?F\251\345?&\251\345\031\r4\036\243CA\246\200\003G\244\365=@mM\251\3454\364\237\245?J\rB4\321\212i\352OQ\3512z!\247\250\0004\000\000\000\000\000\000\003@\000\r\032#D\021\352\217HOH\237\224\324\362j\003\3655\033P6\223@\000\000\000\032\00044\0322\034\000\006\200\000d\000\000\001\220\321\240\000\000\000\000\000\000\002SQ\023\325O\312zh\236\215S\331&Bz\230\t\352h4\000\320\000\000\000\000\000\003CF\231\222Z\3557\340\330F\303\266O\323\307\376\377\255\376\020\230D\315F\324\216\210\032\353\204\262\036\0252o*\013\351!\017\t,\360*\243J.j\221\250\231\250\336\350\277\374\357\303\227C\261\332\352/e|u\363;'\313\373\277U\025\177\302\356\320\362\214\2538V\376`c!\371\307nC\372\245ZM\016\303\003\257\215{\302B\367H\342W\030\343\035Zr\373'\315\251\3756\207aGLe\350.\t\356*o)\004\244\325\354\367\352\006\333\n\016Z\236m\333\2540D\"l\321m\004F\2027q\343p?j*S\266\014\210\032\020\251\316G\324\020\252w\376\2365\001\363Rc8\243\205\257\264\022\227'`\016 \2027\375d4\260N\252e\322%\307\370\265\222\256AY!\235\203\\0\342\226\314\006\tM\370\235f\233\266\031Z\002eH\034B\364)i\311\233).\032\210J\320\233=\007M\204\204\305eW\205\372\332\320\360\361\004:\252\226@\271\007\005\031\211\302t\243k\216T<\262\266\017U\320*0\263\254B\223Eq\201\253v\204\260\257\312\327\217\\Wxl2\365\332\316\225\306\3509~\254\027\026\024\243\317\236\213.:\206ZVf\323h8Rq\350\331\215e\332J\016\316\312\251X*\372\005\201H\301\363\200d\337=\311\031\024\257\210'\272\350q\351\313[\262\036I\177\254\274\273\361\033\233\010\244\302\335\201\335W\246nGjf2\341\260\002V<krj\"'\232\367\033kz\201\212\202\240\025D\304\002\202Jb\014\320\237\003J*\376\324O\205%\307d\225Y\262Ib\321\304a\000*;\227Ao\335c\364L\0133\006D\321.c\312#\360\255\304\220\222\330\210g\203\23013J\"C\202\204Q\213r\246TA\331\325\031\000AZ\207\003\316N\224bZ\302\245,\004Qm\264\224\212\230\013""\033\022\361\244\231\240x\301\244(A\010H*A\004\316rV\255\321,\372\321\265v\023\262Qa5\306\037\221;\036\t\232\306\346~\206\346\376\326mw\344\027\205f\202Av\341\326\013c\2547tA\2039\013\224D\270\025\305\364\211\310K\271\202\222.\3121zK\232&\316\315\277y\201\001v\236\345\324\220-\202\"i%T\336\202\270\323-\033L\024\331\254\"\365\230\323,\336(3V\303\211\036tk\2216x\007\231\023r\230Lg\345\353UJ.\355\301\017N\220r\"\316\"g\342\177\"\341y4si\035m\300R\020+s\027\255\270XVa^\031\350\324s\3327j\215,\267V\234\231\374uf2\325\266\316Pnr\317+ \2421\306\331\207R\222\312\274\221D\322\227\363\310\263\277\034\251%\317\263\202R\262\356\364\226\310\2569bu\367\314\315\r\222|Ch\320\366\204\344\313\211+\335e\310[-\024\317g\"L\204\342\205v\350\006\226Y\004\222M\214\310\321S\225)\310Y\256k\203n\352\221!\\4\202\305,\270\343ry\024\252Ut\342ER\263B\310\202t\023\201.\376[\323\242\":\245$\2009 \225ND4),Ui\253\244d\026\243\206\024\306\013\022\232\227\334\206,\331\203\031\252\262\273\006\234\245\270[\303\216\266\264\254ec\014CZ\024\227\232\226\210\327\301T\210z\022\205\373\372uB\007\342\020\311TQ\241y\365y\210\013\254O.\006\222\370<\273\027b\220\322\300\014\304\202q>\311\024C\224FQ\024q\210X\n\r*$\222q\352\014<\333+\227e~0\251\005\3208\272\331\342\363\313d/\322*I#\242\212\370\207\306zThw\210ey\351\207\251\200\003@\010\317w\0279a\220\244Im\343\305-\210\236`p\002\320\373\002\033[D(+\251v!S\205\354oz\027\220\t\241]o\027jgWf\223.F\273w\322\034+l[\3049\222T\022\341\254\302\310\r\251\204\016\370\330Q\326\373\266%\342\315\235\000\304S\006u%\301<\322\344\313\201K\"[\333\241\224)v\243\034\024\234&\262a\307\rvZ:U]\203,\024?.q\262\346\245\345\rp\274j\244\254\242\233\360#`\"Np\222\320\254\320{n\022\256\020f\212\271\363\342\030\314E\304\323\265:\221&L$Dj\250n\256\023\254>%\314\315\217\313\337op\226\200\301\3424a!L\201\357\326\310[g\353\024\322\r\004:?\222\030qre\2501\213\023A\231\025\"\362\346\340\312\017H\375\246J?\315\023p\214\037\331\307\372~Ou\340\370\305\335\335\336\305\274\374\242\276K\262\024\240\360""\336\352\365\036\275\326\223kr~oCsO\317\rX\307\207T\223\355\352_\025X\264E\010\253\250\345\206\330%\224QE\213h\326UE\332\231Te\0367[\231\204S\377\027rE8P\220\202\223\000\256";
+    PyObject *data = __Pyx_DecompressString(cstring, 1491, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (1364 bytes) */
-const char* const cstring = "x\332eUKo\0337\020NS\003\265\033\247\266\363N\332\003\335\006uR\244\n\334\272h\221\246\rdKv\025\333\212m\311\t\n\024 \250\345Hb\265\"\327$W\266r\312Q\307=\356q\217:\372\230\237\320\243\217:\346'\344't\310\325\303h-k\370\315\220\034~\363 \365\204l\206\354-\324b.\324\323\226fQ[\004fKixJC\321xZ\356\201\264\246\020\365\327<Z+\237E\020X\340\204Y\322U\306\222\035e\t\223$\2260\231\351@\377Ti\\\241[q\027\367\220\212\214bKl?\002\322\215qK\003\010\353\261P\260F\010DHb\333\302\220 d\306<!\r\\\211\232Tvu_\030#d\213h8\211\205\206\231C\363\214\354\307\241\025\021nG?1\030\322Tzv^UI\250*\013\350\030Yn\365m[I\347\224\003F\004\232Y\010\373\304X-\220\256v\213$9(\037|\277\361\313\006F\302\361\274\2771\020CL\334\360\244\320\275j\"1\201GJ\037\206)\220J\223\364UL$ /\253H\204\353.o\260m\220\304\200u\200\2541\211\3610+\224\244\270\035cZ#\034#\n\254\350\201\333\275\315B\003\205\337\036=.\274`\234S\\\014\\\030\227\036\220N\266\002ar\304I\244\214p\236X8\313\307\023\322\302*\024]\ts\3019p\217\216\240\253z\300g%.\\.q\201\266@\372\204\360B^\350\255PD\r\3054\337R\322\352\342\2310\036lZ9\031K\352t\212\217#\217J\320\303Qb<\023\265$L\240\344DC\022l\272R\004\340a\r\244Q\332C\025\206\240K\3142\237\275)(<\017U\200\231\371\275@\251\206HS:\2638\336g\221.\277.W\353t\257R\253\323\034\356\027\017rP-\356\227k\345^\275\037\371\300\274@?B\nK\351D\223p\372\037\345\377'\344\263M\255\272\324\3600W\003\r\230\263m\021BI\253h2\226%\277l\232\340\232e\332N\224:\234\331\n\322\221qww\377U\211\026\367\352~\334\252\037\355y\260s\\\361c\355\217\312v}\027\372.\3358\370s'\343\214\316\324\342\342\022l\246\343\035\234\342\256\342\242i\246*V\206\003j\230\232\361\200\r\211\3408B\341k\277\317\"g;\320\352\314\257\332W\261\311\005\266G\320\361\310\361\032\333{\371\\-p\205\364\3608\242\364\240\177\206\337\022\3361Z\305\240\217\240y\030\013\353\276\236\306\024\314\202\251\225\366\350\016\270(\253\254\013c\255\0260\351\010OL\273\345?K\257\336T\307\360\370\300\201\203\243r\255V.9xx\\\251\327 l\346\335U\257\2538h{QBnL{\350\337\016\217j""\030e\010.\304\327L\037\033\320o\204\344\n\333\200\205\241\023\330*\263\253kP\321-\303L_\006x\217\002\245U\214\017\002\240\275\301\214\037\224\302m\276w\361bYa\241\353T\\\203}G\255f\0014X\320\tBe \010M\336E\201\325!\007\027\"\245\334e\013\377\270\n(\005\354\021\350M\263Ci3\226h\036\367\245;\240\334\303J\265b1\356\352\231\304N\020\322Ra\350\224\245#c:\330\026\370\357\016\303\301\270o\277\3339uaQ\332eH\022\245\351\240\204\361\035D\2508\365\035$@\233\274\225\2741\016\301Q\355j\205L\361-u\t\300K\204e\232Jw\241\220\254U\252\341^\324Ha[Dx\223\231\006\007T\004\332\366)=\211Y\230\357\300w\336\342<\246er\3435\330XK3n\002\337\272\230\213\037\014\226\030_DN)\276\261\343\343\020qh2,\256i\213&z0\241\262H\312`\371\000_{\014\225R\207P\342\017\216mkujE\027\r\254\033\271\352H\023\342\312r\017\237h\367\310S\377\322O\004vJ\034q\234\367?8\371\257N\217!\303S`\035\rM\004\276w*\245|\244\202\277\025\321\305\334\203\364q\366\323p\351\374\344\343\303+\013\213\203\215\201IVG\213K\003\233\374\234~\223\276\311v\206\353\243\345\273\311\311h\361f\262>\232\277vq\355\253\2648Z\274\221|\207\303\362\312\207\371\305\301\326 N6\023H\177L\331x\325\322\340$-\276\303\317\307\317\257,\\\037l'\217\322\325\024\355\013\203;\336\277[\360\256\370a\376\372\340hp2B\027\233\003\346\214q\3622ei\234\225\206\237\214\026\357\245WS\244r\013}\267\322Z6\227\341\261\267\223z\272\222~\355\030 \247\024W\335I\230#w\037\315\253\316\345\022\036\260\226\256L\267\337\300\343\276XzW\034\335\177\340&]X\017S\236=\314\030\332n\337\311m/\262\325l#\353\237\177v\216\264Fw\357y\353\305\315\265\354d87|y\336z\177\230\273\236\360\333\314Z\303\303\213\271{\351\365\354\257\363/\337W\377Y\375\270|ea\031==Ouv+;t\363\243\245\233\311\257i\303\021\317^c\026Q}\226\036\2456[\317\312\303\225\313jq4\277\234\314%{\331\325\354\333\341\247\303\365\204\375\013\353\345x\212";
-    PyObject *data = __Pyx_DecompressString(cstring, 1364, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (1349 bytes) */
+const char* const cstring = "x\332eUKo\0337\020NR\003\265\033\247\266\363N\332\003\335\006uR\244\n\334:h\221\246\rdKv\225\330\212m\311\t\n\024 \250\345Hb\265\"\327$W\266z\312Q\307=\356q\217:\372\230\237\320\243\217:\346'\344't\310\325\303H-k\346\233\341\353\233\007\251\307d3d\377@-\346B=QZ\264\236\2644\213\332\"0[J\303\223r\017\2445\205\250\277\346\321Z\3714\202\300\002'\314\222\2562\226\354(K\230$\261\204\311H\007\372'J\343\014\335\212\273\270\206Td\024[b\373\021\220n\214K\032@X\217\205\2025B B\022\333\026\206\004!3\3461i\340L\264\244\262\253{\302\030![D\303q,4\31464\317HUI\250*\013\270\026\211l\365m[I\267\216C(\032\240\231\205\260O\214\325\002\031i7I\222\375\362\376\017\033\277l Y\216[\376\215\\\r1q\303\237\013\206\250&\236-B\353\370 SS \225&\351\253\230H\300\243\255\"\021\316\273\270\300\266A\022\003\326\001\262\306$RfV(Iq9\322^#\034I\007V\364\300\255\336f\241\201\302o\017\037\025^0\316)N\006.\214\313\000H'[\20109\342$RF\270\235X8\013\3711ia\242\213\256J\271\340\034\270G\207\320U=\340\263*\026.\026\260\220\027p+\024QC1\315\267\224\264\272x*\214\007\233VNtI\235L\361Q\344Q\tz\250%\00611K\302\004JN,<\231Mg\212\000<\254\2014J{\250\302\020t\211Y\346S6\005\205\347\241\n0\035\277\027(\325\020iJg\236\026\270>\322\3457\345j\235\356Vju\232\303\275\342~\016\252\305\275r\255\334\253\367#\037\230\027\270\217\220\302R:\261$\234|b\374\377\204|\264\251U\227\032\036\346f\240\001;g[\204P\322*\232\350\262\344\027]\023\\\263L\333\211Q\207S[A:2\356\276\332{]\242\305\335\272\327[\365\303]\017v\216*^\327\376\250l\327_A\337\245\033\225?w\242gt\246\036\027\227`3\033\357\326\024w\025\027M35\2612\034\320\302\324\214\025v!\202\243\010\205\257\375\036\213\234o_\253S?kO\305&\027\330\036A\307#\307k\354\357\345c\265\300\025\322\303\243\210\322\375\376)~Kx\261h\025\203>\204\346A,\254\373z\032S0\013\246V\332\245;\340\242\254\262.\214\255Z\300\244#<q\275*\377Yz\375\266:\206G\373\016\354\037\226k\265r\311\301\203\243J\275\006a3\357\256z]\305A\333\213\022rc\332\303\275\030o\257G5\2142\004\027\342\033\246\217\014\350\267Br\205m""\300\302\320\tl\225\331}5h\350\226a\246/\003\274<\201\322*\306W\000\320\337`\306+\245p\231\357]\332\002+,t\235\211s\260\357\250\325,\200\006\013:A\250\014\004\241\311\273(\260:\244<\360\235\311\301\205J)wY\303?\256\002J\001{\005z\323,Q\332\214%\272\307\375\351\016*\367\260b\255XL\332{\334\014BZ*\014\235\022u|L\007;\003\377\3359\250\214\373\366\273\235\023\027\031\245]\206<Q\232\016J\030_C\204\212S\337D\002\264\311\273\311;\343\020\034\313\256VH\022\337P\227\003\274GX\251\251tw\nyZ\245\032\356%\215\024vF\204\227\231ip@E\240m\237\322\343\230\205\371\n|\302-\216cf&\227^\203\215\2654\343>\360\335\213i\370\321`\225\361%\344\224\342\333:>\016\021\207&\303\372\232\266h\342\016&T\026I\031\254 \340+\217\241R\352\020J\374-\261m\255N\254\350\242\203u#W iB\234Y\356\341\323\354\036w\352_\370\211\300f\211#\216\343\370\233\024\347\302\364\0302<\001\326\321\320D\340\333\247R\3125\025\374|\356~\372({:\\:;\376\370\340\322\302\342`c`\222\325\321\342\322\300&?\247\337\246o\263\235\341\372h\371Nr<Z\274\221\254\217\346\257\236_\375:-\216\026\257'\337\243Z^\3710\2778\330\032\304\311f\002\351O)\033\317Z\032\034\247\305w\370\371\370\305\245\205k\203\355\344a\272\232\242\177ap/YM\236\246\227\375\224w\305\017\363\327\006\207\203\343\021n\2629`\316\031'/S\226\306Yixy\264x7\275\222\"\231\233\270{+\255es\031\036|+\251\247+\3517\216\003\262\302\235\026o'\314\321\273\207\356U\267\345\022\206\260\226\256L\227_\307\200\276\\zW\034\335\273\357\006]`\017R\236=\310\030\372n\335\316}/\262\325l#\353\237}~\206\264Fw\356z\357\371\215\265\354x87|y\326z\177\220o=\341\267\231\265\206\007\347sw\323k\331_g_\275\257\376\273\372q\371\322\3022\356\364<\325\331\315\354\300\215\217\226n$\277\246\rG<{\203yD\363Yz\230\332l=+\017W.\232\305\321\374r2\227\354fW\262\357\206\237\r\327\023\366\037\325\320i\234";
+    PyObject *data = __Pyx_DecompressString(cstring, 1349, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (2293 bytes) */
-const char* const bytes = ", BlazeSudio/graphicsCore/_lib/Events.py'Event'Expected at most Got an unexpected keyword argument Input type must be avaliable in this class, but is not!Missing required arguments: Multiple values for argument NoneNote that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.=().?add_notedisableenablegcisenabled positional arguments, got AudioAudioAddedAudioRemovedBlazeSudio.graphicsCore._generated.EventsClipboardContrAxisContrBtnContrBtnDownContrBtnUpContrDevConnectContrDevDisconContrDevRemapContrDeviceContrSensorControllerDataclassDataclass.<locals>.__repr__.<locals>.genexprEVENT_LIST_EVENT_MAPEVENT_NAMESEvTypEventEvent.__init__Event.__new__Event.__new__.<locals>.genexprEvent._from_sdlEvent.createFileDropFileDropEndFileDropFileFileDropStartFileDropTextIntEnumKMOD_ALTKMOD_CTRLKMOD_GUIKMOD_SHIFTKeyDownKeyEventKeyEvent._from_sdlKeyEvent.initialKeyEvent.keyKeyEvent.modifsKeyEvent.scodeKeyTypeKeyTypingKeyUpKeyboardMappingProxyTypeMouseMouseClickMouseDownMouseMoveMouseScrollMouseUp__Pyx_PyDict_NextRefQuitQuitEventQuitEvent._from_sdlSDL_GetKeyNameSDL_GetScancodeNameSDL_KEYDOWNSDL_KEYUPSDL_PRESSEDSDL_QUITSelfSensorTTouchTouchDollarTouchMultiTouchSingleTypeVarUserWindow__all__alt__annotations__argsasyncio.coroutines__bases__bool__class_getitem__cline_in_tracebackcloseclscreatectrldecode__dict____doc__enumev_from_sdl__func__genexpr_getEvMapgui_init__init__initialint_is_coroutineitemskkeykeycodekeyskeysymkwargs__main__mask__metaclass__mod_modifiersmodifs__module____mro_entries____name__name__new__nextoobjectpop__prepare__property__qualname__quitrepeat__repr__returnscancodescodesdl2selfsend__set_name__setdefaultshift__slots__statestrsym__test__thisthrowtimestamp_translateEvtyptype_typestypestypingupdatevaluevaluesvar__weakref__windowIDwindow_idzip\320\004\032\230)\2405\250\017\260q\360$\000\t\014\2104\210s\220!\330\014\017\210t\2207\230#\230W\240G\2501\330""\020\027\220q\330\014\023\2201\330\010\013\320\013\034\230A\330\014\022\220*\230A\330\020\021\340\010\014\210C\210u\220B\220e\2303\230a\330\014\023\2201\330\010\017\210q\230A\200A\200A\360\n\000\t\r\210F\220(\230!\2301\330\010\t\210\026\210s\220!\330\010\017\210q\200A\340\010\r\210R\210q\330\010\014\210B\210a\330\010\017\210u\220J\230a\230u\240D\250\001\330\014\030\230\002\230!\330\014\024\220B\220g\230S\240\004\240A\330\014\025\220T\230\021\230\"\230A\330\014\027\220q\230\001\330\014\026\220a\220q\330\014\031\230\021\230!\200A\340\010\017\210s\220'\230\021\330\014\030\230\002\230!\330\014\022\220!\330\016\017\200A\330\031\032\340\010\017\210t\2207\230$\230d\240$\240a\200A\330\025\026\340\010\017\210t\220?\240!\2404\240y\260\007\260q\200A\330\027\030\340\010\017\210t\320\023'\240q\250\004\250J\260g\270Q\200A\340\010\017\210u\220J\230a\230u\240B\240g\250Q\320\004\030\230\r\240\\\260\033\270N\310!\360\020\000\t\020\210t\220<\230r\240\024\240Q\240g\250Q\330\017\023\220;\230b\240\004\240A\240V\2501\330\017\023\220:\230R\230t\2401\240E\250\021\330\017\023\220:\230R\230t\2401\240A\330\010\020\220\004\220L\240\002\240&\250\003\2501\220a";
+    #else /* compression: none (2255 bytes) */
+const char* const bytes = ", BlazeSudio/orig/graphicsCore/Events.py'Event'Expected at most Got an unexpected keyword argument Input type must be avaliable in this class, but is not!Missing required arguments: NoneNote that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.=().?add_notedisableenablegcisenabled positional arguments, got AudioAudioAddedAudioRemovedBlazeSudio.graphicsCore.EventsClipboardContrAxisContrBtnContrBtnDownContrBtnUpContrDevConnectContrDevDisconContrDevRemapContrDeviceContrSensorControllerDataclassDataclass.<locals>.__repr__.<locals>.genexprEVENT_LIST_EVENT_MAPEVENT_NAMESEvTypEventEvent.__init__Event.__new__Event.__new__.<locals>.genexprEvent._from_sdlEvent.createFileDropFileDropEndFileDropFileFileDropStartFileDropTextIntEnumKMOD_ALTKMOD_CTRLKMOD_GUIKMOD_SHIFTKeyDownKeyEventKeyEvent._from_sdlKeyEvent.initialKeyEvent.keyKeyEvent.modifsKeyEvent.scodeKeyTypeKeyTypingKeyUpKeyboardMappingProxyTypeMouseMouseClickMouseDownMouseMoveMouseScrollMouseUp__Pyx_PyDict_NextRefQuitQuitEventQuitEvent._from_sdlSDL_GetKeyNameSDL_GetScancodeNameSDL_KEYDOWNSDL_KEYUPSDL_PRESSEDSDL_QUITSelfSensorTTouchTouchDollarTouchMultiTouchSingleTypeVarUserWindow__all__alt__annotations__argsasyncio.coroutines__bases__bool__class_getitem__cline_in_tracebackcloseclscreatectrl_dc_initdecode__dict____doc__enumev_from_sdl__func__genexpr_getEvMapgui__init__initialint_is_coroutineitemskkeykeycodekeyskeysymkwargs__main__mask__metaclass__mod_modifiersmodifs__module____mro_entries____name__name__new__nextoobjectpop__prepare__property__qualname__quitrepeat__repr__returnscancodescodesdl2selfsend__set_name__setdefaultshift__slots__statestrsym__test__thisthrowtimestamp_translateEvtyptype_typestypestypingupdatevaluevaluesvar__weakref__windowIDwindow_id\320\004\032\230)\2405\250\017\260q\360$\000\t\014\2104\210s\220!\330\014\017\210t\2207\230#\230W\240G\2501\330\020\027\220q\330\014\023\2201\330\010\013""\320\013\034\230A\330\014\022\220*\230A\330\020\021\340\010\014\210C\210u\220B\220e\2303\230a\330\014\023\2201\330\010\017\210q\230A\200A\200A\360\n\000\t\r\210F\220(\230!\2301\330\010\t\210\031\220!\2205\230\001\330\010\017\210q\200A\340\010\r\210R\210q\330\010\014\210B\210a\330\010\017\210u\220J\230a\230u\240D\250\001\330\014\030\230\002\230!\330\014\024\220B\220g\230S\240\004\240A\330\014\025\220T\230\021\230\"\230A\330\014\027\220q\230\001\330\014\026\220a\220q\330\014\031\230\021\230!\200A\340\010\017\210s\220'\230\021\330\014\030\230\002\230!\330\014\022\220!\330\016\017\200A\330\031\032\340\010\017\210t\2207\230$\230d\240$\240a\200A\330\025\026\340\010\017\210t\220?\240!\2404\240y\260\007\260q\200A\330\027\030\340\010\017\210t\320\023'\240q\250\004\250J\260g\270Q\200A\340\010\017\210u\220J\230a\230u\240B\240g\250Q\320\004\030\230\r\240\\\260\033\270N\310!\360\020\000\t\020\210t\220<\230r\240\024\240Q\240g\250Q\330\017\023\220;\230b\240\004\240A\240V\2501\330\017\023\220:\230R\230t\2401\240E\250\021\330\017\023\220:\230R\230t\2401\240A\330\010\020\220\004\220L\240\002\240&\250\003\2501\220a";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
     PyObject **stringtab = __pyx_mstate->__pyx_string_tab;
     Py_ssize_t pos = 0;
-    for (int i = 0; i < 183; i++) {
+    for (int i = 0; i < 181; i++) {
       Py_ssize_t bytes_length = index[i].length;
       PyObject *string = PyUnicode_DecodeUTF8(bytes + pos, bytes_length, NULL);
-      if (likely(string) && i >= 21) PyUnicode_InternInPlace(&string);
+      if (likely(string) && i >= 20) PyUnicode_InternInPlace(&string);
       if (unlikely(!string)) {
         Py_XDECREF(data);
         __PYX_ERR(0, 1, __pyx_L1_error)
@@ -10611,7 +10439,7 @@ const char* const bytes = ", BlazeSudio/graphicsCore/_lib/Events.py'Event'Expect
       stringtab[i] = string;
       pos += bytes_length;
     }
-    for (int i = 183; i < 195; i++) {
+    for (int i = 181; i < 193; i++) {
       Py_ssize_t bytes_length = index[i].length;
       PyObject *string = PyBytes_FromStringAndSize(bytes + pos, bytes_length);
       stringtab[i] = string;
@@ -10622,14 +10450,14 @@ const char* const bytes = ", BlazeSudio/graphicsCore/_lib/Events.py'Event'Expect
       }
     }
     Py_XDECREF(data);
-    for (Py_ssize_t i = 0; i < 195; i++) {
+    for (Py_ssize_t i = 0; i < 193; i++) {
       if (unlikely(PyObject_Hash(stringtab[i]) == -1)) {
         __PYX_ERR(0, 1, __pyx_L1_error)
       }
     }
     #if CYTHON_IMMORTAL_CONSTANTS
     {
-      PyObject **table = stringtab + 183;
+      PyObject **table = stringtab + 181;
       for (Py_ssize_t i=0; i<12; ++i) {
         #if CYTHON_COMPILING_IN_CPYTHON_FREETHREADING
         Py_SET_REFCNT(table[i], _Py_IMMORTAL_REFCNT_LOCAL);
@@ -10689,64 +10517,64 @@ static int __Pyx_CreateCodeObjects(__pyx_mstatetype *__pyx_mstate) {
   PyObject* tuple_dedup_map = PyDict_New();
   if (unlikely(!tuple_dedup_map)) return -1;
   {
-    const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR), 143};
+    const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR), 139};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_name_2};
-    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[0] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[0])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR), 189};
+    const __Pyx_PyCode_New_function_description descr = {0, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_GENERATOR), 185};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_k};
-    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[1] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_kp_b_iso88591_A, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[1])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 167};
+    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 163};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cls, __pyx_mstate->__pyx_n_u_var, __pyx_mstate->__pyx_n_u_typ, __pyx_mstate->__pyx_n_u_genexpr, __pyx_mstate->__pyx_n_u_genexpr};
-    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_new, __pyx_mstate->__pyx_kp_b_iso88591_5_q_4s_t7_WG1_q_1_A_A_CuBe3a_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[2] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_new, __pyx_mstate->__pyx_kp_b_iso88591_5_q_4s_t7_WG1_q_1_A_A_CuBe3a_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[2])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_VARARGS|CO_VARKEYWORDS), 197};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_VARARGS|CO_VARKEYWORDS), 193};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_args, __pyx_mstate->__pyx_n_u_kwargs};
-    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_init_2, __pyx_mstate->__pyx_kp_b_iso88591_A_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[3] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_init, __pyx_mstate->__pyx_kp_b_iso88591_A_2, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[3])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_VARKEYWORDS), 200};
+    const __Pyx_PyCode_New_function_description descr = {4, 0, 0, 5, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_VARKEYWORDS), 196};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_this, __pyx_mstate->__pyx_n_u_cls, __pyx_mstate->__pyx_n_u_ev, __pyx_mstate->__pyx_n_u_typ, __pyx_mstate->__pyx_n_u_kwargs};
-    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_from_sdl, __pyx_mstate->__pyx_kp_b_iso88591_A_s, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[4] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_from_sdl, __pyx_mstate->__pyx_kp_b_iso88591_A_s, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[4])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_VARKEYWORDS), 207};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS|CO_VARKEYWORDS), 203};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cls, __pyx_mstate->__pyx_n_u_kwargs, __pyx_mstate->__pyx_n_u_o};
-    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_create, __pyx_mstate->__pyx_kp_b_iso88591_A_F_1_s_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[5] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_create, __pyx_mstate->__pyx_kp_b_iso88591_A_F_1_5_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[5])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 221};
+    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 3, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 217};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cls, __pyx_mstate->__pyx_n_u_ev, __pyx_mstate->__pyx_n_u_typ};
-    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_from_sdl, __pyx_mstate->__pyx_kp_b_iso88591_A_uJauBgQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[6] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_from_sdl, __pyx_mstate->__pyx_kp_b_iso88591_A_uJauBgQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[6])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 234};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 230};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
-    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_initial, __pyx_mstate->__pyx_kp_b_iso88591_A_t7_d_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[7] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_initial, __pyx_mstate->__pyx_kp_b_iso88591_A_t7_d_a, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[7])) goto bad;
+  }
+  {
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 239};
+    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
+    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_scode, __pyx_mstate->__pyx_kp_b_iso88591_A_t_q_JgQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
   }
   {
     const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 243};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
-    __pyx_mstate_global->__pyx_codeobj_tab[8] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_scode, __pyx_mstate->__pyx_kp_b_iso88591_A_t_q_JgQ, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[8])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_key, __pyx_mstate->__pyx_kp_b_iso88591_A_t_4y_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 0, 1, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 247};
-    PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self};
-    __pyx_mstate_global->__pyx_codeobj_tab[9] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_key, __pyx_mstate->__pyx_kp_b_iso88591_A_t_4y_q, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[9])) goto bad;
-  }
-  {
-    const __Pyx_PyCode_New_function_description descr = {1, 0, 4, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 253};
+    const __Pyx_PyCode_New_function_description descr = {1, 0, 4, 6, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 249};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_self, __pyx_mstate->__pyx_n_u_shift, __pyx_mstate->__pyx_n_u_ctrl, __pyx_mstate->__pyx_n_u_alt, __pyx_mstate->__pyx_n_u_gui, __pyx_mstate->__pyx_n_u_mask};
-    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_modifs, __pyx_mstate->__pyx_kp_b_iso88591_N_t_r_QgQ_b_AV1_Rt1E_Rt1A_L_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[10] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_modifs, __pyx_mstate->__pyx_kp_b_iso88591_N_t_r_QgQ_b_AV1_Rt1E_Rt1A_L_1, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[10])) goto bad;
   }
   {
-    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 271};
+    const __Pyx_PyCode_New_function_description descr = {3, 0, 0, 4, (unsigned int)(CO_OPTIMIZED|CO_NEWLOCALS), 267};
     PyObject* const varnames[] = {__pyx_mstate->__pyx_n_u_cls, __pyx_mstate->__pyx_n_u_ev, __pyx_mstate->__pyx_n_u_typ, __pyx_mstate->__pyx_n_u_k};
-    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_graphicsCore__lib_Eve, __pyx_mstate->__pyx_n_u_from_sdl, __pyx_mstate->__pyx_kp_b_iso88591_A_Rq_Ba_uJauD_BgS_A_T_A_q_aq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
+    __pyx_mstate_global->__pyx_codeobj_tab[11] = __Pyx_PyCode_New(descr, varnames, __pyx_mstate->__pyx_kp_u_BlazeSudio_orig_graphicsCore_Eve, __pyx_mstate->__pyx_n_u_from_sdl, __pyx_mstate->__pyx_kp_b_iso88591_A_Rq_Ba_uJauD_BgS_A_T_A_q_aq, tuple_dedup_map); if (unlikely(!__pyx_mstate_global->__pyx_codeobj_tab[11])) goto bad;
   }
   Py_DECREF(tuple_dedup_map);
   return 0;
@@ -12443,20 +12271,7 @@ bad:
     return;
 }
 
-/* RaiseTooManyValuesToUnpack */
-static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
-    PyErr_Format(PyExc_ValueError,
-                 "too many values to unpack (expected %" CYTHON_FORMAT_SSIZE_T "d)", expected);
-}
-
-/* RaiseNeedMoreValuesToUnpack */
-static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index) {
-    PyErr_Format(PyExc_ValueError,
-                 "need more than %" CYTHON_FORMAT_SSIZE_T "d value%.1s to unpack",
-                 index, (index == 1) ? "" : "s");
-}
-
-/* IterFinish */
+/* IterFinish (used by dict_iter) */
 static CYTHON_INLINE int __Pyx_IterFinish(void) {
     PyObject* exc_type;
     __Pyx_PyThreadState_declare
@@ -12469,16 +12284,6 @@ static CYTHON_INLINE int __Pyx_IterFinish(void) {
         return 0;
     }
     return 0;
-}
-
-/* UnpackItemEndCheck */
-static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected) {
-    if (unlikely(retval)) {
-        Py_DECREF(retval);
-        __Pyx_RaiseTooManyValuesError(expected);
-        return -1;
-    }
-    return __Pyx_IterFinish();
 }
 
 /* PyObjectCallNoArg (used by PyObjectCallMethod0) */
@@ -12600,6 +12405,29 @@ static PyObject* __Pyx_PyObject_CallMethod0(PyObject* obj, PyObject* method_name
 bad:
     return result;
 #endif
+}
+
+/* RaiseNeedMoreValuesToUnpack (used by UnpackTuple2) */
+static CYTHON_INLINE void __Pyx_RaiseNeedMoreValuesError(Py_ssize_t index) {
+    PyErr_Format(PyExc_ValueError,
+                 "need more than %" CYTHON_FORMAT_SSIZE_T "d value%.1s to unpack",
+                 index, (index == 1) ? "" : "s");
+}
+
+/* RaiseTooManyValuesToUnpack (used by UnpackItemEndCheck) */
+static CYTHON_INLINE void __Pyx_RaiseTooManyValuesError(Py_ssize_t expected) {
+    PyErr_Format(PyExc_ValueError,
+                 "too many values to unpack (expected %" CYTHON_FORMAT_SSIZE_T "d)", expected);
+}
+
+/* UnpackItemEndCheck (used by UnpackTuple2) */
+static int __Pyx_IternextUnpackEndCheck(PyObject *retval, Py_ssize_t expected) {
+    if (unlikely(retval)) {
+        Py_DECREF(retval);
+        __Pyx_RaiseTooManyValuesError(expected);
+        return -1;
+    }
+    return __Pyx_IterFinish();
 }
 
 /* RaiseNoneIterError (used by UnpackTupleError) */

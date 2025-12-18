@@ -11,6 +11,7 @@ class OpFlags(IntEnum):
     Flags that make Operations act differently.
     Only for manual use if you know what you're doing.
     """
+    NoFlags = 0
     List = 1
     Matrix = 2
     Transformable = 4
@@ -22,7 +23,7 @@ class Op(ABC, metaclass=abc.ABCMeta):
     def __init__(self): ...
     @abstractmethod
     def apply(self, arr: np.ndarray, defSmth: bool) -> np.ndarray: ...
-    flags: int
+    flags: Incomplete
     def freeze(self) -> None: ...
     def frozen(self) -> Op: ...
     def __add__(self, oth) -> OpList: ...

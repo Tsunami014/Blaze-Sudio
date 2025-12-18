@@ -1,4 +1,4 @@
-from .base import Op, MatOp
+from .base import Op, MatOp, OpFlags
 from typing import overload, Iterable
 import numpy as np
 
@@ -82,6 +82,7 @@ class Resize(Op): # FIXME
 
         self.sze = sze
         self._smooth = smooth
+        self.flags = OpFlags.NoFlags
 
     def apply(self, arr: np.ndarray, defSmth: bool):
         smooth = self._smooth if self._smooth is not None else defSmth
@@ -92,6 +93,7 @@ class Fill(Op):
     __slots__ = ['col']
     def __init__(self, col):
         self.col = col
+        self.flags = OpFlags.NoFlags
     def apply(self, arr: np.ndarray, _):
         arr[:] = self.col
         return arr

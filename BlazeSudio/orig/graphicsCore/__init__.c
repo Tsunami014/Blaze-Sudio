@@ -2537,7 +2537,7 @@ typedef struct {
   PyObject *__pyx_slice[1];
   PyObject *__pyx_tuple[8];
   PyObject *__pyx_codeobj_tab[16];
-  PyObject *__pyx_string_tab[133];
+  PyObject *__pyx_string_tab[136];
   PyObject *__pyx_number_tab[9];
 /* #### Code section: module_state_contents ### */
 /* CommonTypesMetaclass.module_state_decls */
@@ -2582,136 +2582,139 @@ static __pyx_mstatetype * const __pyx_mstate_global = &__pyx_mstate_global_stati
 #define __pyx_kp_u_ __pyx_string_tab[0]
 #define __pyx_kp_u_0_02x_1_02x_2_02x __pyx_string_tab[1]
 #define __pyx_kp_u_A_Colour_is_an_rgb_tuple_This_c __pyx_string_tab[2]
-#define __pyx_kp_u_BlazeSudio_graphicsCore___init __pyx_string_tab[3]
-#define __pyx_kp_u_BlazeSudio_orig_graphicsCore___i __pyx_string_tab[4]
-#define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[5]
-#define __pyx_kp_u_RGB_value_must_be_between_0_255 __pyx_string_tab[6]
-#define __pyx_kp_u_Tuple_int_int_int __pyx_string_tab[7]
-#define __pyx_kp_u_Tuple_int_int_int_int __pyx_string_tab[8]
-#define __pyx_kp_u__2 __pyx_string_tab[9]
-#define __pyx_kp_u__3 __pyx_string_tab[10]
-#define __pyx_kp_u_add_note __pyx_string_tab[11]
-#define __pyx_kp_u_int_float __pyx_string_tab[12]
-#define __pyx_n_u_AvgClock __pyx_string_tab[13]
-#define __pyx_n_u_AvgClock___init __pyx_string_tab[14]
-#define __pyx_n_u_AvgClock_get_fps __pyx_string_tab[15]
-#define __pyx_n_u_AvgClock_get_fps_inst __pyx_string_tab[16]
-#define __pyx_n_u_AvgClock_tick __pyx_string_tab[17]
-#define __pyx_n_u_Black __pyx_string_tab[18]
-#define __pyx_n_u_BlazeSudio_graphicsCore __pyx_string_tab[19]
-#define __pyx_n_u_BlazeSudio_graphicsCore_surf __pyx_string_tab[20]
-#define __pyx_n_u_Clock __pyx_string_tab[21]
-#define __pyx_n_u_Clock___init __pyx_string_tab[22]
-#define __pyx_n_u_Clock_get_fps __pyx_string_tab[23]
-#define __pyx_n_u_Clock_tick __pyx_string_tab[24]
-#define __pyx_n_u_Col __pyx_string_tab[25]
-#define __pyx_n_u_Col___new __pyx_string_tab[26]
-#define __pyx_n_u_Col_hex __pyx_string_tab[27]
-#define __pyx_n_u_Col_rgb __pyx_string_tab[28]
-#define __pyx_n_u_Col_rgba __pyx_string_tab[29]
-#define __pyx_n_u_Col_to_hex __pyx_string_tab[30]
-#define __pyx_n_u_Col_to_rgb __pyx_string_tab[31]
-#define __pyx_n_u_Col_to_rgba __pyx_string_tab[32]
-#define __pyx_n_u_Draw __pyx_string_tab[33]
-#define __pyx_n_u_Events __pyx_string_tab[34]
-#define __pyx_n_u_Grey __pyx_string_tab[35]
-#define __pyx_n_u_Ix __pyx_string_tab[36]
-#define __pyx_n_u_Op __pyx_string_tab[37]
-#define __pyx_n_u_Pyx_PyDict_NextRef __pyx_string_tab[38]
-#define __pyx_n_u_RGBHEXFMT __pyx_string_tab[39]
-#define __pyx_n_u_Surface __pyx_string_tab[40]
-#define __pyx_n_u_Transparent __pyx_string_tab[41]
-#define __pyx_n_u_Tuple __pyx_string_tab[42]
-#define __pyx_n_u_White __pyx_string_tab[43]
-#define __pyx_n_u_Window __pyx_string_tab[44]
-#define __pyx_n_u_a __pyx_string_tab[45]
-#define __pyx_n_u_all __pyx_string_tab[46]
-#define __pyx_n_u_append __pyx_string_tab[47]
-#define __pyx_n_u_args __pyx_string_tab[48]
-#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[49]
-#define __pyx_n_u_b __pyx_string_tab[50]
-#define __pyx_n_u_clamp __pyx_string_tab[51]
-#define __pyx_n_u_class_getitem __pyx_string_tab[52]
-#define __pyx_n_u_cline_in_traceback __pyx_string_tab[53]
-#define __pyx_n_u_cls __pyx_string_tab[54]
-#define __pyx_n_u_col __pyx_string_tab[55]
-#define __pyx_n_u_collections __pyx_string_tab[56]
-#define __pyx_n_u_colourType __pyx_string_tab[57]
-#define __pyx_n_u_count __pyx_string_tab[58]
-#define __pyx_n_u_cutoff __pyx_string_tab[59]
-#define __pyx_n_u_delta __pyx_string_tab[60]
-#define __pyx_n_u_deque __pyx_string_tab[61]
-#define __pyx_n_u_doc __pyx_string_tab[62]
-#define __pyx_n_u_dt __pyx_string_tab[63]
-#define __pyx_n_u_format __pyx_string_tab[64]
-#define __pyx_n_u_frameTimes __pyx_string_tab[65]
-#define __pyx_n_u_func __pyx_string_tab[66]
-#define __pyx_n_u_g __pyx_string_tab[67]
-#define __pyx_n_u_get_fps __pyx_string_tab[68]
-#define __pyx_n_u_get_fps_inst __pyx_string_tab[69]
-#define __pyx_n_u_goodEnough __pyx_string_tab[70]
-#define __pyx_n_u_hex __pyx_string_tab[71]
-#define __pyx_n_u_init __pyx_string_tab[72]
-#define __pyx_n_u_int __pyx_string_tab[73]
-#define __pyx_n_u_is_coroutine __pyx_string_tab[74]
-#define __pyx_n_u_items __pyx_string_tab[75]
-#define __pyx_n_u_lastTime __pyx_string_tab[76]
-#define __pyx_n_u_lstrip __pyx_string_tab[77]
-#define __pyx_n_u_main __pyx_string_tab[78]
-#define __pyx_n_u_maxfps __pyx_string_tab[79]
-#define __pyx_n_u_metaclass __pyx_string_tab[80]
-#define __pyx_n_u_module __pyx_string_tab[81]
-#define __pyx_n_u_mro_entries __pyx_string_tab[82]
-#define __pyx_n_u_name __pyx_string_tab[83]
-#define __pyx_n_u_new __pyx_string_tab[84]
-#define __pyx_n_u_o __pyx_string_tab[85]
-#define __pyx_n_u_overload __pyx_string_tab[86]
-#define __pyx_n_u_perf_counter __pyx_string_tab[87]
-#define __pyx_n_u_pop __pyx_string_tab[88]
-#define __pyx_n_u_popleft __pyx_string_tab[89]
-#define __pyx_n_u_prepare __pyx_string_tab[90]
-#define __pyx_n_u_qualname __pyx_string_tab[91]
-#define __pyx_n_u_r __pyx_string_tab[92]
-#define __pyx_n_u_return __pyx_string_tab[93]
-#define __pyx_n_u_rgb __pyx_string_tab[94]
-#define __pyx_n_u_rgba __pyx_string_tab[95]
-#define __pyx_n_u_secs __pyx_string_tab[96]
-#define __pyx_n_u_self __pyx_string_tab[97]
-#define __pyx_n_u_set_name __pyx_string_tab[98]
-#define __pyx_n_u_setdefault __pyx_string_tab[99]
-#define __pyx_n_u_sleep __pyx_string_tab[100]
-#define __pyx_n_u_slept __pyx_string_tab[101]
-#define __pyx_n_u_str __pyx_string_tab[102]
-#define __pyx_n_u_super __pyx_string_tab[103]
-#define __pyx_n_u_t __pyx_string_tab[104]
-#define __pyx_n_u_target_dt __pyx_string_tab[105]
-#define __pyx_n_u_test __pyx_string_tab[106]
-#define __pyx_n_u_tick __pyx_string_tab[107]
-#define __pyx_n_u_time __pyx_string_tab[108]
-#define __pyx_n_u_to_hex __pyx_string_tab[109]
-#define __pyx_n_u_to_rgb __pyx_string_tab[110]
-#define __pyx_n_u_to_rgba __pyx_string_tab[111]
-#define __pyx_n_u_typing __pyx_string_tab[112]
-#define __pyx_n_u_upper __pyx_string_tab[113]
-#define __pyx_n_u_val __pyx_string_tab[114]
-#define __pyx_n_u_values __pyx_string_tab[115]
-#define __pyx_n_u_x __pyx_string_tab[116]
-#define __pyx_kp_b_iso88591_A __pyx_string_tab[117]
-#define __pyx_kp_b_iso88591_A_3avS_3d_4q_s_b __pyx_string_tab[118]
-#define __pyx_kp_b_iso88591_A_4t1_4_A_1D_vRt9D_b_q __pyx_string_tab[119]
-#define __pyx_kp_b_iso88591_A_F_M __pyx_string_tab[120]
-#define __pyx_kp_b_iso88591_A_HE_N_3c __pyx_string_tab[121]
-#define __pyx_kp_b_iso88591_A_S __pyx_string_tab[122]
-#define __pyx_kp_b_iso88591_A_XXXQ_3c __pyx_string_tab[123]
-#define __pyx_kp_b_iso88591_A__A_C_q_1E_as_5_Qc_1_1F_q __pyx_string_tab[124]
-#define __pyx_kp_b_iso88591_A_a_c_WAV1_T_D_T_Cr_D_3c __pyx_string_tab[125]
-#define __pyx_kp_b_iso88591_A_q __pyx_string_tab[126]
-#define __pyx_kp_b_iso88591_A_s_A __pyx_string_tab[127]
-#define __pyx_kp_b_iso88591_A_uBha __pyx_string_tab[128]
-#define __pyx_kp_b_iso88591_A_uD_Cwd_D __pyx_string_tab[129]
-#define __pyx_kp_b_iso88591_O81_D_Q_4_Bb_A_wgQ_D_6_1_A_az_6 __pyx_string_tab[130]
-#define __pyx_kp_b_iso88591_O81_RuAQ_L_q_A_a_d_t4_1Cr_a_HA __pyx_string_tab[131]
-#define __pyx_kp_b_iso88591_vQ_HA_N_O5_Ry __pyx_string_tab[132]
+#define __pyx_kp_u_BlazeSudio __pyx_string_tab[3]
+#define __pyx_kp_u_BlazeSudio_graphicsCore___init __pyx_string_tab[4]
+#define __pyx_kp_u_BlazeSudio_orig_graphicsCore___i __pyx_string_tab[5]
+#define __pyx_kp_u_BlazeSudio_surf __pyx_string_tab[6]
+#define __pyx_kp_u_Note_that_Cython_is_deliberately __pyx_string_tab[7]
+#define __pyx_kp_u_RGB_value_must_be_between_0_255 __pyx_string_tab[8]
+#define __pyx_kp_u_Tuple_int_int_int __pyx_string_tab[9]
+#define __pyx_kp_u_Tuple_int_int_int_int __pyx_string_tab[10]
+#define __pyx_kp_u__3 __pyx_string_tab[11]
+#define __pyx_kp_u__4 __pyx_string_tab[12]
+#define __pyx_kp_u_add_note __pyx_string_tab[13]
+#define __pyx_kp_u_int_float __pyx_string_tab[14]
+#define __pyx_n_u_AvgClock __pyx_string_tab[15]
+#define __pyx_n_u_AvgClock___init __pyx_string_tab[16]
+#define __pyx_n_u_AvgClock_get_fps __pyx_string_tab[17]
+#define __pyx_n_u_AvgClock_get_fps_inst __pyx_string_tab[18]
+#define __pyx_n_u_AvgClock_tick __pyx_string_tab[19]
+#define __pyx_n_u_Black __pyx_string_tab[20]
+#define __pyx_n_u_BlazeSudio_graphicsCore __pyx_string_tab[21]
+#define __pyx_n_u_Clock __pyx_string_tab[22]
+#define __pyx_n_u_Clock___init __pyx_string_tab[23]
+#define __pyx_n_u_Clock_get_fps __pyx_string_tab[24]
+#define __pyx_n_u_Clock_tick __pyx_string_tab[25]
+#define __pyx_n_u_Col __pyx_string_tab[26]
+#define __pyx_n_u_Col___new __pyx_string_tab[27]
+#define __pyx_n_u_Col_hex __pyx_string_tab[28]
+#define __pyx_n_u_Col_rgb __pyx_string_tab[29]
+#define __pyx_n_u_Col_rgba __pyx_string_tab[30]
+#define __pyx_n_u_Col_to_hex __pyx_string_tab[31]
+#define __pyx_n_u_Col_to_rgb __pyx_string_tab[32]
+#define __pyx_n_u_Col_to_rgba __pyx_string_tab[33]
+#define __pyx_n_u_Draw __pyx_string_tab[34]
+#define __pyx_n_u_Events __pyx_string_tab[35]
+#define __pyx_n_u_Grey __pyx_string_tab[36]
+#define __pyx_n_u_Ix __pyx_string_tab[37]
+#define __pyx_n_u_Op __pyx_string_tab[38]
+#define __pyx_n_u_Pyx_PyDict_NextRef __pyx_string_tab[39]
+#define __pyx_n_u_RGBHEXFMT __pyx_string_tab[40]
+#define __pyx_n_u_Surface __pyx_string_tab[41]
+#define __pyx_n_u_Transparent __pyx_string_tab[42]
+#define __pyx_n_u_Tuple __pyx_string_tab[43]
+#define __pyx_n_u_White __pyx_string_tab[44]
+#define __pyx_n_u_Window __pyx_string_tab[45]
+#define __pyx_n_u__2 __pyx_string_tab[46]
+#define __pyx_n_u_a __pyx_string_tab[47]
+#define __pyx_n_u_all __pyx_string_tab[48]
+#define __pyx_n_u_append __pyx_string_tab[49]
+#define __pyx_n_u_args __pyx_string_tab[50]
+#define __pyx_n_u_asyncio_coroutines __pyx_string_tab[51]
+#define __pyx_n_u_b __pyx_string_tab[52]
+#define __pyx_n_u_clamp __pyx_string_tab[53]
+#define __pyx_n_u_class_getitem __pyx_string_tab[54]
+#define __pyx_n_u_cline_in_traceback __pyx_string_tab[55]
+#define __pyx_n_u_cls __pyx_string_tab[56]
+#define __pyx_n_u_col __pyx_string_tab[57]
+#define __pyx_n_u_collections __pyx_string_tab[58]
+#define __pyx_n_u_colourType __pyx_string_tab[59]
+#define __pyx_n_u_count __pyx_string_tab[60]
+#define __pyx_n_u_cutoff __pyx_string_tab[61]
+#define __pyx_n_u_delta __pyx_string_tab[62]
+#define __pyx_n_u_deque __pyx_string_tab[63]
+#define __pyx_n_u_doc __pyx_string_tab[64]
+#define __pyx_n_u_dt __pyx_string_tab[65]
+#define __pyx_n_u_format __pyx_string_tab[66]
+#define __pyx_n_u_frameTimes __pyx_string_tab[67]
+#define __pyx_n_u_func __pyx_string_tab[68]
+#define __pyx_n_u_g __pyx_string_tab[69]
+#define __pyx_n_u_get_fps __pyx_string_tab[70]
+#define __pyx_n_u_get_fps_inst __pyx_string_tab[71]
+#define __pyx_n_u_goodEnough __pyx_string_tab[72]
+#define __pyx_n_u_hex __pyx_string_tab[73]
+#define __pyx_n_u_init __pyx_string_tab[74]
+#define __pyx_n_u_int __pyx_string_tab[75]
+#define __pyx_n_u_is_coroutine __pyx_string_tab[76]
+#define __pyx_n_u_items __pyx_string_tab[77]
+#define __pyx_n_u_lastTime __pyx_string_tab[78]
+#define __pyx_n_u_lstrip __pyx_string_tab[79]
+#define __pyx_n_u_main __pyx_string_tab[80]
+#define __pyx_n_u_maxfps __pyx_string_tab[81]
+#define __pyx_n_u_metaclass __pyx_string_tab[82]
+#define __pyx_n_u_module __pyx_string_tab[83]
+#define __pyx_n_u_mro_entries __pyx_string_tab[84]
+#define __pyx_n_u_name __pyx_string_tab[85]
+#define __pyx_n_u_new __pyx_string_tab[86]
+#define __pyx_n_u_o __pyx_string_tab[87]
+#define __pyx_n_u_overload __pyx_string_tab[88]
+#define __pyx_n_u_perf_counter __pyx_string_tab[89]
+#define __pyx_n_u_pop __pyx_string_tab[90]
+#define __pyx_n_u_popleft __pyx_string_tab[91]
+#define __pyx_n_u_prepare __pyx_string_tab[92]
+#define __pyx_n_u_qualname __pyx_string_tab[93]
+#define __pyx_n_u_r __pyx_string_tab[94]
+#define __pyx_n_u_return __pyx_string_tab[95]
+#define __pyx_n_u_rgb __pyx_string_tab[96]
+#define __pyx_n_u_rgba __pyx_string_tab[97]
+#define __pyx_n_u_secs __pyx_string_tab[98]
+#define __pyx_n_u_self __pyx_string_tab[99]
+#define __pyx_n_u_set_name __pyx_string_tab[100]
+#define __pyx_n_u_setdefault __pyx_string_tab[101]
+#define __pyx_n_u_sleep __pyx_string_tab[102]
+#define __pyx_n_u_slept __pyx_string_tab[103]
+#define __pyx_n_u_str __pyx_string_tab[104]
+#define __pyx_n_u_super __pyx_string_tab[105]
+#define __pyx_n_u_surf __pyx_string_tab[106]
+#define __pyx_n_u_t __pyx_string_tab[107]
+#define __pyx_n_u_target_dt __pyx_string_tab[108]
+#define __pyx_n_u_test __pyx_string_tab[109]
+#define __pyx_n_u_tick __pyx_string_tab[110]
+#define __pyx_n_u_time __pyx_string_tab[111]
+#define __pyx_n_u_to_hex __pyx_string_tab[112]
+#define __pyx_n_u_to_rgb __pyx_string_tab[113]
+#define __pyx_n_u_to_rgba __pyx_string_tab[114]
+#define __pyx_n_u_typing __pyx_string_tab[115]
+#define __pyx_n_u_upper __pyx_string_tab[116]
+#define __pyx_n_u_val __pyx_string_tab[117]
+#define __pyx_n_u_values __pyx_string_tab[118]
+#define __pyx_n_u_x __pyx_string_tab[119]
+#define __pyx_kp_b_iso88591_A __pyx_string_tab[120]
+#define __pyx_kp_b_iso88591_A_3avS_3d_4q_s_b __pyx_string_tab[121]
+#define __pyx_kp_b_iso88591_A_4t1_4_A_1D_vRt9D_b_q __pyx_string_tab[122]
+#define __pyx_kp_b_iso88591_A_F_M __pyx_string_tab[123]
+#define __pyx_kp_b_iso88591_A_HE_N_3c __pyx_string_tab[124]
+#define __pyx_kp_b_iso88591_A_S __pyx_string_tab[125]
+#define __pyx_kp_b_iso88591_A_XXXQ_3c __pyx_string_tab[126]
+#define __pyx_kp_b_iso88591_A__A_C_q_1E_as_5_Qc_1_1F_q __pyx_string_tab[127]
+#define __pyx_kp_b_iso88591_A_a_c_WAV1_T_D_T_Cr_D_3c __pyx_string_tab[128]
+#define __pyx_kp_b_iso88591_A_q __pyx_string_tab[129]
+#define __pyx_kp_b_iso88591_A_s_A __pyx_string_tab[130]
+#define __pyx_kp_b_iso88591_A_uBha __pyx_string_tab[131]
+#define __pyx_kp_b_iso88591_A_uD_Cwd_D __pyx_string_tab[132]
+#define __pyx_kp_b_iso88591_O81_D_Q_4_Bb_A_wgQ_D_6_1_A_az_6 __pyx_string_tab[133]
+#define __pyx_kp_b_iso88591_O81_RuAQ_L_q_A_a_d_t4_1Cr_a_HA __pyx_string_tab[134]
+#define __pyx_kp_b_iso88591_vQ_HA_N_O5_Ry __pyx_string_tab[135]
 #define __pyx_float_1_0 __pyx_number_tab[0]
 #define __pyx_float_0_001 __pyx_number_tab[1]
 #define __pyx_int_0 __pyx_number_tab[2]
@@ -2738,7 +2741,7 @@ static CYTHON_SMALL_CODE int __pyx_m_clear(PyObject *m) {
   for (int i=0; i<1; ++i) { Py_CLEAR(clear_module_state->__pyx_slice[i]); }
   for (int i=0; i<8; ++i) { Py_CLEAR(clear_module_state->__pyx_tuple[i]); }
   for (int i=0; i<16; ++i) { Py_CLEAR(clear_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<133; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<136; ++i) { Py_CLEAR(clear_module_state->__pyx_string_tab[i]); }
   for (int i=0; i<9; ++i) { Py_CLEAR(clear_module_state->__pyx_number_tab[i]); }
 /* #### Code section: module_state_clear_contents ### */
 /* CommonTypesMetaclass.module_state_clear */
@@ -2765,7 +2768,7 @@ static CYTHON_SMALL_CODE int __pyx_m_traverse(PyObject *m, visitproc visit, void
   for (int i=0; i<1; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_slice[i]); }
   for (int i=0; i<8; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_tuple[i]); }
   for (int i=0; i<16; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_codeobj_tab[i]); }
-  for (int i=0; i<133; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
+  for (int i=0; i<136; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_string_tab[i]); }
   for (int i=0; i<9; ++i) { __Pyx_VISIT_CONST(traverse_module_state->__pyx_number_tab[i]); }
 /* #### Code section: module_state_traverse_contents ### */
 /* CommonTypesMetaclass.module_state_traverse */
@@ -6694,13 +6697,13 @@ __Pyx_RefNannySetupContext("PyInit_graphicsCore", 0);
   /*--- Execution code ---*/
 
   /* "BlazeSudio/orig/graphicsCore/__init__.py":1
- * from BlazeSudio.graphicsCore import Draw, Ix, Op, Events             # <<<<<<<<<<<<<<
- * from BlazeSudio.graphicsCore.surf import Surface, Window
+ * from . import Draw, Ix, Op, Events             # <<<<<<<<<<<<<<
+ * from .surf import Surface, Window
  * from typing import Tuple, overload
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_Draw,__pyx_mstate_global->__pyx_n_u_Ix,__pyx_mstate_global->__pyx_n_u_Op,__pyx_mstate_global->__pyx_n_u_Events};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore, __pyx_imported_names, 4, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u__2, __pyx_imported_names, 4, __pyx_mstate_global->__pyx_kp_u_BlazeSudio, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   }
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
@@ -6716,14 +6719,14 @@ __Pyx_RefNannySetupContext("PyInit_graphicsCore", 0);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "BlazeSudio/orig/graphicsCore/__init__.py":2
- * from BlazeSudio.graphicsCore import Draw, Ix, Op, Events
- * from BlazeSudio.graphicsCore.surf import Surface, Window             # <<<<<<<<<<<<<<
+ * from . import Draw, Ix, Op, Events
+ * from .surf import Surface, Window             # <<<<<<<<<<<<<<
  * from typing import Tuple, overload
  * from collections import deque
 */
   {
     PyObject* const __pyx_imported_names[] = {__pyx_mstate_global->__pyx_n_u_Surface,__pyx_mstate_global->__pyx_n_u_Window};
-    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_BlazeSudio_graphicsCore_surf, __pyx_imported_names, 2, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_surf, __pyx_imported_names, 2, __pyx_mstate_global->__pyx_kp_u_BlazeSudio_surf, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
   }
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
@@ -6739,8 +6742,8 @@ __Pyx_RefNannySetupContext("PyInit_graphicsCore", 0);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "BlazeSudio/orig/graphicsCore/__init__.py":3
- * from BlazeSudio.graphicsCore import Draw, Ix, Op, Events
- * from BlazeSudio.graphicsCore.surf import Surface, Window
+ * from . import Draw, Ix, Op, Events
+ * from .surf import Surface, Window
  * from typing import Tuple, overload             # <<<<<<<<<<<<<<
  * from collections import deque
  * import time
@@ -6763,7 +6766,7 @@ __Pyx_RefNannySetupContext("PyInit_graphicsCore", 0);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "BlazeSudio/orig/graphicsCore/__init__.py":4
- * from BlazeSudio.graphicsCore.surf import Surface, Window
+ * from .surf import Surface, Window
  * from typing import Tuple, overload
  * from collections import deque             # <<<<<<<<<<<<<<
  * import time
@@ -7335,8 +7338,8 @@ __Pyx_RefNannySetupContext("PyInit_graphicsCore", 0);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
   /* "BlazeSudio/orig/graphicsCore/__init__.py":1
- * from BlazeSudio.graphicsCore import Draw, Ix, Op, Events             # <<<<<<<<<<<<<<
- * from BlazeSudio.graphicsCore.surf import Surface, Window
+ * from . import Draw, Ix, Op, Events             # <<<<<<<<<<<<<<
+ * from .surf import Surface, Window
  * from typing import Tuple, overload
 */
   __pyx_t_6 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -7540,34 +7543,34 @@ static int __Pyx_InitCachedConstants(__pyx_mstatetype *__pyx_mstate) {
 static int __Pyx_InitConstants(__pyx_mstatetype *__pyx_mstate) {
   CYTHON_UNUSED_VAR(__pyx_mstate);
   {
-    const struct { const unsigned int length: 8; } index[] = {{1},{22},{146},{32},{40},{179},{32},{20},{25},{1},{1},{8},{11},{8},{17},{16},{21},{13},{5},{23},{28},{5},{14},{13},{10},{3},{11},{7},{7},{8},{10},{10},{11},{4},{6},{4},{2},{2},{20},{10},{7},{11},{5},{5},{6},{1},{7},{6},{4},{18},{1},{5},{17},{18},{3},{3},{11},{10},{5},{6},{5},{5},{7},{2},{6},{11},{8},{1},{7},{12},{10},{3},{8},{3},{13},{5},{9},{6},{8},{6},{13},{10},{15},{8},{7},{1},{8},{12},{3},{7},{11},{12},{1},{6},{3},{4},{4},{4},{12},{10},{5},{5},{3},{5},{1},{9},{8},{4},{4},{6},{6},{7},{6},{5},{3},{6},{1},{5},{41},{54},{16},{26},{13},{24},{74},{70},{12},{16},{15},{25},{143},{82},{41}};
-    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (1332 bytes) */
-const char* const cstring = "BZh91AY&SY=\346\031\261\000\000\217\177\377\377\377\377\377~\347\377p\277\347\375\312\277\377\377\376@@@@@@@@@@@@@\000@\000P\004~;C;\003K17\016\"d\223Q\204\320d40OSi\352 \017P\365\014\236\220b4\r\032hh\032hh\032\r1\250\3005\021\241Oh)\351\214\243Q\232A\220\003@\000\000\000\000\000\000\000\000\321\240h\023A\t\243\022bz\231\nz\2324\320\366\250\003@\000\000\001\240\000\036\241\246\207\251\210\330\241\300\000\000\000\000\000\031\000\000\000\000\000\000\000\001\220\000I\010\223*y\224\236\246\006\210\036\247\244\000\001\240\000\000\r\000\000\000\000\r\0316\2456\254Nk\203=\037\235\006o\327\357A\244C8\341\032RR#G\r\004\344\326\244\264\322\302\311\003S\210\225y\332-\020\023\241&\312\204\256:t\365(\202\031\031\224\022!\020\027\020\363\267\206VaiC\342R\265\364\222\266\211C\315\262\3334`\3339Kl\266w\201p\201\370u\375\216^\306-\313\352\234#\310\253\312\213\347s+\033\372D\026k\331\204\277{\r\303\177\306%*\327\370=\345BN\366{v\261\346\251\tU\016c\222\242\256\224\243\202R\005\324\006\240\224'&\016*Mp\336\007\301U\021\375\326\204d\236A\206`\204\226\302\337\230\271\205C>\334:\031s\227\305\033\311\334\017\236\nJ\362\336\353.\364+\352 hU\326\360<\275\032ww\205\005-\303\2402\206P\002\"\027\336'LR\251\010\342\306\306+>\226\266\347\352r\242K~`\0365\327w\203H\010\024/\335\342\374\270\371\341\016[)N\300\267kX\036\325\3440\331\331j\317\274\027\222q\036\274\367\016\323\340\207\004\3046\001\375&N\277\014\\\037\037\327\344\320X\342\227c.\344\311\352\013\00463\340d@j\364\241\031\224\263\027\363g\245/\345\r\356\274\253\271O\032\324\353\235V3\226\005\022xl\347\023\311\240\233\242\006\223\272v\330\2610dTb\355A\317)\363\037\274\247\201\254I\364\210wH\325\031\343%b\006R\034\201\340\311\212A\t\336x\350;0\031i\201\257\177Zt\2215\036\322\025\236\007\227H^\341\2609\010\360\335\247\204\032\000$\250\210w\311t\250?\n\313\235\033\177*4\300S\025!h\303)w\315\003\267\025\313*jT\316\001\330\354\202U\327\271\273\206\252\254\327\206s\304\016\200#\335\302&K\t \314\257\262qnu\321\036'\333\251,\204\345\014\326#\225""\032\270\215\314\311\n\244\362\273R\311\220=lj1\263&I_\036\000F\346\211m\222\022.\321\266\350\267\262\267f@\214 -\3262\340;\323\002&\326\007\300\205\001\016\002\276\371\014'[\216\231\312\255\220'1\t^t\320\007\0374g\235\n@v\254\030\236Y\207\034VUF*\303%\217\247u\230\"\375aiV\363\304j1Q\024T\332\247\250J\360\025\360 U8J\300.}\ng!+\242yq\355\220\014N\356\203\032\224\224Y3\213\000\341O\304S{\315\\\322\004\260\311\031\370\347)HL\303\311\000\020\301\274:\353\020q3\004fT\0100\n\212\034U\231\014\202\234\026)\335\002\350\314cd\333Y7r\014\212CZ\365\030\373\006\312h$\022\000\374\024ay\020!\271\r2\225L$\200P\250\r\224\316,\251\241|\021\261UP\245\0131@ZNT\353\264R\210\332\255\214\005\2470\003\3251J\\\310F\013\253\025t$\245\261,e8|:VTfb\005x \317\247*\230\246\265\016\210Y\205\30030gT\025a\rsD\264D\256\310'Q\254\234\n\314eT\242B\222A\205\357\035#2d\244\014\022/M\024\254\270\206\255\220\220)E\005\266\3563$\315\320R\027\322\231\210l\314!\267&\002\261P\310s\022S\032\256\215+\310a\225\032J[\r\202\212g\023\024h\376tR\001\305Jg\322x\201\2054SHYf!\2324\303\004\274G\335\206]{\nk\0200\021\"H]\305\222ak5F\n1\311\005>)\245\231\371.\001d\303\255\000\357W\314H\253i\201c}o\374\263\335\306\233\305\352\336>\013\312\337\027ffG\261\327\365\317\231\327a\270\364@\355\304\357\0324\324\023\030E\017A\314\257h\007\034\377\177\245\010\304h\301Y~_\"i8H\237K\004'P+\313~\0010\237\275}U\376\233\020c\211\r \265\321\224ab\314\036\010J\321\n\336\001ATN\257\362\"+\t-2\032,OC+\303Q\232h\211M\205z\320}\332!\222\021\256>\327\336z\026\317N\316\262\345\213k\002\303\273ky\320ZN\214\235\3116\335Da\314\035\213\352\316;\3346g.,V&H\217\234\356\346\336b\340\230\266\232\221\322P\211!\301L\t6);!\305]\343\023x\243\234\020\000\246\023\270\204\314\177\370\273\222)\302\204\201\3570\315\210";
-    PyObject *data = __Pyx_DecompressString(cstring, 1332, 2);
+    const struct { const unsigned int length: 8; } index[] = {{1},{22},{146},{11},{32},{40},{15},{179},{32},{20},{25},{1},{1},{8},{11},{8},{17},{16},{21},{13},{5},{23},{5},{14},{13},{10},{3},{11},{7},{7},{8},{10},{10},{11},{4},{6},{4},{2},{2},{20},{10},{7},{11},{5},{5},{6},{0},{1},{7},{6},{4},{18},{1},{5},{17},{18},{3},{3},{11},{10},{5},{6},{5},{5},{7},{2},{6},{11},{8},{1},{7},{12},{10},{3},{8},{3},{13},{5},{9},{6},{8},{6},{13},{10},{15},{8},{7},{1},{8},{12},{3},{7},{11},{12},{1},{6},{3},{4},{4},{4},{12},{10},{5},{5},{3},{5},{4},{1},{9},{8},{4},{4},{6},{6},{7},{6},{5},{3},{6},{1},{5},{41},{54},{16},{26},{13},{24},{74},{70},{12},{16},{15},{25},{143},{82},{41}};
+    #if (CYTHON_COMPRESS_STRINGS) == 2 /* compression: bz2 (1318 bytes) */
+const char* const cstring = "BZh91AY&SYn\344\237A\000\000\217\177\377\377\377\377\377~\347\377p\277\347\375\312\277\377\377\376@@@@@@@@@@@@@\000@\000P\004~&VT\025@,\365\304M\002\230\247\222\r\006\214\t\352mM4\321\241\241\240\323\324\006F\201\243@\000\320\006\021\264@\310\032\004\004\000\010\232dQ\345\031\2416\220\003F\200\000\000h\000\006\200\003F\231\250p\000\000\000\000\000\006@\000\000\000\000\000\000\000d\0002\032\000\000\000\000\032\000\000\000\000\000\000\000\032\000\000\0001\021\032F%3({T\3654\323\324d\000\003\324\000\000\001\240\000\000\000\001\243jmIOYa\232\006\201\037\235\024\277_\275\025\000\351\203\000\370\340`\037K$\3020S\300\351\223\221\022\002\225\302j\305\244\235\300\214\304\253\356M,X\265\005\334:#\004\302\001\310p)!\243o$+\310\240\355rG_!\013dA\332+X\263\202\003l\302Ke\263\260\003\202\001\337Oi\312\257\216\344\301C\257C\031\302\231\273&8\247X\200eMa\nR`R\007\374\020QE\315P\316\251\225*q\333+.{1\032d\3041Z\026\262\246\030\017\246/!*\007\210\354\201\273E[\307\241I\361\253\010\377*\204a<C\010\241\t\254k>\022\355\212\006\\\270\3632\344^\3540'\274\017\211\312J\370\357\365\327}\324\364\0203\250\353\364\272\272j\336\337\023\023\263\036`\312\031@\010\210_P\224\350N\2152\021\330\3418\203\002\376\001\355Gp\245R\022\244\027\313\256\361\332\310\004\021\017/\331\361\221i\010q\205\226\252\026\371\007`\023b\366\0146]E\247=\241{\023\200\364\245\241\332{]\303 \355\244?t\257\363\356\240\360}?\233\305\230\251\342\326S\340\246\"6\205`\205y\265(\207\003[\215\310\301$\206\034\350\343\207\362e\356\260\325L\270\323\306\250\321ZaX\023A\235b`Z\t\304X\207\n\014\305\226z\021\001\021@\273\310'=W\264\377#\236\024u\270\373\205:\312\216\327x<\347\001,\305XZ$\306C\031\333l\362\234\260h\320Ffncg\263X\267dR\257-E\360\370\324\002\220\237\016]\374!0\002N\314\312\354\227R\203\352U{\321\270-F\221)\212\020\264\306\322\344g\035\233\026\330\317Z\246D\016\247\262\010\323N{\330\353\242\255\270\344{\013\230\2048\335\003%tP\\\257\335(7qt\207\023\371u\245N\224]uH\362\233S\001\235\310\352\"\370\337\255b\310\037K\032\215""\225W\\p\207\010#y\242YTDK\262m\274,\376\326\373\220#\007\0136\213q\034\343\002\021GT!\211\007\002\034%\206\021\030\312\227\363\3164nq<\303\243\201\317B\351\366\341,\220\242]\232\206\303\266A\343\212\252&\305Hb,\264\362\222\001\351\302\200\234\324\321\270\246\272C\315B\313j\0016\000*\340841\020\254\013\337\242\231\304F\370\035\273?\302\001\211\357z\r\224)(\252G\006\001\341O\300S~\006\257M\022\361\256z1)JB\204&\223\000#z\033\332i\021\230P\201H\332\014/\007\005\350\n\241\231\220\021\342\254\235p\002\340f1\322\202\322\354\306q-\311!\227vz\215E\305\200\277\016\3266\345\206T\335D\263V\032\021\205\002\223j\234\255\215\340\251\034;\311\313\321\034\243\245\306\263}\006cu\034[\211\334p+vk\324\366\313.\255n0\374\2633\344=\3071x\254\344\222\332\201^\344\031j\265LOj\207\242\025\302\362f`\317T\024b\355\262D\260@\257\254J\203X\274\nLZ\2514t\342\203\034\r\360\324.J\346\343\004\213\317E*\257!\257s\242\n0Ae\231\263$\215\350&\354';\210n\274;\226\274E\"\201Y\310ELk\276\023\246\263\022J3\302\221H1\032\262\327\273.j\307p\205Jm~s\2540\216\256\002=\366&\240\333k\014\255+\353\333\277\316\202{d 2\273@\372\235\233\016\373\201 c\314+\354\331\3459\257\322\240:\017\256\202\025\372\3378aF\323bo}p\374\264\031\202\213=\2253\374\017\225|Y$\210\3661\376\260\371\216\272\013\217\347\017lL\365\010\314\022\020F+\360w3\326\021\206G\265VJB\223D+\312\340\360*(\tK\002hEM0\2616\010\004\342\301\177\002\264\034\266\341\313\022\215\020\263\311\204Ao\366\036\334F\273B\277ps\265\026\205\212\202#$K&v\034^\366B\360\361j\237\001\204\2708k/\004\014\214`(\002\007\344\217\246#\003\350!\373z\360Q\357\205\373\233\372\343E\327\022[I\217\261i\346#n\341\3501]~\305\326\372\305\215\031\271\332r\361\356\377\265c\312\004\212\323\316c\262R\234nR\005I\310\242Y\016\n\367\302\006\370#\315\310\000S\t\377!3\037\376.\344\212p\241 \335\311>\202";
+    PyObject *data = __Pyx_DecompressString(cstring, 1318, 2);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (1236 bytes) */
-const char* const cstring = "x\332uT\315o\023G\024'\020\202i\235\020\023h\201\322j\314\207h\245b08\210\366R9v\002H%\220\304*\221P5\032\357\276\265\267\254w\3263\263\216\315\207\304\321\3079\316q\217{\3641G\216\034{\3641\177\002\177B\337\354:\341Ct\265\236\217}\237\277\337{\317W\257\276\272\375\373\355;\3037\257\252\371v'\333\276!\370\324I\203\007<\026\304\227\204\205Dt\332D\305Q\000\225L\232-\255.\312\234\200II:\376\000$\221\274\007\244\013A\004\202xq\350(\237\207\222x\\\020G\000S~\330!\252\013\022rO\222\264\231\004\227p\317\303\037q}\317\003\001\241\"N\036X\215\"\220y\270\265\200\275\204\235\330\365y\245#X\324\365\035\331\340\002*\224\372\241\257(\375(\277\305\205\337\271\365\251\322\255C\245J4\332\344\n\203w\231\"\215\221\352\362\320\202s!\360\333 \230\202`D\244\022\276\2430}T\n\311\323\365\2477k\367k\210\337%\002\376\001G!\306\270\235A\306\3641\351v\354\007\210k\226+y\344\221\021\217I\010\010Kq\022Yj>1@\360!\221\240\354\201\334`a\310\025\263\034Q4Grn \007\002\203 \227\326z\203\005\022*\333\017\326\310\200\0051\220^,\025i\003\276j\017\320\321\355\233wVW\313-K\345s?T\277\222\303\345\357\257|\313\005\225?\230\353R\014\013x#\257\211\027p\246\352\203N#\340\316\213\303\375\210\325\243\017\035P\324\213\344\227wT\223G\326\025\345;/\260\016\331\362\265b\375_\re,\274\314\303\347\301?\213\3641\0026%\276\250\025\302\036*\341\261\013C\273a\203\3166fw\305\351L\200\247\231,?\261\246`{\353\003l4\371@\300\350\321\360ID\351\323\321\020\177M\254=\335\204\241\332\006\217\"\361\017\327w7\036\267v0A\346@K\260PF\314vh\306\357\263\256\257\340\231\037\272|\217Q\312\202\000\227(\202\320e\242#\231\034\205\016\"u\270\34016\010H\333\004=\214\224\365\002E\\h\335\263W\024\"d\252\004\306h#}N q\000\360\r \037\240|\034Z\330a\016\217C\345\304\n'\006\273V1\027\3721P\352r\007\027\205s\326cH\227`=h\371=\220\224\332!\244\2643c\361\323\262u8w\327C\036w\272H\323!\347\330\024\324\227\364(i\233\242\244\230\260\262\376\002;\034\210\240\3070]\\\207\326\027\355\201b9&|z\334\215\003\310N\202SdJ\370\220\tB\314)\333m\3258\037\200\300\316s""\361\177\302\243\031(\020\021\217\360\r\300\303<\"\001\226hk\320\217Y\220\033\013\001*\026!V\320\026Q\202\203#\025x\224\342<\315\334\343\311\005\217\305\201\222\001@\204K\2440g\031c\034\245\260,\250\351\242{\005\322\256\330M\na\345\235\222\367\306\254C\362q\214\261\232\002G/\233>9|[\237^\372\001\227\302\267\343\273c6\036\350\03537-\256\350\273\3325eS3\375dnZ83\226\372\232n\233\271\267\365\017\205c\247\213\343\332X\351\252U\253\3517\t\032/\353\023\272\252\233&\323\035\350m\255\314oI3]H\333\223S\223\276u_\034o\350\262\335\036\233\022\336\317]6\017\223\365t%\335\334/\347\346w\265\223I.\220\244\220\236Lw&\030lz\376G\263\233\354\246\273\223\255\317\225.^O\350\004\275\236\376\260p\354\364\342\2701~en$\245\344z\322OO\244\325t}r~\302&r\277\274\277\372\356\344\273\255w\316\373\322\373\262\205\230\345\\\325\033\246l\023\265\211}\367\223a\323\302\322\330\321%}U?3u\363WR\235\026\026\307-\275\202\200\216[\315\374\322\320\302\224,\202\246>\256\277H\372\322/i\351\320\343\305\237\323\031eWt='ly\034\3535\3355\354\343\265i\346M\303\354%nz%m\"\326'\372\276\251~X\262h\232z\321dx\347l\312\265\034\333A\361\034\272h\243U\375\240xf\274\247;\250\263|\3314\223\343Iy\272\274\242\357\231\263\246jyEr/\230\005\303\314\313\364lzorvR\265\037\346\315cL\021\305k\246\235\314c\315\212\313zA\263<B\177v\323\375\303\n\035\245\2634\336\306l\353z\353\000%\177\232S\330\020h}P(\351s\3729\306\276\226d\364\271\372\246QI-y=\251N\032\023\261_\262\036\227\220Z\334\212X\352\372\277\363\337\353\201\331\312\021>\324YGl\232\254#\236\230U\333d\213\030id\346\376\003\345\006\362\303";
-    PyObject *data = __Pyx_DecompressString(cstring, 1236, 1);
+    #elif (CYTHON_COMPRESS_STRINGS) != 0 /* compression: zlib (1238 bytes) */
+const char* const cstring = "x\332mT\315o\023G\024o \004\323:!&\320\002\245\325\230\017\321J\305`p\020\355\245r\354\004\220J \211U\"\241j4\336}koY\357\254gf\035\233\017\211\243\217s\234\343\036\367\350c\216\0349\366\350c\376\004\376\204\276\331uB@\254\326\363\261\357\363\367{\357\371\332\265\327w\376\270sw\370\366u5\337\356f\333\267\004\237:i\360\200\307\202\370\222\260\220\210N\233\2508\n\240\222I\263\245\325E\231\0230)I\307\037\200$\222\367\200t!\210@\020/\016\035\345\363P\022\217\013\342\010`\312\017;DuAB\356I\2226\223\340\022\356y\370#\256\357y  T\304\311\003\253Q\0042\017\267\026\260W\260\023\273>\257\034;v\004\213\272\276#\033\\@\205R?\364\025\245\237\344\267\271\360;\267\217+\335>T\252D\243c~d,\274M\2560\255.S\2441R]\036Z\330.\004~\033\004S\020\214\210T\302w\024\002C\245\220<[\177v\253\366\240\206\314\270D\300\277\340(D\037\26732\020\030\302i\307~\200\210g(\310c\217\214xLB@\300\212\223\310\222v\314\000i\t\211\004e\017\344&\013C\256\230e\217\2429\322v\023\331\021\030\004Y\266\326\033,\220P\331~\270F\006,\210\201\364b\251H\033\360U{\200\216\356\334\272\273\272ZnY\222_\370\241\372\215\034.\377|\345[.\250\374\311\\\227bX\300\033yC\274\2003U\037t\032\001w^\036\356G$\037}\350\200\242^$\277\274\243\232<\262\256(\337y\211tg\313\327j\227i}\036\3403o\237\274`K\342\213Z!\354\241\022\036\2730\264\033\266\347lcvW\234\316\004x\232\311\362\023k\n\266\267>\3006\223\017\005\214\036\017\237F\224>\033\r\361\327\304\372\322M\030\252m\360(\222\373h}w\343Ik\007\233\2039\320\022,\224\021\263\375\231q\370\274\353+x\356\207.\337c\224\262 \300%\212 t\231\350H&G\241\203 \035.x\214M\000\322\026\272\207\221\262zS\304\205\326={E!B\246J`\2146R\344\004\022\333\037\337\000\362\361\311\207\241\205]\344\3608TN\254p^\2603\025s\241\037\003\245.wpQ8e=\206t\t\326\203\226\337\003I\251\035AJ;3\026\217\227\246\303\271\273\036\362\270\323E\232\0169\307\302S_\322\243\244m\212\222b\302\312\372\013\354\000 \202\036\303tq\035Z_\264\007\212\345\230\360\351q7\016 ;\tN\221)\341C&\0101\247l\267U\343|\000\002\273\313\305\177\t\217f\240@D<""\3027\000\017\363\210\004X\242\255A?fAn,\004\250X\204XA[D\t\016\216M\340Q\21233s\217'\027<\026\007J\006\000\021.\221\302\234e\214q\354\204+\205\245Am\027C(\220v\305\216R\010-\357\226\274?f]\222\217]\214\025\0258b\331\224\311\341\273\372\364\362\217\270\024\276\033\337\033\263\361@\357\230\271iqE\337\323\256)\233\232\351's\323\302\331\261\324\327u\333\314\275\253\177,|s\2468\256\215\225\256Z\265\232~\233\240\361\262>\251\253\272i2\335\201\336\326\312\374\2364\323\205\264=9=\351[\367\305\361\206.\333\355\211)\341\375\374\025\363(YOW\322\315\375rn~O;\231\344\"I\n\351\251tg\202\301\246\027~2\273\311n\272;\331\372\\\351\322\215\204N\320\353\231\217\013\337\234Y\0347\306\257\315\315\244\224\334H\372\351\311\264\232\256O.L\330D\356\227\367W\337\237z\277\365\336\371P\372P\266\020\263\234\253z\303\224m\2426\261\357\1776lZX\032;\272\244\257\351\347\246n\376N\252\323\302\342\270\245W\020\320\t\253\231_\032Z\230\222E\320\324'\364\027I_\3765-\035z\274\364K:\243\354\252\256\347\204-\217c\275\246\273\206}\2726\315\274i\230\275\304M\257\246M\304\372T?0\325\217K\026MS/\232\014\357\234M\271\226c;(\236G\027m\264\252\037\024\317\216\367t\007u\226\257\230fr\")O\227W\364}s\316T-\257H\356E\263`\230y\225\236K\357O\316M\252\366\303\274y\202)\242x\315\264\223y\254YqY/h\226G\350\317n\272\177X\241\243t\226\306\333\230m]o\035\240\344/s\032\033\002\255\017\n%}^\277\300\330\327\223\214>W\3372*\251%o&\325Ic\"\366K\326\343\022R\213[\021K]\377o\376\007=0[9\302G:\353\210M\223u\304S\263j\233l\021#\215\314\334\377\177C\363\233";
+    PyObject *data = __Pyx_DecompressString(cstring, 1238, 1);
     if (unlikely(!data)) __PYX_ERR(0, 1, __pyx_L1_error)
     const char* const bytes = __Pyx_PyBytes_AsString(data);
     #if !CYTHON_ASSUME_SAFE_MACROS
     if (likely(bytes)); else { Py_DECREF(data); __PYX_ERR(0, 1, __pyx_L1_error) }
     #endif
-    #else /* compression: none (1982 bytes) */
-const char* const bytes = "##{0:02x}{1:02x}{2:02x}\n    A Colour is an rgb tuple.\n    \n    This class gives some helper functions for creating these tuples based off of different colour types.\n    BlazeSudio.graphicsCore.__init__BlazeSudio/orig/graphicsCore/__init__.pyNote that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.RGB value must be between 0-255!Tuple[int, int, int]Tuple[int, int, int, int].?add_noteint | floatAvgClockAvgClock.__init__AvgClock.get_fpsAvgClock.get_fps_instAvgClock.tickBlackBlazeSudio.graphicsCoreBlazeSudio.graphicsCore.surfClockClock.__init__Clock.get_fpsClock.tickColCol.__new__Col.hexCol.rgbCol.rgbaCol.to_hexCol.to_rgbCol.to_rgbaDrawEventsGreyIxOp__Pyx_PyDict_NextRef_RGBHEXFMTSurfaceTransparentTupleWhiteWindowa__all__appendargsasyncio.coroutinesbclamp__class_getitem__cline_in_tracebackclscolcollectionscolourTypecountcutoffdeltadeque__doc__dtformat_frameTimes__func__gget_fpsget_fps_instgoodEnoughhex__init__int_is_coroutineitems_lastTimelstrip__main__maxfps__metaclass____module____mro_entries____name____new__ooverloadperf_counterpoppopleft__prepare____qualname__rreturnrgbrgbasecsself__set_name__setdefaultsleepsleptstrsuperttarget_dt__test__ticktimeto_hexto_rgbto_rgbatypinguppervalvaluesx\200A\330\032\033\200A\330\010\013\2103\210a\210v\220S\230\001\330\014\023\2203\220d\230!\2304\230q\240\001\330\010\017\210s\220$\220b\230\001\200A\360\010\000\t\014\2104\210t\2201\330\014\023\2204\220}\240A\330\010\020\220\003\2201\220D\230\001\330\010\017\210v\220R\220t\2309\240D\250\006\250b\260\007\260q\200A\330\010\014\210F\220!\330\010\014\210M\230\021\200A\330\024\034\230H\240E\250\023\250N\270!\330\010\020\220\003\2203\220c\230\021\200A\330\030 \240\010\250\005\250S\260\001\200A\330\025\035\230X\240X\250X\260Q\330\010\020\220\003\2203\220c\230\021\200A\330\031%\240_\260A\330\010\t\360\006\000\t\r\210C\210{\230'\240\021\240%\240q\250\003\2501\250E\260\025""\260a\260s\270!\2705\300\005\300Q\300c\310\021\310!\330\010\013\2101\330\014\023\2201\220F\230!\330\010\017\210q\200A\330\026\036\230a\330\010\016\210c\220\021\220#\220W\230A\230V\2401\330\010\r\210T\220\023\220D\230\002\230!\330\010\r\210T\220\023\220C\220r\230\021\330\010\014\210D\220\002\220!\330\010\020\220\003\2203\220c\230\021\200A\330\032)\250\021\330\010\017\210q\200A\330\031(\250\001\330\010\017\210s\220\"\220A\200A\360\010\000\t\020\210u\220B\220h\230a\200A\360\010\000\t\020\210u\220D\230\004\230C\230w\240d\250\"\250D\260\001\200O\2208\2301\360\016\000\t\r\210D\220\r\230Q\330\010\020\220\001\330\010\013\2104\210{\230'\240\021\340\014\024\220B\220b\230\004\230A\340\014\017\210w\220g\230Q\330\020\034\230D\240\002\240!\330\020\023\2206\230\022\2301\330\024\034\230A\330\024\030\230\006\230a\230z\250\022\2506\260\022\2601\330\024\030\230\004\230M\250\021\330\024\034\230B\230b\240\004\240A\330\014\020\220\006\220a\330\010\013\2104\210q\330\014\020\220\006\220a\220q\330\010\014\210M\230\021\200O\2208\2301\360\016\000\t\016\210R\210u\220A\220Q\340\010\014\210L\230\007\230q\240\004\240A\340\010\021\220\024\220[\240\002\240$\240a\330\010\016\210d\220-\230t\2404\240|\2601\260C\260r\270\021\330\014\020\220\016\230a\330\014\020\220\014\230H\240A\320\004\027\220v\230Q\360\016\000\t\r\210H\220A\330\010\014\210N\230!\330\010\014\210O\2305\240\001\330\010\r\210R\210y\230\001";
+    #else /* compression: none (1984 bytes) */
+const char* const bytes = "##{0:02x}{1:02x}{2:02x}\n    A Colour is an rgb tuple.\n    \n    This class gives some helper functions for creating these tuples based off of different colour types.\n    BlazeSudio.BlazeSudio.graphicsCore.__init__BlazeSudio/orig/graphicsCore/__init__.pyBlazeSudio.surfNote that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types. If you need to pass subclasses then set the 'annotation_typing' directive to False.RGB value must be between 0-255!Tuple[int, int, int]Tuple[int, int, int, int].?add_noteint | floatAvgClockAvgClock.__init__AvgClock.get_fpsAvgClock.get_fps_instAvgClock.tickBlackBlazeSudio.graphicsCoreClockClock.__init__Clock.get_fpsClock.tickColCol.__new__Col.hexCol.rgbCol.rgbaCol.to_hexCol.to_rgbCol.to_rgbaDrawEventsGreyIxOp__Pyx_PyDict_NextRef_RGBHEXFMTSurfaceTransparentTupleWhiteWindowa__all__appendargsasyncio.coroutinesbclamp__class_getitem__cline_in_tracebackclscolcollectionscolourTypecountcutoffdeltadeque__doc__dtformat_frameTimes__func__gget_fpsget_fps_instgoodEnoughhex__init__int_is_coroutineitems_lastTimelstrip__main__maxfps__metaclass____module____mro_entries____name____new__ooverloadperf_counterpoppopleft__prepare____qualname__rreturnrgbrgbasecsself__set_name__setdefaultsleepsleptstrsupersurfttarget_dt__test__ticktimeto_hexto_rgbto_rgbatypinguppervalvaluesx\200A\330\032\033\200A\330\010\013\2103\210a\210v\220S\230\001\330\014\023\2203\220d\230!\2304\230q\240\001\330\010\017\210s\220$\220b\230\001\200A\360\010\000\t\014\2104\210t\2201\330\014\023\2204\220}\240A\330\010\020\220\003\2201\220D\230\001\330\010\017\210v\220R\220t\2309\240D\250\006\250b\260\007\260q\200A\330\010\014\210F\220!\330\010\014\210M\230\021\200A\330\024\034\230H\240E\250\023\250N\270!\330\010\020\220\003\2203\220c\230\021\200A\330\030 \240\010\250\005\250S\260\001\200A\330\025\035\230X\240X\250X\260Q\330\010\020\220\003\2203\220c\230\021\200A\330\031%\240_\260A\330\010\t\360\006\000\t\r\210C\210{\230'\240\021\240%\240q\250\003\2501\250E\260""\025\260a\260s\270!\2705\300\005\300Q\300c\310\021\310!\330\010\013\2101\330\014\023\2201\220F\230!\330\010\017\210q\200A\330\026\036\230a\330\010\016\210c\220\021\220#\220W\230A\230V\2401\330\010\r\210T\220\023\220D\230\002\230!\330\010\r\210T\220\023\220C\220r\230\021\330\010\014\210D\220\002\220!\330\010\020\220\003\2203\220c\230\021\200A\330\032)\250\021\330\010\017\210q\200A\330\031(\250\001\330\010\017\210s\220\"\220A\200A\360\010\000\t\020\210u\220B\220h\230a\200A\360\010\000\t\020\210u\220D\230\004\230C\230w\240d\250\"\250D\260\001\200O\2208\2301\360\016\000\t\r\210D\220\r\230Q\330\010\020\220\001\330\010\013\2104\210{\230'\240\021\340\014\024\220B\220b\230\004\230A\340\014\017\210w\220g\230Q\330\020\034\230D\240\002\240!\330\020\023\2206\230\022\2301\330\024\034\230A\330\024\030\230\006\230a\230z\250\022\2506\260\022\2601\330\024\030\230\004\230M\250\021\330\024\034\230B\230b\240\004\240A\330\014\020\220\006\220a\330\010\013\2104\210q\330\014\020\220\006\220a\220q\330\010\014\210M\230\021\200O\2208\2301\360\016\000\t\016\210R\210u\220A\220Q\340\010\014\210L\230\007\230q\240\004\240A\340\010\021\220\024\220[\240\002\240$\240a\330\010\016\210d\220-\230t\2404\240|\2601\260C\260r\270\021\330\014\020\220\016\230a\330\014\020\220\014\230H\240A\320\004\027\220v\230Q\360\016\000\t\r\210H\220A\330\010\014\210N\230!\330\010\014\210O\2305\240\001\330\010\r\210R\210y\230\001";
     PyObject *data = NULL;
     CYTHON_UNUSED_VAR(__Pyx_DecompressString);
     #endif
     PyObject **stringtab = __pyx_mstate->__pyx_string_tab;
     Py_ssize_t pos = 0;
-    for (int i = 0; i < 117; i++) {
+    for (int i = 0; i < 120; i++) {
       Py_ssize_t bytes_length = index[i].length;
       PyObject *string = PyUnicode_DecodeUTF8(bytes + pos, bytes_length, NULL);
-      if (likely(string) && i >= 13) PyUnicode_InternInPlace(&string);
+      if (likely(string) && i >= 15) PyUnicode_InternInPlace(&string);
       if (unlikely(!string)) {
         Py_XDECREF(data);
         __PYX_ERR(0, 1, __pyx_L1_error)
@@ -7575,7 +7578,7 @@ const char* const bytes = "##{0:02x}{1:02x}{2:02x}\n    A Colour is an rgb tuple
       stringtab[i] = string;
       pos += bytes_length;
     }
-    for (int i = 117; i < 133; i++) {
+    for (int i = 120; i < 136; i++) {
       Py_ssize_t bytes_length = index[i].length;
       PyObject *string = PyBytes_FromStringAndSize(bytes + pos, bytes_length);
       stringtab[i] = string;
@@ -7586,14 +7589,14 @@ const char* const bytes = "##{0:02x}{1:02x}{2:02x}\n    A Colour is an rgb tuple
       }
     }
     Py_XDECREF(data);
-    for (Py_ssize_t i = 0; i < 133; i++) {
+    for (Py_ssize_t i = 0; i < 136; i++) {
       if (unlikely(PyObject_Hash(stringtab[i]) == -1)) {
         __PYX_ERR(0, 1, __pyx_L1_error)
       }
     }
     #if CYTHON_IMMORTAL_CONSTANTS
     {
-      PyObject **table = stringtab + 117;
+      PyObject **table = stringtab + 120;
       for (Py_ssize_t i=0; i<16; ++i) {
         #if CYTHON_COMPILING_IN_CPYTHON_FREETHREADING
         Py_SET_REFCNT(table[i], _Py_IMMORTAL_REFCNT_LOCAL);
@@ -10262,7 +10265,7 @@ static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name) {
         if (unlikely(!module_name_str)) { goto modbad; }
         module_name = PyUnicode_FromString(module_name_str);
         if (unlikely(!module_name)) { goto modbad; }
-        module_dot = PyUnicode_Concat(module_name, __pyx_mstate_global->__pyx_kp_u__2);
+        module_dot = PyUnicode_Concat(module_name, __pyx_mstate_global->__pyx_kp_u__3);
         if (unlikely(!module_dot)) { goto modbad; }
         full_name = PyUnicode_Concat(module_dot, name);
         if (unlikely(!full_name)) { goto modbad; }
@@ -12664,7 +12667,7 @@ __Pyx_PyType_GetFullyQualifiedName(PyTypeObject* tp)
         result = name;
         name = NULL;
     } else {
-        result = __Pyx_NewRef(__pyx_mstate_global->__pyx_kp_u__3);
+        result = __Pyx_NewRef(__pyx_mstate_global->__pyx_kp_u__4);
     }
     goto done;
 }

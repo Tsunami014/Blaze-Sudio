@@ -1,5 +1,5 @@
-from BlazeSudio.graphicsCore import Draw, Ix, Op, Events
-from BlazeSudio.graphicsCore.surf import Surface, Window
+from . import Draw, Ix, Op, Events
+from .surf import Surface, Window
 from typing import Tuple, overload
 from collections import deque
 import time

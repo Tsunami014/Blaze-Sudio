@@ -23,5 +23,6 @@ class Resize(Op):
 
 class Fill(Op):
     col: Incomplete
+    flags: Incomplete
     def __init__(self, col) -> None: ...
     def apply(self, arr: np.ndarray, _): ...

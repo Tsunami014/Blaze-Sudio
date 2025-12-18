@@ -1,13 +1,17 @@
 # How to use
-- Compiled: `from BlazeSudio import something`
-- Regular: `from BlazeSudio.orig import something`
+This contains the source code for the compiled modules.
+To actually see this, you need to download the code off github and use that (or you can `pip install -e .` to use it with other code)
 
-To use the regular version (will be very very much slower), you need to have the debug version of the library installed. You can get this through 2 ways;
-- Don't pip install it and just run code in the root directory (so the module is there) with the code freshly off of github
-- Download the repo, `cd` into it's directory and then `pip install -e .`
+To use the regular version (will be very very much slower), run
+```py
+from BlazeSudio.orig import Debug
+Debug(pkgname)
+```
+e.g. to debug the `graphicsCore` module you'd run `Debug('graphicsCore')`.
 
-Also try to replace every import with either one or the other. It'll probably crash out if you tried to combine stuff.
-# TO BUILD THIS FOR YOUR DEVICE:
+This MUST be run before any imports to that module.
+
+# TO BUILD THIS FOR YOUR DEVICE
 1. `pip install cython setuptools mypy`
 2. `python3 BlazeSudio/orig/setup.py <folder you want to build>`
 3. Wait for it to finish :)

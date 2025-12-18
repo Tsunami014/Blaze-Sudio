@@ -14,6 +14,8 @@ It will first read the file, then overwrite it when you save.')
     NodeEditor(f)()
 
 def NewGraphicsDemo():
+    #from BlazeSudio.orig import Debug
+    #Debug('graphicsCore')
     from BlazeSudio.graphicsCore import Window, AvgClock, Col, Draw, Ix
     from BlazeSudio.graphicsCore.Op import Fill
     w = Window()

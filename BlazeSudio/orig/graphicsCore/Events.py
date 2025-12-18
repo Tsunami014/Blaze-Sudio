@@ -107,7 +107,7 @@ def Dataclass(cls: T) -> T:
         if hasattr(cls, name):
             defaults[name] = getattr(cls, name)
 
-    def _init(self, *args, **kwargs):
+    def _dc_init(self, *args, **kwargs):
         if len(args) > len(fields):
             raise TypeError(
                 f"Expected at most {len(fields)} positional arguments, got {len(args)}"
@@ -115,13 +115,9 @@ def Dataclass(cls: T) -> T:
 
         values = {}
 
-        for name, value in zip(fields, args):
-            values[name] = value
         for name, value in kwargs.items():
             if name not in fields:
                 raise TypeError(f"Got an unexpected keyword argument {name!r}")
-            if name in values:
-                raise TypeError(f"Multiple values for argument {name!r}")
             values[name] = value
 
         missing = []
@@ -152,7 +148,7 @@ def Dataclass(cls: T) -> T:
         new_namespace[name] = value
 
     new_namespace['__slots__'] = slots
-    new_namespace['_init'] = _init
+    new_namespace['_dc_init'] = _dc_init
     new_namespace['__annotations__'] = MappingProxyType(annotations)
     new_namespace['__repr__'] = __repr__
 
@@ -194,7 +190,7 @@ class Event:
             return False
         return var
 
-    def __init__(self, *args, **kwargs): ...
+    def __init__(self, *args, **kwargs): pass
 
     _types = {}
     @classmethod
@@ -210,7 +206,7 @@ class Event:
         Create a new event object. Not for the light-hearted.
         """
         o = object.__new__(cls)
-        o._init(**kwargs)
+        o._dc_init(o, **kwargs)
         return o
 
 

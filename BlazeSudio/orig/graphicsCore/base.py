@@ -21,6 +21,8 @@ class OpFlags(IntEnum):
     Flags that make Operations act differently.
     Only for manual use if you know what you're doing.
     """
+    NoFlags = 0
+    """Has no flags. Is not special."""
     List = 0b1
     """Is an OpList"""
     Matrix = 0b10
@@ -40,9 +42,9 @@ class Op(ABC):
     def apply(self, arr: np.ndarray, defSmth: bool) -> np.ndarray: ...
 
     def freeze(self):
-        self.flags = 0 # It is no longer a whatever and unable to be stacked
+        self.flags = OpFlags.NoFlags # It is no longer a whatever and unable to be stacked
     def frozen(self) -> 'Op':
-        self.flags = 0
+        self.flags = OpFlags.NoFlags
         return self
 
     def __add__(self, oth) -> 'OpList':
@@ -167,11 +169,11 @@ class OpList(Op):
     def freeze(self):
         if not self._fixed:
             self.fix()
-        self.flags = 0
+        self.flags = OpFlags.NoFlags
     def frozen(self) -> 'Op':
         if not self._fixed:
             self.fix()
-        self.flags = 0
+        self.flags = OpFlags.NoFlags
         return self
 
     def apply(self, arr: np.ndarray, defSmth):

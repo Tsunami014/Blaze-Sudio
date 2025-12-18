@@ -1,5 +1,5 @@
-from BlazeSudio.graphicsCore import Draw as Draw, Events as Events, Ix as Ix, Op as Op
-from BlazeSudio.graphicsCore.surf import Surface as Surface, Window as Window
+from . import Draw as Draw, Events as Events, Ix as Ix, Op as Op
+from .surf import Surface as Surface, Window as Window
 from _typeshed import Incomplete
 from typing import overload
 
