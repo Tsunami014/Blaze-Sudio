@@ -1,5 +1,7 @@
 import numpy as np
 
+__path__: list
+
 def _drawCirc(arr: np.ndarray, pos: np.ndarray, radius: int, thickness: int, col: np.ndarray):
     ...
 

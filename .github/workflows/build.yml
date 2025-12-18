@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux:
+  compile-linux:
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
           default_author: github_actions
           message: 'ci(build): 🛠️ Build for linux :)'
   
-  build-windows:
+  compile-windows:
     permissions:
       contents: write
     runs-on: windows-latest
