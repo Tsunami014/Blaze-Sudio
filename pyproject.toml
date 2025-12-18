@@ -77,7 +77,7 @@ all = [
 
 [tool.setuptools.packages.find]
 exclude = [
-    "BlazeSudio.orig",
+    "BlazeSudio.speed.setup",
 ]
 
 [tool.setuptools.package-data]
@@ -86,6 +86,7 @@ exclude = [
     "ldtk/internal-icons.png",
     "graphics/defaultTheme/*",
     "graphics/GUI/textboxify/data/**",
+
     "**/*.pyi",
     "**/*.so", "**/*.pyd"
 ]

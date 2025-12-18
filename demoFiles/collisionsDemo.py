@@ -9,6 +9,8 @@ header_opts = ['point', 'line', 'arc', 'circle', 'rect', 'rotated rect', 'polygo
 types = [collisions.Point, collisions.Line, collisions.Arc, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.Polygon, collisions.NoShape]
 font = pygame.font.Font(None, 36)
 header_sze = 50
+gravity_amnt = 0.3
+friction_amnt = 0.03
 typ = 0
 curObj: collisions.Shape = collisions.Point(0, 0)
 objs = collisions.Shapes()
@@ -17,12 +19,12 @@ combineTyp = 0
 pos = [0, 0]
 vel = [0, 0]
 combineFs = {
-    'CollsUnion': collisions.ShapeCombiner.union,
-    'ShapelyUnion': collisions.ShapeCombiner.shapelyUnion,
-    'BoundingBox': collisions.ShapeCombiner.boundingBox,
-    'CombineRects': collisions.ShapeCombiner.combineRects,
-    'PointsToShape': collisions.ShapeCombiner.pointsToShape,
-    'PointsToPoly': collisions.ShapeCombiner.pointsToPoly
+    'CollsUnion': collisions.Combine.union,
+    'ShapelyUnion': collisions.shapely.shapelyUnion,
+    'BoundingBox': collisions.Combine.boundingBox,
+    'CombineRects': collisions.Combine.combineRects,
+    'PointsToShape': collisions.Combine.pointsToShape,
+    'PointsToPoly': collisions.shapely.pointsToPoly
 }
 highlightTyps = [
     (collisions.Line, collisions.ClosedShape),
@@ -291,20 +293,20 @@ Press any key/mouse to close this window""",0,allowed_width=win.get_width()//rat
                 if cpoints:
                     # Find the point on the unit circle * 0.2 that is closest to the object
                     angle = math.atan2(curObj.y-cpoints[1], curObj.x-cpoints[0])
-                    gravity = [-0.2*math.cos(angle), -0.2*math.sin(angle)]
+                    gravity = [-gravity_amnt*math.cos(angle), -gravity_amnt*math.sin(angle)]
                 else:
                     gravity = [0, 0]
             elif pygame.key.get_mods() & pygame.KMOD_CTRL:
-                gravity = [0, -0.2]
+                gravity = [0, -gravity_amnt]
             else:
-                gravity = [0, 0.2]
+                gravity = [0, gravity_amnt]
         else:
             gravity = [0, 0]
         vel = [vel[0] + gravity[0], vel[1] + gravity[1]]
         vellLimits = [10, 10]
         vel = [min(max(vel[0], -vellLimits[0]), vellLimits[0]), min(max(vel[1], -vellLimits[1]), vellLimits[1])]
         if not btns[pygame.K_l]:
-            friction = [0.02, 0.02]
+            friction = [friction_amnt, friction_amnt]
         else:
             friction = [0, 0]
         def fric_eff(x, fric):

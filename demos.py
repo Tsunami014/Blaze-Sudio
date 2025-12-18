@@ -334,9 +334,7 @@ def LoremGraphicsDemo():
 def ThemePgDemo():
     import demoFiles.themePlayground as themePlayground  # noqa: F401
 
-def CollisionsDemo(debug=False):
-    if debug:
-        from BlazeSudio.debug import collisions  # noqa: F401
+def CollisionsDemo():
     from demoFiles import collisionsDemo  # noqa: F401
 
 def WrapBasicDemo():
@@ -902,7 +900,6 @@ if __name__ == '__main__':
 
         'Collisions [collisions]:': None,
         'Collisions Demo':       CollisionsDemo,
-        'DEBUG Collisions Demo': lambda: CollisionsDemo(True),
 
         'Wrapping [game]:': None,
         'Wrap Demo':       WrapDemo,
