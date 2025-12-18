@@ -2,7 +2,7 @@
 This code compiles all .pyx files in the entire Blaze Sudio module!
 
 # How to build
-1. `pip install stubgen-pyx`
+1. `pip install stubgen-pyx numpy`
 2. `python3 BlazeSudio/speed/setup.py`
 3. Wait for it to finish :)
 
