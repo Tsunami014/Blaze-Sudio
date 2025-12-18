@@ -1,5 +1,7 @@
-from . import Draw, Ix, Op, Events
-from .surf import Surface, Window
+from BlazeSudio.speed import _COMPILING
+if not _COMPILING:
+    from . import Draw, Ix, Op, Events
+    from .surf import Surface, Window
 from typing import Tuple, overload
 from collections import deque
 import time
