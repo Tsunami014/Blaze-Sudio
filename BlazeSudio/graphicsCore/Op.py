@@ -92,9 +92,9 @@ class Resize(Op): # FIXME
 class Fill(Op):
     __slots__ = ['col']
     def __init__(self, col):
-        self.col = col
+        self.col = np.array(col, np.uint8)
         self.flags = OpFlags.NoFlags
     def apply(self, arr: np.ndarray, _):
-        arr[:] = self.col
+        np.copyto(arr, self.col)
         return arr
 

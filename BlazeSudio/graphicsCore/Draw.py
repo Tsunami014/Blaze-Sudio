@@ -1,6 +1,6 @@
 from typing import overload, Iterable, Tuple
 from .base import OpFlags, TransOp
-from ._draw import _drawThickLine, _drawRect, _drawCirc, _drawElipse
+from ._calcs import _drawThickLine, _drawRect, _drawCirc, _drawElipse
 import numpy as np
 import math
 
@@ -41,8 +41,7 @@ class Polygon(TransOp):
         for p2 in newps[1:]:
             _drawThickLine(arr, p1, p2, t, self.col)
             p1 = p2
-        p2 = newps[0]
-        _drawThickLine(arr, p1, p2, t, self.col)
+        _drawThickLine(arr, p1, newps[0], t, self.col)
         return arr
 
 class Line(Polygon):

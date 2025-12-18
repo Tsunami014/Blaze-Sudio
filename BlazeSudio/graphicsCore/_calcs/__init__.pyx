@@ -1,37 +1,116 @@
+# cython: boundscheck=False, wraparound=False, nonecheck=False, cdivision=True
 import numpy as np
 
-def _drawThickLine(arr: np.ndarray, p1: np.ndarray, p2: np.ndarray, thickness: int, colour: np.ndarray):
-    x, y = p1.astype(np.int64)
-    x1, y1 = p2.astype(np.int64)
-    radius = int(thickness) // 2
 
-    # Precompute circle mask
-    yy, xx = np.ogrid[-radius:radius+1, -radius:radius+1]
-    circle_mask = xx*xx + yy*yy <= radius*radius
-    offsets = np.arange(-radius, radius+1, dtype=np.int64)
+def apply(mat: np.ndarray, arr: np.ndarray, smooth: bool):
+    background = 0
 
-    dx = abs(x1 - x)
-    dy = abs(y1 - y)
+    h, w = arr.shape[:2]
+    is_color = arr.ndim == 3
+
+    T_inv = np.linalg.inv(mat)
+
+    yy, xx = np.meshgrid(np.arange(h), np.arange(w), indexing='ij')
+    ones = np.ones_like(xx)
+    dst = np.stack([xx, yy, ones], axis=-1)
+
+    src = dst @ T_inv.T
+    sx = src[..., 0] / src[..., 2]
+    sy = src[..., 1] / src[..., 2]
+
+    if smooth:
+        x0 = np.floor(sx).astype(int)
+        x1 = x0 + 1
+        y0 = np.floor(sy).astype(int)
+        y1 = y0 + 1
+
+        wx = sx - x0
+        wy = sy - y0
+
+        valid = (x0 >= 0) & (x1 < w) & (y0 >= 0) & (y1 < h)
+
+        if not is_color:
+            arr = arr[..., None]
+
+        c00 = arr[y0, x0]
+        c10 = arr[y0, x1]
+        c01 = arr[y1, x0]
+        c11 = arr[y1, x1]
+
+        top = c00 * (1 - wx)[..., None] + c10 * wx[..., None]
+        bottom = c01 * (1 - wx)[..., None] + c11 * wx[..., None]
+        blended = top * (1 - wy)[..., None] + bottom * wy[..., None]
+
+        out = np.full((*arr.shape[:2], arr.shape[2]), background, dtype=float)
+        out[valid] = blended[valid]
+        out = out.astype(arr.dtype)
+
+        if not is_color:
+            out = out[..., 0]
+
+        return out
+    else:
+        sx_i = np.rint(sx).astype(int)
+        sy_i = np.rint(sy).astype(int)
+
+        out = np.full_like(arr, background)
+        mask = (sx_i >= 0) & (sx_i < w) & (sy_i >= 0) & (sy_i < h)
+
+        out[mask] = arr[sy_i[mask], sx_i[mask]]
+        return out
+
+def _drawThickLine(
+        arr,
+        double[:] p1,
+        double[:] p2,
+        double thickness,
+        colour):
+    cdef long x = <long>p1[0]
+    cdef long y = <long>p1[1]
+    cdef long x1 = <long>p2[0]
+    cdef long y1 = <long>p2[1]
+    cdef int radius = int(thickness) >> 1
+    if radius < 0:
+        radius = 0
+
+    # precompute circle mask for this call
+    gy, gx = np.ogrid[-radius:radius+1, -radius:radius+1]
+    mask = (gx*gx + gy*gy) <= radius*radius
+    offs_y, offs_x = np.nonzero(mask)
+    offs_y -= radius
+    offs_x -= radius
+
+    cdef long h = arr.shape[0]
+    cdef long w = arr.shape[1]
+
+    cdef long dx = abs(x1 - x)
+    cdef long dy = abs(y1 - y)
+    cdef long err
+    cdef long sx, sy
+    cdef long y0, y1b, x0, x1b
+    cdef long my0, mx0, my1, mx1
+
     if dx > dy:
         if x > x1:
             x, x1 = x1, x
             y, y1 = y1, y
         sy = 1 if y < y1 else -1
-        err = dx / 2
+        err = dx // 2
         while x <= x1:
             y0 = max(y - radius, 0)
-            y1b = min(y + radius + 1, arr.shape[0])
+            y1b = min(y + radius + 1, h)
             x0 = max(x - radius, 0)
-            x1b = min(x + radius + 1, arr.shape[1])
-
-            sub = arr[y0:y1b, x0:x1b]
+            x1b = min(x + radius + 1, w)
 
             my0 = y0 - (y - radius)
             mx0 = x0 - (x - radius)
             my1 = my0 + (y1b - y0)
             mx1 = mx0 + (x1b - x0)
 
-            sub[circle_mask[my0:my1, mx0:mx1]] = colour
+            submask = mask[my0:my1, mx0:mx1]
+            if submask.size:
+                sub = arr[y0:y1b, x0:x1b]
+                sub[submask] = colour
 
             err -= dy
             if err < 0:
@@ -43,21 +122,22 @@ def _drawThickLine(arr: np.ndarray, p1: np.ndarray, p2: np.ndarray, thickness: i
             x, x1 = x1, x
             y, y1 = y1, y
         sx = 1 if x < x1 else -1
-        err = dy / 2
+        err = dy // 2
         while y <= y1:
             y0 = max(y - radius, 0)
-            y1b = min(y + radius + 1, arr.shape[0])
+            y1b = min(y + radius + 1, h)
             x0 = max(x - radius, 0)
-            x1b = min(x + radius + 1, arr.shape[1])
-
-            sub = arr[y0:y1b, x0:x1b]
+            x1b = min(x + radius + 1, w)
 
             my0 = y0 - (y - radius)
             mx0 = x0 - (x - radius)
             my1 = my0 + (y1b - y0)
             mx1 = mx0 + (x1b - x0)
 
-            sub[circle_mask[my0:my1, mx0:mx1]] = colour
+            submask = mask[my0:my1, mx0:mx1]
+            if submask.size:
+                sub = arr[y0:y1b, x0:x1b]
+                sub[submask] = colour
 
             err -= dx
             if err < 0:

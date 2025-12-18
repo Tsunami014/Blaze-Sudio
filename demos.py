@@ -40,7 +40,7 @@ def NewGraphicsDemo():
            Draw.Rect(500, 510, 50, 50, 1, Col.Black, roundness=100) + \
            Draw.Line((500, 570), (500, 570), 5, Col.Black)
 
-    ops.fix()
+    ops.freeze()
 
     f = 0
     while Ix.handleBasic():
