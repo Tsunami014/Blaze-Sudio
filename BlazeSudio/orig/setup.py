@@ -43,16 +43,27 @@ extensions = [
 
 if '--no-stub' not in sys.argv:
     print("Generating stub files...")
+    # Ensure that if the file was modified after the stub, the file must be newer so regenerate the stub, otherwise don't touch it
+    def needs_stub(src, dst):
+        if not os.path.exists(dst):
+            return True
+        return os.path.getmtime(src) > os.path.getmtime(dst)
     # Build pyi stub file automatically
     for name in MODULES:
+        src = f"{orig}/{name}.py"
+        dst = f"{out}/{name}.pyi"
+        if not needs_stub(src, dst):
+            print(f"Stub up-to-date: {name}")
+            continue
+
         print(f"Stubgening {name}...")
-        if os.system(f"stubgen {orig}/{name}.py --include-docstrings") != 0:
+        if os.system(f"stubgen {src} --include-docstrings") != 0:
             raise RuntimeError(
-                f"Problem with stubgen on file `{orig}/{name}.py`!"
+                f"Problem with stubgen on file `{src}`!"
             )
         shutil.move(
-            f"./out/{orig}/{name}.pyi",
-            f"{out}/{name}.pyi"
+            f"./out/{src}i",
+            f"{dst}.pyi"
         )
 
 if '--no-copy' not in sys.argv:
