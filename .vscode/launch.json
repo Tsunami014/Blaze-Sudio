@@ -33,6 +33,15 @@
             "justMyCode": false
         },
         {
+            "name": "Compile all",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "BlazeSudio/speed/setup.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": false
+        },
+        {
             "name": "Current File",
             "type": "debugpy",
             "request": "launch",
