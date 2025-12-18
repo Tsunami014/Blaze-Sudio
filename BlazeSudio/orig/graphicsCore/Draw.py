@@ -13,7 +13,8 @@ def _drawThickLine(arr: np.ndarray, p1: np.ndarray, p2: np.ndarray, thickness: i
 
     # Precompute circle mask
     yy, xx = np.ogrid[-radius:radius+1, -radius:radius+1]
-    circle_mask = xx**2 + yy**2 <= radius**2
+    circle_mask = xx*xx + yy*yy <= radius*radius
+    offsets = np.arange(-radius, radius+1, dtype=np.int64)
 
     dx = abs(x1 - x)
     dy = abs(y1 - y)
@@ -24,11 +25,20 @@ def _drawThickLine(arr: np.ndarray, p1: np.ndarray, p2: np.ndarray, thickness: i
         sy = 1 if y < y1 else -1
         err = dx / 2
         while x <= x1:
-            y_indices = np.arange(y-radius, y+radius+1)
-            x_indices = np.arange(x-radius, x+radius+1)
-            valid_y = (y_indices >= 0) & (y_indices < arr.shape[0])
-            valid_x = (x_indices >= 0) & (x_indices < arr.shape[1])
-            arr[np.ix_(y_indices[valid_y], x_indices[valid_x])][circle_mask[valid_y][:, valid_x]] = colour
+            y0 = max(y - radius, 0)
+            y1b = min(y + radius + 1, arr.shape[0])
+            x0 = max(x - radius, 0)
+            x1b = min(x + radius + 1, arr.shape[1])
+
+            sub = arr[y0:y1b, x0:x1b]
+
+            my0 = y0 - (y - radius)
+            mx0 = x0 - (x - radius)
+            my1 = my0 + (y1b - y0)
+            mx1 = mx0 + (x1b - x0)
+
+            sub[circle_mask[my0:my1, mx0:mx1]] = colour
+
             err -= dy
             if err < 0:
                 y += sy
@@ -41,11 +51,20 @@ def _drawThickLine(arr: np.ndarray, p1: np.ndarray, p2: np.ndarray, thickness: i
         sx = 1 if x < x1 else -1
         err = dy / 2
         while y <= y1:
-            y_indices = np.arange(y-radius, y+radius+1)
-            x_indices = np.arange(x-radius, x+radius+1)
-            valid_y = (y_indices >= 0) & (y_indices < arr.shape[0])
-            valid_x = (x_indices >= 0) & (x_indices < arr.shape[1])
-            arr[np.ix_(y_indices[valid_y], x_indices[valid_x])][circle_mask[valid_y][:, valid_x]] = colour
+            y0 = max(y - radius, 0)
+            y1b = min(y + radius + 1, arr.shape[0])
+            x0 = max(x - radius, 0)
+            x1b = min(x + radius + 1, arr.shape[1])
+
+            sub = arr[y0:y1b, x0:x1b]
+
+            my0 = y0 - (y - radius)
+            mx0 = x0 - (x - radius)
+            my1 = my0 + (y1b - y0)
+            mx1 = mx0 + (x1b - x0)
+
+            sub[circle_mask[my0:my1, mx0:mx1]] = colour
+
             err -= dx
             if err < 0:
                 x += sx
@@ -209,7 +228,8 @@ def _drawRect(arr: np.ndarray, pos: np.ndarray, sze: np.ndarray, thickness: int,
             yy, xx = np.ogrid[ys:ye, xs:xe]
             d2 = (xx - cx)**2 + (yy - cy)**2
             mask = (rthic2 <= d2) & (d2 < r2)
-            arr[ys:ye, xs:xe][mask] = col
+            sub = arr[ys:ye, xs:xe]
+            sub[mask] = col
 
 class Rect(TransOp):
     __slots__ = ['pos', 'sze', 'thickness', 'col', 'round']
@@ -309,7 +329,8 @@ def _drawCirc(arr: np.ndarray, pos: np.ndarray, radius: int, thickness: int, col
     dist_sq = dx**2 + dy**2
 
     mask = (radius_inner_sq <= dist_sq) & (dist_sq <= radius_outer_sq)
-    arr[rng][mask] = col
+    sub = arr[rng]
+    sub[mask] = col
 
 def _drawElipse(arr: np.ndarray, pos: np.ndarray, xradius: int, yradius: int, rotation: float, thickness: int, col: np.ndarray):
     xrad, yrad = int(xradius), int(yradius)
@@ -347,7 +368,8 @@ def _drawElipse(arr: np.ndarray, pos: np.ndarray, xradius: int, yradius: int, ro
         mask = outer & ~inner
 
     # Apply color
-    arr[y_min:y_max, x_min:x_max][mask] = col
+    sub = arr[y_min:y_max, x_min:x_max]
+    sub[mask] = col
 
 # TODO: Add an input for rotation
 class Elipse(TransOp):
