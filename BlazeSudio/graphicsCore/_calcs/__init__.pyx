@@ -1,6 +1,7 @@
 # cython: boundscheck=False, wraparound=False, nonecheck=False, cdivision=True
 import numpy as np
 cimport numpy as cnp
+__cimport_types__ = [cnp.ndarray]
 
 
 def apply(mat: np.ndarray, arr: np.ndarray, smooth: bool):
