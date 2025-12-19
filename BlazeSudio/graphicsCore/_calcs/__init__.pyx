@@ -59,7 +59,7 @@ def apply(mat: np.ndarray, arr: np.ndarray, smooth: bool):
         out[mask] = arr[sy_i[mask], sx_i[mask]]
         return out
 
-def _drawThickLine(
+def _drawRoundThickLine(
         arr,
         double[:] p1,
         double[:] p2,
@@ -138,6 +138,68 @@ def _drawThickLine(
             if submask.size:
                 sub = arr[y0:y1b, x0:x1b]
                 sub[submask] = colour
+
+            err -= dx
+            if err < 0:
+                x += sx
+                err += dy
+            y += 1
+
+def _drawThickLine(
+        arr,
+        double[:] p1,
+        double[:] p2,
+        double thickness,
+        colour):
+    cdef long x = <long>p1[0]
+    cdef long y = <long>p1[1]
+    cdef long x1 = <long>p2[0]
+    cdef long y1 = <long>p2[1]
+
+    cdef long h = arr.shape[0]
+    cdef long w = arr.shape[1]
+
+    cdef long dx = abs(x1 - x)
+    cdef long dy = abs(y1 - y)
+    cdef long err
+    cdef long sx, sy
+    cdef long y0, y1b, x0, x1b
+    cdef long my0, mx0, my1, mx1
+
+    if dx > dy:
+        if x > x1:
+            x, x1 = x1, x
+            y, y1 = y1, y
+        sy = 1 if y < y1 else -1
+        err = dx // 2
+        while x <= x1:
+            y0 = max(y, 0)
+            y1b = min(y + 1, h)
+            x0 = max(x, 0)
+            x1b = min(x + 1, w)
+
+            my1 = (y0 - y) + (y1b - y0)
+            mx1 = (x0 - x) + (x1b - x0)
+
+            err -= dy
+            if err < 0:
+                y += sy
+                err += dx
+            x += 1
+    else:
+        if y > y1:
+            x, x1 = x1, x
+            y, y1 = y1, y
+        sx = 1 if x < x1 else -1
+        err = dy // 2
+        while y <= y1:
+            y0 = max(y, 0)
+            y1b = min(y + 1, h)
+            x0 = max(x, 0)
+            x1b = min(x + 1, w)
+
+            my1 = (y0 - y) + (y1b - y0)
+            mx1 = (x0 - x) + (x1b - x0)
 
             err -= dx
             if err < 0:

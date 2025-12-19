@@ -1,6 +1,6 @@
 from typing import overload, Iterable, Tuple
 from .base import OpFlags, TransOp
-from ._calcs import _drawThickLine, _drawRect, _drawCirc, _drawElipse
+from ._calcs import _drawThickLine, _drawRoundThickLine, _drawRect, _drawCirc, _drawElipse
 import numpy as np
 import math
 
@@ -46,7 +46,7 @@ class Polygon(TransOp):
 
 class Line(Polygon):
     @overload
-    def __init__(self, p1: Point, p2: Point, thickness: Number, col: np.ndarray):
+    def __init__(self, p1: Point, p2: Point, thickness: Number, col: np.ndarray, /, round=False):
         """
         Draw a line!
 
@@ -55,9 +55,10 @@ class Line(Polygon):
             p2: The ending point of the line (must be in format `[x, y]`)
             thickness: The thickness of the line. Must be > 0.
             col: The colour of the line
+            round: Whether the line ends are round or not
         """
     @overload
-    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray):
+    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /, round=False):
         """
         Draw a line!
 
@@ -65,8 +66,9 @@ class Line(Polygon):
             ps: The points of the line (must be in format `[[x1, y1], [x2, y2]]`)
             thickness: The thickness of the line. Must be > 0.
             col: The colour of the line
+            round: Whether the line ends are round or not
         """
-    def __init__(self, *args):
+    def __init__(self, *args, round=False):
         if len(args) == 4:
             p1, p2, thickness, col = args
             ps = (p1, p2)
@@ -76,13 +78,17 @@ class Line(Polygon):
             raise TypeError(
                 f'Incorrect number of arguments! Expected 3 or 4, found {len(args)}!'
             )
+        self.round = round
         super().__init__(ps, thickness, col)
         assert self.ps.shape == (2, 2), "Points must be in this format: [(point 1 x, point 1 y), (point 2 x, point 2 y)]"
 
     def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
         newps = self._warpPs(mat, self.ps)
         s = np.linalg.svd(mat[:2, :2], compute_uv=False)
-        _drawThickLine(arr, newps[0], newps[1], self.thickness * np.mean(s), self.col)
+        if self.round:
+            _drawRoundThickLine(arr, newps[0], newps[1], self.thickness * np.mean(s), self.col)
+        else:
+            _drawThickLine(arr, newps[0], newps[1], self.thickness * np.mean(s), self.col)
         return arr
 
 

@@ -95,6 +95,9 @@ class Fill(Op):
         self.col = np.array(col, np.uint8)
         self.flags = OpFlags.NoFlags
     def apply(self, arr: np.ndarray, _):
-        np.copyto(arr, self.col)
+        if (self.col[0] == self.col[1] == self.col[2]).all():
+            arr.fill(self.col[0])
+        else:
+            arr[...] = self.col
         return arr
 
