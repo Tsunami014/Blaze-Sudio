@@ -8,7 +8,7 @@ def drawCirc(arr: ndarray, pos: float[:], radius: float, thickness: float, col: 
 def drawElipse(arr: ndarray, pos: float[:], xradius: float, yradius: float, rotation: float, thickness: float, col: ndarray):
     ...
 
-def drawLine(arr: ndarray, p1: float[:], p2: float[:], thickness: float, colour: ndarray):
+def drawLine(arr: ndarray, p1: float[:], p2: float[:], thickness: float, col: ndarray):
     ...
 
 def drawPolyLine(arr: ndarray, points: float[:, _:], thickness: float, col: ndarray, round: bool):

@@ -49,10 +49,11 @@ def NewGraphicsDemo():
         w.rend()
         c.tick()
         w.set_title(f'FPS: {c.get_fps()}')
-        print(c.get_fps())
+        if f % 10 == 0:
+            print(c.get_fps())
     w.Quit()
 
-    quit() # Uncomment to ignore pygame
+    #quit() # Uncomment to ignore pygame
     print('Using pygame:')
 
     import pygame
@@ -89,7 +90,8 @@ def NewGraphicsDemo():
         pygame.display.flip()
         c.tick()
         pygame.display.set_caption(f'FPS: {c.get_fps()}')
-        print(c.get_fps())
+        if f % 10 == 0:
+            print(c.get_fps())
     pygame.quit()
 
 def GraphicsDemo():

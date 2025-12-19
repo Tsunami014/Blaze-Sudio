@@ -9,7 +9,7 @@ def drawLine(
         double[:] p1,
         double[:] p2,
         double thickness,
-        cnp.ndarray[cnp.uint8_t, ndim=1] colour):
+        cnp.ndarray[cnp.uint8_t, ndim=1] col):
     cdef long x = <long>p1[0]
     cdef long y = <long>p1[1]
     cdef long x1 = <long>p2[0]
@@ -23,8 +23,13 @@ def drawLine(
     cdef long dy = abs(y1 - y)
     cdef long err
     cdef long sx, sy
-    cdef long y0, y1b, x0, x1b
-    cdef long my0, mx0, my1, mx1
+    cdef long ys, ye, xs, xe
+    cdef long i
+
+    cdef unsigned char rcol = col[0]
+    cdef unsigned char gcol = col[1]
+    cdef unsigned char bcol = col[2]
+    cdef unsigned char acol = col[3]
 
     if dx > dy:
         if x > x1:
@@ -33,13 +38,16 @@ def drawLine(
         sy = 1 if y < y1 else -1
         err = dx // 2
         while x <= x1:
-            y0 = max(y - half, 0)
-            y1b = min(y + half + 1, h)
-            x0 = max(x, 0)
-            x1b = min(x + 1, w)
+            ys = max(y - half, 0)
+            ye = min(y + half + 1, h)
+            xs = min(max(x, 0), w)
 
-            if x0 < x1b and y0 < y1b:
-                arr[y0:y1b, x0:x1b] = colour
+            if ys < ye:
+                for i in range(ys, ye):
+                    arr[i, xs, 0] = rcol
+                    arr[i, xs, 1] = gcol
+                    arr[i, xs, 2] = bcol
+                    arr[i, xs, 3] = acol
 
             err -= dy
             if err < 0:
@@ -53,13 +61,16 @@ def drawLine(
         sx = 1 if x < x1 else -1
         err = dy // 2
         while y <= y1:
-            y0 = max(y, 0)
-            y1b = min(y + 1, h)
-            x0 = max(x - half, 0)
-            x1b = min(x + half + 1, w)
+            xs = max(x - half, 0)
+            xe = min(x + half + 1, h)
+            ys = min(max(y, 0), w)
 
-            if x0 < x1b and y0 < y1b:
-                arr[y0:y1b, x0:x1b] = colour
+            if xs < xe:
+                for i in range(xs, xe):
+                    arr[ys, i, 0] = rcol
+                    arr[ys, i, 1] = gcol
+                    arr[ys, i, 2] = bcol
+                    arr[ys, i, 3] = acol
 
             err -= dx
             if err < 0:
@@ -96,6 +107,18 @@ cdef inline long _clip(long v, long lo, long hi):
         return hi
     return v
 
+cdef _fill(
+    cnp.ndarray[cnp.uint8_t, ndim=3] arr,
+    long fromy, long toy, long fromx, long tox,
+    long rcol, long gcol, long bcol, long acol):
+    cdef long y, x
+    for y in range(fromy, toy):
+        for x in range(fromx, tox):
+            arr[y, x, 0] = rcol
+            arr[y, x, 1] = gcol
+            arr[y, x, 2] = bcol
+            arr[y, x, 3] = acol
+
 def drawRect(
         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
         double[:] pos,
@@ -130,27 +153,48 @@ def drawRect(
     if r < 0:
         r = 0
 
+    cdef unsigned char rcol = col[0]
+    cdef unsigned char gcol = col[1]
+    cdef unsigned char bcol = col[2]
+    cdef unsigned char acol = col[3]
+
+    cdef long x, y
+
     if t <= 0:
         if r == 0:
-            arr[_clip(y0, 0, H):_clip(y1, 0, H), _clip(x0, 0, W):_clip(x1, 0, W), :] = col
+            _fill(arr,
+                _clip(y0, 0, H), _clip(y1, 0, H),
+                _clip(x0, 0, W), _clip(x1, 0, W),
+                rcol, gcol, bcol, acol)
             return
 
         # Rounded fill (top/bottom strips + middle)
-        arr[_clip(y0 + r, 0, H):_clip(y1 - r, 0, H), _clip(x0, 0, W):_clip(x1, 0, W), :] = col
+        _fill(arr,
+            _clip(y0 + r, 0, H), _clip(y1 - r, 0, H),
+            _clip(x0, 0, W), _clip(x1, 0, W),
+            rcol, gcol, bcol, acol)
     else:
-        arr[_clip(y0, 0, H):_clip(y0 + t, 0, H), x0+r:x1-r, :] = col # Top
-        arr[_clip(y1 - t, 0, H):_clip(y1, 0, H), x0+r:x1-r, :] = col # Bottom
-        arr[y0+r:y1-r, _clip(x0, 0, W):_clip(x0 + t, 0, W), :] = col # Left
-        arr[y0+r:y1-r, _clip(x1 - t, 0, W):_clip(x1, 0, W), :] = col # Right
+        _fill(arr, # Top
+            _clip(y0, 0, H), _clip(y0 + t, 0, H),
+            x0+r, x1-r, rcol, gcol, bcol, acol)
+        _fill(arr, # Bottom
+            _clip(y1 - t, 0, H), _clip(y1, 0, H),
+            x0+r, x1-r, rcol, gcol, bcol, acol)
+        _fill(arr, y0+r, y1-r, # Left
+            _clip(x0, 0, W), _clip(x0 + t, 0, W),
+            rcol, gcol, bcol, acol)
+        _fill(arr, y0+r, y1-r, # Right
+            _clip(x1 - t, 0, W), _clip(x1, 0, W),
+            rcol, gcol, bcol, acol)
 
 
     cdef long r2, inner, off
     cdef long cx, cy, xs, xe, ys, ye
     cdef long dx, dy, d2
-    cdef long x, y, c
     if r > 0:
         r2 = r*r
-        inner = (r - t) * (r - t) if t > 0 else 0
+        inner = max(r - t, 0)
+        inner *= inner
         off = 0 if t > 0 else 1
 
         # TL, TR, BL, BR
@@ -173,8 +217,10 @@ def drawRect(
                     dx = x - cx
                     d2 = dx*dx + dy*dy
                     if inner <= d2 < r2:
-                        for c in range(arr.shape[2]):
-                            arr[y, x, c] = col[c]
+                        arr[y, x, 0] = rcol
+                        arr[y, x, 1] = gcol
+                        arr[y, x, 2] = bcol
+                        arr[y, x, 3] = acol
 
 
 def drawCirc(
@@ -204,6 +250,11 @@ def drawCirc(
         innrad2 = max(r - <long>thickness, 0)
         innrad2 *= innrad2
 
+    cdef unsigned char rcol = col[0]
+    cdef unsigned char gcol = col[1]
+    cdef unsigned char bcol = col[2]
+    cdef unsigned char acol = col[3]
+
     cdef long xx, yy
     cdef long dx, dy
     cdef long dist_sq
@@ -214,7 +265,10 @@ def drawCirc(
             dist_sq = dx*dx + dy*dy
 
             if innrad2 <= dist_sq <= outrad2:
-                arr[yy, xx, :] = col
+                arr[yy, xx, 0] = rcol
+                arr[yy, xx, 1] = gcol
+                arr[yy, xx, 2] = bcol
+                arr[yy, xx, 3] = acol
 
 
 def drawElipse(
@@ -253,6 +307,11 @@ def drawElipse(
     cdef double xr, yr
     cdef double v_outer, v_inner
 
+    cdef unsigned char rcol = col[0]
+    cdef unsigned char gcol = col[1]
+    cdef unsigned char bcol = col[2]
+    cdef unsigned char acol = col[3]
+
     if t == 0:
         invxr = 1.0 / (xrad * xrad)
         invyr = 1.0 / (yrad * yrad)
@@ -265,12 +324,15 @@ def drawElipse(
                 yr = -dx * sin_t + dy * cos_t
 
                 if xr * xr * invxr + yr * yr * invyr <= 1.0:
-                    arr[yy, xx, :] = col
+                    arr[yy, xx, 0] = rcol
+                    arr[yy, xx, 1] = gcol
+                    arr[yy, xx, 2] = bcol
+                    arr[yy, xx, 3] = acol
     else:
         inv_right = 1.0 / ((xrad + t) * (xrad + t))
         inv_bot = 1.0 / ((yrad + t) * (yrad + t))
         inv_left = 1.0 / ((xrad - t) * (xrad - t))
-        inv_right = 1.0 / ((yrad - t) * (yrad - t))
+        inv_top = 1.0 / ((yrad - t) * (yrad - t))
 
         for yy in range(y_min, y_max):
             dy = yy - y
@@ -282,7 +344,10 @@ def drawElipse(
 
                 v_outer = xr * xr * inv_right + yr * yr * inv_bot
                 if v_outer <= 1.0:
-                    v_inner = xr * xr * inv_left + yr * yr * inv_right
+                    v_inner = xr * xr * inv_left + yr * yr * inv_top
                     if v_inner > 1.0:
-                        arr[yy, xx, :] = col
+                        arr[yy, xx, 0] = rcol
+                        arr[yy, xx, 1] = gcol
+                        arr[yy, xx, 2] = bcol
+                        arr[yy, xx, 3] = acol
 
