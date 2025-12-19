@@ -24,7 +24,7 @@ def NewGraphicsDemo():
 
     ops = Fill(Col.White)
     # It can handle decimals!
-    ops += Draw.Line((10.5, 10.5), (200.25, 100.75), 5, Col.Black) + \
+    ops += Draw.Line((10.5, 10.5), (200.25, 100.75), 15, Col.Black) + \
            Draw.Polygon([(100, 100.5), (200, 300), (0, 300)], 30, Col(80, 100, 250)) + \
            Draw.Rect((30.5, 50), (100.25, 80.3333333), 10, Col.Grey, roundness=30) + \
            Draw.Rect(100, 150, 30, 50, 10, Col.Black) + \
@@ -67,7 +67,7 @@ def NewGraphicsDemo():
                 r = False
         WIN.fill((255, 255, 255))
         # It cannot handle decimals well, if at all :(
-        pygame.draw.line(WIN, 0, (10.5, 10.5), (200.25, 100.75), 5)
+        pygame.draw.line(WIN, 0, (10.5, 10.5), (200.25, 100.75), 15)
         pygame.draw.polygon(WIN, (80, 100, 250), [(100, 100), (200, 300), (0, 300)], 30)
         pygame.draw.rect(WIN, (125, 125, 125), (30, 50, 100, 80), 10, 30)
         pygame.draw.rect(WIN, 0, (100, 150, 30, 50), 10)

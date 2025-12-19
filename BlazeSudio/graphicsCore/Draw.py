@@ -9,7 +9,7 @@ Point = Tuple[Number, Number]
 
 class Polygon(TransOp):
     __slots__ = ['ps', 'thickness', 'col', 'round']
-    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /, round=False):
+    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /, round: bool = True):
         """
         Draw a closed polygon!
 
@@ -58,7 +58,7 @@ class Polygon(TransOp):
 
 class Line(Polygon):
     @overload
-    def __init__(self, p1: Point, p2: Point, thickness: Number, col: np.ndarray, /, round=False):
+    def __init__(self, p1: Point, p2: Point, thickness: Number, col: np.ndarray, /, round: bool = True):
         """
         Draw a line!
 
@@ -72,7 +72,7 @@ class Line(Polygon):
             round: Whether the line ends are round or not
         """
     @overload
-    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /, round=False):
+    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /, round: bool = True):
         """
         Draw a line!
 
@@ -84,7 +84,7 @@ class Line(Polygon):
         Keyword args:
             round: Whether the line ends are round or not
         """
-    def __init__(self, *args, round=False):
+    def __init__(self, *args, round=True):
         if len(args) == 4:
             p1, p2, thickness, col = args
             ps = (p1, p2)
@@ -102,7 +102,7 @@ class Rect(Polygon):
     __slots__ = ['pos', 'sze', 'thickness', 'col']
 
     @overload
-    def __init__(self, pos: Point, sze: Point, thickness: Number, col: np.ndarray, /, roundness: Number = 0, round: bool = False):
+    def __init__(self, pos: Point, sze: Point, thickness: Number, col: np.ndarray, /, roundness: Number = 0, round: bool = True):
         """
         Draws a rectangle!
 
@@ -117,7 +117,7 @@ class Rect(Polygon):
             round: Whether to include circles at every joint of the line or not
         """
     @overload
-    def __init__(self, x: Number, y: Number, width: Number, height: Number, thickness: Number, col: np.ndarray, /, roundness: Number = 0, round: bool = False):
+    def __init__(self, x: Number, y: Number, width: Number, height: Number, thickness: Number, col: np.ndarray, /, roundness: Number = 0, round: bool = True):
         """
         Draws a rectangle!
 
@@ -130,10 +130,10 @@ class Rect(Polygon):
             col: The colour of the rect
 
         Keyword args:
-            roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
-            round: Whether to include circles at every joint of the line or not
+            roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all (doesn't apply when using projection/rotation)
+            round: Whether to include circles at every joint of the line or not (only applies when using projection/rotation)
         """
-    def __init__(self, *args, roundness = 0, round = False):
+    def __init__(self, *args, roundness = 0, round=True):
         if len(args) == 4:
             self.pos, self.sze, self.thickness, col = args
         elif len(args) == 6:

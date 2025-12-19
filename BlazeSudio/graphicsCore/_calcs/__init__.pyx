@@ -70,6 +70,7 @@ def _drawThickLine(
     cdef long y = <long>p1[1]
     cdef long x1 = <long>p2[0]
     cdef long y1 = <long>p2[1]
+    cdef long half = <long>(thickness) >> 1
 
     cdef long h = arr.shape[0]
     cdef long w = arr.shape[1]
@@ -88,13 +89,13 @@ def _drawThickLine(
         sy = 1 if y < y1 else -1
         err = dx // 2
         while x <= x1:
-            y0 = max(y, 0)
-            y1b = min(y + 1, h)
+            y0 = max(y - half, 0)
+            y1b = min(y + half + 1, h)
             x0 = max(x, 0)
             x1b = min(x + 1, w)
 
-            my1 = (y0 - y) + (y1b - y0)
-            mx1 = (x0 - x) + (x1b - x0)
+            if x0 < x1b and y0 < y1b:
+                arr[y0:y1b, x0:x1b] = colour
 
             err -= dy
             if err < 0:
@@ -110,11 +111,11 @@ def _drawThickLine(
         while y <= y1:
             y0 = max(y, 0)
             y1b = min(y + 1, h)
-            x0 = max(x, 0)
-            x1b = min(x + 1, w)
+            x0 = max(x - half, 0)
+            x1b = min(x + half + 1, w)
 
-            my1 = (y0 - y) + (y1b - y0)
-            mx1 = (x0 - x) + (x1b - x0)
+            if x0 < x1b and y0 < y1b:
+                arr[y0:y1b, x0:x1b] = colour
 
             err -= dx
             if err < 0:
@@ -209,24 +210,25 @@ def _drawCirc(arr: np.ndarray, pos: np.ndarray, radius: int, thickness: int, col
     h, w, _ = arr.shape
     x, y = pos.astype(np.int64)
 
-    # Bounding box
-    rng = (
-        slice(max(y - r - 1, 0),min(y + r + 1, h)),
-        slice(max(x - r - 1, 0),min(x + r + 1, w))
-    )
+    y0 = max(y - r - 1, 0)
+    y1 = min(y + r + 1, h)
+    x0 = max(x - r - 1, 0)
+    x1 = min(x + r + 1, w)
+    if y0 >= y1 or x0 >= x1:
+        return
 
     # Radii squared
     radius_outer_sq = r ** 2
     radius_inner_sq = 0 if thickness == 0 else max(r - thickness, 0) ** 2
 
     # Coordinate grid
-    yy, xx = np.mgrid[rng]
+    yy, xx = np.mgrid[y0:y1, x0:x1]
     dx = xx - x
     dy = yy - y
-    dist_sq = dx**2 + dy**2
+    dist_sq = dx*dx + dy*dy
 
     mask = (radius_inner_sq <= dist_sq) & (dist_sq <= radius_outer_sq)
-    sub = arr[rng]
+    sub = arr[y0:y1, x0:x1]
     sub[mask] = col
 
 
