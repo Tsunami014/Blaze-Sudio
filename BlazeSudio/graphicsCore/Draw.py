@@ -9,7 +9,7 @@ Point = Tuple[Number, Number]
 
 class Polygon(TransOp):
     __slots__ = ['ps', 'thickness', 'col', 'round']
-    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /, round: bool = True):
+    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /,*, round: bool = True):
         """
         Draw a closed polygon!
 
@@ -49,7 +49,7 @@ class Polygon(TransOp):
 
 class Line(Polygon):
     @overload
-    def __init__(self, p1: Point, p2: Point, thickness: Number, col: np.ndarray, /, round: bool = True):
+    def __init__(self, p1: Point, p2: Point, thickness: Number, col: np.ndarray, /,*, round: bool = True):
         """
         Draw a line!
 
@@ -63,7 +63,7 @@ class Line(Polygon):
             round: Whether the line ends are round or not
         """
     @overload
-    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /, round: bool = True):
+    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /,*, round: bool = True):
         """
         Draw a line!
 
@@ -75,16 +75,38 @@ class Line(Polygon):
         Keyword args:
             round: Whether the line ends are round or not
         """
+    @overload
+    def __init__(self,
+            x1: Number, y1: Number, x2: Number, y2: Number,
+            thickness: Number, col: np.ndarray, /,*, round: bool = True):
+        """
+        Draw a line! (This is not preferred for readability - instead, use (x1, y1), (x2, y2))
+
+        Args:
+            x1: The x pos of the first point
+            y1: The y pos of the first point
+            x2: The x pos of the second point
+            y2: The y pos of the second point
+            thickness: The thickness of the line. Must be > 0.
+            col: The colour of the line
+
+        Keyword args:
+            round: Whether the line ends are round or not
+        """
     def __init__(self, *args, round=True):
-        if len(args) == 4:
-            p1, p2, thickness, col = args
-            ps = (p1, p2)
-        elif len(args) == 3:
-            ps, thickness, col = args
-        else:
-            raise TypeError(
-                f'Incorrect number of arguments! Expected 3 or 4, found {len(args)}!'
-            )
+        match len(args):
+            case 6:
+                x1, y1, x2, y2, thickness, col = args
+                ps = [(x1, y1), (x2, y2)]
+            case 4:
+                p1, p2, thickness, col = args
+                ps = (p1, p2)
+            case 3:
+                ps, thickness, col = args
+            case _:
+                raise TypeError(
+                    f'Incorrect number of arguments! Expected 3 or 4 or 6, found {len(args)}!'
+                )
         super().__init__(ps, thickness, col, round=round)
         assert self.ps.shape == (2, 2), "Points must be in this format: [(point 1 x, point 1 y), (point 2 x, point 2 y)]"
 
@@ -93,7 +115,7 @@ class Rect(Polygon):
     __slots__ = ['pos', 'sze', 'roundness', 'col']
 
     @overload
-    def __init__(self, pos: Point, sze: Point, thickness: Number, col: np.ndarray, /, roundness: Number = 0, round: bool = True):
+    def __init__(self, pos: Point, sze: Point, thickness: Number, col: np.ndarray, /,*, roundness: Number = 0, round: bool = True):
         """
         Draws a rectangle!
 
@@ -108,7 +130,7 @@ class Rect(Polygon):
             round: Whether to include circles at every joint of the line or not
         """
     @overload
-    def __init__(self, x: Number, y: Number, width: Number, height: Number, thickness: Number, col: np.ndarray, /, roundness: Number = 0, round: bool = True):
+    def __init__(self, x: Number, y: Number, width: Number, height: Number, thickness: Number, col: np.ndarray, /,*, roundness: Number = 0, round: bool = True):
         """
         Draws a rectangle!
 
@@ -125,16 +147,17 @@ class Rect(Polygon):
             round: Whether to include circles at every joint of the line or not (only applies when using projection/rotation)
         """
     def __init__(self, *args, roundness = 0, round=True):
-        if len(args) == 4:
-            self.pos, self.sze, self.thickness, col = args
-        elif len(args) == 6:
-            x, y, w, h, self.thickness, col = args
-            self.pos = (x, y)
-            self.sze = (w, h)
-        else:
-            raise TypeError(
-                f'Incorrect number of arguments! Expected 3 or 6, found {len(args)}!'
-            )
+        match len(args):
+            case 4:
+                self.pos, self.sze, self.thickness, col = args
+            case 6:
+                x, y, w, h, self.thickness, col = args
+                self.pos = (x, y)
+                self.sze = (w, h)
+            case _:
+                raise TypeError(
+                    f'Incorrect number of arguments! Expected 4 or 6, found {len(args)}!'
+                )
         assert self.thickness >= 0, "Thickness must be >=0"
         self.roundness = roundness
         self.col = np.array(col, np.uint8)
@@ -201,15 +224,16 @@ class Elipse(TransOp):
             col: The colour to fill the circle with.
         """
     def __init__(self, *args):
-        if len(args) == 6:
-            x, y, self.xradius, self.yradius, self.thickness, col = args
-            self.pos = (x, y)
-        elif len(args) == 5:
-            self.pos, self.xradius, self.yradius, self.thickness, col = args
-        else:
-            raise ValueError(
-                f'Expected 5-6 arguments, found {len(args)}!'
-            )
+        match len(args):
+            case 6:
+                x, y, self.xradius, self.yradius, self.thickness, col = args
+                self.pos = (x, y)
+            case 5:
+                self.pos, self.xradius, self.yradius, self.thickness, col = args
+            case _:
+                raise ValueError(
+                    f'Expected 5 or 6 arguments, found {len(args)}!'
+                )
         assert self.thickness >= 0, "Thickness must be >=0"
         self.col = np.array(col, np.uint8)
         assert self.col.shape == (4,), "Colour is of incorrect shape!"
@@ -268,15 +292,16 @@ class Circle(Elipse):
             col: The colour to fill the circle with.
         """
     def __init__(self, *args):
-        if len(args) == 5:
-            x, y, radius, self.thickness, col = args
-            self.pos = (x, y)
-        elif len(args) == 4:
-            self.pos, radius, self.thickness, col = args
-        else:
-            raise ValueError(
-                f'Expected 4-5 arguments, found {len(args)}!'
-            )
+        match len(args):
+            case 5:
+                x, y, radius, self.thickness, col = args
+                self.pos = (x, y)
+            case 4:
+                self.pos, radius, self.thickness, col = args
+            case _:
+                raise ValueError(
+                    f'Expected 4 or 5 arguments, found {len(args)}!'
+                )
         assert self.thickness >= 0, "Thickness must be >=0"
         self.xradius, self.yradius = radius, radius
         self.col = np.array(col, np.uint8)
