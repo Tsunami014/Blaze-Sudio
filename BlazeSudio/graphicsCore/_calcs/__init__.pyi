@@ -11,9 +11,6 @@ def _drawElipse(arr: np.ndarray, pos: np.ndarray, xradius: int, yradius: int, ro
 def _drawRect(arr: np.ndarray, pos: np.ndarray, sze: np.ndarray, thickness: int, round: int, col: np.ndarray):
     ...
 
-def _drawRoundThickLine(arr, p1: float[:], p2: float[:], thickness: float, colour):
-    ...
-
 def _drawThickLine(arr, p1: float[:], p2: float[:], thickness: float, colour):
     ...
 

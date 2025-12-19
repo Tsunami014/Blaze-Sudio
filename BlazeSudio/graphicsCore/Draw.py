@@ -1,6 +1,6 @@
 from typing import overload, Iterable, Tuple
 from .base import OpFlags, TransOp
-from ._calcs import _drawThickLine, _drawRoundThickLine, _drawRect, _drawCirc, _drawElipse
+from ._calcs import _drawThickLine, _drawRect, _drawCirc, _drawElipse
 import numpy as np
 import math
 
@@ -8,8 +8,8 @@ Number = int|float
 Point = Tuple[Number, Number]
 
 class Polygon(TransOp):
-    __slots__ = ['ps', 'thickness', 'col']
-    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray):
+    __slots__ = ['ps', 'thickness', 'col', 'round']
+    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /, round=False):
         """
         Draw a closed polygon!
 
@@ -17,6 +17,9 @@ class Polygon(TransOp):
             ps: The points making up the polygon
             thickness: The thickness of the line. Must be > 0.
             col: The colour of the line
+
+        Keyword args:
+            round: Whether the line ends are round or not
         """
         if thickness <= 0:
             raise ValueError(
@@ -30,13 +33,22 @@ class Polygon(TransOp):
         self.col = np.array(col, np.uint8)
         assert self.col.shape == (4,), "Colour is of incorrect shape!"
         self.flags = OpFlags.Transformable
+        self.round = round
     
     def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
-        if len(self.ps) < 2:
+        ps = self.ps
+        if len(ps) < 2:
             return
         s = np.linalg.svd(mat[:2, :2], compute_uv=False)
         t = self.thickness * np.mean(s)
-        newps = self._warpPs(mat, self.ps)
+        newps = self._warpPs(mat, ps)
+        if self.round:
+            ht = t//2
+            for p in newps:
+                _drawCirc(arr, p, ht, 0, self.col)
+        if len(ps) == 2:
+            _drawThickLine(arr, newps[0], newps[1], t, self.col)
+            return arr
         p1 = newps[0]
         for p2 in newps[1:]:
             _drawThickLine(arr, p1, p2, t, self.col)
@@ -55,6 +67,8 @@ class Line(Polygon):
             p2: The ending point of the line (must be in format `[x, y]`)
             thickness: The thickness of the line. Must be > 0.
             col: The colour of the line
+
+        Keyword args:
             round: Whether the line ends are round or not
         """
     @overload
@@ -66,6 +80,8 @@ class Line(Polygon):
             ps: The points of the line (must be in format `[[x1, y1], [x2, y2]]`)
             thickness: The thickness of the line. Must be > 0.
             col: The colour of the line
+
+        Keyword args:
             round: Whether the line ends are round or not
         """
     def __init__(self, *args, round=False):
@@ -78,25 +94,15 @@ class Line(Polygon):
             raise TypeError(
                 f'Incorrect number of arguments! Expected 3 or 4, found {len(args)}!'
             )
-        self.round = round
-        super().__init__(ps, thickness, col)
+        super().__init__(ps, thickness, col, round=round)
         assert self.ps.shape == (2, 2), "Points must be in this format: [(point 1 x, point 1 y), (point 2 x, point 2 y)]"
 
-    def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
-        newps = self._warpPs(mat, self.ps)
-        s = np.linalg.svd(mat[:2, :2], compute_uv=False)
-        if self.round:
-            _drawRoundThickLine(arr, newps[0], newps[1], self.thickness * np.mean(s), self.col)
-        else:
-            _drawThickLine(arr, newps[0], newps[1], self.thickness * np.mean(s), self.col)
-        return arr
 
-
-class Rect(TransOp):
-    __slots__ = ['pos', 'sze', 'thickness', 'col', 'round']
+class Rect(Polygon):
+    __slots__ = ['pos', 'sze', 'thickness', 'col']
 
     @overload
-    def __init__(self, pos: Point, sze: Point, thickness: Number, col: np.ndarray, /, roundness: Number = 0):
+    def __init__(self, pos: Point, sze: Point, thickness: Number, col: np.ndarray, /, roundness: Number = 0, round: bool = False):
         """
         Draws a rectangle!
 
@@ -108,9 +114,10 @@ class Rect(TransOp):
 
         Keyword args:
             roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
+            round: Whether to include circles at every joint of the line or not
         """
     @overload
-    def __init__(self, x: Number, y: Number, width: Number, height: Number, thickness: Number, col: np.ndarray, /, roundness: Number = 0):
+    def __init__(self, x: Number, y: Number, width: Number, height: Number, thickness: Number, col: np.ndarray, /, roundness: Number = 0, round: bool = False):
         """
         Draws a rectangle!
 
@@ -124,8 +131,9 @@ class Rect(TransOp):
 
         Keyword args:
             roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all
+            round: Whether to include circles at every joint of the line or not
         """
-    def __init__(self, *args, roundness = 0):
+    def __init__(self, *args, roundness = 0, round = False):
         if len(args) == 4:
             self.pos, self.sze, self.thickness, col = args
         elif len(args) == 6:
@@ -141,30 +149,28 @@ class Rect(TransOp):
         self.col = np.array(col, np.uint8)
         assert self.col.shape == (4,), "Colour is of incorrect shape!"
         self.flags = OpFlags.Transformable
+        self.round = round
+
+    @property
+    def ps(self):
+        return [
+            self.pos,
+            [self.pos[0], self.pos[1]+self.sze[1]],
+            [self.pos[0]+self.sze[0], self.pos[1]+self.sze[1]],
+            [self.pos[0]+self.sze[0], self.pos[1]]
+        ]
 
     def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
-        s = np.linalg.svd(mat[:2, :2], compute_uv=False)
-        t = self.thickness * np.mean(s)
-
         # Checks if the rectangle after matrix op is still a rectangle - i.e. no perspective warp or rotation
         if (mat[2] == [0, 0, 1]).all() and \
                 ((mat[[0,1], [1,0]] == [0, 0]).all() or (mat[[0,1], [0,1]] == [0, 0]).all()):
+            s = np.linalg.svd(mat[:2, :2], compute_uv=False)
+            t = self.thickness * np.mean(s)
             newps = self._warpPs(mat, [self.pos, self.sze])
             _drawRect(arr, newps[0], newps[1], t, self.round, self.col)
         else:
             # If not, draw the lines
-            newps = self._warpPs(mat, [
-                self.pos,
-                [self.pos[0], self.pos[1]+self.sze[1]],
-                [self.pos[0]+self.sze[0], self.pos[1]+self.sze[1]],
-                [self.pos[0]+self.sze[0], self.pos[1]]
-            ])
-            p1 = newps[0]
-            for p2 in newps[1:]:
-                _drawThickLine(arr, p1, p2, t, self.col)
-                p1 = p2
-            p2 = newps[0]
-            _drawThickLine(arr, p1, p2, t, self.col)
+            super().applyTrans(mat, arr)
         return arr
 
 
