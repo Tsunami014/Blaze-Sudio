@@ -61,11 +61,11 @@ def apply(mat: np.ndarray, arr: np.ndarray, smooth: bool):
 
 
 def _drawThickLine(
-        arr,
+        arr: np.ndarray,
         double[:] p1,
         double[:] p2,
         double thickness,
-        colour):
+        colour: np.ndarray):
     cdef long x = <long>p1[0]
     cdef long y = <long>p1[1]
     cdef long x1 = <long>p2[0]
@@ -124,85 +124,92 @@ def _drawThickLine(
             y += 1
 
 
-def _drawRect(arr: np.ndarray, pos: np.ndarray, sze: np.ndarray, thickness: int, round: int, col: np.ndarray):
-    h, w, _ = arr.shape
-    pos, sze = pos.astype(np.int64), sze.astype(np.int64)
-    if sze[0] > 0:
-        x0, x1 = pos[0], pos[0] + sze[0]
-    else:
-        x0, x1 = pos[0] + sze[0], pos[0]
-    if sze[1] > 0:
-        y0, y1 = pos[1], pos[1] + sze[1]
-    else:
-        y0, y1 = pos[1] + sze[1], pos[1]
+cdef inline long _clip(long v, long lo, long hi):
+    if v < lo:
+        return lo
+    if v > hi:
+        return hi
+    return v
 
-    # Compute actual rounding radius (cannot exceed half-size, nor thickness)
-    r = min(int(round),
-            (x1 - x0) // 2,
-            (y1 - y0) // 2)
-    r = max(0, r)
-    t = int(thickness)
+def _drawRect(
+        arr: np.ndarray,
+        double[:] pos,
+        double[:] sze,
+        double thickness,
+        double round,
+        col: np.ndarray):
+    cdef long H = arr.shape[0]
+    cdef long W = arr.shape[1]
+    cdef long t = <long>thickness
+
+    cdef long x0 = <long>pos[0]
+    cdef long y0 = <long>pos[1]
+    cdef long x1 = x0 + <long>sze[0]
+    cdef long y1 = y0 + <long>sze[1]
+
+    if x1 < x0:
+        x0, x1 = x1, x0
+    if y1 < y0:
+        y0, y1 = y1, y0
+
+    cdef long r = <long>round
+    cdef long w = x1 - x0
+    cdef long h = y1 - y0
+
+    cdef long hwid = <long>(w * 0.5)
+    cdef long hhei = <long>(h * 0.5)
+    if r > hwid:
+        r = hwid
+    if r > hhei:
+        r = hhei
+    if r < 0:
+        r = 0
 
     if t <= 0:
-        # Fill entire area
-        if r <= 0:
-            # bcos it's faster than otherwise
-            a, b = np.clip(np.array([y0, y1]), 0, h)
-            c, d = np.clip(np.array([x0, x1]), 0, w)
-            arr[a : b, c : d, :] = col
+        if r == 0:
+            arr[_clip(y0, 0, H):_clip(y1, 0, H), _clip(x0, 0, W):_clip(x1, 0, W), :] = col
             return
-        else:
-            a, b, e, f = np.clip(np.array([y0+r, y1-r, y0, y1]), 0, h)
-            c, d, g, h = np.clip(np.array([x0, x1, x0+r, x1-1]), 0, w)
-            arr[a : b, c : d, :] = col
-            arr[e : f, g : h, :] = col
-    else:
-        # Clip edges for straight sections (excluding corners)
-        xs = np.clip(np.array([
-            x0, x0+t,
-            x1-t, x1,
-            x0+r, x1-r,
-        ]), 0, w)
-        ys = np.clip(np.array([
-            y0, y0+t,
-            y1-t, y1,
-            y0+r, y1-r,
-        ]), 0, h)
-        
-        arr[ys[0] : ys[1], xs[4] : xs[5], :] = col  # Top edge
-        arr[ys[2] : ys[3], xs[4] : xs[5], :] = col  # Bottom edge
-        arr[ys[4] : ys[5], xs[0] : xs[1], :] = col  # Left edge
-        arr[ys[4] : ys[5], xs[2] : xs[3], :] = col  # Right edge
 
+        # Rounded fill (top/bottom strips + middle)
+        arr[_clip(y0 + r, 0, H):_clip(y1 - r, 0, H), _clip(x0, 0, W):_clip(x1, 0, W), :] = col
+    else:
+        arr[_clip(y0, 0, H):_clip(y0 + t, 0, H), x0+r:x1-r, :] = col # Top
+        arr[_clip(y1 - t, 0, H):_clip(y1, 0, H), x0+r:x1-r, :] = col # Bottom
+        arr[y0+r:y1-r, _clip(x0, 0, W):_clip(x0 + t, 0, W), :] = col # Left
+        arr[y0+r:y1-r, _clip(x1 - t, 0, W):_clip(x1, 0, W), :] = col # Right
+
+
+    cdef long r2, inner, off
+    cdef long cx, cy, xs, xe, ys, ye
+    cdef long dx, dy, d2
+    cdef long x, y, c
     if r > 0:
         r2 = r*r
-        off = 0
-        if t == 0:
-            rthic2 = 0
-            off = 1
-        else:
-            rthic2 = (r - t) * (r - t)
+        inner = (r - t) * (r - t) if t > 0 else 0
+        off = 0 if t > 0 else 1
 
-        xs = np.clip(np.array([
-            x0, x0 + r,
-            x1 - r, x1
-        ]), 0, w)
-        ys = np.clip(np.array([
-            y0, y0 + r,
-            y1 - r, y1
-        ]), 0, h)
-        # draw quarter-circles at the four corners
-        for cx, cy, xs, xe, ys, ye in [
-            (x0 + r - off, y0 + r - 1,       xs[0], xs[1], ys[0], ys[1]),  # TL
-            (x1 - r,       y0 + r - 1,       xs[2], xs[3], ys[0], ys[1]),  # TR
-            (x0 + r - off, y1 - r - 1 + off, xs[0], xs[1], ys[2], ys[3]),  # BL
-            (x1 - r,       y1 - r - 1 + off, xs[2], xs[3], ys[2], ys[3])   # BR
-        ]:
-            yy, xx = np.ogrid[ys:ye, xs:xe]
-            d2 = (xx - cx)**2 + (yy - cy)**2
-            mask = (rthic2 <= d2) & (d2 < r2)
-            sub = arr[ys:ye, xs:xe]
-            sub[mask] = col
+        # TL, TR, BL, BR
+        corners = [
+            (x0 + r - off, y0 + r - 1, x0, x0+r, y0, y0+r),
+            (x1 - r,       y0 + r - 1, x1-r, x1, y0, y0+r),
+            (x0 + r - off, y1 - r - 1 + off, x0, x0+r, y1-r, y1),
+            (x1 - r,       y1 - r - 1 + off, x1-r, x1, y1-r, y1)
+        ]
+
+        for cx, cy, xs, xe, ys, ye in corners:
+            xs = _clip(xs, 0, W)
+            xe = _clip(xe, 0, W)
+            ys = _clip(ys, 0, H)
+            ye = _clip(ye, 0, H)
+
+            for y in range(ys, ye):
+                dy = y - cy
+                for x in range(xs, xe):
+                    dx = x - cx
+                    d2 = dx*dx + dy*dy
+                    if inner <= d2 < r2:
+                        for c in range(arr.shape[2]):
+                            arr[y, x, c] = col[c]
 
 
 def _drawCirc(arr: np.ndarray, pos: np.ndarray, radius: int, thickness: int, col: np.ndarray):
