@@ -90,7 +90,7 @@ class Line(Polygon):
 
 
 class Rect(Polygon):
-    __slots__ = ['pos', 'sze', 'thickness', 'col']
+    __slots__ = ['pos', 'sze', 'roundness', 'col']
 
     @overload
     def __init__(self, pos: Point, sze: Point, thickness: Number, col: np.ndarray, /, roundness: Number = 0, round: bool = True):
@@ -136,7 +136,7 @@ class Rect(Polygon):
                 f'Incorrect number of arguments! Expected 3 or 6, found {len(args)}!'
             )
         assert self.thickness >= 0, "Thickness must be >=0"
-        self.round = roundness
+        self.roundness = roundness
         self.col = np.array(col, np.uint8)
         assert self.col.shape == (4,), "Colour is of incorrect shape!"
         self.flags = OpFlags.Transformable
@@ -161,9 +161,10 @@ class Rect(Polygon):
                 sx = abs(mat[0, 1])
                 sy = abs(mat[1, 0])
             t = self.thickness * 0.5 * (sx + sy)
+            r = self.roundness * 0.5 * (sx + sy)
 
             p, s = self._regWarp(mat, self.pos), self._regWarp(mat, self.sze)
-            _calcs.drawRect(arr, p, s, t, self.round, self.col)
+            _calcs.drawRect(arr, p, s, t, r, self.col)
         else:
             # If not, draw the lines
             super().applyTrans(mat, arr)

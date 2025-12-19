@@ -140,12 +140,12 @@ def drawRect(
     if y1 < y0:
         y0, y1 = y1, y0
 
-    cdef long r = <long>round
     cdef long w = x1 - x0
     cdef long h = y1 - y0
 
     cdef long hwid = <long>(w * 0.5)
     cdef long hhei = <long>(h * 0.5)
+    cdef long r = <long>round
     if r > hwid:
         r = hwid
     if r > hhei:
@@ -173,6 +173,10 @@ def drawRect(
             _clip(y0 + r, 0, H), _clip(y1 - r, 0, H),
             _clip(x0, 0, W), _clip(x1, 0, W),
             rcol, gcol, bcol, acol)
+        _fill(arr,
+            _clip(y0, 0, H), _clip(y1, 0, H),
+            _clip(x0 + r, 0, W), _clip(x1 - r, 0, W),
+            rcol, gcol, bcol, acol)
     else:
         _fill(arr, # Top
             _clip(y0, 0, H), _clip(y0 + t, 0, H),
@@ -187,14 +191,20 @@ def drawRect(
             _clip(x1 - t, 0, W), _clip(x1, 0, W),
             rcol, gcol, bcol, acol)
 
-
-    cdef long r2, inner, off
+    cdef long outer, inner, off
     cdef long cx, cy, xs, xe, ys, ye
     cdef long dx, dy, d2
-    if r > 0:
-        r2 = r*r
-        inner = max(r - t, 0)
-        inner *= inner
+    if r > 1:
+        outer = r*r
+        if t > 0:
+            inner = r - t
+            if inner < 0:
+                inner = 0
+            else:
+                inner *= inner
+        else:
+            inner = 0
+
         off = 0 if t > 0 else 1
 
         # TL, TR, BL, BR
@@ -216,7 +226,7 @@ def drawRect(
                 for x in range(xs, xe):
                     dx = x - cx
                     d2 = dx*dx + dy*dy
-                    if inner <= d2 < r2:
+                    if inner <= d2 < outer:
                         arr[y, x, 0] = rcol
                         arr[y, x, 1] = gcol
                         arr[y, x, 2] = bcol
