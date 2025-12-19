@@ -1,4 +1,5 @@
 from stubgen_pyx.stubgen import stubgen
+import numpy
 import sys
 import os
 
@@ -47,7 +48,11 @@ if len(MODULES) > 0:
         # This also compiles it too for whatever reason
         stubgen(
             src,
-            define_macros=[("Py_LIMITED_API", "0x030B0000")],
+            include_dirs=[numpy.get_include()],
+            define_macros=[
+                ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
+                ("Py_LIMITED_API", "0x030B0000")
+            ],
             py_limited_api=True
         )
 else:

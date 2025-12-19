@@ -8,10 +8,10 @@ def _drawCirc(arr: np.ndarray, pos: np.ndarray, radius: int, thickness: int, col
 def _drawElipse(arr: np.ndarray, pos: np.ndarray, xradius: int, yradius: int, rotation: float, thickness: int, col: np.ndarray):
     ...
 
-def _drawRect(arr: np.ndarray, pos: float[:], sze: float[:], thickness: float, round: float, col: np.ndarray):
+def _drawRect(arr: ndarray, pos: ndarray, sze: ndarray, thickness: float, round: float, col: ndarray):
     ...
 
-def _drawThickLine(arr: np.ndarray, p1: float[:], p2: float[:], thickness: float, colour: np.ndarray):
+def _drawThickLine(arr: ndarray, p1: ndarray, p2: ndarray, thickness: float, colour: ndarray):
     ...
 
 def apply(mat: np.ndarray, arr: np.ndarray, smooth: bool):

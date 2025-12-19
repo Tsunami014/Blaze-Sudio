@@ -1,5 +1,6 @@
 # cython: boundscheck=False, wraparound=False, nonecheck=False, cdivision=True
 import numpy as np
+cimport numpy as cnp
 
 
 def apply(mat: np.ndarray, arr: np.ndarray, smooth: bool):
@@ -61,11 +62,11 @@ def apply(mat: np.ndarray, arr: np.ndarray, smooth: bool):
 
 
 def _drawThickLine(
-        arr: np.ndarray,
-        double[:] p1,
-        double[:] p2,
+        cnp.ndarray[cnp.uint8_t, ndim=3] arr,
+        cnp.ndarray[cnp.double_t, ndim=1] p1,
+        cnp.ndarray[cnp.double_t, ndim=1] p2,
         double thickness,
-        colour: np.ndarray):
+        cnp.ndarray[cnp.uint8_t, ndim=1] colour):
     cdef long x = <long>p1[0]
     cdef long y = <long>p1[1]
     cdef long x1 = <long>p2[0]
@@ -132,12 +133,12 @@ cdef inline long _clip(long v, long lo, long hi):
     return v
 
 def _drawRect(
-        arr: np.ndarray,
-        double[:] pos,
-        double[:] sze,
+        cnp.ndarray[cnp.uint8_t, ndim=3] arr,
+        cnp.ndarray[cnp.double_t, ndim=1] pos,
+        cnp.ndarray[cnp.double_t, ndim=1] sze,
         double thickness,
         double round,
-        col: np.ndarray):
+        cnp.ndarray[cnp.uint8_t, ndim=1] col):
     cdef long H = arr.shape[0]
     cdef long W = arr.shape[1]
     cdef long t = <long>thickness
