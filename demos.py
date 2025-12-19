@@ -14,84 +14,138 @@ It will first read the file, then overwrite it when you save.')
     NodeEditor(f)()
 
 def NewGraphicsDemo():
-    #from BlazeSudio.orig import Debug
-    #Debug('graphicsCore')
+    NAMES = {
+        0: "Blank",
+        1: "Shapes"
+    }
+    def PRINT_run(thing, thingcol, nam):
+        print(f"\nRunning \033[{thingcol}m{thing}\033[0m with \033[93m{NAMES[nam]}\033[0m:")
+    def PRINT_fps(fps):
+        print(f"Average FPS: \033[94m{fps}\033[m", end="\r")
+
     from BlazeSudio.graphicsCore import Window, AvgClock, Col, Draw, Ix
     from BlazeSudio.graphicsCore.Op import Fill
     w = Window()
     c = AvgClock()
-    print('Using new graphics engine:')
 
-    ops = Fill(Col.White)
-    # It can handle decimals!
-    ops += Draw.Line((10.5, 10.5), (200.25, 100.75), 15, Col.Black) + \
-           Draw.Polygon([(100, 100.5), (200, 300), (0, 300)], 30, Col(80, 100, 250)) + \
-           Draw.Rect((30.5, 50), (100.25, 80.3333333), 10, Col.Grey, roundness=30) + \
-           Draw.Rect(100, 150, 30, 50, 10, Col.Black) + \
-           Draw.Circle(300, 300, 10, 5, Col(255, 100, 100)) + \
-           Draw.Elipse((100, 100), 50, 30, 10, Col(80, 255, 100))
-    # Testing entirely fill
-    ops += Draw.Elipse(700, 100, 30, 70, 0, Col.Black) + \
-           Draw.Circle((500, 300.5), 30.5, 0, Col.Black) + \
-           Draw.Rect(500, 350, 50, 30, 0, Col.Black) + \
-           Draw.Rect((500, 400), (30, 50), 0, Col.Grey, roundness=10)
-    # Testing stupid cases. These *should* all appear one after the other in a column
-    ops += Draw.Rect(500, 500, 0, 0, 5, Col.Black) + \
-           Draw.Rect(500, 510, 50, 50, 1, Col.Black, roundness=100) + \
-           Draw.Line((500, 570), (500, 570), 5, Col.Black)
-
-    ops.freeze()
-
+    cur = None
+    perframe = None
     f = 0
+    times = []
+    def changeOp(new):
+        nonlocal cur
+        if new == cur:
+            return
+        PRINT_run("new graphics engine", 92, new)
+        nonlocal perframe, f, times
+        cur = new
+        ops = Fill(Col.White)
+        match new:
+            case 0: # Blank
+                perframe = lambda _: ops
+            case 1: # Shapes
+                # It can handle decimals!
+                ops += Draw.Line((10.5, 10.5), (200.25, 100.75), 15, Col.Black) + \
+                       Draw.Polygon([(100, 100.5), (200, 300), (0, 300)], 30, Col(80, 100, 250)) + \
+                       Draw.Rect((30.5, 50), (100.25, 80.3333333), 10, Col.Grey, roundness=30) + \
+                       Draw.Rect(100, 150, 30, 50, 10, Col.Black) + \
+                       Draw.Circle(300, 300, 10, 5, Col(255, 100, 100)) + \
+                       Draw.Elipse((100, 100), 50, 30, 10, Col(80, 255, 100))
+                # Testing entirely fill
+                ops += Draw.Elipse(700, 100, 30, 70, 0, Col.Black) + \
+                       Draw.Circle((500, 300.5), 30.5, 0, Col.Black) + \
+                       Draw.Rect(500, 350, 50, 30, 0, Col.Black) + \
+                       Draw.Rect((500, 400), (30, 50), 0, Col.Grey, roundness=10)
+                # Testing stupid cases. These *should* all appear one after the other in a column
+                ops += Draw.Rect(500, 500, 0, 0, 5, Col.Black) + \
+                       Draw.Rect(500, 510, 50, 50, 1, Col.Black, roundness=100) + \
+                       Draw.Line((500, 570), (500, 570), 5, Col.Black)
+                def _1perframe(f):
+                    return ops + Draw.Circle(f*10, 10, 50, 0, Col(250, 90, 255))
+                perframe = _1perframe
+        ops.freeze()
+        f = 0
+        times = []
+
+    changeOp(1)
+
     while Ix.handleBasic():
-        w @= ops + Draw.Circle(f*10, 10, 50, 0, Col(250, 90, 255))
-        f = (f + 1) % 200
+        if Ix.Keys['1']:
+            changeOp(1)
+        if Ix.Keys['0']:
+            changeOp(0)
+        w @= perframe(f)
         w.rend()
         c.tick()
         w.set_title(f'FPS: {c.get_fps()}')
-        if f % 10 == 0:
-            print(c.get_fps())
+        if f % 50 == 0:
+            times.append(c.get_fps())
+            PRINT_fps(sum(times)/len(times))
+        f = (f + 1) % 200
     w.Quit()
 
     #quit() # Uncomment to ignore pygame
-    print('Using pygame:')
+    print("\n")
 
     import pygame
     pygame.init()
     WIN = pygame.display.set_mode()
     c = pygame.time.Clock()
     f = 0
+    cur = 1
+    init = True
+    times = []
     r = True
     while r:
         for ev in pygame.event.get():
             if ev.type == pygame.QUIT or (ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE):
                 r = False
-        WIN.fill((255, 255, 255))
-        # It cannot handle decimals well, if at all :(
-        pygame.draw.line(WIN, 0, (10.5, 10.5), (200.25, 100.75), 15)
-        pygame.draw.polygon(WIN, (80, 100, 250), [(100, 100), (200, 300), (0, 300)], 30)
-        pygame.draw.rect(WIN, (125, 125, 125), (30, 50, 100, 80), 10, 30)
-        pygame.draw.rect(WIN, 0, (100, 150, 30, 50), 10)
-        pygame.draw.circle(WIN, (255, 100, 100), (300, 300), 10, 5)
-        pygame.draw.ellipse(WIN, (80, 255, 100), (100-50, 100-30, 50*2, 30*2), 10)
-        # Testing entirely fill
-        pygame.draw.ellipse(WIN, 0, (700-30, 100-70, 30*2, 70*2), 0)
-        pygame.draw.circle(WIN, 0, (500, 300), 30.5, 0)
-        pygame.draw.rect(WIN, 0, (500, 350, 50, 30), 0)
-        pygame.draw.rect(WIN, (125, 125, 125), (500, 400, 30, 50), 0, 10)
-        # Testing stupid cases. These all appear one after the other in a column, and should look like;
-        pygame.draw.rect(WIN, 0, (500, 500, 0, 0), 5) # Unspecified; in reality, not there..? Would be nice (but too expensive) to make it a dot
-        pygame.draw.rect(WIN, 0, (500, 510, 50, 50), 1, 100) # A circle; yay!
-        pygame.draw.line(WIN, 0, (500, 570), (500, 570), 5) # Unspecified; in reality, a circle (which is great!)
+        ks = pygame.key.get_pressed()
+        new = None
+        if ks[pygame.K_1]:
+            new = 1
+        elif ks[pygame.K_0]:
+            new = 0
+        if new is not None and new != cur or init:
+            init = False
+            if new is not None:
+                cur = new
+                f = 0
+                times = []
+            PRINT_run("pygame", 91, cur)
 
-        f = (f + 1) % 200
-        pygame.draw.circle(WIN, (250, 90, 255), (f*10, 10), 50, 0)
+        WIN.fill((255, 255, 255))
+        match cur:
+            case 0: # Blank
+                pass
+            case 1: # Shapes
+                # It cannot handle decimals well, if at all :(
+                pygame.draw.line(WIN, 0, (10.5, 10.5), (200.25, 100.75), 15)
+                pygame.draw.polygon(WIN, (80, 100, 250), [(100, 100), (200, 300), (0, 300)], 30)
+                pygame.draw.rect(WIN, (125, 125, 125), (30, 50, 100, 80), 10, 30)
+                pygame.draw.rect(WIN, 0, (100, 150, 30, 50), 10)
+                pygame.draw.circle(WIN, (255, 100, 100), (300, 300), 10, 5)
+                pygame.draw.ellipse(WIN, (80, 255, 100), (100-50, 100-30, 50*2, 30*2), 10)
+                # Testing entirely fill
+                pygame.draw.ellipse(WIN, 0, (700-30, 100-70, 30*2, 70*2), 0)
+                pygame.draw.circle(WIN, 0, (500, 300), 30.5, 0)
+                pygame.draw.rect(WIN, 0, (500, 350, 50, 30), 0)
+                pygame.draw.rect(WIN, (125, 125, 125), (500, 400, 30, 50), 0, 10)
+                # Testing stupid cases. These all appear one after the other in a column, and should look like;
+                pygame.draw.rect(WIN, 0, (500, 500, 0, 0), 5) # Unspecified; in reality, not there..? Would be nice (but too expensive) to make it a dot
+                pygame.draw.rect(WIN, 0, (500, 510, 50, 50), 1, 100) # A circle; yay!
+                pygame.draw.line(WIN, 0, (500, 570), (500, 570), 5) # Unspecified; in reality, a circle (which is great!)
+
+                pygame.draw.circle(WIN, (250, 90, 255), (f*10, 10), 50, 0)
 
         pygame.display.flip()
         c.tick()
         pygame.display.set_caption(f'FPS: {c.get_fps()}')
-        if f % 10 == 0:
-            print(c.get_fps())
+        if f % 50 == 0:
+            times.append(c.get_fps())
+            PRINT_fps(sum(times)/len(times))
+        f = (f + 1) % 200
+    print()
     pygame.quit()
 
 def GraphicsDemo():

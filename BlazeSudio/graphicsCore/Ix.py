@@ -20,7 +20,11 @@ __all__ = [
     'update',
 ]
 
-class Keys:
+class _KeysMeta(type):
+    def __getitem__(cls, key):
+        return cls._getit(key)
+
+class Keys(metaclass=_KeysMeta):
     """
     Get keys pressed or key events
 
@@ -37,7 +41,8 @@ class Keys:
     """'Windows'/'Command'/'Super' key"""
     mNumLock: bool
     mCapsLock: bool
-    def __getitem__(cls, key):
+    @classmethod
+    def _getit(cls, key):
         ln = len(key)
         if ln == 0:
             raise ValueError(
@@ -45,15 +50,16 @@ class Keys:
             )
         lk = key.lower()
         k = _specialkeys.speshs.get(key, None)
-        if k is not None and ln == 1:
+        if k is None and ln == 1:
             k = sdl2.SDL_GetScancodeFromKey(ord(lk))
-            if k == 0:
-                raise ValueError(
-                    f'No key found for character "{lk}"'
-                )
+        if k == 0 or k is None:
+            raise ValueError(
+                f'No key found for "{lk}"'
+            )
         return cls._kbdState[k]
 
-    def events(): pass # TODO: This, and also have lots of optional filters
+    @classmethod
+    def events(cls): pass # TODO: This, and also have lots of optional filters
 
 class Mouse:
     """
