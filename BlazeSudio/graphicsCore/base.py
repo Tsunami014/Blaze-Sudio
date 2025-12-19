@@ -1,4 +1,4 @@
-from . import _calcs
+from . import _basey
 from abc import ABC, abstractmethod
 from enum import IntEnum
 import numpy as np
@@ -56,13 +56,9 @@ class Op(ABC):
     def flatten(self):
         return self
 
-class TransOp(Op):
+class TransOp(_basey.TransBase, Op):
     def __init__(self):
         self.flags = OpFlags.Transformable
-
-    def _warpPs(self, mat, points):
-        p = np.c_[points, np.ones(len(points))] @ mat.T
-        return p[:, :2] / p[:, 2:3]
 
     def apply(self, arr, _):
         return self.applyTrans(IDENTITY, arr)
@@ -86,7 +82,7 @@ class MatOp(Op):
 
     def apply(self, arr: np.ndarray, defSmth: bool):
         smooth = self._smooth if self._smooth is not None else defSmth
-        _calcs.apply(self.mat, arr, smooth)
+        _basey.apply(self.mat, arr, smooth)
 
 class OpList(Op):
     __slots__ = ['ops', '_fixed', 'flags']

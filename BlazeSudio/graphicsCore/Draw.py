@@ -1,6 +1,6 @@
 from typing import overload, Iterable, Tuple
 from .base import OpFlags, TransOp
-from ._calcs import _drawThickLine, _drawRect, _drawCirc, _drawElipse
+from . import _calcs
 import numpy as np
 import math
 
@@ -39,21 +39,12 @@ class Polygon(TransOp):
         ps = self.ps
         if len(ps) < 2:
             return
-        s = np.linalg.svd(mat[:2, :2], compute_uv=False)
-        t = self.thickness * np.mean(s)
+        A = mat[:2, :2]
+        sx2 = A[0,0]*A[0,0] + A[1,0]*A[1,0]
+        sy2 = A[0,1]*A[0,1] + A[1,1]*A[1,1]
+        t = self.thickness * ((sx2 + sy2) * 0.5) ** 0.5
         newps = self._warpPs(mat, ps)
-        if self.round:
-            ht = t//2
-            for p in newps:
-                _drawCirc(arr, p, ht, 0, self.col)
-        if len(ps) == 2:
-            _drawThickLine(arr, newps[0], newps[1], t, self.col)
-            return arr
-        p1 = newps[0]
-        for p2 in newps[1:]:
-            _drawThickLine(arr, p1, p2, t, self.col)
-            p1 = p2
-        _drawThickLine(arr, p1, newps[0], t, self.col)
+        _calcs.drawPolyLine(arr, newps, t, self.col, self.round)
         return arr
 
 class Line(Polygon):
@@ -162,12 +153,17 @@ class Rect(Polygon):
 
     def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
         # Checks if the rectangle after matrix op is still a rectangle - i.e. no perspective warp or rotation
-        if (mat[2] == [0, 0, 1]).all() and \
-                ((mat[[0,1], [1,0]] == [0, 0]).all() or (mat[[0,1], [0,1]] == [0, 0]).all()):
-            s = np.linalg.svd(mat[:2, :2], compute_uv=False)
-            t = self.thickness * np.mean(s)
-            newps = self._warpPs(mat, [self.pos, self.sze])
-            _drawRect(arr, newps[0], newps[1], t, self.round, self.col)
+        if self._regMat(mat):
+            if mat[0, 1] == 0 and mat[1, 0] == 0:
+                sx = abs(mat[0, 0])
+                sy = abs(mat[1, 1])
+            else:
+                sx = abs(mat[0, 1])
+                sy = abs(mat[1, 0])
+            t = self.thickness * 0.5 * (sx + sy)
+
+            p, s = self._regWarp(mat, self.pos), self._regWarp(mat, self.sze)
+            _calcs.drawRect(arr, p, s, t, self.round, self.col)
         else:
             # If not, draw the lines
             super().applyTrans(mat, arr)
@@ -219,8 +215,12 @@ class Elipse(TransOp):
         self.flags = OpFlags.Transformable
     
     def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
-        if (mat[2] == [0, 0, 1]).all():
-            centre = (mat @ [self.pos[0], self.pos[1], 1.0])[:2]
+        if mat[2,2] != 1:
+            raise NotImplementedError(
+                'Cannot have a non-normalized homogeneous coordinate with circles yet!'
+            )
+        if mat[0,2] == 0 and mat[1,2] == 0:
+            centre = self._regWarp(mat, self.pos)
             A = mat[:2, :2]
             u = A @ np.array([1.0, 0.0]) * self.xradius
             v = A @ np.array([0.0, 1.0]) * self.yradius
@@ -228,19 +228,15 @@ class Elipse(TransOp):
             r1 = np.hypot(u[0], u[1])
             r2 = np.hypot(v[0], v[1])
 
-            # NOTE: I could have implemented different thickness for both sides of the elipse, but I didn't want to.
-            s = np.linalg.svd(A, compute_uv=False)
-            t = self.thickness * np.mean(s)
+            sx2 = A[0,0]*A[0,0] + A[1,0]*A[1,0]
+            sy2 = A[0,1]*A[0,1] + A[1,1]*A[1,1]
+            t = self.thickness * ((sx2 + sy2) * 0.5) ** 0.5
             if r1 == r2:
-                _drawCirc(arr, centre, r1, t, self.col)
+                _calcs.drawCirc(arr, centre, r1, t, self.col)
             else:
                 angle = math.atan2(u[1], u[0])
-                _drawElipse(arr, centre, r1, r2, angle, t, self.col)
+                _calcs.drawElipse(arr, centre, r1, r2, angle, t, self.col)
         else:
-            if mat[2,2] != 1:
-                raise NotImplementedError(
-                    'Cannot have a non-normalized homogeneous coordinate with circles yet!'
-                )
             raise NotImplementedError(
                 'Cannot have projective transform with circles yet!'
             )

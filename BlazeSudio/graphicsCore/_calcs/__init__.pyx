@@ -4,68 +4,10 @@ cimport numpy as cnp
 __cimport_types__ = [cnp.ndarray]
 
 
-def apply(mat: np.ndarray, arr: np.ndarray, smooth: bool):
-    background = 0
-
-    h, w = arr.shape[:2]
-    is_color = arr.ndim == 3
-
-    T_inv = np.linalg.inv(mat)
-
-    yy, xx = np.meshgrid(np.arange(h), np.arange(w), indexing='ij')
-    ones = np.ones_like(xx)
-    dst = np.stack([xx, yy, ones], axis=-1)
-
-    src = dst @ T_inv.T
-    sx = src[..., 0] / src[..., 2]
-    sy = src[..., 1] / src[..., 2]
-
-    if smooth:
-        x0 = np.floor(sx).astype(int)
-        x1 = x0 + 1
-        y0 = np.floor(sy).astype(int)
-        y1 = y0 + 1
-
-        wx = sx - x0
-        wy = sy - y0
-
-        valid = (x0 >= 0) & (x1 < w) & (y0 >= 0) & (y1 < h)
-
-        if not is_color:
-            arr = arr[..., None]
-
-        c00 = arr[y0, x0]
-        c10 = arr[y0, x1]
-        c01 = arr[y1, x0]
-        c11 = arr[y1, x1]
-
-        top = c00 * (1 - wx)[..., None] + c10 * wx[..., None]
-        bottom = c01 * (1 - wx)[..., None] + c11 * wx[..., None]
-        blended = top * (1 - wy)[..., None] + bottom * wy[..., None]
-
-        out = np.full((*arr.shape[:2], arr.shape[2]), background, dtype=float)
-        out[valid] = blended[valid]
-        out = out.astype(arr.dtype)
-
-        if not is_color:
-            out = out[..., 0]
-
-        return out
-    else:
-        sx_i = np.rint(sx).astype(int)
-        sy_i = np.rint(sy).astype(int)
-
-        out = np.full_like(arr, background)
-        mask = (sx_i >= 0) & (sx_i < w) & (sy_i >= 0) & (sy_i < h)
-
-        out[mask] = arr[sy_i[mask], sx_i[mask]]
-        return out
-
-
-def _drawThickLine(
+def drawLine(
         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
-        cnp.ndarray[cnp.double_t, ndim=1] p1,
-        cnp.ndarray[cnp.double_t, ndim=1] p2,
+        double[:] p1,
+        double[:] p2,
         double thickness,
         cnp.ndarray[cnp.uint8_t, ndim=1] colour):
     cdef long x = <long>p1[0]
@@ -125,6 +67,27 @@ def _drawThickLine(
                 err += dy
             y += 1
 
+def drawPolyLine(
+        cnp.ndarray[cnp.uint8_t, ndim=3] arr,
+        double[:, :] points,
+        double thickness,
+        cnp.ndarray[cnp.uint8_t, ndim=1] col,
+        bool round):
+    cdef long ht = <long>(thickness // 2)
+    cdef long n = len(points)
+    if round:
+        for i in range(n):
+            drawCirc(arr, points[i], ht, 0, col)
+    if n == 2:
+        drawLine(arr, points[0], points[1], thickness, col)
+        return
+    p1 = points[0]
+    for i in range(1, n):
+        p2 = points[i]
+        drawLine(arr, p1, p2, thickness, col)
+        p1 = p2
+    drawLine(arr, p1, points[0], thickness, col)
+
 
 cdef inline long _clip(long v, long lo, long hi):
     if v < lo:
@@ -133,10 +96,10 @@ cdef inline long _clip(long v, long lo, long hi):
         return hi
     return v
 
-def _drawRect(
+def drawRect(
         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
-        cnp.ndarray[cnp.double_t, ndim=1] pos,
-        cnp.ndarray[cnp.double_t, ndim=1] sze,
+        double[:] pos,
+        double[:] sze,
         double thickness,
         double round,
         cnp.ndarray[cnp.uint8_t, ndim=1] col):
@@ -214,68 +177,112 @@ def _drawRect(
                             arr[y, x, c] = col[c]
 
 
-def _drawCirc(arr: np.ndarray, pos: np.ndarray, radius: int, thickness: int, col: np.ndarray):
-    r = int(radius)
-    h, w, _ = arr.shape
-    x, y = pos.astype(np.int64)
+def drawCirc(
+        cnp.ndarray[cnp.uint8_t, ndim=3] arr,
+        double[:] pos,
+        double radius,
+        double thickness,
+        cnp.ndarray[cnp.uint8_t, ndim=1] col):
+    cdef long r = <long>radius
+    cdef long w = <long>arr.shape[1]
+    cdef long h = <long>arr.shape[0]
+    cdef long x = <long>pos[0]
+    cdef long y = <long>pos[1]
 
-    y0 = max(y - r - 1, 0)
-    y1 = min(y + r + 1, h)
-    x0 = max(x - r - 1, 0)
-    x1 = min(x + r + 1, w)
+    cdef long y0 = max(y - r - 1, 0)
+    cdef long y1 = min(y + r + 1, h)
+    cdef long x0 = max(x - r - 1, 0)
+    cdef long x1 = min(x + r + 1, w)
     if y0 >= y1 or x0 >= x1:
         return
 
-    # Radii squared
-    radius_outer_sq = r ** 2
-    radius_inner_sq = 0 if thickness == 0 else max(r - thickness, 0) ** 2
+    cdef long outrad2 = r * r
+    cdef long innrad2
+    if thickness == 0:
+        innrad2 = 0
+    else:
+        innrad2 = max(r - <long>thickness, 0)
+        innrad2 *= innrad2
 
-    # Coordinate grid
-    yy, xx = np.mgrid[y0:y1, x0:x1]
-    dx = xx - x
-    dy = yy - y
-    dist_sq = dx*dx + dy*dy
+    cdef long xx, yy
+    cdef long dx, dy
+    cdef long dist_sq
+    for yy in range(y0, y1):
+        dy = yy - y
+        for xx in range(x0, x1):
+            dx = xx - x
+            dist_sq = dx*dx + dy*dy
 
-    mask = (radius_inner_sq <= dist_sq) & (dist_sq <= radius_outer_sq)
-    sub = arr[y0:y1, x0:x1]
-    sub[mask] = col
+            if innrad2 <= dist_sq <= outrad2:
+                arr[yy, xx, :] = col
 
 
-def _drawElipse(arr: np.ndarray, pos: np.ndarray, xradius: int, yradius: int, rotation: float, thickness: int, col: np.ndarray):
-    xrad, yrad = int(xradius), int(yradius)
-    h, w, _ = arr.shape
-    x, y = pos.astype(np.int64)
+def drawElipse(
+        cnp.ndarray[cnp.uint8_t, ndim=3] arr,
+        double[:] pos,
+        double xradius,
+        double yradius,
+        double rotation,
+        double thickness,
+        cnp.ndarray[cnp.uint8_t, ndim=1] col):
+    cdef long xrad = <long>xradius
+    cdef long yrad = <long>yradius
+    cdef long w = <long>arr.shape[1]
+    cdef long h = <long>arr.shape[0]
+    cdef long x = <long>pos[0]
+    cdef long y = <long>pos[1]
 
+    cdef long t
     if thickness >= min(xrad, yrad):
         t = 0
     else:
-        t = int(thickness) // 2
+        t = <long>(thickness / 2)
 
     # Bounding box
-    x_min = max(x - xrad- 1 - t, 0)
-    x_max = min(x + xrad+ 1 + t, w)
-    y_min = max(y - yrad- 1 - t, 0)
-    y_max = min(y + yrad+ 1 + t, h)
-
-    # Coordinate grid
-    yy, xx = np.mgrid[y_min:y_max, x_min:x_max]
-    dx = xx - x
-    dy = yy - y
+    cdef long x_min = max(x - xrad- 1 - t, 0)
+    cdef long x_max = min(x + xrad+ 1 + t, w)
+    cdef long y_min = max(y - yrad- 1 - t, 0)
+    cdef long y_max = min(y + yrad+ 1 + t, h)
 
     # Rotation
-    cos_t = np.cos(rotation)
-    sin_t = np.sin(rotation)
-    xr = dx * cos_t + dy * sin_t
-    yr = -dx * sin_t + dy * cos_t
+    cdef double cos_t = np.cos(rotation)
+    cdef double sin_t = np.sin(rotation)
 
-    # Ellipse equation
-    if thickness == 0 or thickness >= min(xrad, yrad):
-        mask = (xr**2 / xrad**2 + yr**2 / yrad**2) <= 1
+    cdef long xx, yy
+    cdef double dx, dy
+    cdef double xr, yr
+    cdef double v_outer, v_inner
+
+    if t == 0:
+        invxr = 1.0 / (xrad * xrad)
+        invyr = 1.0 / (yrad * yrad)
+        for yy in range(y_min, y_max):
+            dy = yy - y
+            for xx in range(x_min, x_max):
+                dx = xx - x
+
+                xr = dx * cos_t + dy * sin_t
+                yr = -dx * sin_t + dy * cos_t
+
+                if xr * xr * invxr + yr * yr * invyr <= 1.0:
+                    arr[yy, xx, :] = col
     else:
-        outer = (xr**2 / (xrad+ t)**2 + yr**2 / (yrad+ t)**2) <= 1
-        inner = (xr**2 / (xrad- t)**2 + yr**2 / (yrad- t)**2) <= 1
-        mask = outer & ~inner
+        inv_right = 1.0 / ((xrad + t) * (xrad + t))
+        inv_bot = 1.0 / ((yrad + t) * (yrad + t))
+        inv_left = 1.0 / ((xrad - t) * (xrad - t))
+        inv_right = 1.0 / ((yrad - t) * (yrad - t))
 
-    # Apply color
-    sub = arr[y_min:y_max, x_min:x_max]
-    sub[mask] = col
+        for yy in range(y_min, y_max):
+            dy = yy - y
+            for xx in range(x_min, x_max):
+                dx = xx - x
+
+                xr = dx * cos_t + dy * sin_t
+                yr = -dx * sin_t + dy * cos_t
+
+                v_outer = xr * xr * inv_right + yr * yr * inv_bot
+                if v_outer <= 1.0:
+                    v_inner = xr * xr * inv_left + yr * yr * inv_right
+                    if v_inner > 1.0:
+                        arr[yy, xx, :] = col
+
