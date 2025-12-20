@@ -2,62 +2,156 @@ import numpy as np
 cimport numpy as cnp
 __cimport_types__ = [cnp.ndarray]
 
-def apply(mat: np.ndarray, arr: np.ndarray, smooth: bool):
-    background = 0
+cdef inline cnp.ndarray[cnp.float64_t, ndim=2] invert_matrix(mat):
+    if mat[2,0] != 0 or mat[2,1] != 0:
+        return np.linalg.inv(mat)
 
-    h, w = arr.shape[:2]
-    is_color = arr.ndim == 3
+    cdef double a, b, tx
+    cdef double c, d, ty
+    a, b, tx = mat[0]
+    c, d, ty = mat[1]
+    cdef double det = a*d - b*c
+    if det == 0:
+        raise ValueError("Singular affine")
+    return np.array([
+        [ d/det, -b/det, (b*ty - d*tx)/det ],
+        [-c/det,  a/det, (c*tx - a*ty)/det ],
+        [ 0, 0, 1 ]
+    ], dtype=np.float64)
 
-    T_inv = np.linalg.inv(mat)
+def apply(
+        cnp.ndarray[cnp.float64_t, ndim=2] mat,
+        cnp.ndarray[cnp.uint8_t, ndim=3] arr,
+        bool smooth):
 
-    yy, xx = np.meshgrid(np.arange(h), np.arange(w), indexing='ij')
-    ones = np.ones_like(xx)
-    dst = np.stack([xx, yy, ones], axis=-1)
+    cdef long h = arr.shape[0]
+    cdef long w = arr.shape[1]
+    cdef long ch = arr.shape[2]
+    cdef long i, j, c
 
-    src = dst @ T_inv.T
-    sx = src[..., 0] / src[..., 2]
-    sy = src[..., 1] / src[..., 2]
+    cdef T_inv = invert_matrix(mat)
+    cdef double[:, ::1] T = T_inv
+
+    cdef double x, y, z
+    cdef double sx, sy, wx, wy
+    cdef long x0, y0
+
+    cdef double top, bottom, val
+    cdef cnp.ndarray[cnp.uint8_t, ndim=3] out = np.zeros((h, w, ch), dtype=np.uint8)
+    cdef unsigned char[:, :, ::1] in_arr = arr
+    cdef unsigned char[:, :, ::1] out_arr = out
 
     if smooth:
-        x0 = np.floor(sx).astype(int)
-        x1 = x0 + 1
-        y0 = np.floor(sy).astype(int)
-        y1 = y0 + 1
+        for i in range(h):
+            for j in range(w):
+                # column-vector homography: [x y 1]^T
+                x = T[0,0] * j + T[0,1] * i + T[0,2]
+                y = T[1,0] * j + T[1,1] * i + T[1,2]
+                z = T[2,0] * j + T[2,1] * i + T[2,2]
 
-        wx = sx - x0
-        wy = sy - y0
+                if z == 0:
+                    continue
 
-        valid = (x0 >= 0) & (x1 < w) & (y0 >= 0) & (y1 < h)
+                sx = x / z
+                sy = y / z
 
-        if not is_color:
-            arr = arr[..., None]
+                x0 = <long>np.floor(sx)
+                y0 = <long>np.floor(sy)
 
-        c00 = arr[y0, x0]
-        c10 = arr[y0, x1]
-        c01 = arr[y1, x0]
-        c11 = arr[y1, x1]
+                if x0 < 0 or x0 + 1 >= w or y0 < 0 or y0 + 1 >= h:
+                    continue
 
-        top = c00 * (1 - wx)[..., None] + c10 * wx[..., None]
-        bottom = c01 * (1 - wx)[..., None] + c11 * wx[..., None]
-        blended = top * (1 - wy)[..., None] + bottom * wy[..., None]
+                wx = sx - x0
+                wy = sy - y0
 
-        out = np.full((*arr.shape[:2], arr.shape[2]), background, dtype=float)
-        out[valid] = blended[valid]
-        out = out.astype(arr.dtype)
-
-        if not is_color:
-            out = out[..., 0]
-
-        return out
+                for c in range(ch):
+                    top = (1 - wx) * in_arr[y0, x0, c] + wx * in_arr[y0, x0 + 1, c]
+                    bottom = (1 - wx) * in_arr[y0 + 1, x0, c] + wx * in_arr[y0 + 1, x0 + 1, c]
+                    out_arr[i, j, c] = <unsigned char>((1 - wy) * top + wy * bottom)
+        return np.asarray(out_arr)
     else:
-        sx_i = np.rint(sx).astype(int)
-        sy_i = np.rint(sy).astype(int)
+        for i in range(h):
+            for j in range(w):
+                x = T[0,0] * j + T[0,1] * i + T[0,2]
+                y = T[1,0] * j + T[1,1] * i + T[1,2]
+                z = T[2,0] * j + T[2,1] * i + T[2,2]
 
-        out = np.full_like(arr, background)
-        mask = (sx_i >= 0) & (sx_i < w) & (sy_i >= 0) & (sy_i < h)
+                if z == 0:
+                    continue
 
-        out[mask] = arr[sy_i[mask], sx_i[mask]]
-        return out
+                sx = x / z
+                sy = y / z
+
+                x0 = <long>np.floor(sx)
+                y0 = <long>np.floor(sy)
+
+                if 0 <= x0 < w and 0 <= y0 < h:
+                    for c in range(ch):
+                        out_arr[i, j, c] = in_arr[y0, x0, c]
+        return np.asarray(out_arr)
+
+
+def blit(
+        cnp.ndarray[cnp.float64_t, ndim=2] M,
+        cnp.ndarray[cnp.uint8_t, ndim=3] src,
+        cnp.ndarray[cnp.uint8_t, ndim=3] dst):
+    cdef long oh = src.shape[0]
+    cdef long ow = src.shape[1]
+    cdef long dh = dst.shape[0]
+    cdef long dw = dst.shape[1]
+    cdef cnp.ndarray[cnp.float32_t, ndim=2] corners = np.array([
+        [0,  0,  1],
+        [ow, 0,  1],
+        [ow, oh, 1],
+        [0,  oh, 1],
+    ], dtype=np.float32)
+    tc = (M @ corners.T).T
+    xs = tc[:, 0]
+    ys = tc[:, 1]
+
+    cdef long xmin = <long>xs.min()
+    if xmin < 0:
+        xmin = 0
+    cdef long xmax = <long>xs.max() + 1
+    if xmax > dw:
+        xmax = dw
+    cdef long ymin = <long>ys.min()
+    if ymin < 0:
+        ymin = 0
+    cdef long ymax = <long>ys.max() + 1
+    if ymax > dh:
+        ymax = dh
+
+    Minv = np.linalg.inv(M)
+    cdef long y, x, ix, iy
+    cdef double sx, sy, a, inv
+    cdef unsigned char sa, oa
+    for y in range(ymin, ymax):
+        for x in range(xmin, xmax):
+            sx = Minv[0, 0]*x + Minv[0, 1]*y + Minv[0, 2]
+            sy = Minv[1, 0]*x + Minv[1, 1]*y + Minv[1, 2]
+
+            ix = <long>sx
+            iy = <long>sy
+
+            if ix < 0 or iy < 0 or ix >= ow or iy >= oh:
+                continue
+
+            sa = src[iy, ix, 3]
+            if sa == 0:
+                continue
+
+            a = sa / 255.0
+            inv = 1.0 - a
+
+            dst[y, x, 0] = <unsigned char>(src[iy, ix, 0]*a + dst[y, x, 0]*inv)
+            dst[y, x, 1] = <unsigned char>(src[iy, ix, 1]*a + dst[y, x, 1]*inv)
+            dst[y, x, 2] = <unsigned char>(src[iy, ix, 2]*a + dst[y, x, 2]*inv)
+            oa = <unsigned char>(sa + dst[y, x, 3]*inv)
+            if oa > 255:
+                oa = 255
+            dst[y, x, 3] = oa
+
 
 class TransBase:
     def _warpPs(self, mat: np.ndarray, points: np.ndarray):

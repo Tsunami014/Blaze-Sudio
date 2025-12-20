@@ -4,17 +4,22 @@ import numpy as np
 import math
 
 __all__ = [
+    'Transform',
+    'Translate',
+    'Rotate',
     'Scale',
     'Resize',
+    #'Crop',
     'Fill'
 ]
 
 class Transform(MatOp):
     def __init__(
         self, *,
-        rotation=0,
-        translate=(0, 0),
-        scale=(1, 1),
+        rotation = 0,
+        translate = (0, 0),
+        scale = (1, 1),
+        centre = True,
         smooth: bool = None
     ):
         if rotation == 0:
@@ -28,7 +33,7 @@ class Transform(MatOp):
             [scale[0]*cos, -sin,         translate[0]],
             [sin,          scale[1]*cos, translate[1]],
             [0,            0,            1]
-        ], smooth)
+        ], centre, smooth)
 
 class Translate(MatOp):
     @overload
@@ -49,81 +54,88 @@ class Translate(MatOp):
             [1, 0, x],
             [0, 1, y],
             [0, 0, 1]
-        ], smooth)
+        ], False, smooth)
 
 class Rotate(MatOp):
-    def __init__(self, angle, /,*, smooth: bool = None):
+    def __init__(self, angle, /,*, centre: bool = True, smooth: bool = None):
         if angle == 0:
             cos = 1
             sin = 0
         else:
-            cos = math.cos(angle)
-            sin = math.sin(angle)
+            rads = math.radians(angle)
+            cos = math.cos(rads)
+            sin = math.sin(rads)
         super().__init__([
             [cos, -sin, 0],
             [sin, cos,  0],
             [0,   0,    1]
-        ], smooth)
+        ], centre, smooth)
 
 class Scale(MatOp):
     @overload
-    def __init__(self, sze: Iterable[int], /,*, smooth: bool = None): ...
+    def __init__(self, sze: Iterable[int], /,*, centre: bool = True, smooth: bool = None): ...
     @overload
-    def __init__(self, wid: int, hei: int, /,*, smooth: bool = None): ...
-    def __init__(self, *args, smooth: bool = None):
-        if len(args) == 1:
-            sze = args[0]
-            if len(sze) != 2:
+    def __init__(self, wid: int, hei: int, /,*, centre: bool = True, smooth: bool = None): ...
+    def __init__(self, *args, centre = True, smooth = None):
+        match len(args):
+            case 2:
+                sze = (args[0], args[1])
+            case 1:
+                sze = args[0]
+                if len(sze) != 2:
+                    raise TypeError(
+                        f'Size must be an iterable with length 2, found length {len(sze)}!'
+                    )
+            case _:
                 raise TypeError(
-                    f'Size must be an iterable with length 2, found length {len(sze)}!'
+                    f'Expected 1 or 2 arguments, found {len(args)}!'
                 )
-        elif len(args) == 2:
-            sze = (args[0], args[1])
-        else:
-            raise TypeError(
-                f'Expected 1-2 arguments, found {len(args)}!'
-            )
         super().__init__([
             [sze[0], 0,      0],
             [0,      sze[1], 0],
             [0,      0,      1]
-        ], smooth)
+        ], centre, smooth)
 
-class Resize(Op): # FIXME
-    __slots__ = ['sze', '_smooth']
+class Resize(MatOp):
+    __slots__ = ['sze', 'centre2']
 
     @overload
-    def __init__(self, sze: Iterable[int], /, smooth: bool = None): ...
+    def __init__(self, sze: Iterable[int], /,*, centre: bool = True, smooth: bool = None): ...
     @overload
-    def __init__(self, wid: int, hei: int, /, smooth: bool = None): ...
-    def __init__(self, *args, smooth: bool = None):
-        if args[-1] is True or args[-1] is False:
-            if smooth is not None:
-                raise ValueError(
-                    'Last argument is a bool for smooth, but smooth is also defined as a keyword!'
-                )
-            smooth = args[-1]
-            args = args[:-1]
-        if len(args) == 1:
-            sze = args[0]
-            if len(sze) != 2:
+    def __init__(self, wid: int, hei: int, /,*, centre: bool = True, smooth: bool = None): ...
+    def __init__(self, *args, centre = True, smooth = None):
+        match len(args):
+            case 2:
+                sze = (args[0], args[1])
+            case 1:
+                sze = args[0]
+                if len(sze) != 2:
+                    raise TypeError(
+                        f'Size must be an iterable with length 2, found length {len(sze)}!'
+                    )
+            case _:
                 raise TypeError(
-                    f'Size must be an iterable with length 2, found length {len(sze)}!'
+                    f'Expected 1 or 2 arguments, found {len(args)}!'
                 )
-        elif len(args) == 2:
-            sze = (args[0], args[1])
-        else:
-            raise TypeError(
-                f'Expected 1-2 arguments, found {len(args)}!'
-            )
 
-        self.sze = sze
-        self._smooth = smooth
-        self.flags = OpFlags.NoFlags
+        super().__init__([
+            [sze[0], 0,      0],
+            [0,      sze[1], 0],
+            [0,      0,      0]
+        ], True, smooth)
+        self.centre2 = centre
 
-    def apply(self, arr: np.ndarray, defSmth: bool):
-        smooth = self._smooth if self._smooth is not None else defSmth
-        return arr # TODO: This
+    def centredMat(self, arr: np.ndarray) -> np.ndarray:
+        h, w, _ = arr.shape
+        mat = np.array(self.mat / [w, h, 1], float)
+        if not self.centre2:
+            return mat
+        hw, hh = w/2, h/2
+        T1 = np.array([[1, 0, -hw],[0, 1, -hh],[0, 0, 1]], float)
+        T2 = np.array([[1, 0, hw], [0, 1, hh], [0, 0, 1]], float)
+        return T1 @ mat @ T2
+
+#class Crop
 
 
 class Fill(Op):

@@ -16,27 +16,29 @@ It will first read the file, then overwrite it when you save.')
 def NewGraphicsDemo():
     NAMES = {
         0: "Blank",
-        1: "Shapes"
+        1: "Shapes",
+        2: "Transform"
     }
     def PRINT_run(thing, thingcol, nam):
         print(f"\nRunning \033[{thingcol}m{thing}\033[0m with \033[93m{NAMES[nam]}\033[0m:")
     def PRINT_fps(fps):
         print(f"Average FPS: \033[94m{fps}\033[m", end="\r")
 
-    from BlazeSudio.graphicsCore import Window, AvgClock, Col, Draw, Ix
+    from BlazeSudio.graphicsCore import Window, Surface, AvgClock, Col, Draw, Op, Ix
     from BlazeSudio.graphicsCore.Op import Fill
     w = Window()
     c = AvgClock()
 
     cur = None
     perframe = None
-    f = 0
+    f = 1
     times = []
     def changeOp(new):
         nonlocal cur
         if new == cur:
             return
         PRINT_run("new graphics engine", 92, new)
+        PRINT_fps(0)
         nonlocal perframe, f, times
         cur = new
         ops = Fill(Col.White)
@@ -63,8 +65,15 @@ def NewGraphicsDemo():
                 def _1perframe(f):
                     return ops + Draw.Circle(f*10, 10, 50, 0, Col(250, 90, 255))
                 perframe = _1perframe
+            case 2: # Transform
+                ops += Draw.Rect((98, 98), (54, 54), 0, Col.Grey)
+                s = Surface(50, 50) @ (Fill(Col.White) + Draw.Line((5, 5), (45, 45), 5, Col.Black))
+                def _2perframe(f):
+                    return ops + (s @ Op.Rotate(f)).blit(100, 100)
+                perframe = _2perframe
+
         ops.freeze()
-        f = 0
+        f = 1
         times = []
 
     changeOp(1)
@@ -72,6 +81,8 @@ def NewGraphicsDemo():
     while Ix.handleBasic():
         if Ix.Keys['1']:
             changeOp(1)
+        if Ix.Keys['2']:
+            changeOp(2)
         if Ix.Keys['0']:
             changeOp(0)
         w @= perframe(f)
@@ -91,7 +102,7 @@ def NewGraphicsDemo():
     pygame.init()
     WIN = pygame.display.set_mode()
     c = pygame.time.Clock()
-    f = 0
+    f = 1
     cur = 1
     init = True
     times = []
@@ -107,12 +118,14 @@ def NewGraphicsDemo():
         elif ks[pygame.K_0]:
             new = 0
         if new is not None and new != cur or init:
-            init = False
             if new is not None:
                 cur = new
                 f = 0
                 times = []
             PRINT_run("pygame", 91, cur)
+            if init:
+                init = False
+                PRINT_fps(0)
 
         WIN.fill((255, 255, 255))
         match cur:

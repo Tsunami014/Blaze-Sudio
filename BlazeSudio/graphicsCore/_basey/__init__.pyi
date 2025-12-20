@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import ndarray
 
 __path__: list
 
@@ -15,7 +16,10 @@ class TransBase:
     def _warpPs(self, mat: np.ndarray, points: np.ndarray):
         ...
 
-def apply(mat: np.ndarray, arr: np.ndarray, smooth: bool):
+def apply(mat: ndarray, arr: ndarray, smooth: bool):
+    ...
+
+def blit(M: ndarray, src: ndarray, dst: ndarray):
     ...
 
 

@@ -75,29 +75,8 @@ class Line(Polygon):
         Keyword args:
             round: Whether the line ends are round or not
         """
-    @overload
-    def __init__(self,
-            x1: Number, y1: Number, x2: Number, y2: Number,
-            thickness: Number, col: np.ndarray, /,*, round: bool = True):
-        """
-        Draw a line! (This is not preferred for readability - instead, use (x1, y1), (x2, y2))
-
-        Args:
-            x1: The x pos of the first point
-            y1: The y pos of the first point
-            x2: The x pos of the second point
-            y2: The y pos of the second point
-            thickness: The thickness of the line. Must be > 0.
-            col: The colour of the line
-
-        Keyword args:
-            round: Whether the line ends are round or not
-        """
     def __init__(self, *args, round=True):
         match len(args):
-            case 6:
-                x1, y1, x2, y2, thickness, col = args
-                ps = [(x1, y1), (x2, y2)]
             case 4:
                 p1, p2, thickness, col = args
                 ps = (p1, p2)
@@ -105,7 +84,7 @@ class Line(Polygon):
                 ps, thickness, col = args
             case _:
                 raise TypeError(
-                    f'Incorrect number of arguments! Expected 3 or 4 or 6, found {len(args)}!'
+                    f'Incorrect number of arguments! Expected 3 or 4, found {len(args)}!'
                 )
         super().__init__(ps, thickness, col, round=round)
         assert self.ps.shape == (2, 2), "Points must be in this format: [(point 1 x, point 1 y), (point 2 x, point 2 y)]"

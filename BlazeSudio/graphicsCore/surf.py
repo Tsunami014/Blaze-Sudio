@@ -1,11 +1,46 @@
-from . import base as b
+from . import base, _basey
 from typing import overload, Iterable
 import numpy as np
 import sdl2
 import ctypes
+import copy
 
-__all__ = ['Surface']
+__all__ = ['Surface', 'Blit', 'Window']
 
+class Blit(base.TransOp):
+    __slots__ = ['arr', 'pos', 'sze']
+
+    @overload
+    def __init__(self, arr: np.ndarray, pos: Iterable[int] ,/) -> base.Op:
+        """
+        Paste a surface at `pos`
+        """
+    @overload
+    def __init__(self, arr: np.ndarray, x: int, y: int ,/) -> base.Op:
+        """
+        Paste a surface at `(x, y)`
+        """
+    def __init__(self, *args):
+        match len(args):
+            case 2:
+                self.arr, self.pos = args
+            case 3:
+                self.arr, x, y = args
+                self.pos = (x, y)
+        self.flags = base.OpFlags.Transformable
+
+    def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
+        if self.pos == (0, 0):
+            _basey.blit(mat, self.arr, arr)
+            return
+        M = mat.copy()
+        M[0, 2] += self.pos[0]
+        M[1, 2] += self.pos[1]
+
+        _basey.blit(M, self.arr, arr)
+        return arr
+
+# TODO: Make it not copy the array every @
 class Surface:
     __slots__ = ['_arr', 'isSmooth']
 
@@ -35,6 +70,7 @@ class Surface:
         if len(args) == 1:
             if isinstance(args[0], np.ndarray):
                 self._arr = args[0]
+                self.isSmooth = True
                 return
             size = args[0]
         elif len(args) == 2:
@@ -57,29 +93,29 @@ class Surface:
     def size(self) -> Iterable[int]:
         return self._arr.shape[1], self._arr.shape[0]
 
-    def toNumpy(self, op: b.Op) -> np.ndarray:
+    def toNumpy(self, op: base.Op) -> np.ndarray:
         """
         Get the numpy array image of this surface!
         """
         return op.apply(self._arr.copy(), self.isSmooth)
 
     @overload
-    def blit(self, pos: Iterable[int], sze: Iterable[int] = None ,/) -> b.Op:
+    def blit(self, pos: Iterable[int], sze: Iterable[int] = None ,/) -> base.Op:
         """
         Get the operation for blitting this at `pos` and optionally cropped to `sze`.
         """
     @overload
-    def blit(self, x: int, y: int, wid: int = None, hei: int = None ,/) -> b.Op:
+    def blit(self, x: int, y: int, wid: int = None, hei: int = None ,/) -> base.Op:
         """
         Get the operation for blitting this at `(x, y)` and optionally cropped to `(wid, hei)`.
         """
-    def blit(self, *args):
-        pass # TODO: This
+    def blit(self, *args) -> Blit:
+        return Blit(self._arr, *args)
 
-    def __matmul__(self, other: b.Op):
+    def __matmul__(self, other: base.Op):
         return Surface(self.toNumpy(other))
 
-    def __setitem__(self, idx):
+    def __getitem__(self, idx):
         if not isinstance(idx, tuple): # If only one value, it must be an x index or slice
             idx = (slice(None), idx)
 
@@ -88,9 +124,10 @@ class Surface:
 
         return self._arr[idx[1], idx[0]]
 
-    def copy(self):
-        pass # TODO: This
-# NOTE: When doing blit or copy, ensure the respective func is created on the Window
+    def copy(self) -> 'Surface':
+        new = Surface(self._arr.copy())
+        new.isSmooth = self.isSmooth
+        return new
 
 
 _PIXFMT = sdl2.SDL_PIXELFORMAT_ABGR8888 # NOTE: This may display funny on big-endian systems (hopefully none that run this)
@@ -209,7 +246,7 @@ class Window(Surface):
             self._cachedarr = arr
         return self._cachedarr
 
-    def __matmul__(self, other: b.Op):
+    def __matmul__(self, other: base.Op):
         self._op = other
         self._cachedarr = None
         return self
@@ -249,4 +286,19 @@ class Window(Surface):
         #icon = sdlimage.IMG_Load(b"icon.png")
         #sdl2.SDL_SetWindowIcon(window, icon)
         #sdl2.SDL_FreeSurface(icon)
+
+    def toSurf(self) -> Surface:
+        return Surface(self._arr)
+
+    def getOp(self) -> base.Op | None:
+        return self._op
+
+    def copy(self) -> 'Window':
+        new = Window(self._sze)
+        new.isSmooth = self.isSmooth
+        if self._op is not None:
+            new._op = copy.copy(self._op)
+        if self._cachedarr is not None:
+            new._cachedarr = self._cachedarr.copy()
+        return new
 

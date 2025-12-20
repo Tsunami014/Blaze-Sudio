@@ -108,9 +108,9 @@ cdef inline long _clip(long v, long lo, long hi):
     return v
 
 cdef _fill(
-    cnp.ndarray[cnp.uint8_t, ndim=3] arr,
-    long fromy, long toy, long fromx, long tox,
-    long rcol, long gcol, long bcol, long acol):
+        cnp.ndarray[cnp.uint8_t, ndim=3] arr,
+        long fromy, long toy, long fromx, long tox,
+        long rcol, long gcol, long bcol, long acol):
     cdef long y, x
     for y in range(fromy, toy):
         for x in range(fromx, tox):

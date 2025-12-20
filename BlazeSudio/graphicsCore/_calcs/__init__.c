@@ -20456,8 +20456,8 @@ static CYTHON_INLINE long __pyx_f_10BlazeSudio_12graphicsCore_6_calcs__clip(long
  *     return v
  * 
  * cdef _fill(             # <<<<<<<<<<<<<<
- *     cnp.ndarray[cnp.uint8_t, ndim=3] arr,
- *     long fromy, long toy, long fromx, long tox,
+ *         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
+ *         long fromy, long toy, long fromx, long tox,
 */
 
 static PyObject *__pyx_f_10BlazeSudio_12graphicsCore_6_calcs__fill(PyArrayObject *__pyx_v_arr, long __pyx_v_fromy, long __pyx_v_toy, long __pyx_v_fromx, long __pyx_v_tox, long __pyx_v_rcol, long __pyx_v_gcol, long __pyx_v_bcol, long __pyx_v_acol) {
@@ -20491,7 +20491,7 @@ static PyObject *__pyx_f_10BlazeSudio_12graphicsCore_6_calcs__fill(PyArrayObject
   __pyx_pybuffernd_arr.diminfo[0].strides = __pyx_pybuffernd_arr.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_arr.diminfo[0].shape = __pyx_pybuffernd_arr.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_arr.diminfo[1].strides = __pyx_pybuffernd_arr.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_arr.diminfo[1].shape = __pyx_pybuffernd_arr.rcbuffer->pybuffer.shape[1]; __pyx_pybuffernd_arr.diminfo[2].strides = __pyx_pybuffernd_arr.rcbuffer->pybuffer.strides[2]; __pyx_pybuffernd_arr.diminfo[2].shape = __pyx_pybuffernd_arr.rcbuffer->pybuffer.shape[2];
 
   /* "BlazeSudio/graphicsCore/_calcs/__init__.pyx":115
- *     long rcol, long gcol, long bcol, long acol):
+ *         long rcol, long gcol, long bcol, long acol):
  *     cdef long y, x
  *     for y in range(fromy, toy):             # <<<<<<<<<<<<<<
  *         for x in range(fromx, tox):
@@ -20568,8 +20568,8 @@ static PyObject *__pyx_f_10BlazeSudio_12graphicsCore_6_calcs__fill(PyArrayObject
  *     return v
  * 
  * cdef _fill(             # <<<<<<<<<<<<<<
- *     cnp.ndarray[cnp.uint8_t, ndim=3] arr,
- *     long fromy, long toy, long fromx, long tox,
+ *         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
+ *         long fromy, long toy, long fromx, long tox,
 */
 
   /* function exit code */
