@@ -1,8 +1,10 @@
+# cython: boundscheck=False, wraparound=False, cdivision=True
 import numpy as np
 cimport numpy as cnp
-__cimport_types__ = [cnp.ndarray]
+from libc.math cimport floor
+__cimport_types__ = [cnp.ndarray, floor]
 
-cdef inline cnp.ndarray[cnp.float64_t, ndim=2] invert_matrix(mat):
+cdef cnp.ndarray[cnp.float64_t, ndim=2] invert_matrix(mat):
     if mat[2,0] != 0 or mat[2,1] != 0:
         return np.linalg.inv(mat)
 
@@ -37,58 +39,56 @@ def apply(
     cdef long x0, y0
 
     cdef double top, bottom, val
-    cdef cnp.ndarray[cnp.uint8_t, ndim=3] out = np.zeros((h, w, ch), dtype=np.uint8)
     cdef unsigned char[:, :, ::1] in_arr = arr
+    cdef cnp.ndarray[cnp.uint8_t, ndim=3] out = np.zeros((h, w, ch), dtype=np.uint8)
     cdef unsigned char[:, :, ::1] out_arr = out
 
     if smooth:
         for i in range(h):
+            x = T[0,1] * i + T[0,2]
+            y = T[1,1] * i + T[1,2]
+            z = T[2,1] * i + T[2,2]
             for j in range(w):
-                # column-vector homography: [x y 1]^T
-                x = T[0,0] * j + T[0,1] * i + T[0,2]
-                y = T[1,0] * j + T[1,1] * i + T[1,2]
-                z = T[2,0] * j + T[2,1] * i + T[2,2]
+                if z != 0:
+                    sx = x / z
+                    sy = y / z
 
-                if z == 0:
-                    continue
+                    x0 = <long>floor(sx)
+                    y0 = <long>floor(sy)
 
-                sx = x / z
-                sy = y / z
+                    if not (x0 < 0 or x0 + 1 >= w or y0 < 0 or y0 + 1 >= h):
+                        wx = sx - x0
+                        wy = sy - y0
 
-                x0 = <long>np.floor(sx)
-                y0 = <long>np.floor(sy)
-
-                if x0 < 0 or x0 + 1 >= w or y0 < 0 or y0 + 1 >= h:
-                    continue
-
-                wx = sx - x0
-                wy = sy - y0
-
-                for c in range(ch):
-                    top = (1 - wx) * in_arr[y0, x0, c] + wx * in_arr[y0, x0 + 1, c]
-                    bottom = (1 - wx) * in_arr[y0 + 1, x0, c] + wx * in_arr[y0 + 1, x0 + 1, c]
-                    out_arr[i, j, c] = <unsigned char>((1 - wy) * top + wy * bottom)
-        return np.asarray(out_arr)
+                        for c in range(ch):
+                            top = (1 - wx) * in_arr[y0, x0, c] + wx * in_arr[y0, x0 + 1, c]
+                            bottom = (1 - wx) * in_arr[y0 + 1, x0, c] + wx * in_arr[y0 + 1, x0 + 1, c]
+                            out_arr[i, j, c] = <unsigned char>((1 - wy) * top + wy * bottom)
+                x += T[0,0]
+                y += T[1,0]
+                z += T[2,0]
+        return out
     else:
         for i in range(h):
+            x = T[0,1] * i + T[0,2]
+            y = T[1,1] * i + T[1,2]
+            z = T[2,1] * i + T[2,2]
             for j in range(w):
-                x = T[0,0] * j + T[0,1] * i + T[0,2]
-                y = T[1,0] * j + T[1,1] * i + T[1,2]
-                z = T[2,0] * j + T[2,1] * i + T[2,2]
+                if z != 0:
+                    sx = x / z
+                    sy = y / z
 
-                if z == 0:
-                    continue
+                    x0 = <long>floor(sx)
+                    y0 = <long>floor(sy)
 
-                sx = x / z
-                sy = y / z
+                    if 0 <= x0 < w and 0 <= y0 < h:
+                        for c in range(ch):
+                            out_arr[i, j, c] = in_arr[y0, x0, c]
+                x += T[0,0]
+                x += T[1,0]
+                x += T[2,0]
 
-                x0 = <long>np.floor(sx)
-                y0 = <long>np.floor(sy)
-
-                if 0 <= x0 < w and 0 <= y0 < h:
-                    for c in range(ch):
-                        out_arr[i, j, c] = in_arr[y0, x0, c]
-        return np.asarray(out_arr)
+        return out
 
 
 def blit(
@@ -122,7 +122,7 @@ def blit(
     if ymax > dh:
         ymax = dh
 
-    Minv = np.linalg.inv(M)
+    cdef cnp.ndarray[cnp.float64_t, ndim=2] Minv = invert_matrix(M)
     cdef long y, x, ix, iy
     cdef double sx, sy, a, inv
     cdef unsigned char sa, oa
