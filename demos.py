@@ -66,8 +66,8 @@ def NewGraphicsDemo():
                     return ops + Draw.Circle(f*10, 10, 50, 0, Col(250, 90, 255))
                 perframe = _1perframe
             case 2: # Transform
-                ops += Draw.Rect((98, 98), (54, 54), 0, Col.Grey)
-                s = Surface(50, 50) @ (Fill(Col.White) + Draw.Line((5, 5), (45, 45), 5, Col.Black))
+                ops += Draw.Rect((98, 98), (504, 504), 0, Col.Grey)
+                s = Surface(500, 500) @ (Fill(Col.White) + Draw.Line((5, 5), (495, 495), 10, Col.Black))
                 def _2perframe(f):
                     return ops + (s @ Op.Rotate(f)).blit(100, 100)
                 perframe = _2perframe

@@ -1,8 +1,8 @@
 # cython: boundscheck=False, wraparound=False, cdivision=True
 import numpy as np
 cimport numpy as cnp
-from libc.math cimport floor
-__cimport_types__ = [cnp.ndarray, floor]
+from cython.parallel cimport prange
+__cimport_types__ = [cnp.ndarray]
 
 cdef cnp.ndarray[cnp.float64_t, ndim=2] invert_matrix(mat):
     if mat[2,0] != 0 or mat[2,1] != 0:
@@ -28,22 +28,21 @@ def apply(
 
     cdef long h = arr.shape[0]
     cdef long w = arr.shape[1]
-    cdef long ch = arr.shape[2]
-    cdef long i, j, c
 
     cdef T_inv = invert_matrix(mat)
     cdef double[:, ::1] T = T_inv
+
+    cdef unsigned char[:, :, ::1] in_arr = arr
+    cdef cnp.ndarray[cnp.uint8_t, ndim=3] out = np.zeros((h, w, 4), dtype=np.uint8)
+    cdef unsigned char[:, :, ::1] out_arr = out
 
     cdef double x, y, z
     cdef double sx, sy, wx, wy
     cdef long x0, y0
 
-    cdef double top, bottom, val
-    cdef unsigned char[:, :, ::1] in_arr = arr
-    cdef cnp.ndarray[cnp.uint8_t, ndim=3] out = np.zeros((h, w, ch), dtype=np.uint8)
-    cdef unsigned char[:, :, ::1] out_arr = out
-
-    if smooth:
+    cdef unsigned char *row0
+    cdef long i, j, c
+    if not smooth:
         for i in range(h):
             x = T[0,1] * i + T[0,2]
             y = T[1,1] * i + T[1,2]
@@ -53,42 +52,48 @@ def apply(
                     sx = x / z
                     sy = y / z
 
-                    x0 = <long>floor(sx)
-                    y0 = <long>floor(sy)
+                    x0 = <long>sx
+                    y0 = <long>sy
 
-                    if not (x0 < 0 or x0 + 1 >= w or y0 < 0 or y0 + 1 >= h):
-                        wx = sx - x0
-                        wy = sy - y0
-
-                        for c in range(ch):
-                            top = (1 - wx) * in_arr[y0, x0, c] + wx * in_arr[y0, x0 + 1, c]
-                            bottom = (1 - wx) * in_arr[y0 + 1, x0, c] + wx * in_arr[y0 + 1, x0 + 1, c]
-                            out_arr[i, j, c] = <unsigned char>((1 - wy) * top + wy * bottom)
+                    row0 = &in_arr[y0, x0, 0]
+                    if 0 <= x0 < w and 0 <= y0 < h:
+                        out_arr[i, j, 0] = row0[0]
+                        out_arr[i, j, 1] = row0[1]
+                        out_arr[i, j, 2] = row0[2]
+                        out_arr[i, j, 3] = row0[3]
                 x += T[0,0]
                 y += T[1,0]
                 z += T[2,0]
         return out
-    else:
-        for i in range(h):
-            x = T[0,1] * i + T[0,2]
-            y = T[1,1] * i + T[1,2]
-            z = T[2,1] * i + T[2,2]
-            for j in range(w):
-                if z != 0:
-                    sx = x / z
-                    sy = y / z
 
-                    x0 = <long>floor(sx)
-                    y0 = <long>floor(sy)
+    cdef unsigned char *row1
+    cdef double top, bottom, val
+    for i in range(h):
+        x = T[0,1] * i + T[0,2]
+        y = T[1,1] * i + T[1,2]
+        z = T[2,1] * i + T[2,2]
+        for j in range(w):
+            if z != 0:
+                sx = x / z
+                sy = y / z
 
-                    if 0 <= x0 < w and 0 <= y0 < h:
-                        for c in range(ch):
-                            out_arr[i, j, c] = in_arr[y0, x0, c]
-                x += T[0,0]
-                x += T[1,0]
-                x += T[2,0]
+                x0 = <long>sx
+                y0 = <long>sy
 
-        return out
+                if not (x0 < 0 or x0 + 1 >= w or y0 < 0 or y0 + 1 >= h):
+                    wx = sx - x0
+                    wy = sy - y0
+
+                    row0 = &in_arr[y0, x0, 0]
+                    row1 = &in_arr[y0 + 1, x0, 0]
+                    for c in range(4):
+                        top = (1 - wx) * row0[c] + wx * row0[4 + c]
+                        bottom = (1 - wx) * row1[c] + wx * row1[4 + c]
+                        out_arr[i,j,c] = <unsigned char>((1 - wy) * top + wy * bottom)
+            x += T[0,0]
+            y += T[1,0]
+            z += T[2,0]
+    return out
 
 
 def blit(
@@ -122,7 +127,8 @@ def blit(
     if ymax > dh:
         ymax = dh
 
-    cdef cnp.ndarray[cnp.float64_t, ndim=2] Minv = invert_matrix(M)
+    cdef Minv_ = invert_matrix(M)
+    cdef double[:, ::1] Minv = Minv_
     cdef long y, x, ix, iy
     cdef double sx, sy, a, inv
     cdef unsigned char sa, oa
