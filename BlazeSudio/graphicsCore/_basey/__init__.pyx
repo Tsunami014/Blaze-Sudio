@@ -110,6 +110,76 @@ def apply(
     return out
 
 
+cdef inline void ezblit(
+        unsigned char[:, :, ::1] src_mv,
+        unsigned char[:, :, ::1] dst_mv,
+        long ow, long oh, long dw, long dh,
+        double scalex, double scaley, long transx, long transy
+        ) noexcept nogil:
+    cdef long x, y, dx, dy, oa
+    cdef unsigned char sa, inva
+    cdef unsigned char *srcrow
+    cdef unsigned char *dstrow
+    if scalex == 1 and scaley == 1:
+        for y in range(0, oh):#, nogil=True):
+            for x in range(0, ow):
+                dx = x + transx
+                dy = y + transy
+                if 0 <= dx < dw and 0 <= dy < dh:
+                    srcrow = &src_mv[y, x, 0]
+                    sa = srcrow[3]
+                    if sa != 0:
+                        inva = 255 - sa
+                        dstrow = &dst_mv[dy, dx, 0]
+
+                        dstrow[0] = <unsigned char>((srcrow[0]*sa + dstrow[0]*inva) >> 8)
+                        dstrow[1] = <unsigned char>((srcrow[1]*sa + dstrow[1]*inva) >> 8)
+                        dstrow[2] = <unsigned char>((srcrow[2]*sa + dstrow[2]*inva) >> 8)
+                        oa = (srcrow[3] + (dstrow[3] * inva)) >> 8
+                        if oa > 255:
+                            oa = 255
+                        dstrow[3] = <unsigned char>(oa)
+        return
+
+    cdef long ix, iy
+    for y in range(0, <long>(oh*scaley)):#, nogil=True):
+        iy = <long>(y / scaley)
+        for x in range(0, <long>(ow*scalex)):
+            ix = <long>(x / scalex)
+
+            dx = x + transx
+            dy = y + transy
+            if 0 <= ix < ow and 0 <= iy < oh and 0 <= dx < dw and 0 <= dy < dh:
+                srcrow = &src_mv[iy, ix, 0]
+                sa = srcrow[3]
+                if sa != 0:
+                    inva = 255 - sa
+                    dstrow = &dst_mv[dx, dy, 0]
+
+                    dstrow[0] = <unsigned char>((srcrow[0]*sa + dstrow[0]*inva) >> 8)
+                    dstrow[1] = <unsigned char>((srcrow[1]*sa + dstrow[1]*inva) >> 8)
+                    dstrow[2] = <unsigned char>((srcrow[2]*sa + dstrow[2]*inva) >> 8)
+                    oa = (srcrow[3] + (dstrow[3] * inva)) >> 8
+                    if oa > 255:
+                        oa = 255
+                    dstrow[3] = <unsigned char>(oa)
+
+cdef inline void update_bbox(
+        double x, double y,
+        long* xmin, long* xmax,
+        long* ymin, long* ymax) noexcept nogil:
+    cdef long lx = <long>x
+    cdef long ly = <long>y
+    if lx < xmin[0]:
+        xmin[0] = lx
+    elif lx > xmax[0]:
+        xmax[0] = lx
+
+    if ly < ymin[0]:
+        ymin[0] = ly
+    elif ly > ymax[0]:
+        ymax[0] = ly
+
 def blit(
         cnp.ndarray[cnp.float64_t, ndim=2] mat,
         cnp.ndarray[cnp.uint8_t, ndim=3] src,
@@ -118,52 +188,59 @@ def blit(
     cdef long ow = src.shape[1]
     cdef long dh = dst.shape[0]
     cdef long dw = dst.shape[1]
-    cdef cnp.ndarray[cnp.float32_t, ndim=2] corners = np.array([
-        [0,  0,  1],
-        [ow, 0,  1],
-        [ow, oh, 1],
-        [0,  oh, 1],
-    ], dtype=np.float32)
-    tc = (mat @ corners.T).T
-    xs = tc[:, 0]
-    ys = tc[:, 1]
 
-    cdef long xmin = <long>xs.min()
-    if xmin < 0:
-        xmin = 0
-    cdef long xmax = <long>xs.max() + 1
-    if xmax > dw:
-        xmax = dw
-    cdef long ymin = <long>ys.min()
-    if ymin < 0:
-        ymin = 0
-    cdef long ymax = <long>ys.max() + 1
-    if ymax > dh:
-        ymax = dh
-
-    cdef bint persp
-    cdef cnp.ndarray[cnp.float64_t, ndim=2] Minv_
-    if mat[2,0] != 0 or mat[2,1] != 0:
-        Minv_ = np.linalg.inv(mat)
-        persp = True
-    else:
-        Minv_ = invert_affine_matrix(mat)
-        persp = False
-    cdef double[:, ::1] Minv = Minv_
+    cdef double[:, ::1] mat_mv = mat
     cdef unsigned char[:, :, ::1] src_mv = src
     cdef unsigned char[:, :, ::1] dst_mv = dst
 
-    cdef long x, y, ix, iy
+    cdef bint persp = mat_mv[2,0] != 0 or mat_mv[2,1] != 0 or mat_mv[2,2] != 1
+    if (not persp) and mat_mv[0,1] == 0 and mat_mv[1,0] == 0:
+        ezblit(src_mv, dst_mv, ow, oh, dw, dh, mat_mv[0,0], mat_mv[1,1], <long>mat_mv[0,2], <long>mat_mv[1,2])
+        return
+
+    cdef long xmin, xmax, ymin, ymax
+    xmin = xmax = <long>mat_mv[0,2]
+    ymin= ymax = <long>mat_mv[1,2]
+    update_bbox(
+        mat_mv[0,0]*ow + mat_mv[0,2],
+        mat_mv[1,0]*ow + mat_mv[1,2],
+        &xmin, &xmax, &ymin, &ymax)
+    update_bbox(
+        mat_mv[0,0]*ow + mat_mv[0,1]*oh + mat_mv[0,2],
+        mat_mv[1,0]*ow + mat_mv[1,1]*oh + mat_mv[1,2],
+        &xmin, &xmax, &ymin, &ymax)
+    update_bbox(
+        mat_mv[0,1]*oh + mat_mv[0,2],
+        mat_mv[1,1]*oh + mat_mv[1,2],
+        &xmin, &xmax, &ymin, &ymax)
+
+    if xmin < 0:
+        xmin = 0
+    if xmax > dw:
+        xmax = dw
+    if ymin < 0:
+        ymin = 0
+    if ymax > dh:
+        ymax = dh
+
+    cdef cnp.ndarray[cnp.float64_t, ndim=2] Minv_
+    if persp:
+        Minv_ = np.linalg.inv(mat)
+    else:
+        Minv_ = invert_affine_matrix(mat)
+    cdef double[:, ::1] Minv = Minv_
+
+    cdef long x, y, ix, iy, oa
     cdef double z = 1
-    cdef double sx, sy, a, inv, oa
-    cdef unsigned char sa
+    cdef double sx, sy
+    cdef unsigned char sa, inva
     cdef unsigned char *srcrow
     cdef unsigned char *dstrow
-    for y in range(ymin, ymax):
+    for y in range(ymin, ymax):#, nogil=True):
         sx = Minv[0,0]*xmin + Minv[0, 1]*y + Minv[0, 2]
         sy = Minv[1,0]*xmin + Minv[1, 1]*y + Minv[1, 2]
         if persp: z = Minv[2,0]*xmin + Minv[2,1]*y + Minv[2,2]
-        for x in range(xmin, xmax):#, nogil=True):
+        for x in range(xmin, xmax):
             if z != 0:
                 if persp:
                     ix = <long>(sx / z)
@@ -172,19 +249,17 @@ def blit(
                     ix = <long>sx
                     iy = <long>sy
 
-                if not (ix < 0 or iy < 0 or ix >= ow or iy >= oh):
-                    sa = src[iy, ix, 3]
+                if 0 <= ix < ow and 0 <= iy < oh:
+                    srcrow = &src_mv[iy, ix, 0]
+                    sa = srcrow[3]
                     if sa != 0:
-                        a = sa / 255.0
-                        inv = 1.0 - a
-
-                        srcrow = &src_mv[iy, ix, 0]
+                        inva = 255 - sa
                         dstrow = &dst_mv[y, x, 0]
 
-                        dstrow[0] = <unsigned char>(srcrow[0]*a + dstrow[0]*inv)
-                        dstrow[1] = <unsigned char>(srcrow[1]*a + dstrow[1]*inv)
-                        dstrow[2] = <unsigned char>(srcrow[2]*a + dstrow[2]*inv)
-                        oa = sa + dstrow[3]*inv
+                        dstrow[0] = <unsigned char>((srcrow[0]*sa + dstrow[0]*inva) >> 8)
+                        dstrow[1] = <unsigned char>((srcrow[1]*sa + dstrow[1]*inva) >> 8)
+                        dstrow[2] = <unsigned char>((srcrow[2]*sa + dstrow[2]*inva) >> 8)
+                        oa = (sa + dstrow[3] * inva) >> 8
                         if oa > 255:
                             oa = 255
                         dstrow[3] = <unsigned char>(oa)
