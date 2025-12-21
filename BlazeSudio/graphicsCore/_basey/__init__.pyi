@@ -19,7 +19,7 @@ class TransBase:
 def apply(mat: ndarray, arr: ndarray, smooth: bool):
     ...
 
-def blit(M: ndarray, src: ndarray, dst: ndarray):
+def blit(mat: ndarray, src: ndarray, dst: ndarray):
     ...
 
 

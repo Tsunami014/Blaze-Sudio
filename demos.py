@@ -105,6 +105,7 @@ def NewGraphicsDemo():
     f = 1
     cur = 1
     init = True
+    cache = None
     times = []
     r = True
     while r:
@@ -115,9 +116,12 @@ def NewGraphicsDemo():
         new = None
         if ks[pygame.K_1]:
             new = 1
+        elif ks[pygame.K_2]:
+            new = 2
         elif ks[pygame.K_0]:
             new = 0
         if new is not None and new != cur or init:
+            cache = None
             if new is not None:
                 cur = new
                 f = 0
@@ -150,6 +154,17 @@ def NewGraphicsDemo():
                 pygame.draw.line(WIN, 0, (500, 570), (500, 570), 5) # Unspecified; in reality, a circle (which is great!)
 
                 pygame.draw.circle(WIN, (250, 90, 255), (f*10, 10), 50, 0)
+            case 2: # Transform
+                if cache is None:
+                    cache = pygame.Surface((500, 500))
+                    cache.fill((255, 255, 255))
+                    pygame.draw.line(cache, 0, (5, 5), (495, 495), 10)
+                pygame.draw.rect(WIN, Col.Grey, (98, 98, 504, 504), 0)
+                rotImg = pygame.transform.rotate(cache, f)
+                rotRec = rotImg.get_rect(center = cache.get_rect(topleft = (100, 100)).center)
+                WIN.blit(
+                    rotImg, rotRec
+                )
 
         pygame.display.flip()
         c.tick()
