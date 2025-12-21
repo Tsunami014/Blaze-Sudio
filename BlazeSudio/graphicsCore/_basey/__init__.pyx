@@ -129,34 +129,39 @@ def blit(
 
     cdef Minv_ = invert_matrix(M)
     cdef double[:, ::1] Minv = Minv_
-    cdef long y, x, ix, iy
-    cdef double sx, sy, a, inv
-    cdef unsigned char sa, oa
-    for y in range(ymin, ymax):
-        for x in range(xmin, xmax):
-            sx = Minv[0, 0]*x + Minv[0, 1]*y + Minv[0, 2]
-            sy = Minv[1, 0]*x + Minv[1, 1]*y + Minv[1, 2]
+    cdef unsigned char[:, :, ::1] src_mv = src
+    cdef unsigned char[:, :, ::1] dst_mv = dst
 
+    cdef long y, x, ix, iy
+    cdef double sx, sy, a, inv, oa
+    cdef unsigned char sa
+    cdef unsigned char *srcrow
+    cdef unsigned char *dstrow
+    for y in range(ymin, ymax):
+        sx = Minv[0,0]*xmin + Minv[0, 1]*y + Minv[0, 2]
+        sy = Minv[1,0]*xmin + Minv[1, 1]*y + Minv[1, 2]
+        for x in range(xmin, xmax):
             ix = <long>sx
             iy = <long>sy
 
-            if ix < 0 or iy < 0 or ix >= ow or iy >= oh:
-                continue
+            if not (ix < 0 or iy < 0 or ix >= ow or iy >= oh):
+                sa = src[iy, ix, 3]
+                if sa != 0:
+                    a = sa / 255.0
+                    inv = 1.0 - a
 
-            sa = src[iy, ix, 3]
-            if sa == 0:
-                continue
+                    srcrow = &src_mv[iy, ix, 0]
+                    dstrow = &dst_mv[y, x, 0]
 
-            a = sa / 255.0
-            inv = 1.0 - a
-
-            dst[y, x, 0] = <unsigned char>(src[iy, ix, 0]*a + dst[y, x, 0]*inv)
-            dst[y, x, 1] = <unsigned char>(src[iy, ix, 1]*a + dst[y, x, 1]*inv)
-            dst[y, x, 2] = <unsigned char>(src[iy, ix, 2]*a + dst[y, x, 2]*inv)
-            oa = <unsigned char>(sa + dst[y, x, 3]*inv)
-            if oa > 255:
-                oa = 255
-            dst[y, x, 3] = oa
+                    dstrow[0] = <unsigned char>(srcrow[0]*a + dstrow[0]*inv)
+                    dstrow[1] = <unsigned char>(srcrow[1]*a + dstrow[1]*inv)
+                    dstrow[2] = <unsigned char>(srcrow[2]*a + dstrow[2]*inv)
+                    oa = sa + dstrow[3]*inv
+                    if oa > 255:
+                        oa = 255
+                    dstrow[3] = <unsigned char>(oa)
+            sx += Minv[0, 0]
+            sy += Minv[1, 0]
 
 
 class TransBase:
