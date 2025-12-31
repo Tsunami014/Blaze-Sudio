@@ -1,8 +1,8 @@
 from . import base, _basey
 from typing import overload, Iterable
 import numpy as np
-import sdl2
 import ctypes
+import sdl2
 import copy
 
 __all__ = ['Surface', 'Blit', 'Window']
@@ -132,8 +132,6 @@ class Surface:
 
 _PIXFMT = sdl2.SDL_PIXELFORMAT_ABGR8888 # NOTE: This may display funny on big-endian systems (hopefully none that run this)
 class Window(Surface):
-    __slots__ = ['_cachedarr', '_op', '_sze', '_mainWin', '_renderer', '_texture']
-
     @overload
     def __init__(self):
         """
