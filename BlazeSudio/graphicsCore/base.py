@@ -108,11 +108,17 @@ class OpList(Op):
         self.ops = ops
         self._fixed = False
         self.flags = OpFlags.List
+        if any(i.flags & OpFlags.Reset for i in ops):
+            self.flags |= OpFlags.Reset
 
     def fix(self):
         if self._fixed:
             return
         ops = self.ops
+        for idx, o in enumerate(ops[::-1]):
+            if o.flags & OpFlags.Reset:
+                ops = ops[-1-idx:]
+                break
         self.ops = []
         it = iter(ops)
         o = next(it, None)

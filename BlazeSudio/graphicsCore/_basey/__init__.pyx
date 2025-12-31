@@ -62,8 +62,8 @@ def apply(
                         x0 = <long>x
                         y0 = <long>y
 
-                    row0 = &in_arr[y0, x0, 0]
                     if 0 <= x0 < w and 0 <= y0 < h:
+                        row0 = &in_arr[y0, x0, 0]
                         out_arr[i, j, 0] = row0[0]
                         out_arr[i, j, 1] = row0[1]
                         out_arr[i, j, 2] = row0[2]

@@ -70,7 +70,7 @@ class Surface:
         if len(args) == 1:
             if isinstance(args[0], np.ndarray):
                 self._arr = args[0]
-                self.isSmooth = True
+                self.isSmooth = False
                 return
             size = args[0]
         elif len(args) == 2:
@@ -80,7 +80,7 @@ class Surface:
                 f'Expected 1-2 args, found {len(args)}!'
             )
         self._arr = np.ndarray((size[1], size[0], 4), np.uint8)
-        self.isSmooth = True
+        self.isSmooth = False
 
     def rough(self) -> 'Surface':
         self.isSmooth = False
@@ -165,7 +165,7 @@ class Window(Surface):
 
         self.resize(*args)
         self._op = None
-        self.isSmooth = True
+        self.isSmooth = False
         self._cachedarr = None
 
     def Quit(self):
