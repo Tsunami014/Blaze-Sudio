@@ -24,58 +24,64 @@ def NewGraphicsDemo():
     def PRINT_fps(fps):
         print(f"Average FPS: \033[94m{fps}\033[m", end="\r")
 
-    from BlazeSudio.graphicsCore import Window, Surface, AvgClock, Col, Draw, Op, Ix
-    from BlazeSudio.graphicsCore.Op import Fill
-    w = Window()
-    c = AvgClock()
+    from BlazeSudio.graphicsCore import Core, Ix, AvgClock, Col, Op
 
+    c = AvgClock()
     cur = None
-    perframe = None
-    f = 1
+    f = 0
     times = []
+    perframe = None
+
     def changeOp(new):
-        nonlocal cur
+        nonlocal cur, f, times, perframe
         if new == cur:
             return
         PRINT_run("new graphics engine", 92, new)
         PRINT_fps(0)
-        nonlocal perframe, f, times
         cur = new
-        ops = Fill(Col.White)
-        match new:
-            case 0: # Blank
-                perframe = lambda _: ops
-            case 1: # Shapes
-                # It can handle decimals!
-                ops += Draw.Line((10.5, 10.5), (200.25, 100.75), 15, Col.Black) + \
-                       Draw.Polygon([(100, 100.5), (200, 300), (0, 300)], 30, Col(80, 100, 250)) + \
-                       Draw.Rect((30.5, 50), (100.25, 80.3333333), 10, Col.Grey, roundness=30) + \
-                       Draw.Rect(100, 150, 30, 50, 10, Col.Black) + \
-                       Draw.Circle(300, 300, 10, 5, Col(255, 100, 100)) + \
-                       Draw.Elipse((100, 100), 50, 30, 10, Col(80, 255, 100))
-                # Testing entirely fill
-                ops += Draw.Elipse(700, 100, 30, 70, 0, Col.Black) + \
-                       Draw.Circle((500, 300.5), 30.5, 0, Col.Black) + \
-                       Draw.Rect(500, 350, 50, 30, 0, Col.Black) + \
-                       Draw.Rect((500, 400), (30, 50), 0, Col.Grey, roundness=10)
-                # Testing stupid cases. These *should* all appear one after the other in a column
-                ops += Draw.Rect(500, 500, 0, 0, 5, Col.Black) + \
-                       Draw.Rect(500, 510, 50, 50, 1, Col.Black, roundness=100) + \
-                       Draw.Line((500, 570), (500, 570), 5, Col.Black)
-                def _1perframe(f):
-                    return ops + Draw.Circle(f*10, 10, 50, 0, Col(250, 90, 255))
-                perframe = _1perframe
-            case 2: # Transform
-                ops += Draw.Rect((98, 98), (504, 504), 0, Col.Grey)
-                s = Surface(500, 500) @ (Fill(Col.White) + Draw.Line((5, 5), (495, 495), 10, Col.Black))
-                def _2perframe(f):
-                    return ops + (s @ Op.Rotate(f)).blit(100, 100)
-                perframe = _2perframe
-
-        ops.freeze()
         f = 1
         times = []
 
+        ops = Op.Fill(Col.White)
+        match new:
+            case 0: # Blank
+                perframe = lambda _: Core(ops)
+            case 1: # Shapes
+                # It can handle decimals!
+                ops += Op.Draw.Line((10.5, 10.5), (200.25, 100.75), 15, Col.Black) + \
+                       Op.Draw.Polygon([(100, 100.5), (200, 300), (0, 300)], 30, Col(80, 100, 250)) + \
+                       Op.Draw.Rect((30.5, 50), (100.25, 80.3333333), 10, Col.Grey, roundness=30) + \
+                       Op.Draw.Rect(100, 150, 30, 50, 10, Col.Black) + \
+                       Op.Draw.Circle(300, 300, 10, 5, Col(255, 100, 100)) + \
+                       Op.Draw.Elipse((100, 100), 50, 30, 10, Col(80, 255, 100))
+                # Testing entirely fill
+                ops += Op.Draw.Elipse(700, 100, 30, 70, 0, Col.Black) + \
+                       Op.Draw.Circle((500, 300.5), 30.5, 0, Col.Black) + \
+                       Op.Draw.Rect(500, 350, 50, 30, 0, Col.Black) + \
+                       Op.Draw.Rect((500, 400), (30, 50), 0, Col.Grey, roundness=10)
+                # Testing stupid cases. These *should* all appear one after the other in a column
+                ops += Op.Draw.Rect(500, 500, 0, 0, 5, Col.Black) + \
+                       Op.Draw.Rect(500, 510, 50, 50, 1, Col.Black, roundness=100) + \
+                       Op.Draw.Line((500, 570), (500, 570), 5, Col.Black)
+                def _1perframe(f):
+                    Core(ops + Op.Draw.Circle(f*10, 10, 50, 0, Col(250, 90, 255)))
+                perframe = _1perframe
+            case 2: # Transform
+                rect = Op.Draw.Rect((0, 0), (500, 500), 0, Col.Grey)
+                line = Op.Draw.Line((5, 5), (495, 495), 10, Col.Black, **Op.Anchors.Middle)
+                lnoff = -line.getNormalisedPos(**Op.Anchors.TopLeft)
+                def _2perframe(f):
+                    Core(ops +
+                            (rect +
+                                (line @ (Op.Trans.Rotate(f)+lnoff))
+                             ) @ (100, 100)
+                    )
+                perframe = _2perframe
+
+        ops.freeze()
+
+
+    Core.resize()
     changeOp(1)
 
     while Ix.handleBasic():
@@ -85,15 +91,16 @@ def NewGraphicsDemo():
             changeOp(2)
         if Ix.Keys['0']:
             changeOp(0)
-        w @= perframe(f)
-        w.rend()
+        perframe(f)
+        Core.rend()
         c.tick()
-        w.set_title(f'FPS: {c.get_fps()}')
+        Core.set_title(f'FPS: {c.get_fps()}')
         if f % 50 == 0:
             times.append(c.get_fps())
             PRINT_fps(sum(times)/len(times))
         f = (f + 1) % 200
-    w.Quit()
+
+    Core.Quit()
 
     #quit() # Uncomment to ignore pygame
     print("\n")

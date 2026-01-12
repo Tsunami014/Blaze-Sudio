@@ -1,15 +1,31 @@
 from typing import overload, Iterable, Tuple
-from .base import OpFlags, TransOp
+from .base import NormalisedOp
 from . import _calcs
 import numpy as np
 import math
 
-Number = int|float
-Point = Tuple[Number, Number]
+Point = Tuple[float, float]
 
-class Polygon(TransOp):
+class Polygon(NormalisedOp):
     __slots__ = ['ps', 'thickness', 'col', 'round']
-    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /,*, round: bool = True):
+
+    def rect(self):
+        topLeft = [
+            min(i[0] for i in self.ps),
+            min(i[1] for i in self.ps),
+        ]
+        botRight = [
+            max(i[0] for i in self.ps),
+            max(i[1] for i in self.ps),
+        ]
+        return *topLeft, botRight[0]-topLeft[0], botRight[1]-topLeft[1]
+
+    def _translate(self, x, y):
+        self.ps += [x, y]
+
+    def __init__(self,
+            ps: Iterable[Point], thickness: float, col: np.ndarray,
+                 *, round: bool = True, normalise_x = None, normalise_y = None):
         """
         Draw a closed polygon!
 
@@ -25,20 +41,20 @@ class Polygon(TransOp):
             raise ValueError(
                 'Line has to have a thickness of greater than 0!'
             )
-        self.ps = np.array(ps)
+        self.ps = np.array(ps, float)
         assert len(self.ps.shape) == 2, "Points must be a 2 dimensional array; [(point 1 x, point 1 y), (point 2 x, point 2 y), etc.]"
         assert self.ps.shape[1] == 2, "Points must have only 2 dimensions; an x and a y; [(point 1 x, point 1 y), etc.]"
         assert thickness > 0, "Thickness must be >0"
         self.thickness = thickness
         self.col = np.array(col, np.uint8)
         assert self.col.shape == (4,), "Colour is of incorrect shape!"
-        self.flags = OpFlags.Transformable
         self.round = round
+        super().__init__(normalise_x=normalise_x, normalise_y=normalise_y)
     
-    def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
+    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth) -> np.ndarray:
         ps = self.ps
         if len(ps) < 2:
-            return
+            return arr
         A = mat[:2, :2]
         sx2 = A[0,0]*A[0,0] + A[1,0]*A[1,0]
         sy2 = A[0,1]*A[0,1] + A[1,1]*A[1,1]
@@ -49,7 +65,9 @@ class Polygon(TransOp):
 
 class Line(Polygon):
     @overload
-    def __init__(self, p1: Point, p2: Point, thickness: Number, col: np.ndarray, /,*, round: bool = True):
+    def __init__(self,
+            p1: Point, p2: Point, thickness: float, col: np.ndarray,
+            *, round: bool = True, normalise_x = None, normalise_y = None):
         """
         Draw a line!
 
@@ -63,7 +81,9 @@ class Line(Polygon):
             round: Whether the line ends are round or not
         """
     @overload
-    def __init__(self, ps: Iterable[Point], thickness: Number, col: np.ndarray, /,*, round: bool = True):
+    def __init__(self,
+            ps: Iterable[Point], thickness: float, col: np.ndarray,
+            *, round: bool = True, normalise_x = None, normalise_y = None):
         """
         Draw a line!
 
@@ -75,7 +95,8 @@ class Line(Polygon):
         Keyword args:
             round: Whether the line ends are round or not
         """
-    def __init__(self, *args, round=True):
+    def __init__(self, *args, **kwargs):
+
         match len(args):
             case 4:
                 p1, p2, thickness, col = args
@@ -86,15 +107,23 @@ class Line(Polygon):
                 raise TypeError(
                     f'Incorrect number of arguments! Expected 3 or 4, found {len(args)}!'
                 )
-        super().__init__(ps, thickness, col, round=round)
+        super().__init__(ps, thickness, col, **kwargs)
         assert self.ps.shape == (2, 2), "Points must be in this format: [(point 1 x, point 1 y), (point 2 x, point 2 y)]"
 
 
 class Rect(Polygon):
     __slots__ = ['pos', 'sze', 'roundness', 'col']
 
+    def rect(self):
+        return (*self.pos, *self.sze)
+
+    def _translate(self, x, y):
+        self.pos = [self.pos[0]+x, self.pos[1]+y]
+
     @overload
-    def __init__(self, pos: Point, sze: Point, thickness: Number, col: np.ndarray, /,*, roundness: Number = 0, round: bool = True):
+    def __init__(self,
+            pos: Point, sze: Point, thickness: float, col: np.ndarray,
+            *, roundness: float = 0, round: bool = True, normalise_x = None, normalise_y = None):
         """
         Draws a rectangle!
 
@@ -109,7 +138,9 @@ class Rect(Polygon):
             round: Whether to include circles at every joint of the line or not
         """
     @overload
-    def __init__(self, x: Number, y: Number, width: Number, height: Number, thickness: Number, col: np.ndarray, /,*, roundness: Number = 0, round: bool = True):
+    def __init__(self,
+            x: float, y: float, width: float, height: float, thickness: float, col: np.ndarray,
+            *, roundness: float = 0, round: bool = True, normalise_x = None, normalise_y = None):
         """
         Draws a rectangle!
 
@@ -125,7 +156,7 @@ class Rect(Polygon):
             roundness: The roundness of the rect. 0 = ends of lines rounded, >0 = ends rounded by that many pixels, <0 = do not round the lines at all (doesn't apply when using projection/rotation)
             round: Whether to include circles at every joint of the line or not (only applies when using projection/rotation)
         """
-    def __init__(self, *args, roundness = 0, round=True):
+    def __init__(self, *args, roundness = 0, round=True, **kwargs):
         match len(args):
             case 4:
                 self.pos, self.sze, self.thickness, col = args
@@ -141,8 +172,8 @@ class Rect(Polygon):
         self.roundness = roundness
         self.col = np.array(col, np.uint8)
         assert self.col.shape == (4,), "Colour is of incorrect shape!"
-        self.flags = OpFlags.Transformable
         self.round = round
+        NormalisedOp.__init__(self, **kwargs)
 
     @property
     def ps(self):
@@ -153,7 +184,7 @@ class Rect(Polygon):
             [self.pos[0]+self.sze[0], self.pos[1]]
         ]
 
-    def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
+    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth) -> np.ndarray:
         # Checks if the rectangle after matrix op is still a rectangle - i.e. no perspective warp or rotation
         if self._regMat(mat):
             if mat[0, 1] == 0 and mat[1, 0] == 0:
@@ -165,7 +196,7 @@ class Rect(Polygon):
             t = self.thickness * 0.5 * (sx + sy)
             r = self.roundness * 0.5 * (sx + sy)
 
-            p, s = self._regWarp(mat, self.pos), self._regWarp(mat, self.sze)
+            p, s = self._regWarp(mat, self.pos), self._regWarp(mat, self.sze, False)
             _calcs.drawRect(arr, p, s, t, r, self.col)
         else:
             # If not, draw the lines
@@ -174,11 +205,19 @@ class Rect(Polygon):
 
 
 # TODO: Add an input for rotation
-class Elipse(TransOp):
+class Elipse(NormalisedOp):
     __slots__ = ['pos', 'xradius', 'yradius', 'thickness', 'col']
 
+    def rect(self):
+        return self.pos[0]-self.xradius, self.pos[1]-self.yradius, self.xradius*2, self.yradius*2
+
+    def _translate(self, x, y):
+        self.pos = [self.pos[0]+x, self.pos[1]+y]
+
     @overload
-    def __init__(self, pos: Point, xradius: Number, yradius: Number, thickness: Number, col: np.ndarray):
+    def __init__(self,
+            pos: Point, xradius: float, yradius: float, thickness: float, col: np.ndarray,
+            *, normalise_x = None, normalise_y = None):
         """
         Draws an elipse!
 
@@ -190,7 +229,9 @@ class Elipse(TransOp):
             col: The colour to fill the circle with.
         """
     @overload
-    def __init__(self, x: Number, y: Number, xradius: Number, yradius: Number, thickness: Number, col: np.ndarray):
+    def __init__(self,
+            x: float, y: float, xradius: float, yradius: float, thickness: float, col: np.ndarray,
+            *, normalise_x = None, normalise_y = None):
         """
         Draws an elipse! (recommended to use the other definition with `((x, y), ...)` instead of `(x, y, ...)` for readability)
 
@@ -202,7 +243,7 @@ class Elipse(TransOp):
             thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
             col: The colour to fill the circle with.
         """
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         match len(args):
             case 6:
                 x, y, self.xradius, self.yradius, self.thickness, col = args
@@ -216,9 +257,9 @@ class Elipse(TransOp):
         assert self.thickness >= 0, "Thickness must be >=0"
         self.col = np.array(col, np.uint8)
         assert self.col.shape == (4,), "Colour is of incorrect shape!"
-        self.flags = OpFlags.Transformable
+        super().__init__(**kwargs)
     
-    def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray:
+    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth) -> np.ndarray:
         if mat[2,2] != 1:
             raise NotImplementedError(
                 'Cannot have a non-normalized homogeneous coordinate with circles yet!'
@@ -248,7 +289,9 @@ class Elipse(TransOp):
 
 class Circle(Elipse):
     @overload
-    def __init__(self, pos: Point, radius: Number, thickness: Number, col: np.ndarray):
+    def __init__(self,
+            pos: Point, radius: float, thickness: float, col: np.ndarray,
+            *, normalise_x: float = 0, normalise_y: float = 0):
         """
         Draws a circle!
 
@@ -259,7 +302,9 @@ class Circle(Elipse):
             col: The colour to fill the circle with.
         """
     @overload
-    def __init__(self, x: Number, y: Number, radius: Number, thickness: Number, col: np.ndarray):
+    def __init__(self,
+            x: float, y: float, radius: float, thickness: float, col: np.ndarray,
+            *, normalise_x: float = 0, normalise_y: float = 0):
         """
         Draws a circle! (recommended to use the other definition with `((x, y), ...)` instead of `(x, y, ...)` for readability)
 
@@ -270,7 +315,7 @@ class Circle(Elipse):
             thickness: The thickness of the circle. If == 0, will fill the circle entirely. Must be >= 0.
             col: The colour to fill the circle with.
         """
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         match len(args):
             case 5:
                 x, y, radius, self.thickness, col = args
@@ -285,5 +330,5 @@ class Circle(Elipse):
         self.xradius, self.yradius = radius, radius
         self.col = np.array(col, np.uint8)
         assert self.col.shape == (4,), "Colour is of incorrect shape!"
-        self.flags = OpFlags.Transformable
+        NormalisedOp.__init__(self, **kwargs)
 

@@ -5,11 +5,15 @@ __path__: list
 
 class TransBase:
 
+    def _affMat(self, mat: np.ndarray):
+        """
+        Returns True if a matrix is 'affine' - no perspective warps        """
+
     def _regMat(self, mat: np.ndarray):
         """
         Returns True if a matrix is 'regular' - no rotations or perspective warps        """
 
-    def _regWarp(self, mat: np.ndarray, p):
+    def _regWarp(self, mat: np.ndarray, p, offset: bool=True):
         """
         Warps a point assuming no perspective warp (bottom row is [0, 0, 1])        """
 

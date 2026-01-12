@@ -20,6 +20,15 @@ __all__ = [
     'update',
 ]
 
+def __getattr__(name):
+    import importlib
+    import sys
+    if name in __all__:
+        mod = importlib.import_module(f".{name}", __name__)
+        setattr(sys.modules[__name__], name, mod)
+        return mod
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 class _KeysMeta(type):
     def __getitem__(cls, key):
         return cls._getit(key)

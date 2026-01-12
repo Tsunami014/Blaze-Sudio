@@ -1,15 +1,35 @@
 from . import _basey
+from ._vec2 import Vec2 as _v2
+from typing import Self
 from abc import ABC, abstractmethod
 from enum import IntEnum
 import numpy as np
 
 __all__ = [
+    'Anchors',
+    'IDENTITY',
     'OpFlags',
+    'Vec2',
     'Op',
+        'NormalisedOp',
+        'OpList',
         'TransOp',
-        'MatOp',
-    'OpList'
+    'MatTrans'
 ]
+
+class Anchors:
+    _nx = 'normalise_x'
+    _ny = 'normalise_y'
+    TopLeft =  {_nx: 0,   _ny: 0}
+    TopMid =   {_nx: 0.5, _ny: 0}
+    TopRight = {_nx: 1,   _ny: 0}
+    MidLeft =  {_nx: 0,   _ny: 0.5}
+    Middle =   {_nx: 0.5, _ny: 0.5}
+    MidMid =   Middle
+    MidRight = {_nx: 1,   _ny: 0.5}
+    BotLeft =  {_nx: 0,   _ny: 1}
+    BotMid =   {_nx: 0.5, _ny: 1}
+    BotRight = {_nx: 1,   _ny: 1}
 
 IDENTITY = np.array([
     [1, 0, 0],
@@ -26,30 +46,49 @@ class OpFlags(IntEnum):
     """Has no flags. Is not special"""
     List = 0b1
     """Is an OpList"""
-    Matrix = 0b10
-    """Is a matrix operation"""
-    StackMatrix = 0b110
-    """Is a stackable matrix operation. These get stacked with other matrix operations"""
-    DynMatrix = 0b1010
-    """Is a dynamic matrix operation. These change their matrix based on the image"""
-    Transformable = 0b10000
-    """Is a transformable op. These get modified by future matrix operations"""
-    Reset = 0b100000
+    Normalised = 0b10
+    """Is a NormalisedOp"""
+    Reset = 0b100
     """Is a reset op. Every op before it will be ignored"""
+    Matrix = 0b1000
+    """Is a matrix operation"""
 
-class Op(ABC):
-    """Please, wherever possible, use TransOps instead. It's faster."""
+
+class Vec2(_v2):
+    flags = OpFlags.Matrix
+
+    @property
+    def mat(self) -> np.ndarray:
+        return np.array([
+            [1, 0, self.pos[0]],
+            [0, 1, self.pos[1]],
+            [0, 0, 1]
+        ], float)
+
+class MatTrans:
+    __slots__ = ['flags', 'mat']
+
+    def __init__(self, mat):
+        self.mat = np.array(mat, float)
+        self.flags = OpFlags.Matrix
+
+    def __add__(self, oth) -> 'MatTrans':
+        if not isinstance(oth, (MatTrans, Vec2)):
+            oth = Vec2(*oth)
+        return MatTrans(oth.mat @ self.mat)
+
+
+class Op(ABC, _basey.TransBase):
     __slots__ = ['flags']
 
     @abstractmethod
-    def __init__(self): ...
-    @abstractmethod
-    def apply(self, arr: np.ndarray, defSmth: bool) -> np.ndarray: ...
+    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth: bool) -> np.ndarray: ...
 
-    def freeze(self):
-        self.flags = OpFlags.NoFlags # It is no longer a whatever and unable to be stacked
-    def frozen(self) -> 'Op':
-        self.flags = OpFlags.NoFlags
+    def frozen(self) -> Self:
+        """Get the frozen verson of this operation"""
+        return self
+    def freeze(self) -> Self:
+        """Freezes this operation and returns it"""
         return self
 
     def __add__(self, oth) -> 'OpList':
@@ -57,50 +96,39 @@ class Op(ABC):
             return OpList(self, *oth.ops)
         return OpList(self, oth)
 
+    def __matmul__(self, oth) -> 'TransOp':
+        if not isinstance(oth, (MatTrans, Vec2)):
+            oth = Vec2(*oth)
+        return TransOp(self.frozen(), oth)
+
+    def __iter__(self):
+        return iter((self,))
     def flatten(self):
         return self
 
-class TransOp(_basey.TransBase, Op):
-    def __init__(self):
-        self.flags = OpFlags.Transformable
+class NormalisedOp(Op):
+    __slots__ = []
 
-    def apply(self, arr, _):
-        return self.applyTrans(IDENTITY, arr)
+    def __init__(self, *, normalise_x = None, normalise_y = None):
+        self.flags = OpFlags.Normalised
+        if normalise_x is not None and normalise_y is not None:
+            ox, oy = self.getNormalisedPos(normalise_x, normalise_y)
+            if normalise_x is None:
+                ox = 0
+            if normalise_y is None:
+                oy = 0
+            self._translate(-ox, -oy)
+
     @abstractmethod
-    def applyTrans(self, mat: np.ndarray, arr: np.ndarray) -> np.ndarray: ...
-
-class MatOp(Op):
-    __slots__ = ['mat', '_smooth', '_centre']
-
-    def __init__(self, mat, centre = True, smooth = None):
-        self._smooth = smooth
-        self._centre = centre
-        self.mat = np.array(mat, float)
-        if centre:
-            self.flags = OpFlags.DynMatrix
-        else:
-            self.flags = OpFlags.StackMatrix
-
-    def centredMat(self, arr: np.ndarray) -> np.ndarray:
-        h, w, _ = arr.shape
-        cx, cy = w/2, h/2
-        T1 = np.array([[1, 0, -cx],[0, 1, -cy],[0, 0, 1]], float)
-        T2 = np.array([[1, 0, cx], [0, 1, cy], [0, 0, 1]], float)
-        return T2 @ self.mat @ T1
-
-    def stack(self, nxt: 'MatOp'):
-        if nxt._smooth is not None:
-            smth = nxt._smooth
-        else:
-            smth = self._smooth
-        return MatOp(self.mat @ nxt.mat, smth)
-
-    def apply(self, arr: np.ndarray, defSmth: bool):
-        smooth = self._smooth if self._smooth is not None else defSmth
-        if self._centre:
-            return _basey.apply(self.centredMat(arr), arr, smooth)
-        else:
-            return _basey.apply(self.mat, arr, smooth)
+    def rect(self):
+        """Returns a tuple in the format (topleft_x, topleft_y, width, height)"""
+    @abstractmethod
+    def _translate(self, x, y): ...
+    
+    def getNormalisedPos(self, normalise_x: float = 0, normalise_y: float = 0):
+        """Get the true position of a normalised point."""
+        x, y, wid, hei = self.rect()
+        return Vec2(x + wid * normalise_x, y + hei * normalise_y)
 
 class OpList(Op):
     __slots__ = ['ops', '_fixed', 'flags']
@@ -108,86 +136,88 @@ class OpList(Op):
         self.ops = ops
         self._fixed = False
         self.flags = OpFlags.List
-        if any(i.flags & OpFlags.Reset for i in ops):
-            self.flags |= OpFlags.Reset
+
+    def rect(self):
+        """
+        Get the rect (x, y, width, height) that surrounds all ops in this list.
+
+        If any operation is not a NormalisedOp, will return (None, None, None, None)
+        """
+        if not self._fixed:
+            self.fix()
+        if not self.flags & OpFlags.Normalised:
+            return None, None, None, None
+        rs = [
+            (x, y, x+w, y+h) for x, y, w, h in
+                (o.rect() for o in self.ops)
+        ]
+        topLeft = [
+            min(i[0] for i in rs),
+            min(i[1] for i in rs),
+        ]
+        botRight = [
+            max(i[2] for i in rs),
+            max(i[3] for i in rs),
+        ]
+        return *topLeft, botRight[0]-topLeft[0], botRight[1]-topLeft[1]
+
+    def getNormalisedPos(self, normalise_x: float = 0, normalise_y: float = 0):
+        """
+        Get the true position of a normalised point.
+
+        If any operation is not a NormalisedOp, will return (None, None)
+        """
+        x, y, wid, hei = self.rect()
+        if x is None:
+            return None, None
+        return x + wid * normalise_x, y + hei * normalise_y
+
+    def _unpack(self, li):
+        for it in li:
+            if it.flags & OpFlags.List:
+                yield from self._unpack(it)
+            else:
+                yield it
 
     def fix(self):
         if self._fixed:
             return
-        ops = self.ops
+        ops = list(self._unpack(self.ops))
         for idx, o in enumerate(ops[::-1]):
             if o.flags & OpFlags.Reset:
                 ops = ops[-1-idx:]
-                break
-        self.ops = []
-        it = iter(ops)
-        o = next(it, None)
-        while o is not None:
-            o2 = o
-            while (nxt := next(it, None)) is not None and \
-                    o.flags & nxt.flags & OpFlags.StackMatrix and \
-                    o._smooth is not False:
-                o2 = o.stack(nxt)
-                o = nxt
-            self.ops.append(o2)
-            o = nxt
+                break # We're going backwards
+        self.ops = ops
+        if any(i.flags & OpFlags.Reset for i in ops):
+            self.flags |= OpFlags.Reset # Add the reset flag
+        else:
+            self.flags &= ~OpFlags.Reset # Remove the reset flag
+        if all(i.flags & OpFlags.Normalised for i in ops):
+            self.flags |= OpFlags.Normalised
+        else:
+            self.flags &= ~OpFlags.Normalised
         self._fixed = True
 
-    def freeze(self):
+    def frozen(self) -> 'OpList':
+        """Get an op list that is the frozen version of this"""
         if not self._fixed:
             self.fix()
-        self.flags = OpFlags.NoFlags
-    def frozen(self) -> 'Op':
+        nl = OpList(*self.ops)
+        nl._fixed = True # We did that just then, no need to do it twice
+        nl.flags = self.flags & ~OpFlags.List # Every flag except List
+        return nl
+    def freeze(self) -> Self:
+        """Freezes this op list and returns it"""
         if not self._fixed:
             self.fix()
-        self.flags = OpFlags.NoFlags
+        self.flags = self.flags & ~OpFlags.List
         return self
 
-    def apply(self, arr: np.ndarray, defSmth):
+    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth):
         if not self._fixed:
             self.fix() # Lazily fix it so it won't every new addition
-        nxtMat = None
-        mat = IDENTITY
-        skips = set()
-        for idx, op in enumerate(self.ops):
-            if op == nxtMat:
-                nxtMat = None
-                continue
-            elif op in skips:
-                continue
-            if nxtMat is None:
-                for i in range(idx, len(self.ops)):
-                    o = self.ops[i]
-                    if o.flags & OpFlags.Matrix:
-                        nxtMat = o
-                        if o.flags & OpFlags.StackMatrix:
-                            mat = o.mat
-                        else:
-                            mat = o.getRealMat(arr.shape[1], arr.shape[0])
-                        if o._smooth is not False:
-                            for j in range(i+1, len(self.ops)):
-                                o2 = self.ops[j]
-                                if o2.flags & OpFlags.Matrix:
-                                    if o.flags & OpFlags.StackMatrix:
-                                        mat @= o.mat
-                                    else:
-                                        mat += o._grm(arr)
-                                    skips.add(o2)
-                                    if o2._smooth is False:
-                                        break
-                                else:
-                                    break
-                        # Apply the matrix here because all ops between now and the matrix will be transformed by themself
-                        smooth = o._smooth if o._smooth is not None else defSmth
-                        arr = _basey.apply(mat, arr, smooth)
-                    # If it isn't transformable, don't keep finding the matrix
-                    elif not o.flags & OpFlags.Transformable:
-                        nxtMat = o
-                        mat = IDENTITY
-                        break
-            if op.flags & OpFlags.Transformable:
-                arr = op.applyTrans(mat, arr)
-            arr = op.apply(arr, defSmth)
+        for op in self.ops:
+            arr = op.apply(mat, arr, defSmth)
         return arr
 
     def __add__(self, oth) -> 'OpList':
@@ -199,6 +229,35 @@ class OpList(Op):
             return OpList(*self.ops, *oth.ops)
         return OpList(*self.ops, oth)
 
+    def __iter__(self):
+        if not self._fixed:
+            self.fix()
+        return iter(self.ops)
     def flatten(self):
+        if not self._fixed:
+            self.fix()
         return self.ops
+
+class TransOp(Op):
+    __slots__ = ['op', 'trans']
+    flags = OpFlags.NoFlags
+    def __init__(self, op: Op, trans: MatTrans|None):
+        self.op = op
+        self.trans = trans
+
+    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth):
+        if self.trans is not None:
+            return self.op.apply(mat @ self.trans.mat, arr, defSmth)
+        else:
+            return self.op.apply(mat, arr, defSmth)
+
+    def frozen(self) -> 'OpList':
+        return self.op.frozen()
+    def freeze(self) -> 'OpList':
+        return self.op.freeze()
+
+    def __iter__(self):
+        return iter(self.op)
+    def flatten(self):
+        return self.op
 
