@@ -65,7 +65,7 @@ def NewGraphicsDemo():
                        Op.Draw.Rect(500, 510, 50, 50, 1, Col.Black, roundness=100) + \
                        Op.Draw.Line((500, 570), (500, 570), 5, Col.Black)
                 def _1perframe(f):
-                    Core(ops + Op.Draw.Circle(f*10, 10, 50, 0, Col(250, 90, 255)))
+                    Core(ops + Op.Draw.Circle(f*2, 10, 50, 0, Col(250, 90, 255)))
                 perframe = _1perframe
             case 2: # Transform
                 rect = Op.Draw.Rect((0, 0), (500, 500), 0, Col.Grey)
@@ -140,6 +140,8 @@ def NewGraphicsDemo():
             new = 1
         elif ks[pygame.K_2]:
             new = 2
+        elif ks[pygame.K_3]:
+            new = 3
         elif ks[pygame.K_0]:
             new = 0
         if new is not None and new != cur or init:
@@ -175,7 +177,7 @@ def NewGraphicsDemo():
                 pygame.draw.rect(WIN, 0, (500, 510, 50, 50), 1, 100) # A circle; yay!
                 pygame.draw.line(WIN, 0, (500, 570), (500, 570), 5) # Unspecified; in reality, a circle (which is great!)
 
-                pygame.draw.circle(WIN, (250, 90, 255), (f*10, 10), 50, 0)
+                pygame.draw.circle(WIN, (250, 90, 255), (f*2, 10), 50, 0)
             case 2: # Transform
                 if cache is None:
                     cache = pygame.Surface((500, 500))
@@ -187,6 +189,17 @@ def NewGraphicsDemo():
                 WIN.blit(
                     rotImg.subsurface(diff, cache.get_size()), (100, 100)
                 )
+            case 3:
+                if cache is None:
+                    cache = pygame.image.load("demoFiles/wrap2.png")
+                nsur = pygame.transform.rotate(cache, f/2)
+                WIN.blit(
+                    nsur.subsurface((0, 0, min(200, nsur.get_width()), min(200, nsur.get_height())))
+                )
+                factor = (1.5 + f/720)
+                WIN.blit(
+                    cache, (cache.get_width()*factor, cache.get_height()*factor)
+                )
 
         pygame.display.flip()
         c.tick()
@@ -194,7 +207,7 @@ def NewGraphicsDemo():
         if f % 50 == 0:
             times.append(c.get_fps())
             PRINT_fps(sum(times)/len(times))
-        f = (f + 1) % 200
+        f = (f + 1) % 720
     print()
     pygame.quit()
 
