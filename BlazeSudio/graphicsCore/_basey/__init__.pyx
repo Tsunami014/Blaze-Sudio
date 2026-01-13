@@ -1,5 +1,4 @@
 # cython: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False
-from libc.math cimport floor, ceil
 import numpy as np
 cimport numpy as cnp
 __cimport_types__ = [cnp.ndarray]
@@ -73,25 +72,6 @@ cdef inline void ezblit(
                     if oa > 255:
                         oa = 255
                     dstrow[3] = <unsigned char>(oa)
-
-cdef inline void update_bbox(
-        double x, double y,
-        long* xmin, long* xmax,
-        long* ymin, long* ymax) noexcept nogil:
-    # use floor for mins and ceil for maxes so rotated/negative coords are handled correctly
-    cdef long fx = <long>floor(x)
-    cdef long cx = <long>ceil(x)
-    if fx < xmin[0]:
-        xmin[0] = fx
-    if cx > xmax[0]:
-        xmax[0] = cx
-
-    cdef long fy = <long>floor(y)
-    cdef long cy = <long>ceil(y)
-    if fy < ymin[0]:
-        ymin[0] = fy
-    if cy > ymax[0]:
-        ymax[0] = cy
 
 def blit(
         cnp.ndarray[cnp.float64_t, ndim=2] mat,
