@@ -1,4 +1,4 @@
-# cython: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False
+# cytho: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False
 import numpy as np
 cimport numpy as cnp
 __cimport_types__ = [cnp.ndarray]
@@ -17,103 +17,12 @@ cdef cnp.ndarray[cnp.float64_t, ndim=2] invert_affine_matrix(mat):
         [ 0, 0, 1 ]
     ], dtype=np.float64)
 
-def apply(
-        cnp.ndarray[cnp.float64_t, ndim=2] mat,
-        cnp.ndarray[cnp.uint8_t, ndim=3] arr,
-        bint smooth):
-
-    cdef long h = arr.shape[0]
-    cdef long w = arr.shape[1]
-
-    cdef bint persp
-    cdef cnp.ndarray[cnp.float64_t, ndim=2] T_inv
-    if mat[2,0] != 0 or mat[2,1] != 0:
-        T_inv = np.linalg.inv(mat)
-        persp = True
-    else:
-        T_inv = invert_affine_matrix(mat)
-        persp = False
-    cdef double[:, ::1] T = T_inv
-
-    cdef unsigned char[:, :, ::1] in_arr = arr
-    cdef cnp.ndarray[cnp.uint8_t, ndim=3] out = np.zeros((h, w, 4), dtype=np.uint8)
-    cdef unsigned char[:, :, ::1] out_arr = out
-
-    cdef double x, y
-    cdef double z = 1
-    cdef double sx, sy, wx, wy
-    cdef long x0, y0
-
-    cdef unsigned char *row0
-    cdef long i, j, c
-    if not smooth:
-        for i in range(h):#, nogil=True):
-            x = T[0,1] * i + T[0,2]
-            y = T[1,1] * i + T[1,2]
-            if persp: z = T[2,1] * i + T[2,2]
-            for j in range(w):
-                if z != 0:
-                    if persp:
-                        sx = x / z
-                        sy = y / z
-                        x0 = <long>sx
-                        y0 = <long>sy
-                    else:
-                        x0 = <long>x
-                        y0 = <long>y
-
-                    if 0 <= x0 < w and 0 <= y0 < h:
-                        row0 = &in_arr[y0, x0, 0]
-                        out_arr[i, j, 0] = row0[0]
-                        out_arr[i, j, 1] = row0[1]
-                        out_arr[i, j, 2] = row0[2]
-                        out_arr[i, j, 3] = row0[3]
-                x = x + T[0,0]
-                y = y + T[1,0]
-                if persp: z = z + T[2,0]
-        return out
-
-    cdef unsigned char *row1
-    cdef double top, bottom, val
-    for i in range(h):#, nogil=True):
-        x = T[0,1] * i + T[0,2]
-        y = T[1,1] * i + T[1,2]
-        if persp: z = T[2,1] * i + T[2,2]
-        for j in range(w):
-            if z != 0:
-                if persp:
-                    sx = x / z
-                    sy = y / z
-                    x0 = <long>sx
-                    y0 = <long>sy
-                else:
-                    x0 = <long>x
-                    y0 = <long>y
-
-                if not (x0 < 0 or x0 + 1 >= w or y0 < 0 or y0 + 1 >= h):
-                    if persp:
-                        wx = sx - x0
-                        wy = sy - y0
-                    else:
-                        wx = x - x0
-                        wy = y - y0
-
-                    row0 = &in_arr[y0, x0, 0]
-                    row1 = &in_arr[y0 + 1, x0, 0]
-                    for c in range(4):
-                        top = (1 - wx) * row0[c] + wx * row0[4 + c]
-                        bottom = (1 - wx) * row1[c] + wx * row1[4 + c]
-                        out_arr[i,j,c] = <unsigned char>((1 - wy) * top + wy * bottom)
-            x = x + T[0,0]
-            y = y + T[1,0]
-            if persp: z = z + T[2,0]
-    return out
-
 
 cdef inline void ezblit(
-        unsigned char[:, :, ::1] src_mv,
+        const unsigned char[:, :, ::1] src_mv,
         unsigned char[:, :, ::1] dst_mv,
-        long ow, long oh, long dw, long dh,
+        long ow, long oh,
+        long cLeft, long cTop, long cRight, long cBot,
         double scalex, double scaley, long transx, long transy
         ) noexcept nogil:
     cdef long x, y, dx, dy, oa
@@ -121,11 +30,11 @@ cdef inline void ezblit(
     cdef unsigned char *srcrow
     cdef unsigned char *dstrow
     if scalex == 1 and scaley == 1:
-        for y in range(0, oh):#, nogil=True):
-            for x in range(0, ow):
+        for y in range(cTop, cBot):#, nogil=True):
+            for x in range(cLeft, cRight):
                 dx = x + transx
                 dy = y + transy
-                if 0 <= dx < dw and 0 <= dy < dh:
+                if 0 <= x < ow and 0 <= y < oh:
                     srcrow = &src_mv[y, x, 0]
                     sa = srcrow[3]
                     if sa != 0:
@@ -142,19 +51,19 @@ cdef inline void ezblit(
         return
 
     cdef long ix, iy
-    for y in range(0, <long>(oh*scaley)):#, nogil=True):
+    for y in range(<long>(cTop*scaley), <long>(cBot*scaley)):#, nogil=True):
         iy = <long>(y / scaley)
-        for x in range(0, <long>(ow*scalex)):
+        for x in range(<long>(cLeft*scalex), <long>(cRight*scalex)):
             ix = <long>(x / scalex)
 
             dx = x + transx
             dy = y + transy
-            if 0 <= ix < ow and 0 <= iy < oh and 0 <= dx < dw and 0 <= dy < dh:
+            if 0 <= ix < ow and 0 <= iy < oh:
                 srcrow = &src_mv[iy, ix, 0]
                 sa = srcrow[3]
                 if sa != 0:
                     inva = 255 - sa
-                    dstrow = &dst_mv[dx, dy, 0]
+                    dstrow = &dst_mv[dy, dx, 0]
 
                     dstrow[0] = <unsigned char>((srcrow[0]*sa + dstrow[0]*inva) >> 8)
                     dstrow[1] = <unsigned char>((srcrow[1]*sa + dstrow[1]*inva) >> 8)
@@ -183,45 +92,66 @@ cdef inline void update_bbox(
 def blit(
         cnp.ndarray[cnp.float64_t, ndim=2] mat,
         cnp.ndarray[cnp.uint8_t, ndim=3] src,
-        cnp.ndarray[cnp.uint8_t, ndim=3] dst):
+        cnp.ndarray[cnp.uint8_t, ndim=3] dst,
+        crop):
     cdef long oh = src.shape[0]
     cdef long ow = src.shape[1]
-    cdef long dh = dst.shape[0]
-    cdef long dw = dst.shape[1]
 
     cdef double[:, ::1] mat_mv = mat
-    cdef unsigned char[:, :, ::1] src_mv = src
+    cdef const unsigned char[:, :, ::1] src_mv = src
     cdef unsigned char[:, :, ::1] dst_mv = dst
+
+    cdef long cLeft = <long>crop[0]
+    cdef long cTop = <long>crop[1]
+    cdef long cRight = <long>crop[2]
+    cdef long cBot = <long>crop[3]
 
     cdef bint persp = mat_mv[2,0] != 0 or mat_mv[2,1] != 0 or mat_mv[2,2] != 1
     if (not persp) and mat_mv[0,1] == 0 and mat_mv[1,0] == 0:
-        ezblit(src_mv, dst_mv, ow, oh, dw, dh, mat_mv[0,0], mat_mv[1,1], <long>mat_mv[0,2], <long>mat_mv[1,2])
+        ezblit(
+            src_mv, dst_mv,
+            ow, oh, cLeft, cTop, cRight, cBot,
+            mat_mv[0,0], mat_mv[1,1], <long>mat_mv[0,2], <long>mat_mv[1,2])
         return
+
+    cdef long cWid = cRight - cLeft
+    cdef long cHei = cBot - cTop
 
     cdef long xmin, xmax, ymin, ymax
     xmin = xmax = <long>mat_mv[0,2]
-    ymin= ymax = <long>mat_mv[1,2]
+    ymin = ymax = <long>mat_mv[1,2]
     update_bbox(
-        mat_mv[0,0]*ow + mat_mv[0,2],
-        mat_mv[1,0]*ow + mat_mv[1,2],
+        mat_mv[0,0]*cWid + mat_mv[0,2],
+        mat_mv[1,0]*cWid + mat_mv[1,2],
         &xmin, &xmax, &ymin, &ymax)
     update_bbox(
-        mat_mv[0,0]*ow + mat_mv[0,1]*oh + mat_mv[0,2],
-        mat_mv[1,0]*ow + mat_mv[1,1]*oh + mat_mv[1,2],
+        mat_mv[0,0]*cWid + mat_mv[0,1]*cHei + mat_mv[0,2],
+        mat_mv[1,0]*cWid + mat_mv[1,1]*cHei + mat_mv[1,2],
         &xmin, &xmax, &ymin, &ymax)
     update_bbox(
-        mat_mv[0,1]*oh + mat_mv[0,2],
-        mat_mv[1,1]*oh + mat_mv[1,2],
+        mat_mv[0,1]*cHei + mat_mv[0,2],
+        mat_mv[1,1]*cHei + mat_mv[1,2],
         &xmin, &xmax, &ymin, &ymax)
-
-    if xmin < 0:
-        xmin = 0
-    if xmax > dw:
-        xmax = dw
-    if ymin < 0:
-        ymin = 0
-    if ymax > dh:
-        ymax = dh
+    update_bbox(
+        mat_mv[0,1]*cHei + mat_mv[0,2],
+        mat_mv[1,1]*cHei + mat_mv[1,2],
+        &xmin, &xmax, &ymin, &ymax)
+    if xmin < cLeft:
+        xmin = cLeft
+    elif xmin > cRight:
+        xmin = cRight
+    if xmax < cLeft:
+        xmax = cLeft
+    elif xmax > cRight:
+        xmax = cRight
+    if ymin < cTop:
+        ymin = cTop
+    elif ymin > cBot:
+        ymin = cBot
+    if ymax < cTop:
+        ymax = cTop
+    elif ymax > cBot:
+        ymax = cBot
 
     cdef cnp.ndarray[cnp.float64_t, ndim=2] Minv_
     if persp:

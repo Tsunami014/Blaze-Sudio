@@ -17,7 +17,8 @@ def NewGraphicsDemo():
     NAMES = {
         0: "Blank",
         1: "Shapes",
-        2: "Transform"
+        2: "Transform",
+        3: "Images",
     }
     def PRINT_run(thing, thingcol, nam):
         print(f"\nRunning \033[{thingcol}m{thing}\033[0m with \033[93m{NAMES[nam]}\033[0m:")
@@ -78,6 +79,9 @@ def NewGraphicsDemo():
                              ) @ (100, 100)
                     )
                 perframe = _2perframe
+            case 3: # Images
+                ops += Op.Surf.Image("demoFiles/wrap2.png")
+                perframe = lambda _: Core(ops)
 
         ops.freeze()
 
@@ -90,6 +94,8 @@ def NewGraphicsDemo():
             changeOp(1)
         if Ix.Keys['2']:
             changeOp(2)
+        if Ix.Keys['3']:
+            changeOp(3)
         if Ix.Keys['0']:
             changeOp(0)
         perframe(f)

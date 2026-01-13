@@ -1,10 +1,10 @@
 from .base import OpFlags, Anchors
-from . import Trans, Draw, base
+from . import Trans, Draw, Surf, base
 from typing import overload
 import numpy as np
 
 __all__ = [
-    'Trans', 'Draw',
+    'Trans', 'Draw', 'Surf',
     'Anchors',
 
     'Fill'

@@ -20,10 +20,7 @@ class TransBase:
     def _warpPs(self, mat: np.ndarray, points: np.ndarray):
         ...
 
-def apply(mat: ndarray, arr: ndarray, smooth: bool):
-    ...
-
-def blit(mat: ndarray, src: ndarray, dst: ndarray):
+def blit(mat: ndarray, src: ndarray, dst: ndarray, crop):
     ...
 
 

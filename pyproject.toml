@@ -50,11 +50,12 @@ BlazeSudio = "BlazeSudio:main"
 graphics = [
     "pysdl2",
     "pysdl2-dll",
-    "numpy"
+    "numpy",
+    "pillow",
 ]
 
 image = [
-    "Pillow",
+    "pillow",
     "numpy",
     "scikit-image",
 ]
