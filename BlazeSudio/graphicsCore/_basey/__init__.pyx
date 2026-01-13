@@ -1,4 +1,5 @@
-# cytho: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False
+# cython: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False
+from libc.math cimport floor, ceil
 import numpy as np
 cimport numpy as cnp
 __cimport_types__ = [cnp.ndarray]
@@ -77,17 +78,20 @@ cdef inline void update_bbox(
         double x, double y,
         long* xmin, long* xmax,
         long* ymin, long* ymax) noexcept nogil:
-    cdef long lx = <long>x
-    cdef long ly = <long>y
-    if lx < xmin[0]:
-        xmin[0] = lx
-    elif lx > xmax[0]:
-        xmax[0] = lx
+    # use floor for mins and ceil for maxes so rotated/negative coords are handled correctly
+    cdef long fx = <long>floor(x)
+    cdef long cx = <long>ceil(x)
+    if fx < xmin[0]:
+        xmin[0] = fx
+    if cx > xmax[0]:
+        xmax[0] = cx
 
-    if ly < ymin[0]:
-        ymin[0] = ly
-    elif ly > ymax[0]:
-        ymax[0] = ly
+    cdef long fy = <long>floor(y)
+    cdef long cy = <long>ceil(y)
+    if fy < ymin[0]:
+        ymin[0] = fy
+    if cy > ymax[0]:
+        ymax[0] = cy
 
 def blit(
         cnp.ndarray[cnp.float64_t, ndim=2] mat,
@@ -114,45 +118,6 @@ def blit(
             mat_mv[0,0], mat_mv[1,1], <long>mat_mv[0,2], <long>mat_mv[1,2])
         return
 
-    cdef long cWid = cRight - cLeft
-    cdef long cHei = cBot - cTop
-
-    cdef long xmin, xmax, ymin, ymax
-    xmin = xmax = <long>mat_mv[0,2]
-    ymin = ymax = <long>mat_mv[1,2]
-    update_bbox(
-        mat_mv[0,0]*cWid + mat_mv[0,2],
-        mat_mv[1,0]*cWid + mat_mv[1,2],
-        &xmin, &xmax, &ymin, &ymax)
-    update_bbox(
-        mat_mv[0,0]*cWid + mat_mv[0,1]*cHei + mat_mv[0,2],
-        mat_mv[1,0]*cWid + mat_mv[1,1]*cHei + mat_mv[1,2],
-        &xmin, &xmax, &ymin, &ymax)
-    update_bbox(
-        mat_mv[0,1]*cHei + mat_mv[0,2],
-        mat_mv[1,1]*cHei + mat_mv[1,2],
-        &xmin, &xmax, &ymin, &ymax)
-    update_bbox(
-        mat_mv[0,1]*cHei + mat_mv[0,2],
-        mat_mv[1,1]*cHei + mat_mv[1,2],
-        &xmin, &xmax, &ymin, &ymax)
-    if xmin < cLeft:
-        xmin = cLeft
-    elif xmin > cRight:
-        xmin = cRight
-    if xmax < cLeft:
-        xmax = cLeft
-    elif xmax > cRight:
-        xmax = cRight
-    if ymin < cTop:
-        ymin = cTop
-    elif ymin > cBot:
-        ymin = cBot
-    if ymax < cTop:
-        ymax = cTop
-    elif ymax > cBot:
-        ymax = cBot
-
     cdef cnp.ndarray[cnp.float64_t, ndim=2] Minv_
     if persp:
         Minv_ = np.linalg.inv(mat)
@@ -166,11 +131,11 @@ def blit(
     cdef unsigned char sa, inva
     cdef unsigned char *srcrow
     cdef unsigned char *dstrow
-    for y in range(ymin, ymax):#, nogil=True):
-        sx = Minv[0,0]*xmin + Minv[0, 1]*y + Minv[0, 2]
-        sy = Minv[1,0]*xmin + Minv[1, 1]*y + Minv[1, 2]
-        if persp: z = Minv[2,0]*xmin + Minv[2,1]*y + Minv[2,2]
-        for x in range(xmin, xmax):
+    for y in range(cTop, cBot):#, nogil=True):
+        sx = Minv[0,0]*cLeft + Minv[0, 1]*y + Minv[0, 2]
+        sy = Minv[1,0]*cLeft + Minv[1, 1]*y + Minv[1, 2]
+        if persp: z = Minv[2,0]*cLeft + Minv[2,1]*y + Minv[2,2]
+        for x in range(cLeft, cRight):
             if z != 0:
                 if persp:
                     ix = <long>(sx / z)

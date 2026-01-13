@@ -80,8 +80,16 @@ def NewGraphicsDemo():
                     )
                 perframe = _2perframe
             case 3: # Images
-                ops += Op.Surf.Image("demoFiles/wrap2.png")
-                perframe = lambda _: Core(ops)
+                im = Op.Surf.Image("demoFiles/wrap2.png", **Op.Anchors.Middle)
+                def _3perframe(f):
+                    Core(ops +
+                    (im2 := im @ Op.Trans.Rotate(f/2)) @ (
+                        -im2.getNormalisedPos(**Op.Anchors.TopLeft) +
+                        Op.Crop(0, 0, 200, 200)
+                    ) + im @ (
+                        Op.Vec2(im.rect()[2:])*(1.5 + f/720)
+                    ))
+                perframe = _3perframe
 
         ops.freeze()
 
@@ -105,7 +113,7 @@ def NewGraphicsDemo():
         if f % 50 == 0:
             times.append(c.get_fps())
             PRINT_fps(sum(times)/len(times))
-        f = (f + 1) % 200
+        f = (f + 1) % 720
 
     Core.Quit()
 

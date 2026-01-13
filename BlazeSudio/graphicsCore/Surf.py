@@ -18,7 +18,7 @@ class Surface(NormalisedOp):
 
     def rect(self):
         """Returns a tuple in the format (topleft_x, topleft_y, width, height)"""
-        return self.im.size
+        return (*self.offs, *self.im.size)
     def _translate(self, *args):
         self.offs += args
 

@@ -93,8 +93,8 @@ class MatTrans(Trans):
     def __init__(self, mat):
         self.mat = np.array(mat, float)
 
-    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth: bool):
-        return mat @ self.mat, arr, crop, defSmth
+    def apply(self, mat: np.ndarray, crop, defSmth: bool):
+        return mat @ self.mat, crop, defSmth
 
 class Vec2(MatTrans):
     __slots__ = ['pos']
@@ -142,14 +142,26 @@ class Vec2(MatTrans):
         return Vec2(abs(self.pos[0]), abs(self.pos[1]))
 
     def __add__(self, oth):
+        if isinstance(oth, Trans):
+            return super().__add__(oth)
+        if not hasattr(oth, '__len__'):
+            return Vec2(self.pos[0] + oth, self.pos[1] + oth)
         return Vec2(self.pos[0] + oth[0], self.pos[1] + oth[1])
     def __sub__(self, oth):
+        if not hasattr(oth, '__len__'):
+            return Vec2(self.pos[0] - oth, self.pos[1] - oth)
         return Vec2(self.pos[0] - oth[0], self.pos[1] - oth[1])
     def __mul__(self, oth):
+        if not hasattr(oth, '__len__'):
+            return Vec2(self.pos[0] * oth, self.pos[1] * oth)
         return Vec2(self.pos[0] * oth[0], self.pos[1] * oth[1])
     def __floordiv__(self, oth):
+        if not hasattr(oth, '__len__'):
+            return Vec2(self.pos[0] // oth, self.pos[1] // oth)
         return Vec2(self.pos[0] // oth[0], self.pos[1] // oth[1])
     def __div__(self, oth):
+        if not hasattr(oth, '__len__'):
+            return Vec2(self.pos[0] / oth, self.pos[1] / oth)
         return Vec2(self.pos[0] / oth[0], self.pos[1] / oth[1])
 
 class TransGroup(Trans):
@@ -188,6 +200,8 @@ class TransGroup(Trans):
             self.fix()
         for m in self.membs[::-1]:
             args = m.apply(*args)
+            if args is None:
+                return None
         return args
 
     def __iter__(self):
@@ -361,25 +375,54 @@ class OpList(Op):
             self.fix()
         return self.ops
 
-class TransOp(Op):
+class TransOp(Op, _basey.TransBase):
     __slots__ = ['op', 'trans']
-    flags = OpFlags.NoFlags
     def __init__(self, op: Op, trans: Trans = None):
         self.op = op
         self.trans = trans
+        self.flags = op.flags
 
     def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth):
         if self.trans is not None:
-            return self.op.apply(*self.trans.apply(mat, arr, crop, defSmth))
+            args = self.trans.apply(mat, crop, defSmth)
+            if args is None:
+                return arr
+            return self.op.apply(args[0], arr, *args[1:])
         return self.op.apply(mat, arr, crop, defSmth)
-
-    def frozen(self) -> 'OpList':
-        return self.op.frozen()
-    def freeze(self) -> 'OpList':
-        return self.op.freeze()
 
     def __iter__(self):
         return iter(self.op)
     def flatten(self):
         return self.op
+
+    def rect(self):
+        """Returns a tuple in the format (topleft_x, topleft_y, width, height)"""
+        r = self.op.rect()
+        if self.trans is None:
+            return r
+        ps = np.array([
+            r[:2],
+            (r[2]+r[0], r[1]),
+            (r[2]+r[0], r[3]+r[1]),
+            (r[0], r[3]+r[1]),
+        ])
+        args = self.trans.apply(IDENTITY, (float("-inf"), float("-inf"), float("inf"), float("inf")), False)
+        if args is None:
+            return r
+
+        nps = self._warpPs(args[0], ps)
+        tl = (
+            min(p[0] for p in nps),
+            min(p[1] for p in nps),
+        )
+        br = (
+            max(p[0] for p in nps),
+            max(p[1] for p in nps),
+        )
+        return (*tl, br[0]-tl[0], br[1]-tl[1])
+
+    def getNormalisedPos(self, normalise_x: float = 0, normalise_y: float = 0):
+        """Get the true position of a normalised point."""
+        x, y, wid, hei = self.rect()
+        return Vec2(x + wid * normalise_x, y + hei * normalise_y)
 

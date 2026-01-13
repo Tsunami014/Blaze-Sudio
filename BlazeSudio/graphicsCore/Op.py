@@ -1,4 +1,4 @@
-from .base import OpFlags, Anchors
+from .base import OpFlags, Anchors, Vec2
 from . import Trans, Draw, Surf, base
 from typing import overload
 import numpy as np
@@ -6,8 +6,10 @@ import numpy as np
 __all__ = [
     'Trans', 'Draw', 'Surf',
     'Anchors',
+    'Vec2',
 
-    'Fill'
+    'Fill',
+    'Crop'
 ]
 
 class Fill(base.Op):
@@ -51,7 +53,7 @@ class Crop(base.Trans, base._basey.TransBase):
             self.topL[1] += r[3] * normalise_y
         self.botR = (r[2]+self.topL[0], r[3]+self.topL[1])
 
-    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth: bool):
+    def apply(self, mat: np.ndarray, crop, defSmth: bool):
         if self._regMat(mat):
             ps = self._regWarp(mat, self.topL), self._regWarp(mat, self.botR)
         else:
@@ -74,9 +76,9 @@ class Crop(base.Trans, base._basey.TransBase):
             min(crop[3], br[1]),
         )
         if topLeft[0] >= botRight[0] or topLeft[1] >= botRight[1]:
-            return arr
+            return None
         newR = (
             *topLeft, *botRight
         )
-        return mat, arr, newR, defSmth
+        return mat, newR, defSmth
 
