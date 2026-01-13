@@ -197,7 +197,7 @@ class Rect(Polygon):
             r = self.roundness * 0.5 * (sx + sy)
 
             p, s = self._regWarp(mat, self.pos), self._regWarp(mat, self.sze, False)
-            _calcs.drawRect(arr, p, s, t, r, self.col)
+            _calcs.drawRect(arr, p, s, t, r, self.col, crop)
         else:
             # If not, draw the lines
             super().apply(mat, arr, crop, defSmth)
@@ -277,10 +277,10 @@ class Elipse(NormalisedOp):
             sy2 = A[0,1]*A[0,1] + A[1,1]*A[1,1]
             t = self.thickness * ((sx2 + sy2) * 0.5) ** 0.5
             if r1 == r2:
-                _calcs.drawCirc(arr, centre, r1, t, self.col)
+                _calcs.drawCirc(arr, centre, r1, t, self.col, crop)
             else:
                 angle = math.atan2(u[1], u[0])
-                _calcs.drawElipse(arr, centre, r1, r2, angle, t, self.col)
+                _calcs.drawElipse(arr, centre, r1, r2, angle, t, self.col, crop)
         else:
             raise NotImplementedError(
                 'Cannot have projective transform with circles yet!'

@@ -3,7 +3,7 @@ import numpy as np
 cimport numpy as cnp
 __cimport_types__ = [cnp.ndarray]
 
-cdef inline long _clip(long v, long lo, long hi):
+cdef inline long clip(long v, long lo, long hi):
     if v < lo:
         return lo
     if v > hi:
@@ -95,13 +95,12 @@ cpdef drawPolyLine(
         double[:, :] points,
         double thickness,
         cnp.ndarray[cnp.uint8_t, ndim=1] col,
-        crop,
-        bool round):
+        crop, bool round):
     cdef long ht = <long>(thickness // 2)
     cdef long n = len(points)
     if round:
         for i in range(n):
-            drawCirc(arr, points[i], ht, 0, col)
+            drawCirc(arr, points[i], ht, 0, col, crop)
     if n == 2:
         drawLine(arr, points[0], points[1], thickness, col, crop)
         return
@@ -131,9 +130,8 @@ cpdef drawRect(
         double[:] sze,
         double thickness,
         double round,
-        cnp.ndarray[cnp.uint8_t, ndim=1] col):
-    cdef long H = arr.shape[0]
-    cdef long W = arr.shape[1]
+        cnp.ndarray[cnp.uint8_t, ndim=1] col,
+        crop):
     cdef long t = <long>thickness
 
     cdef long x0 = <long>pos[0]
@@ -145,6 +143,11 @@ cpdef drawRect(
         x0, x1 = x1, x0
     if y1 < y0:
         y0, y1 = y1, y0
+
+    cdef long cLeft = <long>crop[0]
+    cdef long cTop = <long>crop[1]
+    cdef long cRight = <long>crop[2]
+    cdef long cBot = <long>crop[3]
 
     cdef long w = x1 - x0
     cdef long h = y1 - y0
@@ -169,32 +172,32 @@ cpdef drawRect(
     if t <= 0:
         if r == 0:
             _fill(arr,
-                _clip(y0, 0, H), _clip(y1, 0, H),
-                _clip(x0, 0, W), _clip(x1, 0, W),
+                clip(y0, cTop, cBot), clip(y1, cTop, cBot),
+                clip(x0, cLeft, cRight), clip(x1, cLeft, cRight),
                 rcol, gcol, bcol, acol)
             return
 
         # Rounded fill (top/bottom strips + middle)
         _fill(arr,
-            _clip(y0 + r, 0, H), _clip(y1 - r, 0, H),
-            _clip(x0, 0, W), _clip(x1, 0, W),
+            clip(y0 + r, cTop, cBot), clip(y1 - r, cTop, cBot),
+            clip(x0, cLeft, cRight), clip(x1, cLeft, cRight),
             rcol, gcol, bcol, acol)
         _fill(arr,
-            _clip(y0, 0, H), _clip(y1, 0, H),
-            _clip(x0 + r, 0, W), _clip(x1 - r, 0, W),
+            clip(y0, cTop, cBot), clip(y1, cTop, cBot),
+            clip(x0 + r, cLeft, cRight), clip(x1 - r, cLeft, cRight),
             rcol, gcol, bcol, acol)
     else:
         _fill(arr, # Top
-            _clip(y0, 0, H), _clip(y0 + t, 0, H),
+            clip(y0, cTop, cBot), clip(y0 + t, cTop, cBot),
             x0+r, x1-r, rcol, gcol, bcol, acol)
         _fill(arr, # Bottom
-            _clip(y1 - t, 0, H), _clip(y1, 0, H),
+            clip(y1 - t, cTop, cBot), clip(y1, cTop, cBot),
             x0+r, x1-r, rcol, gcol, bcol, acol)
         _fill(arr, y0+r, y1-r, # Left
-            _clip(x0, 0, W), _clip(x0 + t, 0, W),
+            clip(x0, cLeft, cRight), clip(x0 + t, cLeft, cRight),
             rcol, gcol, bcol, acol)
         _fill(arr, y0+r, y1-r, # Right
-            _clip(x1 - t, 0, W), _clip(x1, 0, W),
+            clip(x1 - t, cLeft, cRight), clip(x1, cLeft, cRight),
             rcol, gcol, bcol, acol)
 
     cdef long outer, inner, off
@@ -222,14 +225,18 @@ cpdef drawRect(
         ]
 
         for cx, cy, xs, xe, ys, ye in corners:
-            xs = _clip(xs, 0, W)
-            xe = _clip(xe, 0, W)
-            ys = _clip(ys, 0, H)
-            ye = _clip(ye, 0, H)
+            xs = clip(xs, cLeft, cRight)
+            xe = clip(xe, cLeft, cRight)
+            ys = clip(ys, cTop, cBot)
+            ye = clip(ye, cTop, cBot)
 
             for y in range(ys, ye):
+                if y < cTop or y > cBot:
+                    continue
                 dy = y - cy
                 for x in range(xs, xe):
+                    if x < cLeft or x > cRight:
+                        continue
                     dx = x - cx
                     d2 = dx*dx + dy*dy
                     if inner <= d2 < outer:
@@ -244,17 +251,16 @@ cpdef drawCirc(
         double[:] pos,
         double radius,
         double thickness,
-        cnp.ndarray[cnp.uint8_t, ndim=1] col):
+        cnp.ndarray[cnp.uint8_t, ndim=1] col,
+        crop):
     cdef long r = <long>radius
-    cdef long w = <long>arr.shape[1]
-    cdef long h = <long>arr.shape[0]
     cdef long x = <long>pos[0]
     cdef long y = <long>pos[1]
 
-    cdef long y0 = max(y - r - 1, 0)
-    cdef long y1 = min(y + r + 1, h)
-    cdef long x0 = max(x - r - 1, 0)
-    cdef long x1 = min(x + r + 1, w)
+    cdef long y0 = max(y - r - 1, <long>crop[1])
+    cdef long y1 = min(y + r + 1, <long>crop[3])
+    cdef long x0 = max(x - r - 1, <long>crop[0])
+    cdef long x1 = min(x + r + 1, <long>crop[2])
     if y0 >= y1 or x0 >= x1:
         return
 
@@ -294,11 +300,10 @@ cpdef drawElipse(
         double yradius,
         double rotation,
         double thickness,
-        cnp.ndarray[cnp.uint8_t, ndim=1] col):
+        cnp.ndarray[cnp.uint8_t, ndim=1] col,
+        crop):
     cdef long xrad = <long>xradius
     cdef long yrad = <long>yradius
-    cdef long w = <long>arr.shape[1]
-    cdef long h = <long>arr.shape[0]
     cdef long x = <long>pos[0]
     cdef long y = <long>pos[1]
 
@@ -309,10 +314,12 @@ cpdef drawElipse(
         t = <long>(thickness / 2)
 
     # Bounding box
-    cdef long x_min = max(x - xrad- 1 - t, 0)
-    cdef long x_max = min(x + xrad+ 1 + t, w)
-    cdef long y_min = max(y - yrad- 1 - t, 0)
-    cdef long y_max = min(y + yrad+ 1 + t, h)
+    cdef long x_min = max(x - xrad- 1 - t, <long>crop[0])
+    cdef long x_max = min(x + xrad+ 1 + t, <long>crop[2])
+    cdef long y_min = max(y - yrad- 1 - t, <long>crop[1])
+    cdef long y_max = min(y + yrad+ 1 + t, <long>crop[3])
+    if y_min >= y_max or x_min >= x_max:
+        return
 
     # Rotation
     cdef double cos_t = np.cos(rotation)

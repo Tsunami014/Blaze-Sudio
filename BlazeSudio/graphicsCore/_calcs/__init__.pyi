@@ -2,10 +2,10 @@ from numpy import ndarray
 
 __path__: list
 
-def drawCirc(arr: ndarray, pos: float[:], radius: float, thickness: float, col: ndarray):
+def drawCirc(arr: ndarray, pos: float[:], radius: float, thickness: float, col: ndarray, crop):
     ...
 
-def drawElipse(arr: ndarray, pos: float[:], xradius: float, yradius: float, rotation: float, thickness: float, col: ndarray):
+def drawElipse(arr: ndarray, pos: float[:], xradius: float, yradius: float, rotation: float, thickness: float, col: ndarray, crop):
     ...
 
 def drawLine(arr: ndarray, p1: float[:], p2: float[:], thickness: float, col: ndarray, crop):
@@ -14,7 +14,7 @@ def drawLine(arr: ndarray, p1: float[:], p2: float[:], thickness: float, col: nd
 def drawPolyLine(arr: ndarray, points: float[:, _:], thickness: float, col: ndarray, crop, round: bool):
     ...
 
-def drawRect(arr: ndarray, pos: float[:], sze: float[:], thickness: float, round: float, col: ndarray):
+def drawRect(arr: ndarray, pos: float[:], sze: float[:], thickness: float, round: float, col: ndarray, crop):
     ...
 
 

@@ -53,7 +53,7 @@ class Crop(base.Trans, base._basey.TransBase):
 
     def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth: bool):
         if self._regMat(mat):
-            tl, br = self._regWarp(mat, self.topL), self._regWarp(mat, self.botR)
+            ps = self._regWarp(mat, self.topL), self._regWarp(mat, self.botR)
         else:
             ps = self._warpPs(mat, np.array([
                 self.topL,
@@ -61,10 +61,10 @@ class Crop(base.Trans, base._basey.TransBase):
                 self.botR,
                 [self.botR[0], self.topL[1]]
             ], float))
-            tl = (min(p[0] for p in ps),
-                  min(p[1] for p in ps))
-            br = (max(p[0] for p in ps),
-                  max(p[1] for p in ps))
+        tl = (min(p[0] for p in ps),
+              min(p[1] for p in ps))
+        br = (max(p[0] for p in ps),
+              max(p[1] for p in ps))
         topLeft = (
             max(crop[0], tl[0]),
             max(crop[1], tl[1]),
