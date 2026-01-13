@@ -3,21 +3,26 @@ import numpy as np
 cimport numpy as cnp
 __cimport_types__ = [cnp.ndarray]
 
+cdef inline long _clip(long v, long lo, long hi):
+    if v < lo:
+        return lo
+    if v > hi:
+        return hi
+    return v
 
-def drawLine(
+
+cpdef drawLine(
         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
         double[:] p1,
         double[:] p2,
         double thickness,
-        cnp.ndarray[cnp.uint8_t, ndim=1] col):
+        cnp.ndarray[cnp.uint8_t, ndim=1] col,
+        crop):
     cdef long x = <long>p1[0]
     cdef long y = <long>p1[1]
     cdef long x1 = <long>p2[0]
     cdef long y1 = <long>p2[1]
     cdef long half = <long>(thickness) >> 1
-
-    cdef long h = arr.shape[0]
-    cdef long w = arr.shape[1]
 
     cdef long dx = abs(x1 - x)
     cdef long dy = abs(y1 - y)
@@ -31,6 +36,11 @@ def drawLine(
     cdef unsigned char bcol = col[2]
     cdef unsigned char acol = col[3]
 
+    cdef long cLeft = <long>crop[0]
+    cdef long cTop = <long>crop[1]
+    cdef long cRight = <long>crop[2]
+    cdef long cBot = <long>crop[3]
+
     if dx > dy:
         if x > x1:
             x, x1 = x1, x
@@ -38,16 +48,17 @@ def drawLine(
         sy = 1 if y < y1 else -1
         err = dx // 2
         while x <= x1:
-            ys = max(y - half, 0)
-            ye = min(y + half + 1, h)
-            xs = min(max(x, 0), w)
+            if x >= cLeft and x <= cRight:
+                ys = max(y - half, cTop)
+                ye = min(y + half + 1, cBot)
+                xs = min(max(x, cLeft), cRight)
 
-            if ys < ye:
-                for i in range(ys, ye):
-                    arr[i, xs, 0] = rcol
-                    arr[i, xs, 1] = gcol
-                    arr[i, xs, 2] = bcol
-                    arr[i, xs, 3] = acol
+                if ys < ye:
+                    for i in range(ys, ye):
+                        arr[i, xs, 0] = rcol
+                        arr[i, xs, 1] = gcol
+                        arr[i, xs, 2] = bcol
+                        arr[i, xs, 3] = acol
 
             err -= dy
             if err < 0:
@@ -61,16 +72,17 @@ def drawLine(
         sx = 1 if x < x1 else -1
         err = dy // 2
         while y <= y1:
-            xs = max(x - half, 0)
-            xe = min(x + half + 1, h)
-            ys = min(max(y, 0), w)
+            if y >= cTop and y <= cBot:
+                xs = max(x - half, cLeft)
+                xe = min(x + half + 1, cRight)
+                ys = min(max(y, cTop), cBot)
 
-            if xs < xe:
-                for i in range(xs, xe):
-                    arr[ys, i, 0] = rcol
-                    arr[ys, i, 1] = gcol
-                    arr[ys, i, 2] = bcol
-                    arr[ys, i, 3] = acol
+                if xs < xe:
+                    for i in range(xs, xe):
+                        arr[ys, i, 0] = rcol
+                        arr[ys, i, 1] = gcol
+                        arr[ys, i, 2] = bcol
+                        arr[ys, i, 3] = acol
 
             err -= dx
             if err < 0:
@@ -78,11 +90,12 @@ def drawLine(
                 err += dy
             y += 1
 
-def drawPolyLine(
+cpdef drawPolyLine(
         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
         double[:, :] points,
         double thickness,
         cnp.ndarray[cnp.uint8_t, ndim=1] col,
+        crop,
         bool round):
     cdef long ht = <long>(thickness // 2)
     cdef long n = len(points)
@@ -90,22 +103,15 @@ def drawPolyLine(
         for i in range(n):
             drawCirc(arr, points[i], ht, 0, col)
     if n == 2:
-        drawLine(arr, points[0], points[1], thickness, col)
+        drawLine(arr, points[0], points[1], thickness, col, crop)
         return
     p1 = points[0]
     for i in range(1, n):
         p2 = points[i]
-        drawLine(arr, p1, p2, thickness, col)
+        drawLine(arr, p1, p2, thickness, col, crop)
         p1 = p2
-    drawLine(arr, p1, points[0], thickness, col)
+    drawLine(arr, p1, points[0], thickness, col, crop)
 
-
-cdef inline long _clip(long v, long lo, long hi):
-    if v < lo:
-        return lo
-    if v > hi:
-        return hi
-    return v
 
 cdef _fill(
         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
@@ -119,7 +125,7 @@ cdef _fill(
             arr[y, x, 2] = bcol
             arr[y, x, 3] = acol
 
-def drawRect(
+cpdef drawRect(
         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
         double[:] pos,
         double[:] sze,
@@ -233,7 +239,7 @@ def drawRect(
                         arr[y, x, 3] = acol
 
 
-def drawCirc(
+cpdef drawCirc(
         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
         double[:] pos,
         double radius,
@@ -281,7 +287,7 @@ def drawCirc(
                 arr[yy, xx, 3] = acol
 
 
-def drawElipse(
+cpdef drawElipse(
         cnp.ndarray[cnp.uint8_t, ndim=3] arr,
         double[:] pos,
         double xradius,

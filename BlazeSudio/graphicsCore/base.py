@@ -1,6 +1,5 @@
 from . import _basey
-from ._vec2 import Vec2 as _v2
-from typing import Self
+from typing import Self, overload
 from abc import ABC, abstractmethod
 from enum import IntEnum
 import numpy as np
@@ -9,12 +8,14 @@ __all__ = [
     'Anchors',
     'IDENTITY',
     'OpFlags',
-    'Vec2',
+    'TransFlags',
+    'Trans',
+        'Vec2',
+        'MatTrans',
     'Op',
         'NormalisedOp',
         'OpList',
-        'TransOp',
-    'MatTrans'
+        'TransOp'
 ]
 
 class Anchors:
@@ -50,12 +51,53 @@ class OpFlags(IntEnum):
     """Is a NormalisedOp"""
     Reset = 0b100
     """Is a reset op. Every op before it will be ignored"""
-    Matrix = 0b1000
-    """Is a matrix operation"""
+
+class TransFlags(IntEnum):
+    NoFlags = 0
+    """Has no flags. Is not special"""
+    Group = 0b1
+    """Is a TransGroup"""
+    Matrix = 0b10
+    """Is a matrix transformation"""
 
 
-class Vec2(_v2):
-    flags = OpFlags.Matrix
+class Trans(ABC):
+    __slots__ = []
+    flags = TransFlags.NoFlags
+
+    @abstractmethod
+    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth: bool): ...
+
+    def __add__(self, oth) -> 'Trans':
+        if not isinstance(oth, Trans):
+            oth = Vec2(*oth)
+        if self.flags & TransFlags.Group:
+            if oth.flags & TransFlags.Group:
+                return TransGroup(*self.membs, *oth.membs)
+            return TransGroup(*self.membs, oth)
+        if oth.flags & TransFlags.Group:
+            return TransGroup(self, *oth.membs)
+        if self.flags & TransFlags.Matrix and oth.flags & TransFlags.Matrix:
+            return MatTrans(oth.mat @ self.mat)
+        return TransGroup(self, oth)
+
+    def __iter__(self):
+        return iter((self,))
+    def flatten(self):
+        return [self]
+
+class MatTrans(Trans):
+    __slots__ = ['mat']
+    flags = TransFlags.Matrix
+
+    def __init__(self, mat):
+        self.mat = np.array(mat, float)
+
+    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth: bool):
+        return mat @ self.mat, arr, crop, defSmth
+
+class Vec2(MatTrans):
+    __slots__ = ['pos']
 
     @property
     def mat(self) -> np.ndarray:
@@ -65,24 +107,104 @@ class Vec2(_v2):
             [0, 0, 1]
         ], float)
 
-class MatTrans:
-    __slots__ = ['flags', 'mat']
+    @overload
+    def __init__(self, x: float, y: float): ...
+    @overload
+    def __init__(self, pos): ...
+    def __init__(self, *args):
+        match len(args):
+            case 1:
+                self.pos = args[0]
+            case 2:
+                self.pos = args
+            case _:
+                raise TypeError(
+                    f'Expected 1 or 2 arguments, found {len(args)}!'
+                )
 
-    def __init__(self, mat):
-        self.mat = np.array(mat, float)
-        self.flags = OpFlags.Matrix
+    @property
+    def x(self) -> float:
+        return self.pos[0]
+    @property
+    def y(self) -> float:
+        return self.pos[1]
 
-    def __add__(self, oth) -> 'MatTrans':
-        if not isinstance(oth, (MatTrans, Vec2)):
-            oth = Vec2(*oth)
-        return MatTrans(oth.mat @ self.mat)
+    def __iter__(self):
+        return iter(self.pos)
+    def __len__(self):
+        return 2
+    def __getitem__(self, it):
+        return self.pos[it]
+
+    def __neg__(self):
+        return Vec2(-self.pos[0], -self.pos[1])
+    def __abs__(self):
+        return Vec2(abs(self.pos[0]), abs(self.pos[1]))
+
+    def __add__(self, oth):
+        return Vec2(self.pos[0] + oth[0], self.pos[1] + oth[1])
+    def __sub__(self, oth):
+        return Vec2(self.pos[0] - oth[0], self.pos[1] - oth[1])
+    def __mul__(self, oth):
+        return Vec2(self.pos[0] * oth[0], self.pos[1] * oth[1])
+    def __floordiv__(self, oth):
+        return Vec2(self.pos[0] // oth[0], self.pos[1] // oth[1])
+    def __div__(self, oth):
+        return Vec2(self.pos[0] / oth[0], self.pos[1] / oth[1])
+
+class TransGroup(Trans):
+    __slots__ = ['membs', '_fixed']
+    flags = TransFlags.Group
+    def __init__(self, *transs):
+        self.membs = list(transs)
+        self._fixed = False
+
+    def _unpack(self, li):
+        for it in li:
+            if it.flags & TransFlags.Group:
+                yield from self._unpack(it)
+            else:
+                yield it
+
+    def fix(self):
+        if self._fixed:
+            return
+        it = self._unpack(self.membs)
+        membs = []
+        m = next(it, None)
+        while m is not None:
+            m2 = m
+            while (nxt := next(it, None)) is not None and \
+                    m.flags & nxt.flags & TransFlags.Matrix:
+                m2 = MatTrans(nxt.mat @ m2.mat)
+                m = nxt
+            membs.append(m2)
+            m = nxt
+        self.membs = membs
+        self._fixed = True
+
+    def apply(self, *args):
+        if not self._fixed:
+            self.fix()
+        for m in self.membs[::-1]:
+            args = m.apply(*args)
+        return args
+
+    def __iter__(self):
+        if not self._fixed:
+            self.fix()
+        return iter(self.membs)
+    def flatten(self):
+        if not self._fixed:
+            self.fix()
+        return self.membs
 
 
 class Op(ABC, _basey.TransBase):
     __slots__ = ['flags']
 
     @abstractmethod
-    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth: bool) -> np.ndarray: ...
+    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth: bool) -> np.ndarray: ...
 
     def frozen(self) -> Self:
         """Get the frozen verson of this operation"""
@@ -97,14 +219,16 @@ class Op(ABC, _basey.TransBase):
         return OpList(self, oth)
 
     def __matmul__(self, oth) -> 'TransOp':
-        if not isinstance(oth, (MatTrans, Vec2)):
+        if oth is None:
+            return TransOp(self.frozen())
+        if not isinstance(oth, Trans):
             oth = Vec2(*oth)
         return TransOp(self.frozen(), oth)
 
     def __iter__(self):
         return iter((self,))
     def flatten(self):
-        return self
+        return [self]
 
 class NormalisedOp(Op):
     __slots__ = []
@@ -124,7 +248,7 @@ class NormalisedOp(Op):
         """Returns a tuple in the format (topleft_x, topleft_y, width, height)"""
     @abstractmethod
     def _translate(self, x, y): ...
-    
+
     def getNormalisedPos(self, normalise_x: float = 0, normalise_y: float = 0):
         """Get the true position of a normalised point."""
         x, y, wid, hei = self.rect()
@@ -183,15 +307,14 @@ class OpList(Op):
         if self._fixed:
             return
         ops = list(self._unpack(self.ops))
+        self.flags &= ~OpFlags.Reset # Remove the reset flag
         for idx, o in enumerate(ops[::-1]):
             if o.flags & OpFlags.Reset:
-                ops = ops[-1-idx:]
+                self.ops = ops[-1-idx:]
+                self.flags |= OpFlags.Reset # Add the reset flag
                 break # We're going backwards
-        self.ops = ops
-        if any(i.flags & OpFlags.Reset for i in ops):
-            self.flags |= OpFlags.Reset # Add the reset flag
         else:
-            self.flags &= ~OpFlags.Reset # Remove the reset flag
+            self.ops = ops
         if all(i.flags & OpFlags.Normalised for i in ops):
             self.flags |= OpFlags.Normalised
         else:
@@ -213,11 +336,11 @@ class OpList(Op):
         self.flags = self.flags & ~OpFlags.List
         return self
 
-    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth):
+    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth):
         if not self._fixed:
             self.fix() # Lazily fix it so it won't every new addition
         for op in self.ops:
-            arr = op.apply(mat, arr, defSmth)
+            arr = op.apply(mat, arr, crop, defSmth)
         return arr
 
     def __add__(self, oth) -> 'OpList':
@@ -241,15 +364,14 @@ class OpList(Op):
 class TransOp(Op):
     __slots__ = ['op', 'trans']
     flags = OpFlags.NoFlags
-    def __init__(self, op: Op, trans: MatTrans|None):
+    def __init__(self, op: Op, trans: Trans = None):
         self.op = op
         self.trans = trans
 
-    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth):
+    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth):
         if self.trans is not None:
-            return self.op.apply(mat @ self.trans.mat, arr, defSmth)
-        else:
-            return self.op.apply(mat, arr, defSmth)
+            return self.op.apply(*self.trans.apply(mat, arr, crop, defSmth))
+        return self.op.apply(mat, arr, crop, defSmth)
 
     def frozen(self) -> 'OpList':
         return self.op.frozen()

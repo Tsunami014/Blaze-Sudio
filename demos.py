@@ -68,12 +68,13 @@ def NewGraphicsDemo():
                 perframe = _1perframe
             case 2: # Transform
                 rect = Op.Draw.Rect((0, 0), (500, 500), 0, Col.Grey)
-                line = Op.Draw.Line((5, 5), (495, 495), 10, Col.Black, **Op.Anchors.Middle)
-                lnoff = -line.getNormalisedPos(**Op.Anchors.TopLeft)
+                line = Op.Draw.Line((0, 0), (500, 500), 10, Col.Black, **Op.Anchors.Middle)
+                lnoff = rect.getNormalisedPos(**Op.Anchors.Middle)
+                crop = Op.Crop(0, 0, *line.rect()[2:])
                 def _2perframe(f):
                     Core(ops +
                             (rect +
-                                (line @ (Op.Trans.Rotate(f)+lnoff))
+                                (line @ (Op.Trans.Rotate(f/2) + lnoff + crop))
                              ) @ (100, 100)
                     )
                 perframe = _2perframe
@@ -167,10 +168,10 @@ def NewGraphicsDemo():
                     cache.fill((255, 255, 255))
                     pygame.draw.line(cache, 0, (5, 5), (495, 495), 10)
                 pygame.draw.rect(WIN, Col.Grey, (98, 98, 504, 504), 0)
-                rotImg = pygame.transform.rotate(cache, f)
-                rotRec = rotImg.get_rect(center = cache.get_rect(topleft = (100, 100)).center)
+                rotImg = pygame.transform.rotate(cache, f/2)
+                diff = ((rotImg.get_width()-cache.get_width())//2, (rotImg.get_height()-cache.get_height())//2)
                 WIN.blit(
-                    rotImg, rotRec
+                    rotImg.subsurface(diff, cache.get_size()), (100, 100)
                 )
 
         pygame.display.flip()

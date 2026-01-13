@@ -51,7 +51,7 @@ class Polygon(NormalisedOp):
         self.round = round
         super().__init__(normalise_x=normalise_x, normalise_y=normalise_y)
     
-    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth) -> np.ndarray:
+    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth) -> np.ndarray:
         ps = self.ps
         if len(ps) < 2:
             return arr
@@ -60,7 +60,7 @@ class Polygon(NormalisedOp):
         sy2 = A[0,1]*A[0,1] + A[1,1]*A[1,1]
         t = self.thickness * ((sx2 + sy2) * 0.5) ** 0.5
         newps = self._warpPs(mat, ps)
-        _calcs.drawPolyLine(arr, newps, t, self.col, self.round)
+        _calcs.drawPolyLine(arr, newps, t, self.col, crop, self.round)
         return arr
 
 class Line(Polygon):
@@ -184,7 +184,7 @@ class Rect(Polygon):
             [self.pos[0]+self.sze[0], self.pos[1]]
         ]
 
-    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth) -> np.ndarray:
+    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth) -> np.ndarray:
         # Checks if the rectangle after matrix op is still a rectangle - i.e. no perspective warp or rotation
         if self._regMat(mat):
             if mat[0, 1] == 0 and mat[1, 0] == 0:
@@ -200,7 +200,7 @@ class Rect(Polygon):
             _calcs.drawRect(arr, p, s, t, r, self.col)
         else:
             # If not, draw the lines
-            super().applyTrans(mat, arr)
+            super().apply(mat, arr, crop, defSmth)
         return arr
 
 
@@ -259,7 +259,7 @@ class Elipse(NormalisedOp):
         assert self.col.shape == (4,), "Colour is of incorrect shape!"
         super().__init__(**kwargs)
     
-    def apply(self, mat: np.ndarray, arr: np.ndarray, defSmth) -> np.ndarray:
+    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth) -> np.ndarray:
         if mat[2,2] != 1:
             raise NotImplementedError(
                 'Cannot have a non-normalized homogeneous coordinate with circles yet!'

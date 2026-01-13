@@ -96,7 +96,7 @@ class _CoreCls:
         if self._cachedarr is None:
             arr = np.ndarray((self._sze[1], self._sze[0], 4), np.uint8)
             if self.op is not None:
-                arr = self.op.apply(IDENTITY, arr, self.isSmooth)
+                arr = self.op.apply(IDENTITY, arr, (0, 0, *self._sze), self.isSmooth)
             self._cachedarr = arr
         return self._cachedarr
 
