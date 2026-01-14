@@ -7,8 +7,82 @@ import sdl2
 
 __all__ = ['Core']
 
+
+class _SurfaceBase:
+    def __init__(self, sze):
+        self._sze = sze
+        self.op: Op|None = None
+        self._cachedarr = None
+        self.isSmooth = False
+
+    @overload
+    def resize(self, sze: Iterable[int] ,/):
+        """
+        Resize the surface
+
+        Args:
+            sze (Iterable[int]): The new size
+        """
+    @overload
+    def resize(self, width: int, height: int ,/):
+        """
+        Resize the surface
+
+        Args:
+            width (int): The new width
+            height (int): The new height
+        """
+    def resize(self, *args):
+        match len(args):
+            case 1:
+                sze = args[0]
+            case 2:
+                sze = (args[0], args[1])
+            case _:
+                raise TypeError(
+                    f'Too many arguments! Expected 1-2, found {len(args)}!'
+                )
+
+        self._cachedarr = None
+        self._sze = sze
+
+    @property
+    def size(self) -> Iterable[int]:
+        return self._sze
+    @size.setter
+    def size(self, newSze):
+        self.resize(newSze)
+
+    def __call__(self, other: Op) -> Self:
+        if self.op != other:
+            self.op = other
+            self._cachedarr = None
+        return self
+
+    @property
+    def arr(self) -> np.ndarray:
+        if self._cachedarr is None:
+            arr = np.zeros((self._sze[1], self._sze[0], 4), np.uint8)
+            if self.op is not None:
+                self._cachedarr = self.op.apply(IDENTITY, arr, (0, 0, *self._sze), self.isSmooth)
+            else:
+                self._cachedarr = arr
+        return self._cachedarr
+
+    def clear(self) -> Self:
+        self.op = None
+        self._cachedarr = None
+        return self
+    def rough(self) -> Self:
+        self.isSmooth = False
+        return self
+    def smooth(self) -> Self:
+        self.isSmooth = True
+        return self
+
+
 _PIXFMT = sdl2.SDL_PIXELFORMAT_ABGR8888 # NOTE: This *may* display funny on big-endian systems (hopefully none run this)
-class _CoreCls:
+class _CoreCls(_SurfaceBase):
     def __new__(cls): # Incase someone weird gets ahold of this class
         if not hasattr(cls, '_instance'):
             cls._instance = super().__new__(cls)
@@ -21,10 +95,7 @@ class _CoreCls:
             sdl2.SDL_RENDERER_ACCELERATED)
         self._texture = sdl2.SDL_CreateTexture(self._renderer, _PIXFMT, sdl2.SDL_TEXTUREACCESS_STREAMING, 0, 0)
 
-        self.op: Op|None = None
-        self._cachedarr = None
-        self.isSmooth = False
-        self._sze = (0, 0)
+        super().__init__((0, 0))
 
     def Quit(self):
         """
@@ -58,53 +129,28 @@ class _CoreCls:
         """
     def resize(self, *args):
         if len(args) == 0:
-            sze = (0, 0)
-        elif len(args) == 1:
-            if len(args[0]) != 2:
-                raise TypeError(
-                    f'Expected size argument to have length 2, found {len(args[0])}!'
-                )
-        elif len(args) == 2:
-            sze = (args[0], args[1])
-        else:
-            raise TypeError(
-                f'Too many positional arguments! Expected 0-2, found {len(args)}!'
-            )
-
-        self._cachedarr = None
-        if sze[0] == 0 and sze[1] == 0:
+            args = (0, 0)
+        super().resize(*args)
+        if self._sze[0] == 0 and self._sze[1] == 0:
             sdl2.SDL_SetWindowFullscreen(self._mainWin, sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP)
             w, h = ctypes.c_int(), ctypes.c_int()
             sdl2.SDL_GetWindowSize(self._mainWin, ctypes.byref(w), ctypes.byref(h))
-            sze = (w.value, h.value)
+            self._sze = (w.value, h.value)
         else:
-            sdl2.SDL_SetWindowSize(self._mainWin, *sze)
+            sdl2.SDL_SetWindowSize(self._mainWin, *self._sze)
 
         sdl2.SDL_DestroyTexture(self._texture)
-        self._texture = sdl2.SDL_CreateTexture(self._renderer, _PIXFMT, sdl2.SDL_TEXTUREACCESS_STREAMING, *sze)
-        self._sze = sze
+        self._texture = sdl2.SDL_CreateTexture(self._renderer, _PIXFMT, sdl2.SDL_TEXTUREACCESS_STREAMING, *self._sze)
 
     @property
-    def size(self) -> Iterable[int]:
-        return self._sze
-    @size.setter
-    def size(self, newSze):
-        self.resize(newSze)
-
-    @property
-    def _arr(self) -> np.ndarray:
+    def arr(self) -> np.ndarray:
         if self._cachedarr is None:
-            arr = np.ndarray((self._sze[1], self._sze[0], 4), np.uint8)
+            arr = np.ndarray((self._sze[1], self._sze[0], 4), np.uint8) # User should fill with colour
             if self.op is not None:
-                arr = self.op.apply(IDENTITY, arr, (0, 0, *self._sze), self.isSmooth)
-            self._cachedarr = arr
+                self._cachedarr = self.op.apply(IDENTITY, arr, (0, 0, *self._sze), self.isSmooth)
+            else:
+                self._cachedarr = arr
         return self._cachedarr
-
-    def __call__(self, other: Op) -> Self:
-        if self.op != other:
-            self.op = other
-            self._cachedarr = None
-        return self
 
     def rend(self):
         """
@@ -113,23 +159,13 @@ class _CoreCls:
         sdl2.SDL_UpdateTexture(
             self._texture,
             None,
-            self._arr.ctypes.data,
+            self.arr.ctypes.data,
             self._sze[0]*4
         )
 
         sdl2.SDL_RenderCopy(self._renderer, self._texture, None, None)
         sdl2.SDL_RenderPresent(self._renderer)
 
-    def clear(self) -> Self:
-        self.op = None
-        self._cachedarr = None
-        return self
-    def rough(self) -> Self:
-        self.isSmooth = False
-        return self
-    def smooth(self) -> Self:
-        self.isSmooth = True
-        return self
 
     def set_title(self, title: str):
         """

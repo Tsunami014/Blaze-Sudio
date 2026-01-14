@@ -71,7 +71,7 @@ def NewGraphicsDemo():
                 rect = Op.Draw.Rect((0, 0), (500, 500), 0, Col.Grey)
                 line = Op.Draw.Line((0, 0), (500, 500), 10, Col.Black, **Op.Anchors.Middle)
                 lnoff = rect.getNormalisedPos(**Op.Anchors.Middle)
-                crop = Op.Crop(0, 0, *line.rect()[2:])
+                crop = Op.Crop(0, 0, *line.rpos)
                 def _2perframe(f):
                     Core(ops +
                             (rect +
@@ -80,14 +80,15 @@ def NewGraphicsDemo():
                     )
                 perframe = _2perframe
             case 3: # Images
-                im = Op.Surf.Image("demoFiles/wrap2.png", **Op.Anchors.Middle)
+                im = Op.Image("demoFiles/wrap2.png")
+                im2 = Op.Surf(im.rsze*2, **Op.Anchors.Middle)(im @ Op.Trans.Scale(2, 2))
                 def _3perframe(f):
                     Core(ops +
-                    (im2 := im @ Op.Trans.Rotate(f/2)) @ (
-                        -im2.getNormalisedPos(**Op.Anchors.TopLeft) +
-                        Op.Crop(0, 0, 200, 200)
-                    ) + im @ (
-                        Op.Vec2(im.rect()[2:])*(1.5 + f/720)
+                    (im3 := im2 @ Op.Trans.Rotate(f/2)) @ (
+                        -im3.getNormalisedPos(**Op.Anchors.TopLeft) +
+                        Op.Crop(0, 0, 400, 400)
+                    ) + im2 @ (
+                        im2.rsze*(1 + f/720)
                     ))
                 perframe = _3perframe
 
@@ -110,8 +111,9 @@ def NewGraphicsDemo():
         Core.rend()
         c.tick()
         Core.set_title(f'FPS: {c.get_fps()}')
-        if f % 50 == 0:
+        if f % 20 == 0:
             times.append(c.get_fps())
+            times = times[-20:]
             PRINT_fps(sum(times)/len(times))
         f = (f + 1) % 720
 
@@ -191,12 +193,12 @@ def NewGraphicsDemo():
                 )
             case 3:
                 if cache is None:
-                    cache = pygame.image.load("demoFiles/wrap2.png")
+                    cache = pygame.transform.scale2x(pygame.image.load("demoFiles/wrap2.png"))
                 nsur = pygame.transform.rotate(cache, f/2)
                 WIN.blit(
-                    nsur.subsurface((0, 0, min(200, nsur.get_width()), min(200, nsur.get_height())))
+                    nsur.subsurface((0, 0, min(400, nsur.get_width()), min(400, nsur.get_height())))
                 )
-                factor = (1.5 + f/720)
+                factor = 1 + f/720
                 WIN.blit(
                     cache, (cache.get_width()*factor, cache.get_height()*factor)
                 )
@@ -204,8 +206,9 @@ def NewGraphicsDemo():
         pygame.display.flip()
         c.tick()
         pygame.display.set_caption(f'FPS: {c.get_fps()}')
-        if f % 50 == 0:
+        if f % 20 == 0:
             times.append(c.get_fps())
+            times = times[-20:]
             PRINT_fps(sum(times)/len(times))
         f = (f + 1) % 720
     print()

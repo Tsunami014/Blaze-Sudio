@@ -47,9 +47,11 @@ class OpFlags(IntEnum):
     """Has no flags. Is not special"""
     List = 0b1
     """Is an OpList"""
-    Normalised = 0b10
+    Trans = 0b10
+    """Is a TransOp"""
+    Normalised = 0b100
     """Is a NormalisedOp"""
-    Reset = 0b100
+    Reset = 0b1000
     """Is a reset op. Every op before it will be ignored"""
 
 class TransFlags(IntEnum):
@@ -244,9 +246,32 @@ class Op(ABC, _basey.TransBase):
     def flatten(self):
         return [self]
 
-class NormalisedOp(Op):
-    __slots__ = []
+class NormalisedBase:
+    def rect(self):
+        """Returns a tuple in the format (topleft_x, topleft_y, width, height)"""
+        return None, None, None, None
+    @property
+    def rpos(self):
+        """Get the position as of self.rect"""
+        p = self.rect()[:2]
+        if p[0] is None:
+            return None
+        return Vec2(p)
+    @property
+    def rsze(self):
+        """Get the size as of self.rect"""
+        s = self.rect()[2:]
+        if s[0] is None:
+            return None
+        return Vec2(s)
+    def getNormalisedPos(self, normalise_x: float = 0, normalise_y: float = 0):
+        """Get the true position of a normalised point."""
+        x, y, wid, hei = self.rect()
+        if x is None:
+            return None, None
+        return Vec2(x + wid * normalise_x, y + hei * normalise_y)
 
+class NormalisedOp(Op, NormalisedBase):
     def __init__(self, *, normalise_x = None, normalise_y = None):
         self.flags = OpFlags.Normalised
         if normalise_x is not None and normalise_y is not None:
@@ -258,17 +283,9 @@ class NormalisedOp(Op):
             self._translate(-ox, -oy)
 
     @abstractmethod
-    def rect(self):
-        """Returns a tuple in the format (topleft_x, topleft_y, width, height)"""
-    @abstractmethod
     def _translate(self, x, y): ...
 
-    def getNormalisedPos(self, normalise_x: float = 0, normalise_y: float = 0):
-        """Get the true position of a normalised point."""
-        x, y, wid, hei = self.rect()
-        return Vec2(x + wid * normalise_x, y + hei * normalise_y)
-
-class OpList(Op):
+class OpList(Op, NormalisedBase):
     __slots__ = ['ops', '_fixed', 'flags']
     def __init__(self, *ops):
         self.ops = ops
@@ -298,17 +315,6 @@ class OpList(Op):
             max(i[3] for i in rs),
         ]
         return *topLeft, botRight[0]-topLeft[0], botRight[1]-topLeft[1]
-
-    def getNormalisedPos(self, normalise_x: float = 0, normalise_y: float = 0):
-        """
-        Get the true position of a normalised point.
-
-        If any operation is not a NormalisedOp, will return (None, None)
-        """
-        x, y, wid, hei = self.rect()
-        if x is None:
-            return None, None
-        return x + wid * normalise_x, y + hei * normalise_y
 
     def _unpack(self, li):
         for it in li:
@@ -375,12 +381,20 @@ class OpList(Op):
             self.fix()
         return self.ops
 
-class TransOp(Op, _basey.TransBase):
+class TransOp(Op, _basey.TransBase, NormalisedBase):
     __slots__ = ['op', 'trans']
+    def __new__(cls, op: Op, trans: Trans = None):
+        if op.flags & OpFlags.Trans:
+            if trans is None:
+                return op
+            if op.trans is None:
+                return TransOp(op.op, trans)
+            return TransOp(op.op, op.trans + trans)
+        return super().__new__(cls)
     def __init__(self, op: Op, trans: Trans = None):
         self.op = op
         self.trans = trans
-        self.flags = op.flags
+        self.flags = op.flags | OpFlags.Trans
 
     def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth):
         if self.trans is not None:
@@ -420,9 +434,4 @@ class TransOp(Op, _basey.TransBase):
             max(p[1] for p in nps),
         )
         return (*tl, br[0]-tl[0], br[1]-tl[1])
-
-    def getNormalisedPos(self, normalise_x: float = 0, normalise_y: float = 0):
-        """Get the true position of a normalised point."""
-        x, y, wid, hei = self.rect()
-        return Vec2(x + wid * normalise_x, y + hei * normalise_y)
 

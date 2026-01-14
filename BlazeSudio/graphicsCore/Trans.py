@@ -68,10 +68,10 @@ class Rotate(MatTrans):
 
 class Scale(MatTrans):
     @overload
-    def __init__(self, sze: Iterable[int], /,*, centre: bool = True): ...
+    def __init__(self, sze: Iterable[int]): ...
     @overload
-    def __init__(self, wid: int, hei: int, /,*, centre: bool = True): ...
-    def __init__(self, *args, centre = True):
+    def __init__(self, wid: int, hei: int): ...
+    def __init__(self, *args):
         match len(args):
             case 2:
                 sze = (args[0], args[1])
@@ -89,7 +89,7 @@ class Scale(MatTrans):
             [sze[0], 0,      0],
             [0,      sze[1], 0],
             [0,      0,      1]
-        ], centre)
+        ])
 
 class Resize(Scale):
     @overload
