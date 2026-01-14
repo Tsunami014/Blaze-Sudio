@@ -19,6 +19,7 @@ def NewGraphicsDemo():
         1: "Shapes",
         2: "Transform",
         3: "Images",
+        4: "Rotate large",
     }
     def PRINT_run(thing, thingcol, nam):
         print(f"\nRunning \033[{thingcol}m{thing}\033[0m with \033[93m{NAMES[nam]}\033[0m:")
@@ -85,12 +86,17 @@ def NewGraphicsDemo():
                 def _3perframe(f):
                     Core(ops +
                     (im3 := im2 @ Op.Trans.Rotate(f/2)) @ (
-                        -im3.getNormalisedPos(**Op.Anchors.TopLeft) +
+                        -im3.getNormalisedPos() +
                         Op.Crop(0, 0, 400, 400)
                     ) + im2 @ (
                         im2.rsze*(1 + f/720)
                     ))
                 perframe = _3perframe
+            case 4: # Rotate large
+                im = Op.Image("demoFiles/large.jpg", **Op.Anchors.Middle)
+                def _4perframe(f):
+                    Core(ops + im @ (Op.Trans.Rotate(f/2) + -im.getNormalisedPos()))
+                perframe = _4perframe
 
         ops.freeze()
 
@@ -101,11 +107,13 @@ def NewGraphicsDemo():
     while Ix.handleBasic():
         if Ix.Keys['1']:
             changeOp(1)
-        if Ix.Keys['2']:
+        elif Ix.Keys['2']:
             changeOp(2)
-        if Ix.Keys['3']:
+        elif Ix.Keys['3']:
             changeOp(3)
-        if Ix.Keys['0']:
+        elif Ix.Keys['4']:
+            changeOp(4)
+        elif Ix.Keys['0']:
             changeOp(0)
         perframe(f)
         Core.rend()
@@ -144,6 +152,8 @@ def NewGraphicsDemo():
             new = 2
         elif ks[pygame.K_3]:
             new = 3
+        elif ks[pygame.K_4]:
+            new = 4
         elif ks[pygame.K_0]:
             new = 0
         if new is not None and new != cur or init:
@@ -191,7 +201,7 @@ def NewGraphicsDemo():
                 WIN.blit(
                     rotImg.subsurface(diff, cache.get_size()), (100, 100)
                 )
-            case 3:
+            case 3: # Images
                 if cache is None:
                     cache = pygame.transform.scale2x(pygame.image.load("demoFiles/wrap2.png"))
                 nsur = pygame.transform.rotate(cache, f/2)
@@ -202,6 +212,10 @@ def NewGraphicsDemo():
                 WIN.blit(
                     cache, (cache.get_width()*factor, cache.get_height()*factor)
                 )
+            case 4: # Rotate large
+                if cache is None:
+                    cache = pygame.image.load("demoFiles/large.jpg")
+                WIN.blit(pygame.transform.rotate(cache, f))
 
         pygame.display.flip()
         c.tick()
