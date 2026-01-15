@@ -79,6 +79,7 @@ all = [
 [tool.setuptools.packages.find]
 exclude = [
     "BlazeSudio.speed.setup",
+    "BlazeSudio.speed.time"
 ]
 
 [tool.setuptools.package-data]
