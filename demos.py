@@ -72,7 +72,7 @@ def NewGraphicsDemo():
                 rect = Op.Draw.Rect((0, 0), (500, 500), 0, Col.Grey)
                 line = Op.Draw.Line((0, 0), (500, 500), 10, Col.Black, **Op.Anchors.Middle)
                 lnoff = rect.getNormalisedPos(**Op.Anchors.Middle)
-                crop = Op.Crop(0, 0, *line.rpos)
+                crop = Op.Crop(0, 0, *rect.rsze)
                 def _2perframe(f):
                     Core(ops +
                             (rect +
@@ -215,7 +215,9 @@ def NewGraphicsDemo():
             case 4: # Rotate large
                 if cache is None:
                     cache = pygame.image.load("demoFiles/large.jpg")
-                WIN.blit(pygame.transform.rotate(cache, f))
+                rot = pygame.transform.rotate(cache, f)
+                new_rect = rot.get_rect(center=cache.get_rect().center)
+                WIN.blit(rot, new_rect)
 
         pygame.display.flip()
         c.tick()

@@ -4,6 +4,14 @@ from PIL import Image as _PillowImg
 from typing import overload
 import numpy as np
 
+__all__ = [
+    'Fill',
+    'Crop',
+    'Surf',
+        'Image',
+        'Preserve'
+]
+
 class Fill(Op):
     __slots__ = ['col']
     def __init__(self, col):
@@ -102,13 +110,59 @@ class Crop(Trans, _basey.TransBase):
         return mat, newR, defSmth
 
 
-class Image(NormalisedOp):
-    __slots__ = ['_im', '_arr', 'offs']
+class _SurfaceBase2(NormalisedOp):
+    """Must define _sze and arr in subclass"""
+    __slots__ = ['_p', '_sze', 'arr']
+    def __init__(self, **kwargs):
+        self._p = Vec2(0, 0)
+        self._cropop = Crop((0, 0), self._sze)
+        NormalisedOp.__init__(self, **kwargs)
+    @property
+    def pos(self):
+        return self._p
+    @pos.setter
+    def pos(self, *args):
+        self._p = Vec2(*args)
+    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth):
+        self._cropop.rect = (*self._p, *self._sze)
+        args = self._cropop.apply(mat, crop, defSmth)
+        if args is not None:
+            mat, crop, defSmth = args
+            _basey.blit(mat @ self._p.mat, self.arr, arr, crop)
+        return arr
+
+    def rect(self):
+        return (*self._p, *self._sze)
+    def _translate(self, *args):
+        self._p += args
+
+class Surf(_SurfaceBase, _SurfaceBase2):
+    @overload
+    def __init__(self, wid: float, height: float, *, normalise_x = None, normalise_y = None): ...
+    @overload
+    def __init__(self, sze, *, normalise_x = None, normalise_y = None): ...
+    def __init__(self, *args, **kwargs):
+        match len(args):
+            case 1:
+                _SurfaceBase.__init__(self, args[0])
+            case 2:
+                _SurfaceBase.__init__(self, args)
+            case _:
+                raise TypeError(
+                    f'Incorrect number of arguments! Expected 1 or 2, found {len(args)}!'
+                )
+        _SurfaceBase2.__init__(self, **kwargs)
+
+class Image(_SurfaceBase2):
+    __slots__ = ['_im', '_arr']
     def __init__(self, pth: str, *, normalise_x = None, normalise_y = None):
         self._arr = None
         self.image = _PillowImg.open(pth)
-        self.offs = Vec2(0, 0)
         super().__init__(normalise_x=normalise_x, normalise_y=normalise_y)
+
+    @property
+    def _sze(self):
+        return self._im.size
     @property
     def arr(self):
         if self._arr is None:
@@ -124,44 +178,18 @@ class Image(NormalisedOp):
             self._im = new.convert('RGBA')
         else:
             self._im = new
-    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth):
-        _basey.blit(mat @ self.offs.mat, self.arr, arr, crop)
-        return arr
 
-    def rect(self):
-        """Returns a tuple in the format (topleft_x, topleft_y, width, height)"""
-        return (*self.offs, *self._im.size)
-    def _translate(self, *args):
-        self.offs += args
-
-class Surf(NormalisedOp, _SurfaceBase):
-    @overload
-    def __init__(self, wid: float, height: float, *, normalise_x = None, normalise_y = None): ...
-    @overload
-    def __init__(self, sze, *, normalise_x = None, normalise_y = None): ...
-    def __init__(self, *args, **kwargs):
-        match len(args):
-            case 1:
-                _SurfaceBase.__init__(self, args[0])
-            case 2:
-                _SurfaceBase.__init__(self, args)
-            case _:
-                raise TypeError(
-                    f'Incorrect number of arguments! Expected 1 or 2, found {len(args)}!'
-                )
-        self.pos = Vec2(0, 0)
-        self._cropop = Crop((0, 0), self._sze)
-        NormalisedOp.__init__(self, **kwargs)
-    def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth):
-        self._cropop.rect = (*self.pos, *self._sze)
-        args = self._cropop.apply(mat, crop, defSmth)
-        if args is not None:
-            mat, crop, defSmth = args
-            _basey.blit(mat @ self.pos.mat, self.arr, arr, crop)
-        return arr
-
-    def rect(self):
-        return (*self.pos, *self._sze)
-    def _translate(self, *args):
-        self.pos += args
+def Preserve(op: NormalisedOp) -> Surf:
+    if not hasattr(op, 'rect'):
+        raise ValueError(
+            'Op is not normalised - it has no rect function!'
+        )
+    x, y, wid, hei = op.rect()
+    if x is None:
+        raise ValueError(
+            'Op seems normalised but rect returns None!'
+        )
+    s = Surf(wid, hei)(op)
+    s._p = x, y
+    return s
 
