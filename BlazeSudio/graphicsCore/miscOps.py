@@ -1,4 +1,5 @@
-from .base import Op, NormalisedOp, OpFlags, Vec2, Trans, _basey
+from .base import Op, NormalisedOp, OpFlags, Vec2, Trans
+from . import _basey, _blit
 from .core import _SurfaceBase
 from PIL import Image as _PillowImg
 from typing import overload
@@ -128,7 +129,7 @@ class _SurfaceBase2(NormalisedOp):
         args = self._cropop.apply(mat, crop, defSmth)
         if args is not None:
             mat, crop, defSmth = args
-            _basey.blit(mat @ self._p.mat, self.arr, arr, crop)
+            _blit.blit(mat @ self._p.mat, self.arr, arr, crop)
         return arr
 
     def rect(self):

@@ -1,8 +1,5 @@
-import builtins as __builtins__
-import sys
-from time import perf_counter
-
 __path__: list
+
 class Timer(object):
     ...
 
