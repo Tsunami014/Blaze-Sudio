@@ -1095,7 +1095,6 @@ if __name__ == '__main__':
                 Tk.Button(root, text=f"{idx}: "+text, command=lambda cmdd=command, txt=text: cmd(cmdd, txt)).pack()
             else:
                 print(f'{idx}: {text}')
-                cmds.append(command)
             idx += 1
     
     if has_tk:
