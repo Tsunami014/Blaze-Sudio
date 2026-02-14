@@ -1,53 +1,43 @@
-from stubgen_pyx.stubgen import stubgen
+from stubgen_pyx.stubgen import StubgenPyx
+from Cython.Build import cythonize
+from setuptools import Extension
+from setuptools.dist import Distribution
+from setuptools.command.build_ext import build_ext
 import numpy
 import sys
 import os
 
 if '-h' in sys.argv or '--help' in sys.argv or len(sys.argv) > 1:
-    print("Usage: "+sys.argv[0]+" [-h/--help] [--force/-f]")
+    print("Usage: "+sys.argv[0]+" [-h/--help]")
     exit()
 
-os.chdir(os.path.abspath(__file__+"/../../../"))
-sys.path.append(os.getcwd())
+ROOT = os.path.abspath(__file__+"/../../../")
+os.chdir(ROOT)
+sys.path.append(ROOT)
 import BlazeSudio.speed
 BlazeSudio.speed._COMPILING = True
 
+print("Generating stubs...")
+files = StubgenPyx().convert_glob(ROOT+"/**/*.pyx")
 MODULES = []
-
-base = "./BlazeSudio"
-
-for root, dirs, files in os.walk(base):
-    for f in files:
-        full_path = os.path.join(root, f)
-        rel_path = os.path.relpath(full_path, base).replace(os.sep, '/')
-        if f.endswith('.pyx'):
-            MODULES.append(rel_path[:-4])
-
-print(f"Compiling modules: {MODULES}")
-
+for f in files:
+    pyx_path = f.pyx_file.resolve()
+    rel = pyx_path.relative_to(ROOT)
+    parts = rel.with_suffix("").parts
+    module_name = ".".join(parts)
+    if parts[-1] == '__init__':
+        symbol = parts[-2]
+    else:
+        symbol = parts[-1]
+    MODULES.append((module_name, str(pyx_path), symbol))
 
 if len(MODULES) > 0:
-    forced = '-f' in sys.argv or '--force' in sys.argv
-    ext = ".pyd" if sys.platform == 'win32' else ".abi3.so"
-    def up2date(src, dst, out):
-        if not os.path.exists(dst):
-            return False
-        if not os.path.exists(out):
-            return False
-        return os.path.getmtime(src) < os.path.getmtime(dst)
-
-    for name in MODULES:
-        src = f"{base}/{name}.pyx"
-        dst = f"{base}/{name}.pyi"
-        out = f"{base}/{name}.{ext}"
-        if (not forced) and up2date(src, dst, out):
-            print(f"File up-to-date: {name}")
-            continue
-
-        print(f"Compiling {name}...")
-        # This also compiles it too for whatever reason
-        stubgen(
-            src,
+    print(f"Compiling modules: {', '.join(m[2] for m in MODULES)}...")
+    extensions = [
+        Extension(
+            name=modname,
+            export_symbols=["PyInit_"+symbol],
+            sources=[src],
             include_dirs=[numpy.get_include()],
             define_macros=[
                 ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
@@ -55,9 +45,24 @@ if len(MODULES) > 0:
             ],
             py_limited_api=True
         )
-else:
-    print("No compile modules found!")
+        for modname, src, symbol in MODULES
+    ]
+    ext_modules = cythonize(
+        extensions,
+        nthreads=6,
+        language_level="3",
+        compiler_directives={'binding': False}
+    )
 
+    dist = Distribution({"name": "inline-build", "ext_modules": ext_modules})
+    cmd = build_ext(dist)
+    cmd.build_lib = os.getcwd()
+    cmd.build_temp = os.path.join(os.getcwd(), "build")
+    cmd.inplace = True
+
+    cmd.ensure_finalized()
+    cmd.run()
+else:
+    print("No modules found!")
 
 print("Finished!")
-
