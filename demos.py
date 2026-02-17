@@ -206,7 +206,8 @@ def NewGraphicsDemo():
                     cache = pygame.transform.scale2x(pygame.image.load("demoFiles/wrap2.png"))
                 nsur = pygame.transform.rotate(cache, f/2)
                 WIN.blit(
-                    nsur.subsurface((0, 0, min(400, nsur.get_width()), min(400, nsur.get_height())))
+                    nsur.subsurface((0, 0, min(400, nsur.get_width()), min(400, nsur.get_height()))),
+                    (0, 0)
                 )
                 factor = 1 + f/720
                 WIN.blit(

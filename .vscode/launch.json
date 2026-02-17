@@ -39,7 +39,7 @@
             "program": "BlazeSudio/speed/setup.py",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
-            "justMyCode": false
+            "justMyCode": true
         },
         {
             "name": "Current File",

@@ -25,18 +25,13 @@ for f in files:
     rel = pyx_path.relative_to(ROOT)
     parts = rel.with_suffix("").parts
     module_name = ".".join(parts)
-    if parts[-1] == '__init__':
-        symbol = parts[-2]
-    else:
-        symbol = parts[-1]
-    MODULES.append((module_name, str(pyx_path), symbol))
+    MODULES.append((module_name, str(pyx_path)))
 
 if len(MODULES) > 0:
-    print(f"Compiling modules: {', '.join(m[2] for m in MODULES)}...")
+    print(f"Compiling modules: {', '.join(m[0] for m in MODULES)}...")
     extensions = [
         Extension(
             name=modname,
-            export_symbols=["PyInit_"+symbol],
             sources=[src],
             include_dirs=[numpy.get_include()],
             define_macros=[
@@ -45,7 +40,7 @@ if len(MODULES) > 0:
             ],
             py_limited_api=True
         )
-        for modname, src, symbol in MODULES
+        for modname, src in MODULES
     ]
     ext_modules = cythonize(
         extensions,
@@ -59,6 +54,7 @@ if len(MODULES) > 0:
     cmd.build_lib = os.getcwd()
     cmd.build_temp = os.path.join(os.getcwd(), "build")
     cmd.inplace = True
+    cmd.parallel = 6
 
     cmd.ensure_finalized()
     cmd.run()
