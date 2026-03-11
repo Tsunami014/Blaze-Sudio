@@ -70,6 +70,7 @@ class Trans(ABC):
     @abstractmethod
     def apply(self, mat: np.ndarray, arr: np.ndarray, crop, defSmth: bool): ...
 
+    def __pos__(self) -> Self: return self
     def __add__(self, oth) -> 'Trans':
         if not isinstance(oth, Trans):
             oth = Vec2(*oth)
@@ -229,6 +230,7 @@ class Op(ABC, _basey.TransBase):
         """Freezes this operation and returns it"""
         return self
 
+    def __pos__(self) -> Self: return self
     def __add__(self, oth) -> 'OpList':
         if oth.flags & OpFlags.List:
             return OpList(self, *oth.ops)
