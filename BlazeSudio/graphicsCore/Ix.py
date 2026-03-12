@@ -41,7 +41,7 @@ class Keys(metaclass=_KeysMeta):
     - Has a key event happened? Use the `Keys.event` function
     - Are any keyboard modifiers pressed? Use the booleans starting with `m` - e.g. `Keys.mShift`, `Keys.mCtrl` or `Keys.mAlt`
     """
-    _kbdState: bool
+    _kbdState: object
     _keyEvs: Iterable[Event] = []
     mShift: bool
     mCtrl: bool
