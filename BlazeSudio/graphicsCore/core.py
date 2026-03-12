@@ -152,9 +152,12 @@ class _CoreCls(_SurfaceBase):
                 self._cachedarr = arr
         return self._cachedarr
 
-    def rend(self):
+    def rend(self, present: bool = True):
         """
         Render the entire screen.
+
+        Args:
+            present (bool): Whether to actually display the screen or just pretend to. Defaults to True
         """
         sdl2.SDL_UpdateTexture(
             self._texture,
@@ -164,7 +167,8 @@ class _CoreCls(_SurfaceBase):
         )
 
         sdl2.SDL_RenderCopy(self._renderer, self._texture, None, None)
-        sdl2.SDL_RenderPresent(self._renderer)
+        if present:
+            sdl2.SDL_RenderPresent(self._renderer)
 
 
     def set_title(self, title: str):

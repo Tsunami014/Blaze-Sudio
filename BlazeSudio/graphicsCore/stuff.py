@@ -30,7 +30,7 @@ class Clock():
                     t = time.perf_counter()
                     delta = t - self._lastTime
             self.dt = delta
-        if not slept:
+        if maxfps is not None and not slept:
             time.sleep(0)
         self._lastTime = t
 

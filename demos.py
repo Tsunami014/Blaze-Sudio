@@ -24,7 +24,7 @@ def NewGraphicsDemo():
     def PRINT_run(thing, thingcol, nam):
         print(f"\nRunning \033[{thingcol}m{thing}\033[0m with \033[93m{NAMES[nam]}\033[0m:")
     def PRINT_fps(fps):
-        print(f"Average FPS: \033[94m{fps}\033[m", end="\r")
+        print(f"Average FPS: \033[94m{round(fps, 3)}\033[m", end="\r")
 
     from BlazeSudio.graphicsCore import Core, Ix, AvgClock, Col, Op
 
@@ -122,7 +122,7 @@ def NewGraphicsDemo():
         elif Ix.Keys['0']:
             changeOp(0)
         perframe(f)
-        Core.rend()
+        Core.rend(not Ix.Keys[' '])
         c.tick()
         Core.set_title(f'FPS: {c.get_fps()}')
         if f % 20 == 0:
@@ -133,7 +133,7 @@ def NewGraphicsDemo():
 
     Core.Quit()
 
-    #quit() # Uncomment to ignore pygame
+    quit() # Uncomment to ignore pygame
     print("\n")
 
     import pygame
@@ -226,7 +226,8 @@ def NewGraphicsDemo():
                 new_rect = rot.get_rect(center=cache.get_rect().center)
                 WIN.blit(rot, new_rect)
 
-        pygame.display.flip()
+        if not ks[pygame.K_SPACE]:
+            pygame.display.flip()
         c.tick()
         pygame.display.set_caption(f'FPS: {c.get_fps()}')
         if f % 20 == 0:
