@@ -117,12 +117,16 @@ cdef _fill(
         long fromy, long toy, long fromx, long tox,
         long rcol, long gcol, long bcol, long acol):
     cdef long y, x
+    cdef long diff = tox - fromx
+    cdef unsigned char *cell
     for y in range(fromy, toy):
-        for x in range(fromx, tox):
-            arr[y, x, 0] = rcol
-            arr[y, x, 1] = gcol
-            arr[y, x, 2] = bcol
-            arr[y, x, 3] = acol
+        cell = &arr[y, fromx, 0]
+        for x in range(diff):
+            cell[0] = rcol
+            cell[1] = gcol
+            cell[2] = bcol
+            cell[3] = acol
+            cell += 4
 
 cpdef drawRect(
         cnp.ndarray[cnp.uint8_t, ndim=3] arr,

@@ -2517,7 +2517,7 @@ return 0;
 /* #### Code section: module_code ### */
 
 /* "BlazeSudio/graphicsCore/_basey/init.pyx":4
- * 
+ * import numpy as np
  * class TransBase:
  *     def _warpPs(self, mat: np.ndarray, points: np.ndarray):             # <<<<<<<<<<<<<<
  *         points = points.astype(float)
@@ -2803,7 +2803,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6_basey_4init_9TransBase__
   goto __pyx_L0;
 
   /* "BlazeSudio/graphicsCore/_basey/init.pyx":4
- * 
+ * import numpy as np
  * class TransBase:
  *     def _warpPs(self, mat: np.ndarray, points: np.ndarray):             # <<<<<<<<<<<<<<
  *         points = points.astype(float)
@@ -3437,7 +3437,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6_basey_4init_9TransBase_6
  *         cdef float y = p[1]
  *         if offset:
 */
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_p, 0, long, 1, __Pyx_PyLong_From_long, 0, 0, 1, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_p, 0, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = __Pyx_PyFloat_AsFloat(__pyx_t_1); if (unlikely((__pyx_t_2 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 26, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -3450,7 +3450,7 @@ static PyObject *__pyx_pf_10BlazeSudio_12graphicsCore_6_basey_4init_9TransBase_6
  *         if offset:
  *             return np.array([
 */
-  __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_p, 1, long, 1, __Pyx_PyLong_From_long, 0, 0, 1, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_p, 1, long, 1, __Pyx_PyLong_From_long, 0, 0, 0, 1, __Pyx_ReferenceSharing_FunctionArgument); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 27, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = __Pyx_PyFloat_AsFloat(__pyx_t_1); if (unlikely((__pyx_t_2 == (float)-1) && PyErr_Occurred())) __PYX_ERR(0, 27, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -4110,20 +4110,21 @@ __Pyx_RefNannySetupContext("PyInit_init", 0);
   (void)__Pyx_modinit_function_import_code(__pyx_mstate);
   /*--- Execution code ---*/
 
-  /* "BlazeSudio/graphicsCore/_basey/init.pyx":1
+  /* "BlazeSudio/graphicsCore/_basey/init.pyx":2
+ * # cython: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False
  * import numpy as np             # <<<<<<<<<<<<<<
- * 
  * class TransBase:
+ *     def _warpPs(self, mat: np.ndarray, points: np.ndarray):
 */
-  __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_numpy, 0, 0, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_mstate_global->__pyx_n_u_numpy, 0, 0, NULL, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
   __pyx_t_2 = __pyx_t_1;
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_2) < (0)) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_mstate_global->__pyx_d, __pyx_mstate_global->__pyx_n_u_np, __pyx_t_2) < (0)) __PYX_ERR(0, 2, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "BlazeSudio/graphicsCore/_basey/init.pyx":3
+ * # cython: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False
  * import numpy as np
- * 
  * class TransBase:             # <<<<<<<<<<<<<<
  *     def _warpPs(self, mat: np.ndarray, points: np.ndarray):
  *         points = points.astype(float)
@@ -4132,7 +4133,7 @@ __Pyx_RefNannySetupContext("PyInit_init", 0);
   __Pyx_GOTREF(__pyx_t_2);
 
   /* "BlazeSudio/graphicsCore/_basey/init.pyx":4
- * 
+ * import numpy as np
  * class TransBase:
  *     def _warpPs(self, mat: np.ndarray, points: np.ndarray):             # <<<<<<<<<<<<<<
  *         points = points.astype(float)
@@ -4221,8 +4222,8 @@ __Pyx_RefNannySetupContext("PyInit_init", 0);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
   /* "BlazeSudio/graphicsCore/_basey/init.pyx":3
+ * # cython: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False
  * import numpy as np
- * 
  * class TransBase:             # <<<<<<<<<<<<<<
  *     def _warpPs(self, mat: np.ndarray, points: np.ndarray):
  *         points = points.astype(float)
@@ -4237,8 +4238,8 @@ __Pyx_RefNannySetupContext("PyInit_init", 0);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "BlazeSudio/graphicsCore/_basey/init.pyx":1
- * import numpy as np             # <<<<<<<<<<<<<<
- * 
+ * # cython: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False             # <<<<<<<<<<<<<<
+ * import numpy as np
  * class TransBase:
 */
   __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)

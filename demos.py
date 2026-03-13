@@ -122,7 +122,8 @@ def NewGraphicsDemo():
         elif Ix.Keys['0']:
             changeOp(0)
         perframe(f)
-        Core.rend(not Ix.Keys[' '])
+        if not Ix.Keys[' ']:
+            Core.rend()
         c.tick()
         Core.set_title(f'FPS: {c.get_fps()}')
         if f % 20 == 0:

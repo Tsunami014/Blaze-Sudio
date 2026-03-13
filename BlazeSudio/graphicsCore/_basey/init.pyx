@@ -1,5 +1,5 @@
+# cython: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False
 import numpy as np
-
 class TransBase:
     def _warpPs(self, mat: np.ndarray, points: np.ndarray):
         points = points.astype(float)

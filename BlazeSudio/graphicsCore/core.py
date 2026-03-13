@@ -12,6 +12,7 @@ class _SurfaceBase:
     def __init__(self, sze):
         self._sze = sze
         self.op: Op|None = None
+        self._cachedout = None
         self._cachedarr = None
         self.isSmooth = False
 
@@ -43,8 +44,10 @@ class _SurfaceBase:
                     f'Too many arguments! Expected 1-2, found {len(args)}!'
                 )
 
-        self._cachedarr = None
-        self._sze = sze
+        if self._sze != sze:
+            self._cachedout = None
+            self._cachedarr = None
+            self._sze = sze
 
     @property
     def size(self) -> Iterable[int]:
@@ -56,21 +59,25 @@ class _SurfaceBase:
     def __call__(self, other: Op) -> Self:
         if self.op != other:
             self.op = other
-            self._cachedarr = None
+            self._cachedout = None
         return self
 
     @property
     def arr(self) -> np.ndarray:
-        if self._cachedarr is None:
-            arr = np.zeros((self._sze[1], self._sze[0], 4), np.uint8)
+        if self._cachedout is None:
+            if self._cachedarr is None:
+                self._cachedarr = np.ndarray((self._sze[1], self._sze[0], 4), np.uint8) # User should fill with colour
             if self.op is not None:
-                self._cachedarr = self.op.apply(IDENTITY, arr, (0, 0, *self._sze), self.isSmooth)
+                self._cachedout = self.op.apply(IDENTITY, self._cachedarr, (0, 0, *self._sze), self.isSmooth)
             else:
-                self._cachedarr = arr
-        return self._cachedarr
+                self._cachedout = self._cachedarr
+        return self._cachedout
 
     def clear(self) -> Self:
         self.op = None
+        self._cachedout = None
+        return self
+    def clearsurf(self) -> Self:
         self._cachedarr = None
         return self
     def rough(self) -> Self:
@@ -142,22 +149,9 @@ class _CoreCls(_SurfaceBase):
         sdl2.SDL_DestroyTexture(self._texture)
         self._texture = sdl2.SDL_CreateTexture(self._renderer, _PIXFMT, sdl2.SDL_TEXTUREACCESS_STREAMING, *self._sze)
 
-    @property
-    def arr(self) -> np.ndarray:
-        if self._cachedarr is None:
-            arr = np.ndarray((self._sze[1], self._sze[0], 4), np.uint8) # User should fill with colour
-            if self.op is not None:
-                self._cachedarr = self.op.apply(IDENTITY, arr, (0, 0, *self._sze), self.isSmooth)
-            else:
-                self._cachedarr = arr
-        return self._cachedarr
-
-    def rend(self, present: bool = True):
+    def rend(self):
         """
         Render the entire screen.
-
-        Args:
-            present (bool): Whether to actually display the screen or just pretend to. Defaults to True
         """
         sdl2.SDL_UpdateTexture(
             self._texture,
@@ -167,8 +161,7 @@ class _CoreCls(_SurfaceBase):
         )
 
         sdl2.SDL_RenderCopy(self._renderer, self._texture, None, None)
-        if present:
-            sdl2.SDL_RenderPresent(self._renderer)
+        sdl2.SDL_RenderPresent(self._renderer)
 
 
     def set_title(self, title: str):
