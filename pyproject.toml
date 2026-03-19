@@ -52,6 +52,7 @@ graphics = [
     "pysdl2-dll",
     "numpy",
     "pillow",
+    "freetype-py",
 ]
 
 image = [

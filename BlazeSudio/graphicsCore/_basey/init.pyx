@@ -1,6 +1,6 @@
 # cython: boundscheck=False, wraparound=False, cdivision=True, initializedcheck=False
 import numpy as np
-class TransBase:
+class Base:
     def _warpPs(self, mat: np.ndarray, points: np.ndarray):
         points = points.astype(float)
         if self._affMat(mat):
@@ -35,4 +35,24 @@ class TransBase:
                 x*mat[0, 0] + y*mat[0, 1],
                 x*mat[1, 0] + y*mat[1, 1]
             ], dtype=float)
+
+    def _warpbbx(self, mat, crop):
+        topL = crop[:2]
+        botR = (crop[2]-crop[0], crop[3]-crop[1])
+        if self._regMat(mat):
+            ps = self._regWarp(mat, topL), self._regWarp(mat, botR)
+        else:
+            ps = self._warpPs(mat, np.array([
+                topL,
+                [topL[0], botR[1]],
+                botR,
+                [botR[0], topL[1]]
+            ], float))
+        tl = (min(p[0] for p in ps),
+              min(p[1] for p in ps))
+        br = (max(p[0] for p in ps),
+              max(p[1] for p in ps))
+        if tl[0] >= br[0] or tl[1] >= br[1]:
+            return None
+        return (tl[0], tl[1], tl[0]+br[0], tl[1]+br[1])
 

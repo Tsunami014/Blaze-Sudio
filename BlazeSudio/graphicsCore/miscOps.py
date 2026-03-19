@@ -1,5 +1,5 @@
 from .base import Op, NormalisedOp, OpFlags, Vec2, Trans
-from . import _basey, _blit
+from . import _blit
 from .core import _SurfaceBase
 from PIL import Image as _PillowImg
 from typing import overload
@@ -26,8 +26,8 @@ class Fill(Op):
         return arr
 
 
-class Crop(Trans, _basey.TransBase):
-    __slots__ = ['topL', 'botR']
+class Crop(Trans):
+    __slots__ = ['pos', 'size']
 
     @overload
     def __init__(self,
@@ -48,60 +48,36 @@ class Crop(Trans, _basey.TransBase):
                 raise TypeError(
                     f'Incorrect number of arguments! Expected 2 or 4, found {len(args)}!'
                 )
-        self.topL = list(r[:2])
+        self.pos = list(r[:2])
         if normalise_x is not None:
-            self.topL[0] += r[2] * normalise_x
+            self.pos[0] += r[2] * normalise_x
         if normalise_y is not None:
-            self.topL[1] += r[3] * normalise_y
-        self.botR = (r[2]+self.topL[0], r[3]+self.topL[1])
-
-    @property
-    def size(self):
-        return self.botR[0]-self.topL[0], self.botR[1]-self.topL[1]
-    @size.setter
-    def size(self, new):
-        self.botR = (
-            self.topL[0] + new[0],
-            self.topL[1] + new[1]
-        )
-    @property
-    def pos(self):
-        return self.topL
-    @pos.setter
-    def pos(self, new):
-        osze = self.size
-        self.topL = new
-        self.botR = (new[0]+osze[0], new[1]+osze[1])
+            self.pos[1] += r[3] * normalise_y
+        self.size = (r[2]-r[0], r[3]-r[1])
 
     @property
     def rect(self):
-        return *self.topL, *self.size
+        return *self.pos, *self.size
     @rect.setter
     def rect(self, new):
-        self.topL = new[:2]
-        self.botR = (new[2]+new[0], new[3]+new[1])
+        self.pos = list(new[:2])
+        self.size = list(new[2:])
+    @property
+    def topL(self):
+        return self.pos
+    @property
+    def botR(self):
+        return self.pos[0]+self.size[0], self.pos[1]+self.size[1]
 
     def apply(self, mat: np.ndarray, crop, defSmth: bool):
-        if self._regMat(mat):
-            ps = self._regWarp(mat, self.topL), self._regWarp(mat, self.botR)
-        else:
-            ps = self._warpPs(mat, np.array([
-                self.topL,
-                [self.topL[0], self.botR[1]],
-                self.botR,
-                [self.botR[0], self.topL[1]]
-            ], float))
-        tl = (min(p[0] for p in ps),
-              min(p[1] for p in ps))
-        br = (max(p[0] for p in ps),
-              max(p[1] for p in ps))
         topLeft = (
-            max(crop[0], tl[0]),
-            max(crop[1], tl[1]),
+            max(crop[0], self.pos[0]),
+            max(crop[1], self.pos[1]),
         )
+        botR = self.botR
         botRight = (
-            min(crop[2], br[0]),
-            min(crop[3], br[1]),
+            min(crop[2], botR[0]),
+            min(crop[3], botR[1]),
         )
         if topLeft[0] >= botRight[0] or topLeft[1] >= botRight[1]:
             return None
@@ -111,7 +87,7 @@ class Crop(Trans, _basey.TransBase):
         return mat, newR, defSmth
 
 
-class _SurfaceBase2(NormalisedOp):
+class _ImageBase(NormalisedOp):
     """Must define _sze and arr in subclass"""
     __slots__ = ['_p', '_sze', 'arr']
     def __init__(self, **kwargs):
@@ -137,7 +113,8 @@ class _SurfaceBase2(NormalisedOp):
     def _translate(self, *args):
         self._p += args
 
-class Surf(_SurfaceBase, _SurfaceBase2):
+class Surf(_SurfaceBase, _ImageBase):
+    """A surface for running operations on, allows ops to be cached"""
     @overload
     def __init__(self, wid: float, height: float, *, normalise_x = None, normalise_y = None): ...
     @overload
@@ -152,9 +129,9 @@ class Surf(_SurfaceBase, _SurfaceBase2):
                 raise TypeError(
                     f'Incorrect number of arguments! Expected 1 or 2, found {len(args)}!'
                 )
-        _SurfaceBase2.__init__(self, **kwargs)
+        _ImageBase.__init__(self, **kwargs)
 
-class Image(_SurfaceBase2):
+class Image(_ImageBase):
     __slots__ = ['_im', '_arr']
     def __init__(self, pth: str, *, normalise_x = None, normalise_y = None):
         self._arr = None

@@ -89,7 +89,7 @@ class Trans(ABC):
     def flatten(self):
         return [self]
 
-class MatTrans(Trans):
+class MatTrans(Trans, _basey.Base):
     __slots__ = ['mat']
     flags = TransFlags.Matrix
 
@@ -97,7 +97,10 @@ class MatTrans(Trans):
         self.mat = np.array(mat, float)
 
     def apply(self, mat: np.ndarray, crop, defSmth: bool):
-        return mat @ self.mat, crop, defSmth
+        warped = self._warpbbx(self.mat, crop)
+        if warped is None:
+            return None
+        return mat @ self.mat, warped, defSmth
 
 class Vec2(MatTrans):
     __slots__ = ['pos']
@@ -217,7 +220,7 @@ class TransGroup(Trans):
         return self.membs
 
 
-class Op(ABC, _basey.TransBase):
+class Op(ABC, _basey.Base):
     __slots__ = ['flags']
 
     @abstractmethod
@@ -383,7 +386,7 @@ class OpList(Op, NormalisedBase):
             self.fix()
         return self.ops
 
-class TransOp(Op, _basey.TransBase, NormalisedBase):
+class TransOp(Op, _basey.Base, NormalisedBase):
     __slots__ = ['op', 'trans']
     def __new__(cls, op: Op, trans: Trans = None):
         if op.flags & OpFlags.Trans:
@@ -413,27 +416,11 @@ class TransOp(Op, _basey.TransBase, NormalisedBase):
 
     def rect(self):
         """Returns a tuple in the format (topleft_x, topleft_y, width, height)"""
-        r = self.op.rect()
         if self.trans is None:
-            return r
-        ps = np.array([
-            r[:2],
-            (r[2]+r[0], r[1]),
-            (r[2]+r[0], r[3]+r[1]),
-            (r[0], r[3]+r[1]),
-        ])
+            return self.op.rect()
         args = self.trans.apply(IDENTITY, (float("-inf"), float("-inf"), float("inf"), float("inf")), False)
         if args is None:
-            return r
+            return (0,0,0,0)
 
-        nps = self._warpPs(args[0], ps)
-        tl = (
-            min(p[0] for p in nps),
-            min(p[1] for p in nps),
-        )
-        br = (
-            max(p[0] for p in nps),
-            max(p[1] for p in nps),
-        )
-        return (*tl, br[0]-tl[0], br[1]-tl[1])
+        return self._warpbbx(args[0], self.op.rect())
 

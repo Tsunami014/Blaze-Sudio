@@ -20,26 +20,30 @@ def NewGraphicsDemo():
         2: "Transform",
         3: "Images",
         4: "Rotate large",
+        5: "Font",
     }
     def PRINT_run(thing, thingcol, nam):
         print(f"\nRunning \033[{thingcol}m{thing}\033[0m with \033[93m{NAMES[nam]}\033[0m:")
     def PRINT_fps(fps):
         print(f"Average FPS: \033[94m{round(fps, 3)}\033[m", end="\r")
 
-    from BlazeSudio.graphicsCore import Core, Ix, AvgClock, Col, Op
+    from BlazeSudio.graphicsCore import Core, Ix, AvgClock, Col, Op, Font
 
+    fnt = Font.SysFonts.default().sized_px(80)
     c = AvgClock()
     cur = None
     f = 0
     times = []
     perframe = None
+    avgFPS = 0
 
     def changeOp(new):
-        nonlocal cur, f, times, perframe
+        nonlocal cur, f, times, perframe, avgFPS
         if new == cur:
             return
         PRINT_run("new graphics engine", 92, new)
         PRINT_fps(0)
+        avgFPS = 0
         cur = new
         f = 1
         times = []
@@ -103,7 +107,10 @@ def NewGraphicsDemo():
                 def _4perframe(f):
                     Core(ops + im @ (Op.Trans.Rotate(f/2) + -im.getNormalisedPos()))
                 perframe = _4perframe
-
+            case 5: # Font
+                def _5perframe(f):
+                    Core(ops + fnt("FPS: "+str(avgFPS), (255, 125, 0, 255))@Op.Trans.Translate(80, 80))
+                perframe = _5perframe
         ops.freeze()
 
 
@@ -119,22 +126,25 @@ def NewGraphicsDemo():
             changeOp(3)
         elif Ix.Keys['4']:
             changeOp(4)
+        elif Ix.Keys['5']:
+            changeOp(5)
         elif Ix.Keys['0']:
             changeOp(0)
         perframe(f)
         if not Ix.Keys[' ']:
             Core.rend()
         c.tick()
-        Core.set_title(f'FPS: {c.get_fps()}')
         if f % 20 == 0:
             times.append(c.get_fps())
             times = times[-20:]
-            PRINT_fps(sum(times)/len(times))
+            avgFPS = sum(times)/len(times)
+            PRINT_fps(avgFPS)
+            Core.set_title(f'FPS: {avgFPS}')
         f = (f + 1) % 720
 
     Core.Quit()
 
-    quit() # Uncomment to ignore pygame
+    #quit() # Uncomment to ignore pygame
     print("\n")
 
     import pygame
@@ -145,6 +155,7 @@ def NewGraphicsDemo():
     cur = 1
     init = True
     cache = None
+    fnt = pygame.font.Font(None, 80)
     times = []
     r = True
     while r:
@@ -161,6 +172,8 @@ def NewGraphicsDemo():
             new = 3
         elif ks[pygame.K_4]:
             new = 4
+        elif ks[pygame.K_5]:
+            new = 5
         elif ks[pygame.K_0]:
             new = 0
         if new is not None and new != cur or init:
@@ -173,6 +186,7 @@ def NewGraphicsDemo():
             if init:
                 init = False
                 PRINT_fps(0)
+                avgFPS = 0
 
         WIN.fill((255, 255, 255))
         match cur:
@@ -226,15 +240,18 @@ def NewGraphicsDemo():
                 rot = pygame.transform.rotate(cache, f)
                 new_rect = rot.get_rect(center=cache.get_rect().center)
                 WIN.blit(rot, new_rect)
+            case 5: # Font
+                WIN.blit(fnt.render("FPS: "+str(avgFPS), 0, (255, 125, 0)), (80, 80))
 
         if not ks[pygame.K_SPACE]:
             pygame.display.flip()
         c.tick()
-        pygame.display.set_caption(f'FPS: {c.get_fps()}')
         if f % 20 == 0:
             times.append(c.get_fps())
             times = times[-20:]
-            PRINT_fps(sum(times)/len(times))
+            avgFPS = sum(times)/len(times)
+            PRINT_fps(avgFPS)
+            pygame.display.set_caption(f'FPS: {avgFPS}')
         f = (f + 1) % 720
     print()
     pygame.quit()
