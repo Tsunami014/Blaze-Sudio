@@ -144,7 +144,7 @@ def NewGraphicsDemo():
 
     Core.Quit()
 
-    #quit() # Uncomment to ignore pygame
+    quit() # Uncomment to ignore pygame
     print("\n")
 
     import pygame

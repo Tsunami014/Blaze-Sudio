@@ -36,30 +36,28 @@ cdef inline void ezblit(
         yhi = min(cBot, transy + oh)
         xlo = max(cLeft, transx)
         xhi = min(cRight, transx + ow)
-        for y in range(cTop, cBot):#, nogil=True):
+        for y in range(ylo, yhi):#, nogil=True):
             oy = y - transy
-            if 0 <= oy < oh:
-                for x in range(cLeft, cRight):
-                    ox = x - transx
-                    if 0 <= ox < ow:
-                        srcrow = &src_mv[oy, ox, 0]
-                        sa = srcrow[3]
-                        if sa != 0:
-                            dstrow = &dst_mv[y, x, 0]
-                            if sa == 255:
-                                dstrow[0] = srcrow[0]
-                                dstrow[1] = srcrow[1]
-                                dstrow[2] = srcrow[2]
-                                dstrow[3] = 255
-                            else:
-                                inva = 255 - sa
-                                dstrow[0] = <unsigned char>((srcrow[0]*sa + dstrow[0]*inva) >> 8)
-                                dstrow[1] = <unsigned char>((srcrow[1]*sa + dstrow[1]*inva) >> 8)
-                                dstrow[2] = <unsigned char>((srcrow[2]*sa + dstrow[2]*inva) >> 8)
-                                oa = sa + dstrow[3]
-                                if oa > 255:
-                                    oa = 255
-                                dstrow[3] = <unsigned char>(oa)
+            for x in range(xlo, xhi):
+                ox = x - transx
+                srcrow = &src_mv[oy, ox, 0]
+                sa = srcrow[3]
+                if sa != 0:
+                    dstrow = &dst_mv[y, x, 0]
+                    if sa == 255:
+                        dstrow[0] = srcrow[0]
+                        dstrow[1] = srcrow[1]
+                        dstrow[2] = srcrow[2]
+                        dstrow[3] = 255
+                    else:
+                        inva = 255 - sa
+                        dstrow[0] = <unsigned char>((srcrow[0]*sa + dstrow[0]*inva) >> 8)
+                        dstrow[1] = <unsigned char>((srcrow[1]*sa + dstrow[1]*inva) >> 8)
+                        dstrow[2] = <unsigned char>((srcrow[2]*sa + dstrow[2]*inva) >> 8)
+                        oa = sa + dstrow[3]
+                        if oa > 255:
+                            oa = 255
+                            dstrow[3] = <unsigned char>(oa)
         return
 
     cdef double dx = transx + ow * scalex

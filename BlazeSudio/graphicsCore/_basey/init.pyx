@@ -36,11 +36,14 @@ class Base:
                 x*mat[1, 0] + y*mat[1, 1]
             ], dtype=float)
 
-    def _warpbbx(self, mat, crop):
+    def _warpbbx(self, mat, crop, outercrop):
         topL = crop[:2]
-        botR = (crop[2]-crop[0], crop[3]-crop[1])
+        botR = crop[2:]
         if self._regMat(mat):
-            ps = self._regWarp(mat, topL), self._regWarp(mat, botR)
+            ps = [
+                self._regWarp(mat, topL),
+                self._regWarp(mat, botR)
+            ]
         else:
             ps = self._warpPs(mat, np.array([
                 topL,
@@ -52,7 +55,16 @@ class Base:
               min(p[1] for p in ps))
         br = (max(p[0] for p in ps),
               max(p[1] for p in ps))
+        if outercrop[2] != 0:
+            tl = (
+                max(outercrop[0], tl[0]),
+                max(outercrop[1], tl[1]),
+            )
+            br = (
+                min(outercrop[2], br[0]),
+                min(outercrop[3], br[1]),
+            )
         if tl[0] >= br[0] or tl[1] >= br[1]:
-            return None
-        return (tl[0], tl[1], tl[0]+br[0], tl[1]+br[1])
+            return (0, 0, 0, 0)
+        return (tl[0], tl[1], br[0], br[1])
 

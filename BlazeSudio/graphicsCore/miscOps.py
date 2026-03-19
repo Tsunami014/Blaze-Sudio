@@ -1,5 +1,5 @@
 from .base import Op, NormalisedOp, OpFlags, Vec2, Trans
-from . import _blit
+from . import _basey, _blit
 from .core import _SurfaceBase
 from PIL import Image as _PillowImg
 from typing import overload
@@ -26,7 +26,7 @@ class Fill(Op):
         return arr
 
 
-class Crop(Trans):
+class Crop(Trans, _basey.Base):
     __slots__ = ['pos', 'size']
 
     @overload
@@ -70,20 +70,9 @@ class Crop(Trans):
         return self.pos[0]+self.size[0], self.pos[1]+self.size[1]
 
     def apply(self, mat: np.ndarray, crop, defSmth: bool):
-        topLeft = (
-            max(crop[0], self.pos[0]),
-            max(crop[1], self.pos[1]),
-        )
-        botR = self.botR
-        botRight = (
-            min(crop[2], botR[0]),
-            min(crop[3], botR[1]),
-        )
-        if topLeft[0] >= botRight[0] or topLeft[1] >= botRight[1]:
+        newR = self._warpbbx(mat, (*self.pos, *self.botR), crop)
+        if newR[2] == 0:
             return None
-        newR = (
-            *topLeft, *botRight
-        )
         return mat, newR, defSmth
 
 

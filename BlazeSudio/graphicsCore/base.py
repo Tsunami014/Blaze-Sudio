@@ -97,10 +97,7 @@ class MatTrans(Trans, _basey.Base):
         self.mat = np.array(mat, float)
 
     def apply(self, mat: np.ndarray, crop, defSmth: bool):
-        warped = self._warpbbx(self.mat, crop)
-        if warped is None:
-            return None
-        return mat @ self.mat, warped, defSmth
+        return mat @ self.mat, crop, defSmth
 
 class Vec2(MatTrans):
     __slots__ = ['pos']
@@ -420,7 +417,8 @@ class TransOp(Op, _basey.Base, NormalisedBase):
             return self.op.rect()
         args = self.trans.apply(IDENTITY, (float("-inf"), float("-inf"), float("inf"), float("inf")), False)
         if args is None:
-            return (0,0,0,0)
-
-        return self._warpbbx(args[0], self.op.rect())
+            return None, None, None, None
+        r = self.op.rect()
+        box = self._warpbbx(args[0], (r[0], r[1], r[2]+r[0],r[3]+r[1]), (0,0,0,0))
+        return box[0], box[1], box[2]-box[0], box[3]-box[1]
 
